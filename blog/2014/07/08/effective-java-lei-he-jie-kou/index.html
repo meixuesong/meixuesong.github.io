@@ -1,0 +1,428 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Effective Java-类和接口 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="本文总结《Effective Java》中“类和接口”的论述。 13.使类和成员的可访问性最小化 最小化可访问性的目的是隐藏信息，隐藏信息的原因主要是为了模块解耦。正确地使用修饰符（private, protected和public）很重要。 第一条规则是：尽可能地使每个类或者成员不被外界访问。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/07/08/effective-java-lei-he-jie-kou">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Effective Java-类和接口</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-08T18:58:31+08:00" pubdate data-updated="true">2014-07-08</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>本文总结《Effective Java》中“类和接口”的论述。</p>
+
+<!--more-->
+
+
+<h2>13.使类和成员的可访问性最小化</h2>
+
+<p>最小化可访问性的目的是隐藏信息，隐藏信息的原因主要是为了模块解耦。正确地使用修饰符（private, protected和public）很重要。</p>
+
+<p>第一条规则是：尽可能地使每个类或者成员不被外界访问。对于顶层（非嵌套）类和接口，应该只有两种可能的访问级别：包级私有（即没有修饰符时）和public。包级私有仍然是这个包的实现的一部分，以后可以对它进行修改，无需担心客户端。但如果是public，则有责任永远支持它。</p>
+
+<p>如果一个包级私有的顶层类/接口只在某一个类的内部被使用，仍应该考虑将它变成那个类的私有嵌套类。</p>
+
+<p>长度非零的数组总是可变的，所以，类具有公有的静态final数组域，或者返回这种域的访问方法，这几乎总是错误的！</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//潜在安全漏洞</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Thing</span><span class="o">[]</span> <span class="n">VALUES</span> <span class="o">=</span> <span class="o">{...};</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//可改为：</span>
+</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Thing</span><span class="o">[]</span> <span class="n">PRIVATE_VALUES</span> <span class="o">=</span> <span class="o">{...};</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Thing</span><span class="o">&gt;</span> <span class="n">VALUES</span> <span class="o">=</span>
+</span><span class='line'>  <span class="n">Collections</span><span class="o">.</span><span class="na">unmodifiableList</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">PRIVATE_VALUES</span><span class="o">));</span>
+</span><span class='line'>  
+</span><span class='line'><span class="c1">//或者返回一个数组的备份：</span>
+</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Thing</span><span class="o">[]</span> <span class="n">PRIVATE_VALUES</span> <span class="o">=</span> <span class="o">{...};</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Thing</span><span class="o">[]</span> <span class="n">values</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">PRIVATE_VALUES</span><span class="o">.</span><span class="na">clones</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>  
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>14.在public类中使用访问方法而非公有域</h2>
+
+<p>简单说，就是public类的属性不要public，而是提供访问方法（如getter, setter）。如果属性不是final的，直接公开属性将表示放弃对该值的控制。即使该属性是final，但如果它引用了可变对象，一样会存在问题。</p>
+
+<h2>15.使可变性最小化</h2>
+
+<p>不可变类是其实例无法修改的类。不可变类不容易出错，本质上是线程安全的，不要求同步。要使类成为不可变，要遵循以下五条规则：</p>
+
+<ol>
+<li>不提供任何会修改对象状态的方法。</li>
+<li>保证类不会被扩展。</li>
+<li>使所有域都是final的。</li>
+<li>使所有域都成为私有的。</li>
+<li>确保对任何可变组件的互斥访问。如果类中有指向可变对象的域，必须确保客户端无法获得指向这些对象的引用。<strong>永远不要用客户端提供的对象引用来初始化这样的域，也不要从任何访问方法返回该对象的引用。</strong>可使用保护性拷贝技术。</li>
+</ol>
+
+
+<p>不可变类唯一的缺点是，对每个不同的值都需要一个单独的对象。对大型对象代价会很高。</p>
+
+<p>其中第2条，保证类不会被扩展，除了使类成为final外，也可以将类的构造器为私有或者包级私有，然后提供静态工厂。</p>
+
+<p>如果你选择让自己的不可变类实现Serializable接口，并且它包含指向可变对象的域，就必须提供一个显式的readObject或者readResolve方法，或者使用ObjectOutputStream.writeUnshared和ObjectInputStream.readUnshared方法。否则攻击者可能从不可变类创建可变的实例。</p>
+
+<p>如果类不能被做成不可变的，仍然应该尽可能地限制它的可变性。尽量使域/属性成为final。</p>
+
+<p>构造器应该创建完全初始化的对象。尽量不要在构造器或者静态工厂之外再提供公有的初始化方法。同时也不应该提供“重新初始化”方法。</p>
+
+<h2>16.复合优先于继承</h2>
+
+<p>继承打破了封装性。子类依赖于父类中特定功能的实现细节。父类的实现有可能会随着发行版本的不同而有所变化。</p>
+
+<p>通过复合（Composition），现有类变成了新类的一个组件，新类提供方法调用现有类实例中对应的方法，并返回它的结果。这被称为转发。</p>
+
+<p>包装类几乎没有缺点。但包装类不适用于回调框架中。在回调框架中，对象把自己的引用传递给其他对象，用于后续调用。而被包装起来的对象并不知道它外面的包装对象，所以它传递一个指向自身的引用（this），回调时避开了外面的包装对象。这被称为<strong>SELF问题</strong>。</p>
+
+<p>只有当子类真正是父类的子类型时，即它们是“is-a”的关系时，才适合用继承。</p>
+
+<h2>17.要么为继承而设计，并提供文档说明，要么就禁止继承</h2>
+
+<p>文档必须精确地描述覆盖每个方法所带来的影响。
+对于为了继承而设计的类，唯一的测试方法就是编写子类。
+<strong>为了允许继承，构造器决不能调用可被覆盖的方法，无论是直接调用还是间接调用！</strong>
+对于为了继承而设计的类，实现Cloneable和Serializable这两个接口都不是好主意，因为将实际负担转嫁给了扩展这个类的程序员身上。还要注意clone和readObject这两个方法非常类似于构造器，也不能调用可覆盖的方法，不管是直接还是间接调用。如果实现了Serializable，并且该类还有readResolve或writeReplace方法，就必须将该方法成为protected方法，不能是private。</p>
+
+<p>对于那些并非为了安全地进行子类化而设计和编写文档的类，要禁止子类化。有两种办法：声明为final或者将所有构造器都变成私有或包级私有，并增加一个公有静态工厂。</p>
+
+<h2>18.接口优于抽象类</h2>
+
+<h2>19.接口只用于定义类型</h2>
+
+<p>书中建议不要用接口来定义常量，这是接口的不良使用。接口应该只用于定义类型，而常量可以通过以下方法实现：</p>
+
+<ul>
+<li>如果某些常量与某个现有类或接口紧密相关，就应该把这些常量加到这个类或接口中。例如Integer的MIN_VALUE常量。</li>
+<li>如果这些常量最好被看作是枚举类型的成员，就应该使用枚举类型。</li>
+<li>否则应该使用不可实例化的工具类来定义这些常量，例如：</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PhysicalConstants</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="nf">PhysicalConstants</span><span class="o">()</span> <span class="o">{}</span> <span class="c1">//避免实例化</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">AVOGADROS_NUMBER</span> <span class="o">=</span> <span class="mf">6.0221419e23</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>20.类层次优于标签类</h2>
+
+<p>标签类（Tagged class）是指那些用一个类来表示多种对象的类。例如用一个类来表示矩形和圆。通过一个标签来区分当前实例是矩形还是圆。</p>
+
+<p>标签类过于冗长，容易出错，而且效率低下。这种情况应该通过类层次来定义。</p>
+
+<h2>21.用函数对象表示策略</h2>
+
+<p>如果一个类，它的方法执行其他对象的操作，这个类仅导出一个这样的方法，它的实例就等同于一个指向该方法的指针。这样的实例就称为函数对象（function object）。例如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">StringLengthComparator</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">String</span> <span class="n">s1</span><span class="o">,</span> <span class="n">String</span> <span class="n">s2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">s1</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="n">s2</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面这个类没有属性，因此适合于单例。为了把该类的实例传递给方法，应该定义一个接口，并让类实现这个接口。这就是一个策略接口：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Comparator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">T</span> <span class="n">t1</span><span class="o">,</span> <span class="n">T</span> <span class="n">t2</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>函数指针的主要用途就是实现策略模式。为了在Java中实现这种模式，要声明一个接口来表示该策略，并且为每个具体策略声明一个实现了该接口的类。当一个具体策略只使用一次时，通常使用匿名类，如果可以重复使用，通常实现为私有的静态成员类，并通过公有的静态final属性导出，其类型为该策略接口。</p>
+
+<h2>22.优先使用静态成员类</h2>
+
+<p>嵌套类（nested class）有四种：静态成员类、非静态成员类、匿名类和局部类。后面三种都被称为内部类（inner class）。</p>
+
+<p>非静态成员类的每个实例都隐含着与一个外围实例的关联，在其内部可以调用外围实例的方法。非静态成员类的一种常见用法是定义一个Adapter。</p>
+
+<p>如果成员类不要求访问外围实例，就要始终把static放在它的声明中，使它成为静态成员类。</p>
+
+<p>匿名类的适用性受到很多限制，它没有名字，不是外围类的成员。它在使用的同时被声明和实例化。不能实现多个接口或者扩展一个类，并同时扩展类和实现接口。它们必须保持简短，大约10行或更少。它主要用于：</p>
+
+<ul>
+<li>创建函数对象，例如匿名的Comparator实例。</li>
+<li>创建过程对象，例如Runnable, Thread或者TimerTask实例。</li>
+<li>在静态工厂方法的内部。参考第18条。</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-08T18:58:31+08:00" pubdate data-updated="true">2014-07-08</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/07/02/javafan-xing/" title="Previous Post: Java泛型">&laquo; Java泛型</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/07/09/javazhu-jie/" title="Next Post: Java注解">Java注解 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/test/'>test (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (1)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/07/21/test-a-new-rake/">Test a New Rake</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/09/javazhu-jie/">Java注解</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/08/effective-java-lei-he-jie-kou/">Effective Java-类和接口</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/02/javafan-xing/">Java泛型</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/02/an-quan-http,sslzheng-shu-ji-shen-qing/">安全HTTP，SSL证书及申请</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fb4e47bf6950f9d2496daf84fe62cec59' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/07/08/effective-java-lei-he-jie-kou/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/07/08/effective-java-lei-he-jie-kou/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

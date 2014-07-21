@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Test | 码出人生]]></title>
+  <link href="http://blog.ubone.com/blog/categories/test/atom.xml" rel="self"/>
+  <link href="http://blog.ubone.com/"/>
+  <updated>2014-07-21T22:36:47+08:00</updated>
+  <id>http://blog.ubone.com/</id>
+  <author>
+    <name><![CDATA[梅雪松]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Test a New Rake]]></title>
+    <link href="http://blog.ubone.com/blog/2014/07/21/test-a-new-rake/"/>
+    <updated>2014-07-21T21:48:53+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/07/21/test-a-new-rake</id>
+    <content type="html"><![CDATA[<p>这只是一个测试，用于测试环境是否正常。</p>
+]]></content>
+  </entry>
+  
+</feed>

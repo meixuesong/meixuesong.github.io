@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 移动开发 | 码出人生]]></title>
+  <link href="http://blog.ubone.com/blog/categories/yi-dong-kai-fa/atom.xml" rel="self"/>
+  <link href="http://blog.ubone.com/"/>
+  <updated>2014-07-21T22:36:47+08:00</updated>
+  <id>http://blog.ubone.com/</id>
+  <author>
+    <name><![CDATA[梅雪松]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Titanium移动开发之每日自动构建]]></title>
+    <link href="http://blog.ubone.com/blog/2014/06/25/titaniumzi-dong-gou-jian/"/>
+    <updated>2014-06-25T11:19:18+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/06/25/titaniumzi-dong-gou-jian</id>
+    <content type="html"><![CDATA[<p>以下脚本用于构建Android 和 iOS版本的Titanium应用。可以将脚本加入cron中，每日定时构建。脚本还实现了自动获取svn日志，生成一个发布网页，直接上传到ftp的功能。</p>
+
+<!--more-->
+
+
+<p>```</p>
+
+<h1>转到项目文件夹，更新脚本并执行Clean</h1>
+
+<p>cd /Users/mxs/Develop/CI/myProject
+svn update
+titanium clean</p>
+
+<h1>Android打包</h1>
+
+<p>echo build Android version
+titanium build &mdash;log-level warn &mdash;platform android &mdash;build-only &mdash;force -K /Users/mxs/keystore -P company -L oasuit -O /Users/mxs/Develop/CI/build -T dist-playstore > ../android.build.log</p>
+
+<h1>文件名加上时间</h1>
+
+<p>fileTime=&ldquo;OA-<code>date +'%Y-%m-%d_%H%M'</code>&rdquo;
+localApkName=&ldquo;/Users/mxs/Develop/CI/build/&rdquo;$fileTime".apk"
+localApkZip=$fileTime".apk.zip"
+localApkZipSource=$fileTime".apk"
+remoteApkName=&ldquo;/moa/test/&rdquo;$fileTime".apk.zip"
+oaapk=/Users/mxs/Develop/CI/build/OA.apk
+oaapkinfo=&ldquo;&rdquo;
+if [ ! -f $oaapk ]
+then
+  oaapkinfo=&lsquo;<br/><strong><span style="color:red">OA.apk不存在，tiapp.xml配置不正确或者构建失败。</span></strong>&rsquo;
+fi
+mv $oaapk $localApkName</p>
+
+<h1>iOS打包</h1>
+
+<p>mv /Users/mxs/Develop/CI/i18n /Users/mxs/Develop/CI/myProject/i18n
+titanium clean
+echo build iOS version
+titanium build &mdash;log-level warn &mdash;platform ios &mdash;build-only &mdash;force &mdash;device-family iphone -O /Users/mxs/Develop/CI/build -P XXXXXXX -T dist-adhoc &mdash;distribution-name &ldquo;Company Ltd./&rdquo; > ../ios.build.log
+localIpaName=&ldquo;/Users/mxs/Develop/CI/build/&rdquo;$fileTime".ipa"
+localIpaZip=$fileTime".ipa.zip"
+localIpaZipSource=$fileTime".ipa"
+remoteIpaName=&ldquo;/moa/test/&rdquo;$fileTime".ipa.zip"
+oaipa=/Users/mxs/Develop/CI/build/OA.ipa
+oaipainfo=&ldquo;&rdquo;
+if [ ! -f $oaipa ]
+then
+  oaipainfo=&lsquo;<br/><strong><span style="color:red">OA.ipa不存在，tiapp.xml配置不正确或者构建失败。</span></string>&rsquo;
+fi
+mv $oaipa $localIpaName
+mv /Users/mxs/Develop/CI/myProject/i18n /Users/mxs/Develop/CI/i18n</p>
+
+<h1>获取昨天的日志，只要以#开始的注释</h1>
+
+<p>yesterday=&ldquo;<code>date -v -1d +'%Y-%m-%d'</code>&rdquo;
+today=&ldquo;<code>date +'%Y-%m-%d'</code>&rdquo;
+svn log -r {$yesterday}:{$today} > ../log.tmp
+grep &lsquo;^#&rsquo; ../log.tmp > ../change.log
+rm ../log.tmp</p>
+
+<h1>生成releasenote</h1>
+
+<p>releaseFileName=&ldquo;../build/releasenote-<code>date +'%Y-%m-%d'</code>.txt&rdquo;
+date &ldquo;+<h2>%Y-%m-%d</h2><hr/><p>构建时间：%Y-%m-%d %H:%M:%S</p>&rdquo; > $releaseFileName
+echo &lsquo;<p>下载地址：<a href="'$remoteIpaName'" target="_blank">iOS</a> | <a href="'$remoteApkName'" target="_blank">Android</a></p>&rsquo; >> $releaseFileName
+echo &lsquo;&rsquo; >> $releaseFileName
+echo &lsquo;<h3>&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;变更日志&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;</h3>&rsquo; >> $releaseFileName
+echo &lsquo;<pre>&rsquo; >> $releaseFileName
+cat ../change.log >> $releaseFileName
+echo &lsquo;</pre>&rsquo; >> $releaseFileName
+echo &lsquo;<h3>&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;构建日志&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;</h3>&rsquo; >> $releaseFileName
+echo &lsquo;注：只显示警告和错误信息。&rsquo; >> $releaseFileName
+echo $oaapkinfo >> $releaseFileName
+echo $oaipainfo >> $releaseFileName
+echo &lsquo;<h4>Android</h4>&rsquo; >> $releaseFileName
+echo &lsquo;<pre>&rsquo; >> $releaseFileName</p>
+
+<h1>删除Titanium构建日志的前4行</h1>
+
+<p>cat ../android.build.log  | sed 1d | sed 1d | sed 1d | sed 1d >> $releaseFileName
+echo &lsquo;</pre>&rsquo; >> $releaseFileName
+echo &lsquo;<h4>iOS</h4>&rsquo; >> $releaseFileName
+echo &lsquo;<pre>&rsquo; >> $releaseFileName
+cat ../ios.build.log  | sed 1d | sed 1d | sed 1d | sed 1d >> $releaseFileName
+echo &lsquo;</pre>&rsquo; >> $releaseFileName
+indexFileName=&ldquo;../build/index.html&rdquo;
+historyFileName=&ldquo;../index_history.html&rdquo;
+indexTopFileName=&ldquo;../index_top.html&rdquo;
+cat $historyFileName >> $releaseFileName
+rm $historyFileName
+mv $releaseFileName $historyFileName
+echo &lsquo;&rsquo; > $indexFileName
+cat $indexTopFileName >> $indexFileName
+cat $historyFileName >> $indexFileName
+rm ../change.log
+rm ../android.build.log
+rm ../ios.build.log
+echo zip</p>
+
+<h1>压缩成zip,必须切换到当前文件夹进行压缩操作，否则zip内容包括路径</h1>
+
+<p>cd ../build
+zip $localApkZip $localApkZipSource
+zip $localIpaZip $localIpaZipSource</p>
+
+<h1>上传到FTP服务器</h1>
+
+<p>echo &lsquo;ftp action&rsquo;
+HOST=&lsquo;192.168&hellip;.&rsquo;
+USER=&lsquo;xxx&rsquo;
+PASSWD=&lsquo;xxx&rsquo;
+remoteIndex=&ldquo;/xxx/index.html&rdquo;
+ftp -n $HOST &lt;&lt;END_SCRIPT
+quote USER $USER
+quote PASS $PASSWD
+binary
+put $localIpaZip $remoteIpaName
+put $localApkZip $remoteApkName
+put $indexFileName $remoteIndex
+quit
+END_SCRIPT
+exit 0</p>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+</feed>

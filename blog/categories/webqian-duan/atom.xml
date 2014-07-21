@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Web前端 | 码出人生]]></title>
+  <link href="http://blog.ubone.com/blog/categories/webqian-duan/atom.xml" rel="self"/>
+  <link href="http://blog.ubone.com/"/>
+  <updated>2014-07-21T22:36:47+08:00</updated>
+  <id>http://blog.ubone.com/</id>
+  <author>
+    <name><![CDATA[梅雪松]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Extjs 备忘录]]></title>
+    <link href="http://blog.ubone.com/blog/2014/06/25/extjs-bei-wang-lu/"/>
+    <updated>2014-06-25T12:13:29+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/06/25/extjs-bei-wang-lu</id>
+    <content type="html"><![CDATA[<p>今天改点老程序，用到了Extjs，记录一下遇到的问题和解决办法。</p>
+
+<!--more-->
+
+
+<h2>JavaScript字符串替换</h2>
+
+<p>根据Ext文档，有多种替换方式。我想要不区分大小写的替换，而目前Extjs文档中提供的方法无效。</p>
+
+<p><code>javascript
+//Extjs文档：
+var str = "Apples are round, and apples are juicy.";
+var newstr = str.replace("apples", "oranges", "gi");
+print(newstr);
+//！文档说结果为： "oranges are round, and oranges are juicy."，
+</code></p>
+
+<p>但上面的代码并没有产生预期的效果，第一个Apples并没有被替换。改用以下方法实现：</p>
+
+<p>```javascript
+replaceIgnoreCase : function(str, searchStr, replaceStr) {</p>
+
+<pre><code>    var regEx = new RegExp(searchStr, "ig");
+    var str = str.replace(regEx, replaceStr);
+
+    return str;
+</code></pre>
+
+<p>}</p>
+
+<p>var result = this._replaceIgnoreCase(&lsquo;This iS IIS&rsquo;, &lsquo;is&rsquo;, &lsquo;as&rsquo;);</p>
+
+<p>//result为：Thas as Ias
+```</p>
+
+<p>设置Extjs Grid Panel的行高</p>
+
+<p>```css
+//gridPanel的定义中：</p>
+
+<p>viewConfig: {                             <br/>
+  getRowClass: function (record, rowIndex, rp, store) {</p>
+
+<pre><code>return "grid-row-height";
+</code></pre>
+
+<p>  }
+},</p>
+
+<p>//CSS定义：
+.grid-row-height {</p>
+
+<pre><code>height: 35px;
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>设置Extjs Grid 单元格中的文字自动换行</h2>
+
+<p>Extjs gridPanel单元格的内容如果超出，默认是显示三个点，要想让它换行，其实很简单：</p>
+
+<p>```
+//gridPanel的定义，注意tdCls
+columns: [</p>
+
+<pre><code>        {
+            header: 'Sentence',
+            dataIndex: 'sentence',
+            flex: 2,
+            renderer: this.sentenceRenderer,
+            tdCls:'wrap-text'
+        },    
+</code></pre>
+
+<p>//CSS定义
+td.wrap-text div {</p>
+
+<pre><code>white-space: normal;
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>设置Extjs Grid 单元格中的文字换行后的行高</h2>
+
+<p>Extjs gridPanel单元格的内容自动换行号，默认行高太小，只需将上面的CSS修改为：</p>
+
+<p>```css
+//CSS定义
+td.wrap-text div {</p>
+
+<pre><code>white-space: normal;
+line-height: 130%;
+</code></pre>
+
+<p>}</p>
+
+<p>//130%表示1.3倍行高。
+```</p>
+]]></content>
+  </entry>
+  
+</feed>

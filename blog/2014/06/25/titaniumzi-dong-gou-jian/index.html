@@ -1,0 +1,498 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Titanium移动开发之每日自动构建 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="以下脚本用于构建Android 和 iOS版本的Titanium应用。可以将脚本加入cron中，每日定时构建。脚本还实现了自动获取svn日志，生成一个发布网页，直接上传到ftp的功能。 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/06/25/titaniumzi-dong-gou-jian">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Titanium移动开发之每日自动构建</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-25T11:19:18+08:00" pubdate data-updated="true">2014-06-25</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>以下脚本用于构建Android 和 iOS版本的Titanium应用。可以将脚本加入cron中，每日定时构建。脚本还实现了自动获取svn日志，生成一个发布网页，直接上传到ftp的功能。</p>
+
+<!--more-->
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#转到项目文件夹，更新脚本并执行Clean
+</span><span class='line'>cd /Users/mxs/Develop/CI/myProject
+</span><span class='line'>svn update 
+</span><span class='line'>titanium clean
+</span><span class='line'>
+</span><span class='line'>#Android打包
+</span><span class='line'>echo build Android version
+</span><span class='line'>titanium build --log-level warn --platform android --build-only --force -K /Users/mxs/keystore -P company -L oasuit -O /Users/mxs/Develop/CI/build -T dist-playstore &gt; ../android.build.log
+</span><span class='line'>
+</span><span class='line'>#文件名加上时间
+</span><span class='line'>fileTime="OA-`date +'%Y-%m-%d_%H%M'`"
+</span><span class='line'>localApkName="/Users/mxs/Develop/CI/build/"$fileTime".apk"
+</span><span class='line'>localApkZip=$fileTime".apk.zip"
+</span><span class='line'>localApkZipSource=$fileTime".apk"
+</span><span class='line'>remoteApkName="/moa/test/"$fileTime".apk.zip"
+</span><span class='line'>oaapk=/Users/mxs/Develop/CI/build/OA.apk
+</span><span class='line'>oaapkinfo=""
+</span><span class='line'>if [ ! -f $oaapk ]
+</span><span class='line'>then
+</span><span class='line'>  oaapkinfo='&lt;br/&gt;&lt;strong&gt;&lt;span style="color:red"&gt;OA.apk不存在，tiapp.xml配置不正确或者构建失败。&lt;/span&gt;&lt;/strong&gt;'
+</span><span class='line'>fi
+</span><span class='line'>mv $oaapk $localApkName
+</span><span class='line'>
+</span><span class='line'>#iOS打包
+</span><span class='line'>mv /Users/mxs/Develop/CI/i18n /Users/mxs/Develop/CI/myProject/i18n 
+</span><span class='line'>titanium clean
+</span><span class='line'>echo build iOS version
+</span><span class='line'>titanium build --log-level warn --platform ios --build-only --force --device-family iphone -O /Users/mxs/Develop/CI/build -P XXXXXXX -T dist-adhoc --distribution-name "Company Ltd./" &gt; ../ios.build.log
+</span><span class='line'>localIpaName="/Users/mxs/Develop/CI/build/"$fileTime".ipa"
+</span><span class='line'>localIpaZip=$fileTime".ipa.zip"
+</span><span class='line'>localIpaZipSource=$fileTime".ipa"
+</span><span class='line'>remoteIpaName="/moa/test/"$fileTime".ipa.zip"
+</span><span class='line'>oaipa=/Users/mxs/Develop/CI/build/OA.ipa
+</span><span class='line'>oaipainfo=""
+</span><span class='line'>if [ ! -f $oaipa ]
+</span><span class='line'>then
+</span><span class='line'>  oaipainfo='&lt;br/&gt;&lt;strong&gt;&lt;span style="color:red"&gt;OA.ipa不存在，tiapp.xml配置不正确或者构建失败。&lt;/span&gt;&lt;/string&gt;'
+</span><span class='line'>fi
+</span><span class='line'>mv $oaipa $localIpaName
+</span><span class='line'>mv /Users/mxs/Develop/CI/myProject/i18n /Users/mxs/Develop/CI/i18n 
+</span><span class='line'>
+</span><span class='line'>#获取昨天的日志，只要以#开始的注释
+</span><span class='line'>yesterday="`date -v -1d +'%Y-%m-%d'`"
+</span><span class='line'>today="`date +'%Y-%m-%d'`"
+</span><span class='line'>svn log -r {$yesterday}:{$today} &gt; ../log.tmp
+</span><span class='line'>grep '^#' ../log.tmp &gt; ../change.log
+</span><span class='line'>rm ../log.tmp
+</span><span class='line'>
+</span><span class='line'>#生成releasenote
+</span><span class='line'>releaseFileName="../build/releasenote-`date +'%Y-%m-%d'`.txt"
+</span><span class='line'>date "+&lt;h2&gt;%Y-%m-%d&lt;/h2&gt;&lt;hr/&gt;&lt;p&gt;构建时间：%Y-%m-%d %H:%M:%S&lt;/p&gt;" &gt; $releaseFileName
+</span><span class='line'>echo '&lt;p&gt;下载地址：&lt;a href="'$remoteIpaName'" target="_blank"&gt;iOS&lt;/a&gt; | &lt;a href="'$remoteApkName'" target="_blank"&gt;Android&lt;/a&gt;&lt;/p&gt;' &gt;&gt; $releaseFileName
+</span><span class='line'>echo '' &gt;&gt; $releaseFileName
+</span><span class='line'>echo '&lt;h3&gt;--------------变更日志-------------------&lt;/h3&gt;' &gt;&gt; $releaseFileName
+</span><span class='line'>echo '&lt;pre&gt;' &gt;&gt; $releaseFileName
+</span><span class='line'>cat ../change.log &gt;&gt; $releaseFileName
+</span><span class='line'>echo '&lt;/pre&gt;' &gt;&gt; $releaseFileName
+</span><span class='line'>echo '&lt;h3&gt;--------------构建日志-------------------&lt;/h3&gt;' &gt;&gt; $releaseFileName
+</span><span class='line'>echo '注：只显示警告和错误信息。' &gt;&gt; $releaseFileName
+</span><span class='line'>echo $oaapkinfo &gt;&gt; $releaseFileName
+</span><span class='line'>echo $oaipainfo &gt;&gt; $releaseFileName
+</span><span class='line'>echo '&lt;h4&gt;Android&lt;/h4&gt;' &gt;&gt; $releaseFileName
+</span><span class='line'>echo '&lt;pre&gt;' &gt;&gt; $releaseFileName
+</span><span class='line'>#删除Titanium构建日志的前4行
+</span><span class='line'>cat ../android.build.log  | sed 1d | sed 1d | sed 1d | sed 1d &gt;&gt; $releaseFileName
+</span><span class='line'>echo '&lt;/pre&gt;' &gt;&gt; $releaseFileName
+</span><span class='line'>echo '&lt;h4&gt;iOS&lt;/h4&gt;' &gt;&gt; $releaseFileName
+</span><span class='line'>echo '&lt;pre&gt;' &gt;&gt; $releaseFileName
+</span><span class='line'>cat ../ios.build.log  | sed 1d | sed 1d | sed 1d | sed 1d &gt;&gt; $releaseFileName
+</span><span class='line'>echo '&lt;/pre&gt;' &gt;&gt; $releaseFileName
+</span><span class='line'>indexFileName="../build/index.html"
+</span><span class='line'>historyFileName="../index_history.html"
+</span><span class='line'>indexTopFileName="../index_top.html"
+</span><span class='line'>cat $historyFileName &gt;&gt; $releaseFileName
+</span><span class='line'>rm $historyFileName
+</span><span class='line'>mv $releaseFileName $historyFileName
+</span><span class='line'>echo '' &gt; $indexFileName
+</span><span class='line'>cat $indexTopFileName &gt;&gt; $indexFileName
+</span><span class='line'>cat $historyFileName &gt;&gt; $indexFileName
+</span><span class='line'>rm ../change.log
+</span><span class='line'>rm ../android.build.log
+</span><span class='line'>rm ../ios.build.log
+</span><span class='line'>echo zip
+</span><span class='line'>#压缩成zip,必须切换到当前文件夹进行压缩操作，否则zip内容包括路径
+</span><span class='line'>cd ../build
+</span><span class='line'>zip $localApkZip $localApkZipSource
+</span><span class='line'>zip $localIpaZip $localIpaZipSource
+</span><span class='line'>
+</span><span class='line'>#上传到FTP服务器
+</span><span class='line'>echo 'ftp action'
+</span><span class='line'>HOST='192.168....'
+</span><span class='line'>USER='xxx'
+</span><span class='line'>PASSWD='xxx'
+</span><span class='line'>remoteIndex="/xxx/index.html"
+</span><span class='line'>ftp -n $HOST &lt;&lt;END_SCRIPT
+</span><span class='line'>quote USER $USER
+</span><span class='line'>quote PASS $PASSWD
+</span><span class='line'>binary
+</span><span class='line'>put $localIpaZip $remoteIpaName
+</span><span class='line'>put $localApkZip $remoteApkName
+</span><span class='line'>put $indexFileName $remoteIndex
+</span><span class='line'>quit
+</span><span class='line'>END_SCRIPT
+</span><span class='line'>exit 0
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-25T11:19:18+08:00" pubdate data-updated="true">2014-06-25</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/yi-dong-kai-fa/'>移动开发</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/06/25/just-a-test/" title="Previous Post: 单例与枚举">&laquo; 单例与枚举</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/06/25/extjs-bei-wang-lu/" title="Next Post: Extjs 备忘录">Extjs 备忘录 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/test/'>test (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (1)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/07/21/test-a-new-rake/">Test a New Rake</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/09/javazhu-jie/">Java注解</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/08/effective-java-lei-he-jie-kou/">Effective Java-类和接口</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/02/javafan-xing/">Java泛型</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/02/an-quan-http,sslzheng-shu-ji-shen-qing/">安全HTTP，SSL证书及申请</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fb4e47bf6950f9d2496daf84fe62cec59' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/06/25/titaniumzi-dong-gou-jian/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/06/25/titaniumzi-dong-gou-jian/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
