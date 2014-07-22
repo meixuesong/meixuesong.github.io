@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-07-21T23:34:12+08:00</updated>
+  <updated>2014-07-23T00:12:11+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,178 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[分布式系统的基础知识]]></title>
+    <link href="http://blog.ubone.com/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/"/>
+    <updated>2014-07-22T20:04:40+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi</id>
+    <content type="html"><![CDATA[<p>这是一篇学习笔记，内容为《大型网站系统与Java中间件实践》的第一章。</p>
+
+<p>组成计算机的5要素为：输入、输出、运算器、控制器、存储器（内存、外存）。分布式系统也一样，可以分为这5个要素。因此这本书会对分布式系统中，这5个要素的变化进行说明。</p>
+
+<!--more-->
+
+
+<p>阿姆达尔定律（Amdahl&rsquo;s law）说明程序中可以并行的代码的比例，决定了你增加处理器能带来的速度提升的上限。</p>
+
+<p>```
+S(N) = 1 / ((1 &ndash; P) + P / N)</p>
+
+<p>P: 可并行的程序在单核上执行时间的占比
+N: 处理器的个数
+S(N): 程序在N个处理器（总核心数）相对于单个处理器中的速度提升比。</p>
+
+<p>当P=0.2, S(N)的上限为1.25
+当P=0.5, S(N)的上限为2
+```</p>
+
+<p>根据阿姆达尔定律，提升P非常的重要！</p>
+
+<h2>1.多线程模式</h2>
+
+<p>这里所说的多线程，是指单进程内的多线程。</p>
+
+<h3>1.1互不通信的多线程模式</h3>
+
+<p>线程之间没有交集，各自执行各自的任务和逻辑。这种模式的编程最简单，与单线程差不多。</p>
+
+<h3>1.2基于共享容器的多线程模式</h3>
+
+<p>例如多个线程共用一个队列。对于存储数据的容器或者对象，分为线程安全和线程不安全。</p>
+
+<ul>
+<li>如果是线程不安全的，一般可以通过加锁或者Copy On Write（COW）的方式控制并发。对于加锁的情况，如果是读多写少，可以用读写锁而不是互斥锁。</li>
+<li>如果是线程安全的，就可以直接使用。</li>
+</ul>
+
+
+<h3>1.3通过事件协同的多线程模式</h3>
+
+<p>某个线程需要等到某个状态或者事件发生后才能继续自己的工作，而这个状态或者事件与另一个线程有关，这时候就需要完成线程间的协调。<strong>为了防止死锁，一般要原子性地获取所需的多个锁，或者注意以相同的顺序获取多个锁。</strong></p>
+
+<p>```java
+//原子性地获取多个锁
+Thread 1
+GetLocks(A, B); //伪代码，一次性获取两个锁，不同平台支持不同。</p>
+
+<p>Thread 2
+GetLocks(A, B);</p>
+
+<p>//或者同样的顺序获取多个锁
+Thread 1
+A.lock();</p>
+
+<pre><code>B.lock();
+</code></pre>
+
+<p>Thread 2
+A.lock();</p>
+
+<pre><code>B.lock();
+</code></pre>
+
+<p>//两个线程的加锁顺序一致，如果Thread 2中的顺序反过来，则很可能造成锁死。</p>
+
+<p>```</p>
+
+<h2>2.多进程模式</h2>
+
+<p>进程之间的内存空间是独立的，因此多进程相对会容易一些。但也正因为内存空间独立，因此数据共享就涉及序列化和反序列化。</p>
+
+<p>对于多进程，单个进程的问题不会造成整体的不可用。</p>
+
+<h2>3.网络基础</h2>
+
+<h3>3.1 OSI七层模型</h3>
+
+<p>OSI七层模型还记得？从上到下依次是：</p>
+
+<ul>
+<li>应用层：为应用程序（如Email）提供网络服务。</li>
+<li>表示层：确保一个应用层发送的信息可被另一个系统的应用层读取。</li>
+<li>会话层：通过传输层建立数据传输的通路。</li>
+<li>传输层：定义传输数据的协议和端口。</li>
+<li>网络层：在位于不同位置的网络中的两个主机系统之间提供连接和路径选择。</li>
+<li>数据链路层：定义如何让格式化数据以进行传输。</li>
+<li>物理层：定义物理设备标准，传输比特流。</li>
+</ul>
+
+
+<h3>3.2 网络IO实现方式</h3>
+
+<ul>
+<li>BIO（Blocking IO），阻塞方式，一个Socket需要一个线程来处理。</li>
+<li>NIO（Nonblocking IO），基于事件驱动思想，采用Reactor模式。</li>
+<li>AIO (Asynchronous IO)，异步IO，采用Proactor模式。</li>
+</ul>
+
+
+<p>Reactor模式和Proactor模式，后续要再研究一下。</p>
+
+<h2>4.从单机到分布式</h2>
+
+<h3>4.1 输入、输出设备的变化</h3>
+
+<p>除了传统意义的人机交互输入、输出设备，分布式环境中的其它节点也可以看作是输入或输出设备。</p>
+
+<h3>4.2 控制器的变化</h3>
+
+<p>在单机中，控制器是CPU中的控制器。在分布式系统中，控制器是控制方式。</p>
+
+<ol>
+<li>使用硬件负载均衡</li>
+<li>使用软件负载均衡，如LVS</li>
+<li>通过名称服务器</li>
+<li>通过规则服务器</li>
+<li>Master + Worker的方式</li>
+</ol>
+
+
+<p>前面两种一般称为透明代理。有两种缺点，一是增加了流量，即代理服务器与请求处理服务器之间多了一次发送和返回。当然，LVS通过配置，可以将请求的处理结果直接返回给客户端，不通过中间代理。二是如果代理出现问题，会影响到所有请求。</p>
+
+<p>第三、四种控制方式，都是客户端先访问名称服务器或者规则服务器，得到真正的请求处理服务器地址，然后直接与该地址进行连接。</p>
+
+<p>第五种一般用来管理任务，由Master把任务分给不同的Worker处理。</p>
+
+<h3>4.3 运算器的变化</h3>
+
+<p>分布式系统中的运算器包括多个节点的计算能力。</p>
+
+<ol>
+<li>通过DNS解析，实现调度和控制</li>
+<li>使用负载均衡设备或软件</li>
+<li>使用Master+Worker方式</li>
+<li>使用规则服务器等。</li>
+</ol>
+
+
+<h3>4.4 存储器的变化</h3>
+
+<p>与前面的类似，也可以通过：</p>
+
+<ol>
+<li>直接访问存储服务器</li>
+<li>通过代理服务器访问存储服务器</li>
+<li>使用名称服务</li>
+<li>使用规则服务</li>
+<li>使用Master控制。但没有Worker了。与规则服务不同，这里的Master根据请求返回存储服务器的地址，而不是返回所有地址。</li>
+</ol>
+
+
+<h2>5. 分布式系统的难点</h2>
+
+<ol>
+<li>缺乏全局时钟</li>
+<li>面对故障独立性。故障独立性指整个系统的一部分有问题，而其他部分正常。</li>
+<li>处理单点故障。如果某个功能或角色只有一台单机在支撑，这个节点就称为单点。它发生的故障就是单点故障（SPoF, Single Point of Failure）</li>
+<li>事务的挑战。即ACID和CAP。</li>
+</ol>
+
+
+<p>后续将研究文中提到的COW、读写锁、互斥锁，以及Reactor模式和Proactor模式。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Java注解]]></title>
@@ -682,132 +854,6 @@ keystorePass="XXXXXX"/&gt; &lt;!--XXXXXX是密码--&gt;
 <a href="http://baike.baidu.com/view/7626.htm?fr=aladdin">百度百科</a>
 <a href="http://fengfan.blog.163.com/blog/static/13478622013713114942896/">博客1</a>
 <a href="http://blog.csdn.net/googling/article/details/6698255">博客2</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[利用反射和代理创建简单的安全账号]]></title>
-    <link href="http://blog.ubone.com/blog/2014/06/28/li-yong-fan-zhang-hao/"/>
-    <updated>2014-06-28T11:42:34+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/06/28/li-yong-fan-zhang-hao</id>
-    <content type="html"><![CDATA[<p>在实际业务中，总是会遇到权限管理和安全方面的需求。以一个帐户类（Account）为例，它实现了帐户的基本信息和余额管理。新的需求是余额修改相关的方法只能由授权用户调用。那么是不是直接修改Account类，在相关方法中加入权限验证代码呢？这样势必会让原来的代码变得混乱，破坏单一职责原则。应该怎么办呢？</p>
-
-<!--more-->
-
-
-<p>开闭原则告诉我们对扩展开放、对修改关闭。我们可以通过代理类实现这个业务需求。这是一个简单的示例，用于演示反射和代理的使用，并不能直接用于生产环境，仅仅提供一种思路供参考。</p>
-
-<p>首先看看这个示例的整体结构图：</p>
-
-<p><img src="/myresource/images/IMG_blog_20140628.jpg" alt="image" /></p>
-
-<p>Accountable接口:</p>
-
-<p>```java
-public interface Accountable {</p>
-
-<pre><code>public BigDecimal getBalance() ;
-public String getBankAba() ;
-public void setBankAba(String bankAba) ;
-public String getBankAccountNumber() ;
-public void setBankAccountNumber(String bankAccountNumber) ;
-public BankAccountType getBankAccountType() ;
-public void setBankAccountType(BankAccountType bankAccountType) ;
-
-public void credit(BigDecimal amount);
-public void transferFromBank(BigDecimal amount);
-</code></pre>
-
-<p>}
-```</p>
-
-<p>静态工厂方法封装具体的接口实现，客户端并不关心实现类是Account还是SecureProxy类。代码如下：</p>
-
-<p>```java
-public class AccountFactory {</p>
-
-<pre><code>private AccountFactory() {
-    throw new AssertionError("作为静态工厂，不允许实例化！");
-}
-
-public static Accountable create(Permission permission) {
-    //如果有修改权限则返回Account，否则返回有权限限制的代理。
-    switch (permission) {
-        case UPDATE:
-            return new Account();
-        case READ_ONLY:
-            return createSecuredAccount();
-    }
-
-    return null;
-}
-
-private static Accountable createSecuredAccount() {
-    SecureProxy secureAccount = new SecureProxy(new Account(),
-            //传入不允许调用的方法名
-            "credit",
-            "setBankAba",
-            "setBankAccountNumber",
-            "setBankAccountType",
-            "transferFromBank");
-
-    //这句是关键
-    return (Accountable) Proxy.newProxyInstance(
-            Accountable.class.getClassLoader(),
-            new Class[] {Accountable.class},
-            secureAccount
-    );
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>最后的return语句是动态建立代理的关键，第一个参数是接口的类加载器；第二个参数是接口类型的数组（这就是创建数组的语法），表示你希望代理类实现哪些接口；第三个是具体的代理对象。详细请参考<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/reflect/Proxy.html">JavaDoc</a>。</p>
-
-<p>SecureProxy的实现：</p>
-
-<p>```java
-public class SecureProxy implements InvocationHandler {</p>
-
-<pre><code>//需要授权的方法
-private List&lt;String&gt; secureMethods;
-//被代理对象
-private Object target;
-
-public SecureProxy(Object target, String... secureMethods) {
-    this.target = target;
-    this.secureMethods = Arrays.asList(secureMethods);
-}
-
-@Override
-public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-    try {
-            //权限验证
-        if (isSecure(method)) {
-            throw new PermissionException();
-        }
-
-        //调用真正的方法
-        return method.invoke(target, args);
-    } catch (InvocationTargetException e) {
-        //如果调用真正的方法时有异常，getTargetException就是真正的异常原因。
-        throw e.getTargetException();
-    }
-
-}
-
-private boolean isSecure(Method method) {
-    return secureMethods.contains(method.getName());
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>注意SecureProxy类并不需要显式实现Accountable接口，因为在静态工厂方法中动态为其指定了将实现的接口。SecureProxy类必须实现InvocationHandler，该接口的一个重要方法就是invoke，客户端调用Accountable接口中的某个方法时，会触发代理的invoke方法，然后在其中调用真正的目标方法。通过isSecure方法来判断是否有权限调用某方法。</p>
-
-<p>总结一下，Account类是真正的业务实现类，SecureProxy作为代理，在Account的基础上增加了安全功能。关键方法包括Proxy.newProxyInstance和InvocationHandler接口。虽然示例太过简单无法用于实际业务，但它演示了<strong>两个重要原则：单一职责和开闭原则！</strong></p>
 ]]></content>
   </entry>
   

@@ -1,0 +1,439 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>分布式系统的基础知识 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="这是一篇学习笔记，内容为《大型网站系统与Java中间件实践》的第一章。 组成计算机的5要素为：输入、输出、运算器、控制器、存储器（内存、外存）。分布式系统也一样，可以分为这5个要素。因此这本书会对分布式系统中，这5个要素的变化进行说明。 阿姆达尔定律（Amdahl&rsquo;s law） &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">分布式系统的基础知识</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-22T20:04:40+08:00" pubdate data-updated="true">2014-07-22</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>这是一篇学习笔记，内容为《大型网站系统与Java中间件实践》的第一章。</p>
+
+<p>组成计算机的5要素为：输入、输出、运算器、控制器、存储器（内存、外存）。分布式系统也一样，可以分为这5个要素。因此这本书会对分布式系统中，这5个要素的变化进行说明。</p>
+
+<!--more-->
+
+
+<p>阿姆达尔定律（Amdahl&rsquo;s law）说明程序中可以并行的代码的比例，决定了你增加处理器能带来的速度提升的上限。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>S(N) = 1 / ((1 - P) + P / N)
+</span><span class='line'>
+</span><span class='line'>P: 可并行的程序在单核上执行时间的占比
+</span><span class='line'>N: 处理器的个数
+</span><span class='line'>S(N): 程序在N个处理器（总核心数）相对于单个处理器中的速度提升比。
+</span><span class='line'>
+</span><span class='line'>当P=0.2, S(N)的上限为1.25
+</span><span class='line'>当P=0.5, S(N)的上限为2</span></code></pre></td></tr></table></div></figure>
+
+
+<p>根据阿姆达尔定律，提升P非常的重要！</p>
+
+<h2>1.多线程模式</h2>
+
+<p>这里所说的多线程，是指单进程内的多线程。</p>
+
+<h3>1.1互不通信的多线程模式</h3>
+
+<p>线程之间没有交集，各自执行各自的任务和逻辑。这种模式的编程最简单，与单线程差不多。</p>
+
+<h3>1.2基于共享容器的多线程模式</h3>
+
+<p>例如多个线程共用一个队列。对于存储数据的容器或者对象，分为线程安全和线程不安全。</p>
+
+<ul>
+<li>如果是线程不安全的，一般可以通过加锁或者Copy On Write（COW）的方式控制并发。对于加锁的情况，如果是读多写少，可以用读写锁而不是互斥锁。</li>
+<li>如果是线程安全的，就可以直接使用。</li>
+</ul>
+
+
+<h3>1.3通过事件协同的多线程模式</h3>
+
+<p>某个线程需要等到某个状态或者事件发生后才能继续自己的工作，而这个状态或者事件与另一个线程有关，这时候就需要完成线程间的协调。<strong>为了防止死锁，一般要原子性地获取所需的多个锁，或者注意以相同的顺序获取多个锁。</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//原子性地获取多个锁</span>
+</span><span class='line'><span class="n">Thread</span> <span class="mi">1</span>
+</span><span class='line'><span class="n">GetLocks</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">B</span><span class="o">);</span> <span class="c1">//伪代码，一次性获取两个锁，不同平台支持不同。</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Thread</span> <span class="mi">2</span>
+</span><span class='line'><span class="n">GetLocks</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">B</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//或者同样的顺序获取多个锁</span>
+</span><span class='line'><span class="n">Thread</span> <span class="mi">1</span>
+</span><span class='line'><span class="n">A</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">B</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+</span><span class='line'>  
+</span><span class='line'><span class="n">Thread</span> <span class="mi">2</span>
+</span><span class='line'><span class="n">A</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">B</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+</span><span class='line'><span class="c1">//两个线程的加锁顺序一致，如果Thread 2中的顺序反过来，则很可能造成锁死。      </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>2.多进程模式</h2>
+
+<p>进程之间的内存空间是独立的，因此多进程相对会容易一些。但也正因为内存空间独立，因此数据共享就涉及序列化和反序列化。</p>
+
+<p>对于多进程，单个进程的问题不会造成整体的不可用。</p>
+
+<h2>3.网络基础</h2>
+
+<h3>3.1 OSI七层模型</h3>
+
+<p>OSI七层模型还记得？从上到下依次是：</p>
+
+<ul>
+<li>应用层：为应用程序（如Email）提供网络服务。</li>
+<li>表示层：确保一个应用层发送的信息可被另一个系统的应用层读取。</li>
+<li>会话层：通过传输层建立数据传输的通路。</li>
+<li>传输层：定义传输数据的协议和端口。</li>
+<li>网络层：在位于不同位置的网络中的两个主机系统之间提供连接和路径选择。</li>
+<li>数据链路层：定义如何让格式化数据以进行传输。</li>
+<li>物理层：定义物理设备标准，传输比特流。</li>
+</ul>
+
+
+<h3>3.2 网络IO实现方式</h3>
+
+<ul>
+<li>BIO（Blocking IO），阻塞方式，一个Socket需要一个线程来处理。</li>
+<li>NIO（Nonblocking IO），基于事件驱动思想，采用Reactor模式。</li>
+<li>AIO (Asynchronous IO)，异步IO，采用Proactor模式。</li>
+</ul>
+
+
+<p>Reactor模式和Proactor模式，后续要再研究一下。</p>
+
+<h2>4.从单机到分布式</h2>
+
+<h3>4.1 输入、输出设备的变化</h3>
+
+<p>除了传统意义的人机交互输入、输出设备，分布式环境中的其它节点也可以看作是输入或输出设备。</p>
+
+<h3>4.2 控制器的变化</h3>
+
+<p>在单机中，控制器是CPU中的控制器。在分布式系统中，控制器是控制方式。</p>
+
+<ol>
+<li>使用硬件负载均衡</li>
+<li>使用软件负载均衡，如LVS</li>
+<li>通过名称服务器</li>
+<li>通过规则服务器</li>
+<li>Master + Worker的方式</li>
+</ol>
+
+
+<p>前面两种一般称为透明代理。有两种缺点，一是增加了流量，即代理服务器与请求处理服务器之间多了一次发送和返回。当然，LVS通过配置，可以将请求的处理结果直接返回给客户端，不通过中间代理。二是如果代理出现问题，会影响到所有请求。</p>
+
+<p>第三、四种控制方式，都是客户端先访问名称服务器或者规则服务器，得到真正的请求处理服务器地址，然后直接与该地址进行连接。</p>
+
+<p>第五种一般用来管理任务，由Master把任务分给不同的Worker处理。</p>
+
+<h3>4.3 运算器的变化</h3>
+
+<p>分布式系统中的运算器包括多个节点的计算能力。</p>
+
+<ol>
+<li>通过DNS解析，实现调度和控制</li>
+<li>使用负载均衡设备或软件</li>
+<li>使用Master+Worker方式</li>
+<li>使用规则服务器等。</li>
+</ol>
+
+
+<h3>4.4 存储器的变化</h3>
+
+<p>与前面的类似，也可以通过：</p>
+
+<ol>
+<li>直接访问存储服务器</li>
+<li>通过代理服务器访问存储服务器</li>
+<li>使用名称服务</li>
+<li>使用规则服务</li>
+<li>使用Master控制。但没有Worker了。与规则服务不同，这里的Master根据请求返回存储服务器的地址，而不是返回所有地址。</li>
+</ol>
+
+
+<h2>5. 分布式系统的难点</h2>
+
+<ol>
+<li>缺乏全局时钟</li>
+<li>面对故障独立性。故障独立性指整个系统的一部分有问题，而其他部分正常。</li>
+<li>处理单点故障。如果某个功能或角色只有一台单机在支撑，这个节点就称为单点。它发生的故障就是单点故障（SPoF, Single Point of Failure）</li>
+<li>事务的挑战。即ACID和CAP。</li>
+</ol>
+
+
+<p>后续将研究文中提到的COW、读写锁、互斥锁，以及Reactor模式和Proactor模式。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-22T20:04:40+08:00" pubdate data-updated="true">2014-07-22</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/" title="Previous Post: Macbook pro，送给自己的生日礼物">&laquo; Macbook pro，送给自己的生日礼物</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (1)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/">分布式系统的基础知识</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/">Macbook Pro，送给自己的生日礼物</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/09/javazhu-jie/">Java注解</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/08/effective-java-lei-he-jie-kou/">Effective Java-类和接口</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/02/javafan-xing/">Java泛型</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fb4e47bf6950f9d2496daf84fe62cec59' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
