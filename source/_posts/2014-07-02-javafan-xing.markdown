@@ -13,7 +13,6 @@ Java泛型功能强大，用起来也很简单。看到一些代码，有时候�
 <!--more-->
 
 ##1.参数化类型
-
 参数化类型，也就是泛型。
 
 ```java
@@ -35,7 +34,6 @@ public class MultiHashMap<K, V> {
 ```
 
 ##2.擦拭法
-
 要实现参数化类型，有多种方法。C++采用的方法是为每种参数化类都创建一个全新的类型定义。例如`MultiHashMap<Date, String>`将会创建一个新类：
 
 ```java
@@ -70,7 +68,6 @@ public class EventMap<K extends java.util.Date, V> {
 表示K必须是Date或者其子类。
 
 ##3.通配符
-
 假设你有个方法想对某种类型的List进行遍历处理：
 
 ```java
@@ -79,7 +76,7 @@ public class EventMap<K extends java.util.Date, V> {
     ｝   
 ```
 
-一旦你如上面一样定义了`List<Object>`参数，则无法将其它类型的列表传入。例如将`List<String>`类型作为参数传入将导致无法编译。这时候你可以使用通配符：
+一旦你如上面一样定义了`List<Object>`参数，则无法将其它类型的列表传入。你可以向`List<Object>`加入Object及其子类的对象，例如：`list.add(new Date())`。因为Date是Object的子类。但是，当一个方法的参数是`List<Object>`时，你不能将`List<Date>`类型的变量作为参数传入这个方法。原因是`List<Date>`不是`List<Object>`的子类！例如将`List<String>`类型作为参数传入将导致无法编译。这时候你可以使用通配符：
 
 ```java
     public static String concatenate(List<?> list) {
@@ -148,10 +145,8 @@ public class SomeClass {
 因为对于`List<?>`中的元素只能用Object来引用，在有些情况下不是很方便。在这些情况下，可以使用上下界来限制未知类型的范围。 如`List<? extends Number>`说明List中可能包含的元素类型是Number及其子类。而`List<? super Number>`则说明List中包含的是Number及其父类。当引入了上界之后，在使用类型的时候就可以使用上界类中定义的方法。比如访问 `List<? extends Number>`的时候，就可以使用Number类的intValue等方法。
 
 ##总结
-
 擦拭法是理解问题的关键。
 
 ##参考
-
 * 《Agile Java》 
 * [http://www.infoq.com/cn/articles/cf-java-generics](http://www.infoq.com/cn/articles/cf-java-generics)
