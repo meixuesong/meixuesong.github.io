@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-07-23T00:12:11+08:00</updated>
+  <updated>2014-07-23T23:55:41+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -612,7 +612,7 @@ public class EventMap<K extends java.util.Date, V> {</p>
 
 <p>```</p>
 
-<p>一旦你如上面一样定义了<code>List&lt;Object&gt;</code>参数，则无法将其它类型的列表传入。例如将<code>List&lt;String&gt;</code>类型作为参数传入将导致无法编译。这时候你可以使用通配符：</p>
+<p>一旦你如上面一样定义了<code>List&lt;Object&gt;</code>参数，则无法将其它类型的列表传入。你可以向<code>List&lt;Object&gt;</code>加入Object及其子类的对象，例如：<code>list.add(new Date())</code>。因为Date是Object的子类。但是，当一个方法的参数是<code>List&lt;Object&gt;</code>时，你不能将<code>List&lt;Date&gt;</code>类型的变量作为参数传入这个方法。原因是<code>List&lt;Date&gt;</code>不是<code>List&lt;Object&gt;</code>的子类！例如将<code>List&lt;String&gt;</code>类型作为参数传入将导致无法编译。这时候你可以使用通配符：</p>
 
 <p>```java</p>
 

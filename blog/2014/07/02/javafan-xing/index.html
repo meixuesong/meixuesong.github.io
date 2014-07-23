@@ -195,7 +195,7 @@ List&lt;String&gt; list = new ArrayList&lt;String& &hellip;">
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>一旦你如上面一样定义了<code>List&lt;Object&gt;</code>参数，则无法将其它类型的列表传入。例如将<code>List&lt;String&gt;</code>类型作为参数传入将导致无法编译。这时候你可以使用通配符：</p>
+<p>一旦你如上面一样定义了<code>List&lt;Object&gt;</code>参数，则无法将其它类型的列表传入。你可以向<code>List&lt;Object&gt;</code>加入Object及其子类的对象，例如：<code>list.add(new Date())</code>。因为Date是Object的子类。但是，当一个方法的参数是<code>List&lt;Object&gt;</code>时，你不能将<code>List&lt;Date&gt;</code>类型的变量作为参数传入这个方法。原因是<code>List&lt;Date&gt;</code>不是<code>List&lt;Object&gt;</code>的子类！例如将<code>List&lt;String&gt;</code>类型作为参数传入将导致无法编译。这时候你可以使用通配符：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -400,10 +400,14 @@ List&lt;String&gt; list = new ArrayList&lt;String& &hellip;">
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (1)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (1)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (1)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/07/23/yi-zhang-tu-kan-dong/">一张图看懂UML类图的关系</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/">分布式系统的基础知识</a>
@@ -419,10 +423,6 @@ List&lt;String&gt; list = new ArrayList&lt;String& &hellip;">
     
       <li class="post">
         <a href="/blog/2014/07/08/effective-java-lei-he-jie-kou/">Effective Java-类和接口</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/07/02/javafan-xing/">Java泛型</a>
       </li>
     
   </ul>

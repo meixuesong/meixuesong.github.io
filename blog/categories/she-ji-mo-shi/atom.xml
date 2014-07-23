@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 设计模式 | 码出人生]]></title>
+  <link href="http://blog.ubone.com/blog/categories/she-ji-mo-shi/atom.xml" rel="self"/>
+  <link href="http://blog.ubone.com/"/>
+  <updated>2014-07-23T23:55:41+08:00</updated>
+  <id>http://blog.ubone.com/</id>
+  <author>
+    <name><![CDATA[梅雪松]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[一张图看懂UML类图的关系]]></title>
+    <link href="http://blog.ubone.com/blog/2014/07/23/yi-zhang-tu-kan-dong/"/>
+    <updated>2014-07-23T23:37:18+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/07/23/yi-zhang-tu-kan-dong</id>
+    <content type="html"><![CDATA[<p>在UML类图中，类之间的关系包括：继承、关联、聚合、组合和依赖关系。如何分辨这些关系呢？每种关系使用什么样的连线呢？</p>
+
+<!--more-->
+
+
+<p><strong>继承关系</strong>，这个太简单，不说了。</p>
+
+<p><strong>关联关系</strong>，在Java中，使用实例变量来实现关系关系。如图中的Driver类有car变量。</p>
+
+<p><strong>聚合关系</strong>，是更强的关联关系。聚合是整体与个体的关系。也需要通过实例变量实现。如果不是很确定是否聚合关系，可以使用关联关系。从Java语法是无法分辨出关联或聚合关系的区别的。</p>
+
+<p><strong>组合关系</strong>，是比聚合关系更强的关系关系。当聚合关系中的整体需要负责个体的生命周期时，就变成了组合关系。例如公司与部门的关系，当公司不存在时，部门也不存在了。</p>
+
+<p><strong>依赖关系</strong>，当A中有个局域变量、方法的参数是B，或者调用了B的静态方法，就是A依赖于B。</p>
+
+<p>下面这张图演示了各种关系：</p>
+
+<p><img src="/myresource/images/img_blog_20140723.jpg" alt="image" /></p>
+]]></content>
+  </entry>
+  
+</feed>
