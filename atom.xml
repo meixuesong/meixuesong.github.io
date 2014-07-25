@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-07-23T23:55:41+08:00</updated>
+  <updated>2014-07-26T00:09:21+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,111 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[一些设计原则]]></title>
+    <link href="http://blog.ubone.com/blog/2014/07/25/yi-xie-she-ji-yuan-ze/"/>
+    <updated>2014-07-25T21:01:51+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/07/25/yi-xie-she-ji-yuan-ze</id>
+    <content type="html"><![CDATA[<p>关于设计，有一些原则。本文总结一些常见的原则。包括：</p>
+
+<ul>
+<li>(S)单一职责原则</li>
+<li>(O)开闭原则</li>
+<li>(L)里氏替换原则</li>
+<li>(I)接口隔离原则</li>
+<li>(D)依赖反转原则</li>
+<li>迪米特法则</li>
+<li>组合/聚合复用原则</li>
+</ul>
+
+
+<!--more-->
+
+
+<h2>S.单一职责原则</h2>
+
+<p>单一职责原则（Single responsibility principle）规定每个类都应该有一个单一的功能，并且该功能应该由这个类完全封装起来。</p>
+
+<h2>O.开闭原则</h2>
+
+<p>简单地说，就是软件中的对象（类，模块，函数等等）应该对于扩展是开放的，但是对于修改是封闭的。这一原则由Bertrand Meyer提出：</p>
+
+<blockquote><p>Software entities should be open for extension, but closed for modification.</p></blockquote>
+
+<p>实现开闭原则的关键是抽象。找到一个系统的可变因素，将它封闭起来，这就是“对可变性的封闭原则”。</p>
+
+<h2>L.里氏替换原则</h2>
+
+<p>派生类（子类）对象能够替换其基类（父类）对象被使用。</p>
+
+<h2>I.接口隔离原则</h2>
+
+<p>接口隔离原则（Interface-segregation principles，ISP）简单地说，就是：使用多个专门的接口比使用单一的总接口要好。</p>
+
+<p>没有客户(client)应该被迫依赖于它不使用方法。接口隔离原则(ISP)拆分非常庞大臃肿的接口成为更小的和更具体的接口，这样客户将会只需要知道他们感兴趣的方法。这种缩小的接口也被称为角色接口（role interfaces）。接口隔离原则(ISP)的目的是系统解开耦合，从而容易重构，更改和重新部署。</p>
+
+<p>准确而恰当地划分角色以及角色所对应的接口，是面向对象的设计的一个重要的组成部分。</p>
+
+<h2>D.依赖反转原则</h2>
+
+<p>简单地说，就是依赖于抽象，不要依赖于具体。</p>
+
+<p>为什么叫“反转”呢？？看看下面是怎么反转的：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/img_blog_20140725_1.png" alt="image" /></p>
+
+<p><img src="http://blog.ubone.com/myresource/images/img_blog_20140725_2.png" alt="image" /></p>
+
+<p>两种表述:</p>
+
+<ol>
+<li>抽象不应当依赖于细节；细节应该依赖于抽象。</li>
+<li>要针对接口编程，不要针对实现编程。</li>
+</ol>
+
+
+<p>针对接口编程是指，应该使用接口和抽象类进行变量的类型声明、参数和方法返回类型的声明，以及数据类型的转换等。</p>
+
+<p>不要针对实现编程是指，不应当使用具体Java类进行变量的类型声明、参数和方法返回类型的声明，以及数据类型的转换等。</p>
+
+<p>如果希望遵循“开－闭原则”，那么依赖反转原则便是达到目标的途径。</p>
+
+<h2>迪米特法则</h2>
+
+<p>迪米特法则又叫做最少知识原则，就是说，一个对象应当对其他对象尽可能少的了解。</p>
+
+<h3>狭义的迪米特法则</h3>
+
+<p>如果两个类不必彼此直接通信，那么这两个类就不应该发生直接的相互作用。就是说如果某人可以通过朋友去调用陌生人的方法，那么就不用直接调用陌生人的方法，而是通过朋友去调用转发。</p>
+
+<p>什么是朋友呢？满足任一条件都是朋友：</p>
+
+<ul>
+<li>当前对象本身</li>
+<li>以参量形式传入到当前对象方法的对象</li>
+<li>当前对象的实例变量直接引用的对象</li>
+<li>当前对象的实例变量如果是聚集，那么其中的元素都是朋友</li>
+<li>当前对象所创建的对象。</li>
+</ul>
+
+
+<p>狭义的迪米特法则的缺点是：产生大量小方法，与商务逻辑无关；不同模块之间的通信效率降低。</p>
+
+<h3>广义迪米特法则在类的设计上的体现</h3>
+
+<ul>
+<li>优先考虑将一个类设置成不变类</li>
+<li>尽量降低一个类的访问权限</li>
+<li>尽量降低成员的访问权限</li>
+</ul>
+
+
+<h2>组合/聚合复用原则</h2>
+
+<p>实际上说的就是尽量使用聚合/组合，尽量不要使用继承。这在Effective-Java中也有描述。<a href="http://blog.ubone.com/blog/2014/07/08/effective-java-lei-he-jie-kou/">Java类与接口</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[一张图看懂UML类图的关系]]></title>

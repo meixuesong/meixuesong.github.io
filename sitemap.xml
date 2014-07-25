@@ -3,6 +3,12 @@
   
   
   <url>
+    <loc>http://blog.ubone.com/blog/2014/07/25/yi-xie-she-ji-yuan-ze/</loc>
+    <lastmod>2014-07-25T21:01:51+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.ubone.com/blog/2014/07/23/yi-zhang-tu-kan-dong/</loc>
     <lastmod>2014-07-23T23:37:18+08:00</lastmod>
     <priority>0.8</priority>
@@ -101,14 +107,14 @@
   
   <url>
     <loc>http://blog.ubone.com/blog/archives/</loc>
-    <lastmod>2014-07-23T23:55:41+08:00</lastmod>
+    <lastmod>2014-07-26T00:09:21+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.ubone.com/</loc>
-    <lastmod>2014-07-23T23:55:41+08:00</lastmod>
+    <lastmod>2014-07-26T00:09:21+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>

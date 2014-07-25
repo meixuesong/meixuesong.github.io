@@ -5,11 +5,17 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>某移动客户端项目开发 - 码出人生</title>
+  <title>一些设计原则 - 码出人生</title>
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="新到一家公司，抽调去支援移动客户端团队，经历了一个移动客户端项目的开发过程。按以往的经验看，项目规模不大、业务也比较简单，3、5个人，2－3个月就应该能搞定。但整个项目却历时半年，最多时项目组有10几个人。简单记录一下吧。 问题总结 采用不熟悉的技术，但又没有形成好的学习氛围和积极的心态； &hellip;">
+  <meta name="description" content="关于设计，有一些原则。本文总结一些常见的原则。包括： (S)单一职责原则
+(O)开闭原则
+(L)里氏替换原则
+(I)接口隔离原则
+(D)依赖反转原则
+迪米特法则
+组合/聚合复用原则 S.单一职责原则 单一职责原则（Single responsibility principle） &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +24,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.ubone.com/blog/2014/06/26/mou-xiang-mu-kai-fa-guo-cheng-zong-jie">
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/07/25/yi-xie-she-ji-yuan-ze">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
@@ -67,7 +73,7 @@
   
   <header>
     
-      <h1 class="entry-title">某移动客户端项目开发</h1>
+      <h1 class="entry-title">一些设计原则</h1>
     
     
       <p class="meta">
@@ -83,7 +89,7 @@
   
 
 
-<time datetime="2014-06-26T15:20:21+08:00" pubdate data-updated="true">2014-06-26</time>
+<time datetime="2014-07-25T21:01:51+08:00" pubdate data-updated="true">2014-07-25</time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://blog.ubone.com">Comments</a>
@@ -93,30 +99,103 @@
   </header>
 
 
-<div class="entry-content"><p>新到一家公司，抽调去支援移动客户端团队，经历了一个移动客户端项目的开发过程。按以往的经验看，项目规模不大、业务也比较简单，3、5个人，2－3个月就应该能搞定。但整个项目却历时半年，最多时项目组有10几个人。简单记录一下吧。</p>
+<div class="entry-content"><p>关于设计，有一些原则。本文总结一些常见的原则。包括：</p>
+
+<ul>
+<li>(S)单一职责原则</li>
+<li>(O)开闭原则</li>
+<li>(L)里氏替换原则</li>
+<li>(I)接口隔离原则</li>
+<li>(D)依赖反转原则</li>
+<li>迪米特法则</li>
+<li>组合/聚合复用原则</li>
+</ul>
+
 
 <!--more-->
 
 
-<h3>问题总结</h3>
+<h2>S.单一职责原则</h2>
+
+<p>单一职责原则（Single responsibility principle）规定每个类都应该有一个单一的功能，并且该功能应该由这个类完全封装起来。</p>
+
+<h2>O.开闭原则</h2>
+
+<p>简单地说，就是软件中的对象（类，模块，函数等等）应该对于扩展是开放的，但是对于修改是封闭的。这一原则由Bertrand Meyer提出：</p>
+
+<blockquote><p>Software entities should be open for extension, but closed for modification.</p></blockquote>
+
+<p>实现开闭原则的关键是抽象。找到一个系统的可变因素，将它封闭起来，这就是“对可变性的封闭原则”。</p>
+
+<h2>L.里氏替换原则</h2>
+
+<p>派生类（子类）对象能够替换其基类（父类）对象被使用。</p>
+
+<h2>I.接口隔离原则</h2>
+
+<p>接口隔离原则（Interface-segregation principles，ISP）简单地说，就是：使用多个专门的接口比使用单一的总接口要好。</p>
+
+<p>没有客户(client)应该被迫依赖于它不使用方法。接口隔离原则(ISP)拆分非常庞大臃肿的接口成为更小的和更具体的接口，这样客户将会只需要知道他们感兴趣的方法。这种缩小的接口也被称为角色接口（role interfaces）。接口隔离原则(ISP)的目的是系统解开耦合，从而容易重构，更改和重新部署。</p>
+
+<p>准确而恰当地划分角色以及角色所对应的接口，是面向对象的设计的一个重要的组成部分。</p>
+
+<h2>D.依赖反转原则</h2>
+
+<p>简单地说，就是依赖于抽象，不要依赖于具体。</p>
+
+<p>为什么叫“反转”呢？？看看下面是怎么反转的：</p>
+
+<p><img src="/myresource/images/img_blog_20140725_1.png" alt="image" /></p>
+
+<p><img src="/myresource/images/img_blog_20140725_2.png" alt="image" /></p>
+
+<p>两种表述:</p>
+
+<ol>
+<li>抽象不应当依赖于细节；细节应该依赖于抽象。</li>
+<li>要针对接口编程，不要针对实现编程。</li>
+</ol>
+
+
+<p>针对接口编程是指，应该使用接口和抽象类进行变量的类型声明、参数和方法返回类型的声明，以及数据类型的转换等。</p>
+
+<p>不要针对实现编程是指，不应当使用具体Java类进行变量的类型声明、参数和方法返回类型的声明，以及数据类型的转换等。</p>
+
+<p>如果希望遵循“开－闭原则”，那么依赖反转原则便是达到目标的途径。</p>
+
+<h2>迪米特法则</h2>
+
+<p>迪米特法则又叫做最少知识原则，就是说，一个对象应当对其他对象尽可能少的了解。</p>
+
+<h3>狭义的迪米特法则</h3>
+
+<p>如果两个类不必彼此直接通信，那么这两个类就不应该发生直接的相互作用。就是说如果某人可以通过朋友去调用陌生人的方法，那么就不用直接调用陌生人的方法，而是通过朋友去调用转发。</p>
+
+<p>什么是朋友呢？满足任一条件都是朋友：</p>
 
 <ul>
-<li>采用不熟悉的技术，但又没有形成好的学习氛围和积极的心态；</li>
-<li>跨地域团队管理难，跨地域开发团队管理更难；</li>
-<li>落后的硬件配置，搞跨平台移动开发居然没有Mac本！</li>
-<li>你觉得可能出问题的地方，将来一定会出问题！所以一定要将问题提前解决，越往后成本越高。</li>
-<li>如果由测试和研发人员主导产品开发，只能解决产品的有无问题，无法产出卓越的产品。产品经理不是画个草图、写几句话就可以撒手不管的。</li>
+<li>当前对象本身</li>
+<li>以参量形式传入到当前对象方法的对象</li>
+<li>当前对象的实例变量直接引用的对象</li>
+<li>当前对象的实例变量如果是聚集，那么其中的元素都是朋友</li>
+<li>当前对象所创建的对象。</li>
 </ul>
 
 
-<h3>改进要求</h3>
+<p>狭义的迪米特法则的缺点是：产生大量小方法，与商务逻辑无关；不同模块之间的通信效率降低。</p>
+
+<h3>广义迪米特法则在类的设计上的体现</h3>
 
 <ul>
-<li>专业的人做专业的事。产品经理要把产品设计好，你别让开发人员来思考怎么做好产品。设计人员把设计工作做好，你别让水平低的开发人员去考虑如何设计。</li>
-<li>产品经理至少要提供低保真图和用例规约，别让设计和开发人员去考虑产品交互细节。如果你说写文档太麻烦，只能说明你自己其实没想清楚。</li>
-<li>要有Code review，要有基本的设计。而不是任务一分就不管了。</li>
+<li>优先考虑将一个类设置成不变类</li>
+<li>尽量降低一个类的访问权限</li>
+<li>尽量降低成员的访问权限</li>
 </ul>
 
+
+<h2>组合/聚合复用原则</h2>
+
+<p>实际上说的就是尽量使用聚合/组合，尽量不要使用继承。这在Effective-Java中也有描述。<a href="/blog/2014/07/08/effective-java-lei-he-jie-kou/">Java类与接口</a></p>
 </div>
 
 
@@ -139,12 +218,12 @@
   
 
 
-<time datetime="2014-06-26T15:20:21+08:00" pubdate data-updated="true">2014-06-26</time>
+<time datetime="2014-07-25T21:01:51+08:00" pubdate data-updated="true">2014-07-25</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/xiang-mu-guan-li/'>项目管理</a>
+    <a class='category' href='/blog/categories/she-ji-mo-shi/'>设计模式</a>
   
 </span>
 
@@ -175,10 +254,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/06/25/zai-githubshang-xie-bo-ke/" title="Previous Post: 在GitHub上写博客">&laquo; 在GitHub上写博客</a>
+        <a class="basic-alignment left" href="/blog/2014/07/23/yi-zhang-tu-kan-dong/" title="Previous Post: 一张图看懂UML类图的关系">&laquo; 一张图看懂UML类图的关系</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/06/26/javasui-ji-cun-qu-wen-jian/" title="Next Post: Java随机存取文件">Java随机存取文件 &raquo;</a>
       
     </p>
   </footer>
@@ -259,8 +336,8 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.ubone.com/blog/2014/06/26/mou-xiang-mu-kai-fa-guo-cheng-zong-jie/';
-        var disqus_url = 'http://blog.ubone.com/blog/2014/06/26/mou-xiang-mu-kai-fa-guo-cheng-zong-jie/';
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/07/25/yi-xie-she-ji-yuan-ze/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/07/25/yi-xie-she-ji-yuan-ze/';
         var disqus_script = 'embed.js';
       
     (function () {
