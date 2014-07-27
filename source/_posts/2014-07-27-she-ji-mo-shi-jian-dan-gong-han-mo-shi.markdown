@@ -34,7 +34,7 @@ public class FruitFactory {
 }
 ```
 
-### 省略产品角色
+### 省略抽象产品角色
 如果具体产品只有一个（即只有一种水果）时，可以省略掉抽象产品角色，变成：
 
 ![image](/myresource/images/image_blog_2014-07-27_3.png)
