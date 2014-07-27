@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-07-27T11:50:55+08:00</updated>
+  <updated>2014-07-27T11:52:57+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -56,7 +56,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h3>省略产品角色</h3>
+<h3>省略抽象产品角色</h3>
 
 <p>如果具体产品只有一个（即只有一种水果）时，可以省略掉抽象产品角色，变成：</p>
 
