@@ -1,0 +1,349 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>设计模式:简单工厂模式 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="简单工厂模式其实就是静态工厂方法模式，即通过静态工厂方法来创建对象。其结构可表示为： 来看个实际的例子，下图中，有多种水果。客户端不关心具体的水果是如何创建的，只需要告诉工厂方法，需要哪种水果类型，工厂方法负责具体水果的创建工作。 工厂方法返回的是水果接口。水果接口也可以换成抽象类。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">设计模式:简单工厂模式</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-27T09:44:35+08:00" pubdate data-updated="true">2014-07-27</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>简单工厂模式其实就是静态工厂方法模式，即通过静态工厂方法来创建对象。其结构可表示为：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-27_1.png" alt="image" /></p>
+
+<!--more-->
+
+
+<p>来看个实际的例子，下图中，有多种水果。客户端不关心具体的水果是如何创建的，只需要告诉工厂方法，需要哪种水果类型，工厂方法负责具体水果的创建工作。</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-27_2.png" alt="image" /></p>
+
+<p>工厂方法返回的是水果接口。水果接口也可以换成抽象类。这是针对抽象编程的一种体现。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FruitFactory</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">Fruit</span> <span class="nf">getFruit</span><span class="o">(</span><span class="n">String</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">type</span><span class="o">.</span><span class="na">equalsIgnoreCase</span><span class="o">(</span><span class="s">&quot;apple&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="k">new</span> <span class="nf">Apple</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">type</span><span class="o">.</span><span class="na">equalsIgnoreCase</span><span class="o">(</span><span class="s">&quot;orange&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="k">new</span> <span class="nf">Orange</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">throw</span> <span class="k">new</span> <span class="nf">FruitFactoryException</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>省略产品角色</h3>
+
+<p>如果具体产品只有一个（即只有一种水果）时，可以省略掉抽象产品角色，变成：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-27_3.png" alt="image" /></p>
+
+<h3>合并工厂角色与抽象产品角色</h3>
+
+<p>有些情况下，工厂角色可以由抽象产品角色扮演，例如java.text.DateFormat类，如下图所示：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-27_4.png" alt="image" /></p>
+
+<h3>三个角色全部合并</h3>
+
+<p><img src="/myresource/images/image_blog_2014-07-27_5.png" alt="image" /></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConcreteProduct</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">ConcreteProduct</span><span class="o">()</span> <span class="o">{}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">ConcreteProduct</span> <span class="nf">factory</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="k">new</span> <span class="nf">ConcreteProduct</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>多个工厂方法</h3>
+
+<p>工厂类可以有一个或多个工厂方法，分别负责创建不同的产品对象。例如java.text.DateFormat类：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">DateFormat</span> <span class="nf">getDateInstance</span><span class="o">();</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">DateFormat</span> <span class="nf">getDateInstance</span><span class="o">(</span><span class="kt">int</span> <span class="n">style</span><span class="o">);</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">DateFormat</span> <span class="nf">getDateInstance</span><span class="o">(</span><span class="kt">int</span> <span class="n">style</span><span class="o">,</span> <span class="n">Local</span> <span class="n">locale</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>总结</h3>
+
+<p>简单工厂模式是非常基本的设计模式，会在较为复杂的设计模式中出现。它的核心是工厂类，客户端完全不关心构建的细节，只需消费产品。因此，简单工厂模式实现了对责任的分割。</p>
+
+<p>但其缺点是当产品结构变得复杂时，工厂类将变得非常复杂。由于静态方法无法继承，因此工厂角色无法形成基于继承的等级结构。</p>
+
+<p>在这种模式中，消费者(Client)和产品（Product）都满足“开－闭原则”，都能在引进新产品时，无需对现有代码进行修改。而工厂（Factory）则必须知道每一种产品以及如何创建它们，因此必须修改这个工厂的代码，不满足“开－闭”原则。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-27T09:44:35+08:00" pubdate data-updated="true">2014-07-27</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/she-ji-mo-shi/'>设计模式</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/07/25/yi-xie-she-ji-yuan-ze/" title="Previous Post: 一些设计原则">&laquo; 一些设计原则</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (1)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (3)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/">设计模式:简单工厂模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/25/yi-xie-she-ji-yuan-ze/">一些设计原则</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/23/yi-zhang-tu-kan-dong/">一张图看懂UML类图的关系</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/">分布式系统的基础知识</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/">Macbook Pro，送给自己的生日礼物</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fb4e47bf6950f9d2496daf84fe62cec59' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

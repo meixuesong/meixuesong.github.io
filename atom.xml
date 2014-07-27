@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-07-26T00:19:04+08:00</updated>
+  <updated>2014-07-27T11:50:55+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,105 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:简单工厂模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/"/>
+    <updated>2014-07-27T09:44:35+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi</id>
+    <content type="html"><![CDATA[<p>简单工厂模式其实就是静态工厂方法模式，即通过静态工厂方法来创建对象。其结构可表示为：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-07-27_1.png" alt="image" /></p>
+
+<!--more-->
+
+
+<p>来看个实际的例子，下图中，有多种水果。客户端不关心具体的水果是如何创建的，只需要告诉工厂方法，需要哪种水果类型，工厂方法负责具体水果的创建工作。</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-07-27_2.png" alt="image" /></p>
+
+<p>工厂方法返回的是水果接口。水果接口也可以换成抽象类。这是针对抽象编程的一种体现。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FruitFactory</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">Fruit</span> <span class="nf">getFruit</span><span class="o">(</span><span class="n">String</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">type</span><span class="o">.</span><span class="na">equalsIgnoreCase</span><span class="o">(</span><span class="s">&quot;apple&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="k">new</span> <span class="nf">Apple</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">type</span><span class="o">.</span><span class="na">equalsIgnoreCase</span><span class="o">(</span><span class="s">&quot;orange&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="k">new</span> <span class="nf">Orange</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">throw</span> <span class="k">new</span> <span class="nf">FruitFactoryException</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>省略产品角色</h3>
+
+<p>如果具体产品只有一个（即只有一种水果）时，可以省略掉抽象产品角色，变成：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-07-27_3.png" alt="image" /></p>
+
+<h3>合并工厂角色与抽象产品角色</h3>
+
+<p>有些情况下，工厂角色可以由抽象产品角色扮演，例如java.text.DateFormat类，如下图所示：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-07-27_4.png" alt="image" /></p>
+
+<h3>三个角色全部合并</h3>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-07-27_5.png" alt="image" /></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConcreteProduct</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">ConcreteProduct</span><span class="o">()</span> <span class="o">{}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">ConcreteProduct</span> <span class="nf">factory</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="k">new</span> <span class="nf">ConcreteProduct</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>多个工厂方法</h3>
+
+<p>工厂类可以有一个或多个工厂方法，分别负责创建不同的产品对象。例如java.text.DateFormat类：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">DateFormat</span> <span class="nf">getDateInstance</span><span class="o">();</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">DateFormat</span> <span class="nf">getDateInstance</span><span class="o">(</span><span class="kt">int</span> <span class="n">style</span><span class="o">);</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">DateFormat</span> <span class="nf">getDateInstance</span><span class="o">(</span><span class="kt">int</span> <span class="n">style</span><span class="o">,</span> <span class="n">Local</span> <span class="n">locale</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>总结</h3>
+
+<p>简单工厂模式是非常基本的设计模式，会在较为复杂的设计模式中出现。它的核心是工厂类，客户端完全不关心构建的细节，只需消费产品。因此，简单工厂模式实现了对责任的分割。</p>
+
+<p>但其缺点是当产品结构变得复杂时，工厂类将变得非常复杂。由于静态方法无法继承，因此工厂角色无法形成基于继承的等级结构。</p>
+
+<p>在这种模式中，消费者(Client)和产品（Product）都满足“开－闭原则”，都能在引进新产品时，无需对现有代码进行修改。而工厂（Factory）则必须知道每一种产品以及如何创建它们，因此必须修改这个工厂的代码，不满足“开－闭”原则。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[一些设计原则]]></title>

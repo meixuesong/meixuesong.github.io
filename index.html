@@ -9,13 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="关于设计，有一些原则。本文总结一些常见的原则。包括： (S)单一职责原则
-(O)开闭原则
-(L)里氏替换原则
-(I)接口隔离原则
-(D)依赖反转原则
-迪米特法则
-组合/聚合复用原则 ">
+  <meta name="description" content="简单工厂模式其实就是静态工厂方法模式，即通过静态工厂方法来创建对象。其结构可表示为： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +64,52 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/">设计模式:简单工厂模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-27T09:44:35+08:00" pubdate data-updated="true">2014-07-27</time>
+        
+           | <a href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>简单工厂模式其实就是静态工厂方法模式，即通过静态工厂方法来创建对象。其结构可表示为：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-27_1.png" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -480,50 +520,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/28/li-yong-fan-zhang-hao/">利用反射和代理创建简单的安全账号</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-28T11:42:34+08:00" pubdate data-updated="true">2014-06-28</time>
-        
-           | <a href="/blog/2014/06/28/li-yong-fan-zhang-hao/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/06/28/li-yong-fan-zhang-hao/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在实际业务中，总是会遇到权限管理和安全方面的需求。以一个帐户类（Account）为例，它实现了帐户的基本信息和余额管理。新的需求是余额修改相关的方法只能由授权用户调用。那么是不是直接修改Account类，在相关方法中加入权限验证代码呢？这样势必会让原来的代码变得混乱，破坏单一职责原则。应该怎么办呢？</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/06/28/li-yong-fan-zhang-hao/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -543,10 +539,14 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (1)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (2)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (1)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (3)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/">设计模式:简单工厂模式</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/07/25/yi-xie-she-ji-yuan-ze/">一些设计原则</a>
@@ -562,10 +562,6 @@
     
       <li class="post">
         <a href="/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/">Macbook Pro，送给自己的生日礼物</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/07/09/javazhu-jie/">Java注解</a>
       </li>
     
   </ul>
