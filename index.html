@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="因工作需要，对两个跨平台移动开发工具（Titanium，Worklight）进行比较的。本文主要从跨平台特性、性能、社区等进行比较。实际上，本文同样适用于Titanium VS Phonegap。 ">
+  <meta name="description" content="前文说到简单工厂方法的工厂类，对“开－闭”原则支持不够，当有新产品时，需要修改工厂类。而工厂方法模式可以解决这个问题。工厂方法模式的用意是定义一个创建产品对象的工厂接口，将实际创建工作推迟到子类中。其结构可表示为： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,52 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">设计模式:工厂方法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-27T22:11:04+08:00" pubdate data-updated="true">2014-07-27</time>
+        
+           | <a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>前文说到简单工厂方法的工厂类，对“开－闭”原则支持不够，当有新产品时，需要修改工厂类。而工厂方法模式可以解决这个问题。工厂方法模式的用意是定义一个创建产品对象的工厂接口，将实际创建工作推迟到子类中。其结构可表示为：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-27_22.10.30.png" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -476,50 +522,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/02/an-quan-http,sslzheng-shu-ji-shen-qing/">安全HTTP，SSL证书及申请</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-02T08:34:08+08:00" pubdate data-updated="true">2014-07-02</time>
-        
-           | <a href="/blog/2014/07/02/an-quan-http,sslzheng-shu-ji-shen-qing/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/02/an-quan-http,sslzheng-shu-ji-shen-qing/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>由于iOS 7.1无法安装企业应用的原因是url必须是https，因此需要将原Tomcat服务器增加SSL支持。总结一下基础知识和配置过程。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/02/an-quan-http,sslzheng-shu-ji-shen-qing/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -539,10 +541,14 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (3)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (4)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">设计模式:工厂方法</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/07/27/titanium-vs-worklight/">Titanium vs Worklight</a>
@@ -558,10 +564,6 @@
     
       <li class="post">
         <a href="/blog/2014/07/23/yi-zhang-tu-kan-dong/">一张图看懂UML类图的关系</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/">分布式系统的基础知识</a>
       </li>
     
   </ul>
