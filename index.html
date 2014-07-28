@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="前文说到简单工厂方法的工厂类，对“开－闭”原则支持不够，当有新产品时，需要修改工厂类。而工厂方法模式可以解决这个问题。工厂方法模式的用意是定义一个创建产品对象的工厂接口，将实际创建工作推迟到子类中。其结构可表示为： ">
+  <meta name="description" content="简单工厂方法模式采用静态方法创建产品，工厂方式模式通过多层级的工厂方法创建一种产品等级结构。而抽象工厂方法模式则可以用于创建多个产品等级结构。因此，其类图示意如下： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,7 +70,53 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">设计模式:工厂方法</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/">设计模式:抽象工厂方法模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-28T19:45:29+08:00" pubdate data-updated="true">2014-07-28</time>
+        
+           | <a href="/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>简单工厂方法模式采用静态方法创建产品，工厂方式模式通过多层级的工厂方法创建一种产品等级结构。而抽象工厂方法模式则可以用于创建多个产品等级结构。因此，其类图示意如下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-28_20.03.46.png" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">设计模式:工厂方法模式</a></h1>
     
     
       <p class="meta">
@@ -478,50 +524,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/02/javafan-xing/">Java泛型</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-02T22:24:37+08:00" pubdate data-updated="true">2014-07-02</time>
-        
-           | <a href="/blog/2014/07/02/javafan-xing/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/02/javafan-xing/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Java泛型功能强大，用起来也很简单。看到一些代码，有时候用?号，有时候又可以直接使用<code>&lt;T&gt;</code>，都有哪些区别呢？系统地了解一下吧。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/02/javafan-xing/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -541,13 +543,17 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (4)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (5)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">设计模式:工厂方法</a>
+        <a href="/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/">设计模式:抽象工厂方法模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">设计模式:工厂方法模式</a>
       </li>
     
       <li class="post">
@@ -560,10 +566,6 @@
     
       <li class="post">
         <a href="/blog/2014/07/25/yi-xie-she-ji-yuan-ze/">一些设计原则</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/07/23/yi-zhang-tu-kan-dong/">一张图看懂UML类图的关系</a>
       </li>
     
   </ul>

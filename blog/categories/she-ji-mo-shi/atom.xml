@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 设计模式 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/she-ji-mo-shi/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-07-28T18:49:31+08:00</updated>
+  <updated>2014-07-28T21:44:03+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -14,7 +14,41 @@
 
   
   <entry>
-    <title type="html"><![CDATA[设计模式:工厂方法]]></title>
+    <title type="html"><![CDATA[设计模式:抽象工厂方法模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/"/>
+    <updated>2014-07-28T19:45:29+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi</id>
+    <content type="html"><![CDATA[<p>简单工厂方法模式采用静态方法创建产品，工厂方式模式通过多层级的工厂方法创建一种产品等级结构。而抽象工厂方法模式则可以用于创建多个产品等级结构。因此，其类图示意如下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-28_20.03.46.png" alt="image" /></p>
+
+<!--more-->
+
+
+<p>从上图可见，有两个产品等级：ProductA和ProductB。抽象工厂模式与工厂方法模式的最大区别就在于，工厂方法模式针对的是一个产品等级结构；而抽象工厂模式则需要面对多个产品等级结构。那么对于多个等级结构的产品，为什么要采用抽象工厂模式呢？</p>
+
+<p>如果采用工厂模式，就要N个独立的工厂等级结构来应对N个产品等级结构。由于这些产品等级结构的相似性，会导致N个平等的工厂等级结构。随着产品等级结构数目的增加，工厂方式模式所给出的工厂等级结构数目也会随之增加。</p>
+
+<p>所以，抽象工厂方法模式的好处是，同一个工厂等级结构应对N个这些相似的产品等级结构。例如上图中的ConcreteCreator1负责创建ProductA1和ProductB1。显然，这种方式更有效率。</p>
+
+<p>什么情况下应当使用抽象工厂模式？</p>
+
+<ol>
+<li>满足工厂模式的条件，即：一个系统不应当依赖于产品类实例如何被创建、组合和表达的细节时。</li>
+<li>多于一个的产品族，而系统只消费其中某一族的产品。如上图中有2个族（1，2），同时只消费其中一个族。</li>
+<li>同属于一个产品族的产品是一起使用的。</li>
+<li>系统提供一个产品类的库，所有的产品以同样的接口出现，从而使客户端不依赖于实现。</li>
+</ol>
+
+
+<p>举一个实际例子就很容易理解为什么需要，以及什么时候需要抽象工厂模式：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-28_21.41.37.png" alt="image" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:工厂方法模式]]></title>
     <link href="http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/"/>
     <updated>2014-07-27T22:11:04+08:00</updated>
     <id>http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa</id>
@@ -30,6 +64,19 @@
 <p>在实际项目中，产品类可能有多个层级，对应工厂类也有多个层级。当使Factory为抽象类时，可以将公共代码尽量往上层抽象。</p>
 
 <p>工厂方法返回的对象不一定是新建的，有可能是之前新建的对象，缓存在那里。但一定是自己创建的，不可以是别的对象传入的对象。</p>
+
+<p>ConcreteFactory1示例代码：</p>
+
+<p>```java
+public class ConcreteFactory1 implements Factory {</p>
+
+<pre><code>public SomeProduct factory() {
+    return new SomeConcreteProduct1();
+}  
+</code></pre>
+
+<p>}
+```</p>
 
 <p>Client代码示例：</p>
 

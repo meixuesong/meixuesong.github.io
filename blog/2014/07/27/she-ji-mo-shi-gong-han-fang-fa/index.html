@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>设计模式:工厂方法 - 码出人生</title>
+  <title>设计模式:工厂方法模式 - 码出人生</title>
   <meta name="author" content="梅雪松">
 
   
@@ -67,7 +67,7 @@
   
   <header>
     
-      <h1 class="entry-title">设计模式:工厂方法</h1>
+      <h1 class="entry-title">设计模式:工厂方法模式</h1>
     
     
       <p class="meta">
@@ -105,6 +105,21 @@
 <p>在实际项目中，产品类可能有多个层级，对应工厂类也有多个层级。当使Factory为抽象类时，可以将公共代码尽量往上层抽象。</p>
 
 <p>工厂方法返回的对象不一定是新建的，有可能是之前新建的对象，缓存在那里。但一定是自己创建的，不可以是别的对象传入的对象。</p>
+
+<p>ConcreteFactory1示例代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConcreteFactory1</span> <span class="kd">implements</span> <span class="n">Factory</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">SomeProduct</span> <span class="nf">factory</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="k">new</span> <span class="nf">SomeConcreteProduct1</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Client代码示例：</p>
 
@@ -193,6 +208,8 @@
         <a class="basic-alignment left" href="/blog/2014/07/27/titanium-vs-worklight/" title="Previous Post: Titanium VS Worklight">&laquo; Titanium VS Worklight</a>
       
       
+        <a class="basic-alignment right" href="/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/" title="Next Post: 设计模式:抽象工厂方法模式">设计模式:抽象工厂方法模式 &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -216,13 +233,17 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (4)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (5)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">设计模式:工厂方法</a>
+        <a href="/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/">设计模式:抽象工厂方法模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">设计模式:工厂方法模式</a>
       </li>
     
       <li class="post">
@@ -235,10 +256,6 @@
     
       <li class="post">
         <a href="/blog/2014/07/25/yi-xie-she-ji-yuan-ze/">一些设计原则</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/07/23/yi-zhang-tu-kan-dong/">一张图看懂UML类图的关系</a>
       </li>
     
   </ul>

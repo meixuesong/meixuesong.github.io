@@ -5,17 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>一些设计原则 - 码出人生</title>
+  <title>设计模式:抽象工厂方法模式 - 码出人生</title>
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="关于设计，有一些原则。本文总结一些常见的原则。包括： (S)单一职责原则
-(O)开闭原则
-(L)里氏替换原则
-(I)接口隔离原则
-(D)依赖反转原则
-迪米特法则
-组合/聚合复用原则 S.单一职责原则 单一职责原则（Single responsibility principle） &hellip;">
+  <meta name="description" content="简单工厂方法模式采用静态方法创建产品，工厂方式模式通过多层级的工厂方法创建一种产品等级结构。而抽象工厂方法模式则可以用于创建多个产品等级结构。因此，其类图示意如下： 从上图可见，有两个产品等级：ProductA和ProductB。抽象工厂模式与工厂方法模式的最大区别就在于， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -24,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.ubone.com/blog/2014/07/25/yi-xie-she-ji-yuan-ze">
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
@@ -73,7 +67,7 @@
   
   <header>
     
-      <h1 class="entry-title">一些设计原则</h1>
+      <h1 class="entry-title">设计模式:抽象工厂方法模式</h1>
     
     
       <p class="meta">
@@ -89,7 +83,7 @@
   
 
 
-<time datetime="2014-07-25T21:01:51+08:00" pubdate data-updated="true">2014-07-25</time>
+<time datetime="2014-07-28T19:45:29+08:00" pubdate data-updated="true">2014-07-28</time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://blog.ubone.com">Comments</a>
@@ -99,103 +93,32 @@
   </header>
 
 
-<div class="entry-content"><p>关于设计，有一些原则。本文总结一些常见的原则。包括：</p>
+<div class="entry-content"><p>简单工厂方法模式采用静态方法创建产品，工厂方式模式通过多层级的工厂方法创建一种产品等级结构。而抽象工厂方法模式则可以用于创建多个产品等级结构。因此，其类图示意如下：</p>
 
-<ul>
-<li>(S)单一职责原则</li>
-<li>(O)开闭原则</li>
-<li>(L)里氏替换原则</li>
-<li>(I)接口隔离原则</li>
-<li>(D)依赖反转原则</li>
-<li>迪米特法则</li>
-<li>组合/聚合复用原则</li>
-</ul>
-
+<p><img src="/myresource/images/image_blog_2014-07-28_20.03.46.png" alt="image" /></p>
 
 <!--more-->
 
 
-<h2>S.单一职责原则</h2>
+<p>从上图可见，有两个产品等级：ProductA和ProductB。抽象工厂模式与工厂方法模式的最大区别就在于，工厂方法模式针对的是一个产品等级结构；而抽象工厂模式则需要面对多个产品等级结构。那么对于多个等级结构的产品，为什么要采用抽象工厂模式呢？</p>
 
-<p>单一职责原则（Single responsibility principle）规定每个类都应该有一个单一的功能，并且该功能应该由这个类完全封装起来。</p>
+<p>如果采用工厂模式，就要N个独立的工厂等级结构来应对N个产品等级结构。由于这些产品等级结构的相似性，会导致N个平等的工厂等级结构。随着产品等级结构数目的增加，工厂方式模式所给出的工厂等级结构数目也会随之增加。</p>
 
-<h2>O.开闭原则</h2>
+<p>所以，抽象工厂方法模式的好处是，同一个工厂等级结构应对N个这些相似的产品等级结构。例如上图中的ConcreteCreator1负责创建ProductA1和ProductB1。显然，这种方式更有效率。</p>
 
-<p>简单地说，就是软件中的对象（类，模块，函数等等）应该对于扩展是开放的，但是对于修改是封闭的。这一原则由Bertrand Meyer提出：</p>
-
-<blockquote><p>Software entities should be open for extension, but closed for modification.</p></blockquote>
-
-<p>实现开闭原则的关键是抽象。找到一个系统的可变因素，将它封闭起来，这就是“对可变性的封闭原则”。</p>
-
-<h2>L.里氏替换原则</h2>
-
-<p>派生类（子类）对象能够替换其基类（父类）对象被使用。</p>
-
-<h2>I.接口隔离原则</h2>
-
-<p>接口隔离原则（Interface-segregation principles，ISP）简单地说，就是：使用多个专门的接口比使用单一的总接口要好。</p>
-
-<p>没有客户(client)应该被迫依赖于它不使用方法。接口隔离原则(ISP)拆分非常庞大臃肿的接口成为更小的和更具体的接口，这样客户将会只需要知道他们感兴趣的方法。这种缩小的接口也被称为角色接口（role interfaces）。接口隔离原则(ISP)的目的是系统解开耦合，从而容易重构，更改和重新部署。</p>
-
-<p>准确而恰当地划分角色以及角色所对应的接口，是面向对象的设计的一个重要的组成部分。</p>
-
-<h2>D.依赖反转原则</h2>
-
-<p>简单地说，就是依赖于抽象，不要依赖于具体。</p>
-
-<p>为什么叫“反转”呢？？看看下面是怎么反转的：</p>
-
-<p><img src="/myresource/images/img_blog_20140725_1.png" alt="image" /></p>
-
-<p><img src="/myresource/images/img_blog_20140725_2.png" alt="image" /></p>
-
-<p>两种表述:</p>
+<p>什么情况下应当使用抽象工厂模式？</p>
 
 <ol>
-<li>抽象不应当依赖于细节；细节应该依赖于抽象。</li>
-<li>要针对接口编程，不要针对实现编程。</li>
+<li>满足工厂模式的条件，即：一个系统不应当依赖于产品类实例如何被创建、组合和表达的细节时。</li>
+<li>多于一个的产品族，而系统只消费其中某一族的产品。如上图中有2个族（1，2），同时只消费其中一个族。</li>
+<li>同属于一个产品族的产品是一起使用的。</li>
+<li>系统提供一个产品类的库，所有的产品以同样的接口出现，从而使客户端不依赖于实现。</li>
 </ol>
 
 
-<p>针对接口编程是指，应该使用接口和抽象类进行变量的类型声明、参数和方法返回类型的声明，以及数据类型的转换等。</p>
+<p>举一个实际例子就很容易理解为什么需要，以及什么时候需要抽象工厂模式：</p>
 
-<p>不要针对实现编程是指，不应当使用具体Java类进行变量的类型声明、参数和方法返回类型的声明，以及数据类型的转换等。</p>
-
-<p>如果希望遵循“开－闭原则”，那么依赖反转原则便是达到目标的途径。</p>
-
-<h2>迪米特法则</h2>
-
-<p>迪米特法则又叫做最少知识原则，就是说，一个对象应当对其他对象尽可能少的了解。</p>
-
-<h3>狭义的迪米特法则</h3>
-
-<p>如果两个类不必彼此直接通信，那么这两个类就不应该发生直接的相互作用。就是说如果某人可以通过朋友去调用陌生人的方法，那么就不用直接调用陌生人的方法，而是通过朋友去调用转发。</p>
-
-<p>什么是朋友呢？满足任一条件都是朋友：</p>
-
-<ul>
-<li>当前对象本身</li>
-<li>以参量形式传入到当前对象方法的对象</li>
-<li>当前对象的实例变量直接引用的对象</li>
-<li>当前对象的实例变量如果是聚集，那么其中的元素都是朋友</li>
-<li>当前对象所创建的对象。</li>
-</ul>
-
-
-<p>狭义的迪米特法则的缺点是：产生大量小方法，与商务逻辑无关；不同模块之间的通信效率降低。</p>
-
-<h3>广义迪米特法则在类的设计上的体现</h3>
-
-<ul>
-<li>优先考虑将一个类设置成不变类</li>
-<li>尽量降低一个类的访问权限</li>
-<li>尽量降低成员的访问权限</li>
-</ul>
-
-
-<h2>组合/聚合复用原则</h2>
-
-<p>实际上说的就是尽量使用聚合/组合，尽量不要使用继承。这在Effective-Java中也有描述。<a href="/blog/2014/07/08/effective-java-lei-he-jie-kou/">Java类与接口</a></p>
+<p><img src="/myresource/images/image_blog_2014-07-28_21.41.37.png" alt="image" /></p>
 </div>
 
 
@@ -218,7 +141,7 @@
   
 
 
-<time datetime="2014-07-25T21:01:51+08:00" pubdate data-updated="true">2014-07-25</time>
+<time datetime="2014-07-28T19:45:29+08:00" pubdate data-updated="true">2014-07-28</time>
       
 
 <span class="categories">
@@ -254,10 +177,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/07/23/yi-zhang-tu-kan-dong/" title="Previous Post: 一张图看懂UML类图的关系">&laquo; 一张图看懂UML类图的关系</a>
+        <a class="basic-alignment left" href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/" title="Previous Post: 设计模式:工厂方法模式">&laquo; 设计模式:工厂方法模式</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/" title="Next Post: 设计模式:简单工厂模式">设计模式:简单工厂模式 &raquo;</a>
       
     </p>
   </footer>
@@ -338,8 +259,8 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.ubone.com/blog/2014/07/25/yi-xie-she-ji-yuan-ze/';
-        var disqus_url = 'http://blog.ubone.com/blog/2014/07/25/yi-xie-she-ji-yuan-ze/';
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/';
         var disqus_script = 'embed.js';
       
     (function () {
