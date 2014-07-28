@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "设计模式:工厂方法"
+title: "设计模式:工厂方法模式"
 date: 2014-07-27 22:11:04 +0800
 comments: true
 categories: 
@@ -18,6 +18,16 @@ categories:
 在实际项目中，产品类可能有多个层级，对应工厂类也有多个层级。当使Factory为抽象类时，可以将公共代码尽量往上层抽象。
 
 工厂方法返回的对象不一定是新建的，有可能是之前新建的对象，缓存在那里。但一定是自己创建的，不可以是别的对象传入的对象。
+
+ConcreteFactory1示例代码：
+
+```java
+public class ConcreteFactory1 implements Factory {
+	public SomeProduct factory() {
+		return new SomeConcreteProduct1();
+	}  
+}
+```
 
 Client代码示例：
 
