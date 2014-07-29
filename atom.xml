@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-07-29T21:41:54+08:00</updated>
+  <updated>2014-07-29T22:47:53+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,21 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:Builder模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/07/29/she-ji-mo-shi-buildermo-shi/"/>
+    <updated>2014-07-29T22:28:54+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/07/29/she-ji-mo-shi-buildermo-shi</id>
+    <content type="html"><![CDATA[<p>Builder模式感觉没什么特别的，甚至都不值得称为一种模式。无非就是由Director构建部分，然后再使用一个方法完成构建过程。但Builder模式对于参数太多的构造器却非常有用。先看Builder模式的类图：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-07-29_22.38.17.png" alt="image" /></p>
+
+<p><a href="http://blog.ubone.com/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">这篇博客</a>建议当构造器参数比较多时，考虑使用Builder模式。这是一种非常优雅的方式。</p>
+
+<p>我觉得Builder模式的好处一是使客户端的代码很清晰，不需要那么多的set方法；二是实现了产品构建的原子性，也就是可以在build时，确保产品构建是有效的，如果某些部分或者参数有问题、冲突，就能够在build时失败，避免残次的半成品出现。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式在序列生成器的应用]]></title>
@@ -2836,147 +2851,6 @@ Java与模式</p>
 <p>改完后手机上访问也基本可以秒杀了。</p>
 
 <p>用GitHub + Octopress建立博客，过程虽然复杂了点，但最终效果相当不错，你值得拥有！</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Extjs 备忘录]]></title>
-    <link href="http://blog.ubone.com/blog/2014/06/25/extjs-bei-wang-lu/"/>
-    <updated>2014-06-25T12:13:29+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/06/25/extjs-bei-wang-lu</id>
-    <content type="html"><![CDATA[<p>今天改点老程序，用到了Extjs，记录一下遇到的问题和解决办法。</p>
-
-<!--more-->
-
-
-<h2>JavaScript字符串替换</h2>
-
-<p>根据Ext文档，有多种替换方式。我想要不区分大小写的替换，而目前Extjs文档中提供的方法无效。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//Extjs文档：</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s2">&quot;Apples are round, and apples are juicy.&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">newstr</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">&quot;apples&quot;</span><span class="p">,</span> <span class="s2">&quot;oranges&quot;</span><span class="p">,</span> <span class="s2">&quot;gi&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nx">print</span><span class="p">(</span><span class="nx">newstr</span><span class="p">);</span>
-</span><span class='line'><span class="c1">//！文档说结果为： &quot;oranges are round, and oranges are juicy.&quot;， </span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>但上面的代码并没有产生预期的效果，第一个Apples并没有被替换。改用以下方法实现：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">replaceIgnoreCase</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">searchStr</span><span class="p">,</span> <span class="nx">replaceStr</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">regEx</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="nx">searchStr</span><span class="p">,</span> <span class="s2">&quot;ig&quot;</span><span class="p">);</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">regEx</span><span class="p">,</span> <span class="nx">replaceStr</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">return</span> <span class="nx">str</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_replaceIgnoreCase</span><span class="p">(</span><span class="s1">&#39;This iS IIS&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;as&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//result为：Thas as Ias</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>设置Extjs Grid Panel的行高</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="o">//</span><span class="nt">gridPanel</span><span class="err">的定义中：</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">viewConfig</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">getRowClass</span><span class="o">:</span> <span class="n">function</span> <span class="p">(</span><span class="n">record</span><span class="o">,</span> <span class="n">rowIndex</span><span class="o">,</span> <span class="n">rp</span><span class="o">,</span> <span class="n">store</span><span class="p">)</span> <span class="err">{</span>
-</span><span class='line'>    <span class="n">return</span> <span class="s2">&quot;grid-row-height&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="err">}</span><span class="o">,</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">//</span><span class="nt">CSS</span><span class="err">定义：</span>
-</span><span class='line'><span class="nc">.grid-row-height</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">height</span><span class="o">:</span> <span class="m">35px</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>设置Extjs Grid 单元格中的文字自动换行</h2>
-
-<p>Extjs gridPanel单元格的内容如果超出，默认是显示三个点，要想让它换行，其实很简单：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="o">//</span><span class="nt">gridPanel</span><span class="err">的定义，注意</span><span class="nt">tdCls</span>
-</span><span class='line'><span class="nt">columns</span><span class="o">:</span> <span class="o">[</span>
-</span><span class='line'>            <span class="p">{</span>
-</span><span class='line'>                <span class="n">header</span><span class="o">:</span> <span class="s1">&#39;Sentence&#39;</span><span class="o">,</span>
-</span><span class='line'>                <span class="n">dataIndex</span><span class="o">:</span> <span class="s1">&#39;sentence&#39;</span><span class="o">,</span>
-</span><span class='line'>                <span class="n">flex</span><span class="o">:</span> <span class="m">2</span><span class="o">,</span>
-</span><span class='line'>                <span class="n">renderer</span><span class="o">:</span> <span class="n">this</span><span class="o">.</span><span class="n">sentenceRenderer</span><span class="o">,</span>
-</span><span class='line'>                <span class="n">tdCls</span><span class="o">:</span><span class="s1">&#39;wrap-text&#39;</span>
-</span><span class='line'>            <span class="p">}</span><span class="o">,</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="o">//</span><span class="nt">CSS</span><span class="err">定义</span>
-</span><span class='line'><span class="nt">td</span><span class="nc">.wrap-text</span> <span class="nt">div</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">white-space</span><span class="o">:</span> <span class="k">normal</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>设置Extjs Grid 单元格中的文字换行后的行高</h2>
-
-<p>Extjs gridPanel单元格的内容自动换行号，默认行高太小，只需将上面的CSS修改为：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="o">//</span><span class="nt">CSS</span><span class="err">定义</span>
-</span><span class='line'><span class="nt">td</span><span class="nc">.wrap-text</span> <span class="nt">div</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">white-space</span><span class="o">:</span> <span class="k">normal</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">line-height</span><span class="o">:</span> <span class="m">130</span><span class="o">%</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">//</span><span class="nt">130</span><span class="o">%</span><span class="err">表示</span><span class="nt">1</span><span class="nc">.3</span><span class="err">倍行高。</span>
-</span></code></pre></td></tr></table></div></figure>
-
 ]]></content>
   </entry>
   
