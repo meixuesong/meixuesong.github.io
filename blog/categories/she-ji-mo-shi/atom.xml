@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 设计模式 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/she-ji-mo-shi/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-07-28T21:44:03+08:00</updated>
+  <updated>2014-07-29T21:41:54+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,279 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式在序列生成器的应用]]></title>
+    <link href="http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong/"/>
+    <updated>2014-07-28T22:21:23+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong</id>
+    <content type="html"><![CDATA[<p>序列生成器是常见的一个应用组件。Oracle数据库有Sequence，但不是所有数据库都有序列。本文尝试将单例模式、多例模式应用于序列生成器。采用了以下方式实现：</p>
+
+<ol>
+<li>没有数据库的单例实现</li>
+<li>有数据库的单例实现</li>
+<li>有缓存的单例实现</li>
+<li>有缓存的多序列实现</li>
+<li>多序列的多例实现。</li>
+</ol>
+
+
+<!--more-->
+
+
+<h2>1. 没有数据库的单例实现</h2>
+
+<p>当没有数据库时，使用单例实现序列生成器非常简单，示例代码如下，注意<code>synchronized</code>关键字：</p>
+
+<p>```java
+/<em>*
+ * 没有数据库的序列键生成器
+ * @author mxs
+ *
+ </em>/
+public class KeyGenerator {</p>
+
+<pre><code>private long key = 0;
+private static KeyGenerator instance = new KeyGenerator();
+
+private KeyGenerator() {}
+
+public static KeyGenerator getInstance() {
+    return instance;
+}
+
+public synchronized long getNextKey() {
+    return key++;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>单元测试代码：</p>
+
+<p>```java
+public class KeyGeneratorTest extends TestCase {</p>
+
+<pre><code>public void testKey() {
+    KeyGenerator keyGenerator = KeyGenerator.getInstance();
+
+    for(int i = 0; i &lt; 100; i++) {
+        Assert.assertEquals(i, keyGenerator.getNextKey());
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>这种实现没有持久化，一旦重启，序列又从0开始。因此我们需要一个有数据库持久化的方案。</p>
+
+<h2>2. 有数据库的单例实现</h2>
+
+<p>当有数据库时，每次获取序列都从数据库读取。</p>
+
+<p>```java
+/<em>*
+ * 有数据库的序列键生成器
+ * @author mxs
+ *
+ </em>/
+public class KeyGenerator {</p>
+
+<pre><code>private static KeyGenerator instance = new KeyGenerator();
+
+private KeyGenerator() {}
+
+public static KeyGenerator getInstance() {
+    return instance;
+}
+
+public synchronized long getNextKey() {
+    return getNextKeyFromDB();
+}
+
+private long getNextKeyFromDB() {
+    //update t_sequence set seq_value = seq_value + 1
+    //select seq_value from t_sequence
+    //返回结果
+    return 1000;
+}
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<h2>3. 有缓存的单例实现</h2>
+
+<p>第2种方法每次都要访问数据库，影响了性能，可以一次多取一些序列放到缓存中，只有缓存都取完时，才访问数据库。</p>
+
+<p>```java
+/<em>*
+ * 有数据库、带缓存的序列键生成器
+ * @author mxs
+ *
+ </em>/
+public class KeyGenerator {</p>
+
+<pre><code>private static KeyGenerator instance = new KeyGenerator();
+private static final int cacheSize = 20;
+private KeyInfo keyInfo;
+
+private KeyGenerator() {
+    keyInfo = new KeyInfo(cacheSize);
+}
+
+public static KeyGenerator getInstance() {
+    return instance;
+}
+
+public synchronized long getNextKey() {
+    return keyInfo.getNext();
+}
+</code></pre>
+
+<p>}</p>
+
+<p>public class KeyInfo {</p>
+
+<pre><code>private long max;
+private long min;
+private long nextKey;
+private int poolSize;
+
+public KeyInfo(int poolSize) {
+    this.poolSize = poolSize;
+    retrieveFromDB();
+}
+
+public long getNext() {
+    if (nextKey &gt;= max) {
+        retrieveFromDB();
+    }
+
+    return nextKey++;
+}
+
+private void retrieveFromDB() {
+    // update t_sequence set seq_value = seq_value + poolSize
+    // select seq_value from t_sequence
+    //以下为模拟数据库操作
+    long value = dbvalue[dbIndex ++];
+    min = value - poolSize;
+    max = value;
+    nextKey = min;
+}
+
+private int[] dbvalue = {20, 40, 60, 80, 100};
+private int dbIndex = 0;
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<h2>4. 有缓存的多序列实现</h2>
+
+<p>要实现多序列，只需要用HashMap改造第3种方法，保持KeyInfo不变，KeyGenerator修改为：</p>
+
+<p>```java
+/<em>*
+ * 有数据库、带缓存的多序列键生成器
+ * @author mxs
+ *
+ </em>/
+public class KeyGenerator {</p>
+
+<pre><code>private static KeyGenerator instance = new KeyGenerator();
+private static final int cacheSize = 20;
+
+private Map&lt;String, KeyInfo&gt; map;
+
+private KeyGenerator() {
+    map = new HashMap&lt;String, KeyInfo&gt;();
+}
+
+public static KeyGenerator getInstance() {
+    return instance;
+}
+
+public synchronized long getNextKey(String key) {
+    KeyInfo keyInfo;
+    if (map.containsKey(key)) {
+        keyInfo = map.get(key);
+    } else {
+        keyInfo = new KeyInfo(cacheSize);
+        map.put(key, keyInfo);
+    }
+
+    return keyInfo.getNext();
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>5. 多序列的多例实现</h2>
+
+<p>前面所有实现方案都是基于单例模式，其实还可以使用多例模式。多例模式允许一个类有多个实例，这些实例有自己的状态。保持KeyInfo不变，KeyGenerator修改为：</p>
+
+<p>```java
+/<em>*
+ * 有数据库、带缓存的多序列键生成器，采用多例模式
+ * @author mxs
+ *
+ </em>/
+public class KeyGenerator {</p>
+
+<pre><code>private static final int cacheSize = 20;
+private KeyInfo keyInfo;
+private static Map&lt;String, KeyGenerator&gt; instances = new HashMap&lt;String, KeyGenerator&gt;(10);
+
+private KeyGenerator() {
+    keyInfo = new KeyInfo(cacheSize);
+}
+
+public static synchronized KeyGenerator getInstance(String key) {
+    if (! instances.containsKey(key)) {
+        KeyGenerator generator = new KeyGenerator();
+        instances.put(key, generator);
+    }
+
+    return instances.get(key);
+}
+
+public synchronized long getNextKey() {
+    return keyInfo.getNext();
+}
+</code></pre>
+
+<p>}</p>
+
+<p>//测试代码：
+public class KeyGeneratorTest extends TestCase {</p>
+
+<pre><code>public void testKey() {
+    for(int j = 0; j &lt; 10; j ++) {
+        String key = "" + j;
+        KeyGenerator keyGenerator = KeyGenerator.getInstance(key);
+        for(int i = 0; i &lt; 90; i++) {
+            long ii = keyGenerator.getNextKey();
+            Assert.assertEquals(i, ii);
+        }
+    }       
+}
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<p>参考：
+Java与模式</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:抽象工厂方法模式]]></title>
@@ -288,32 +561,6 @@ public final static DateFormat getDateInstance(int style, Local locale);
 <h2>组合/聚合复用原则</h2>
 
 <p>实际上说的就是尽量使用聚合/组合，尽量不要使用继承。这在Effective-Java中也有描述。<a href="/blog/2014/07/08/effective-java-lei-he-jie-kou/">Java类与接口</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[一张图看懂UML类图的关系]]></title>
-    <link href="http://blog.ubone.com/blog/2014/07/23/yi-zhang-tu-kan-dong/"/>
-    <updated>2014-07-23T23:37:18+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/07/23/yi-zhang-tu-kan-dong</id>
-    <content type="html"><![CDATA[<p>在UML类图中，类之间的关系包括：继承、关联、聚合、组合和依赖关系。如何分辨这些关系呢？每种关系使用什么样的连线呢？</p>
-
-<!--more-->
-
-
-<p><strong>继承关系</strong>，这个太简单，不说了。</p>
-
-<p><strong>关联关系</strong>，在Java中，使用实例变量来实现关系关系。如图中的Driver类有car变量。</p>
-
-<p><strong>聚合关系</strong>，是更强的关联关系。聚合是整体与个体的关系。也需要通过实例变量实现。如果不是很确定是否聚合关系，可以使用关联关系。从Java语法是无法分辨出关联或聚合关系的区别的。</p>
-
-<p><strong>组合关系</strong>，是比聚合关系更强的关系关系。当聚合关系中的整体需要负责个体的生命周期时，就变成了组合关系。例如公司与部门的关系，当公司不存在时，部门也不存在了。</p>
-
-<p><strong>依赖关系</strong>，当A中有个局域变量、方法的参数是B，或者调用了B的静态方法，就是A依赖于B。</p>
-
-<p>下面这张图演示了各种关系：</p>
-
-<p><img src="/myresource/images/img_blog_20140723.jpg" alt="image" /></p>
 ]]></content>
   </entry>
   

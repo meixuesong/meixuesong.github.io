@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-07-28T21:44:03+08:00</updated>
+  <updated>2014-07-29T21:41:54+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,434 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式在序列生成器的应用]]></title>
+    <link href="http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong/"/>
+    <updated>2014-07-28T22:21:23+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong</id>
+    <content type="html"><![CDATA[<p>序列生成器是常见的一个应用组件。Oracle数据库有Sequence，但不是所有数据库都有序列。本文尝试将单例模式、多例模式应用于序列生成器。采用了以下方式实现：</p>
+
+<ol>
+<li>没有数据库的单例实现</li>
+<li>有数据库的单例实现</li>
+<li>有缓存的单例实现</li>
+<li>有缓存的多序列实现</li>
+<li>多序列的多例实现。</li>
+</ol>
+
+
+<!--more-->
+
+
+<h2>1. 没有数据库的单例实现</h2>
+
+<p>当没有数据库时，使用单例实现序列生成器非常简单，示例代码如下，注意<code>synchronized</code>关键字：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * 没有数据库的序列键生成器</span>
+</span><span class='line'><span class="cm"> * @author mxs</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KeyGenerator</span> <span class="o">{</span>    
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">long</span> <span class="n">key</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">KeyGenerator</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KeyGenerator</span><span class="o">();</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">private</span> <span class="nf">KeyGenerator</span><span class="o">()</span> <span class="o">{}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">KeyGenerator</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">long</span> <span class="nf">getNextKey</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">key</span><span class="o">++;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>单元测试代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KeyGeneratorTest</span> <span class="kd">extends</span> <span class="n">TestCase</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testKey</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">KeyGenerator</span> <span class="n">keyGenerator</span> <span class="o">=</span> <span class="n">KeyGenerator</span><span class="o">.</span><span class="na">getInstance</span><span class="o">();</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">keyGenerator</span><span class="o">.</span><span class="na">getNextKey</span><span class="o">());</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这种实现没有持久化，一旦重启，序列又从0开始。因此我们需要一个有数据库持久化的方案。</p>
+
+<h2>2. 有数据库的单例实现</h2>
+
+<p>当有数据库时，每次获取序列都从数据库读取。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * 有数据库的序列键生成器</span>
+</span><span class='line'><span class="cm"> * @author mxs</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KeyGenerator</span> <span class="o">{</span>    
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">KeyGenerator</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KeyGenerator</span><span class="o">();</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">private</span> <span class="nf">KeyGenerator</span><span class="o">()</span> <span class="o">{}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">KeyGenerator</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">long</span> <span class="nf">getNextKey</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nf">getNextKeyFromDB</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">long</span> <span class="nf">getNextKeyFromDB</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">//update t_sequence set seq_value = seq_value + 1</span>
+</span><span class='line'>      <span class="c1">//select seq_value from t_sequence</span>
+</span><span class='line'>      <span class="c1">//返回结果</span>
+</span><span class='line'>      <span class="k">return</span> <span class="mi">1000</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>3. 有缓存的单例实现</h2>
+
+<p>第2种方法每次都要访问数据库，影响了性能，可以一次多取一些序列放到缓存中，只有缓存都取完时，才访问数据库。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * 有数据库、带缓存的序列键生成器</span>
+</span><span class='line'><span class="cm"> * @author mxs</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KeyGenerator</span> <span class="o">{</span>    
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">KeyGenerator</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KeyGenerator</span><span class="o">();</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">cacheSize</span> <span class="o">=</span> <span class="mi">20</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">KeyInfo</span> <span class="n">keyInfo</span><span class="o">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">private</span> <span class="nf">KeyGenerator</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">keyInfo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KeyInfo</span><span class="o">(</span><span class="n">cacheSize</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">KeyGenerator</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">long</span> <span class="nf">getNextKey</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">keyInfo</span><span class="o">.</span><span class="na">getNext</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KeyInfo</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">long</span> <span class="n">max</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">long</span> <span class="n">min</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">long</span> <span class="n">nextKey</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">poolSize</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">KeyInfo</span><span class="o">(</span><span class="kt">int</span> <span class="n">poolSize</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">poolSize</span> <span class="o">=</span> <span class="n">poolSize</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">retrieveFromDB</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">long</span> <span class="nf">getNext</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">nextKey</span> <span class="o">&gt;=</span> <span class="n">max</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">retrieveFromDB</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">return</span> <span class="n">nextKey</span><span class="o">++;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">retrieveFromDB</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">// update t_sequence set seq_value = seq_value + poolSize</span>
+</span><span class='line'>      <span class="c1">// select seq_value from t_sequence</span>
+</span><span class='line'>      <span class="c1">//以下为模拟数据库操作</span>
+</span><span class='line'>      <span class="kt">long</span> <span class="n">value</span> <span class="o">=</span> <span class="n">dbvalue</span><span class="o">[</span><span class="n">dbIndex</span> <span class="o">++];</span>
+</span><span class='line'>      <span class="n">min</span> <span class="o">=</span> <span class="n">value</span> <span class="o">-</span> <span class="n">poolSize</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">max</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">nextKey</span> <span class="o">=</span> <span class="n">min</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">dbvalue</span> <span class="o">=</span> <span class="o">{</span><span class="mi">20</span><span class="o">,</span> <span class="mi">40</span><span class="o">,</span> <span class="mi">60</span><span class="o">,</span> <span class="mi">80</span><span class="o">,</span> <span class="mi">100</span><span class="o">};</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">dbIndex</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>4. 有缓存的多序列实现</h2>
+
+<p>要实现多序列，只需要用HashMap改造第3种方法，保持KeyInfo不变，KeyGenerator修改为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * 有数据库、带缓存的多序列键生成器</span>
+</span><span class='line'><span class="cm"> * @author mxs</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KeyGenerator</span> <span class="o">{</span>    
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">KeyGenerator</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KeyGenerator</span><span class="o">();</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">cacheSize</span> <span class="o">=</span> <span class="mi">20</span><span class="o">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">KeyInfo</span><span class="o">&gt;</span> <span class="n">map</span><span class="o">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">private</span> <span class="nf">KeyGenerator</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">KeyInfo</span><span class="o">&gt;();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">KeyGenerator</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">long</span> <span class="nf">getNextKey</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">KeyInfo</span> <span class="n">keyInfo</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">map</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">key</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">keyInfo</span> <span class="o">=</span> <span class="n">map</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">keyInfo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KeyInfo</span><span class="o">(</span><span class="n">cacheSize</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">keyInfo</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>              
+</span><span class='line'>      <span class="k">return</span> <span class="n">keyInfo</span><span class="o">.</span><span class="na">getNext</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>5. 多序列的多例实现</h2>
+
+<p>前面所有实现方案都是基于单例模式，其实还可以使用多例模式。多例模式允许一个类有多个实例，这些实例有自己的状态。保持KeyInfo不变，KeyGenerator修改为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * 有数据库、带缓存的多序列键生成器，采用多例模式</span>
+</span><span class='line'><span class="cm"> * @author mxs</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KeyGenerator</span> <span class="o">{</span>    
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">cacheSize</span> <span class="o">=</span> <span class="mi">20</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">KeyInfo</span> <span class="n">keyInfo</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">KeyGenerator</span><span class="o">&gt;</span> <span class="n">instances</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">KeyGenerator</span><span class="o">&gt;(</span><span class="mi">10</span><span class="o">);</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">private</span> <span class="nf">KeyGenerator</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">keyInfo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KeyInfo</span><span class="o">(</span><span class="n">cacheSize</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">synchronized</span> <span class="n">KeyGenerator</span> <span class="nf">getInstance</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(!</span> <span class="n">instances</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">key</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">KeyGenerator</span> <span class="n">generator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KeyGenerator</span><span class="o">();</span>
+</span><span class='line'>          <span class="n">instances</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">generator</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">return</span> <span class="n">instances</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">long</span> <span class="nf">getNextKey</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">keyInfo</span><span class="o">.</span><span class="na">getNext</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//测试代码：</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KeyGeneratorTest</span> <span class="kd">extends</span> <span class="n">TestCase</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testKey</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">j</span> <span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="o">+</span> <span class="n">j</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">KeyGenerator</span> <span class="n">keyGenerator</span> <span class="o">=</span> <span class="n">KeyGenerator</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</span><span class='line'>          <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">90</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="kt">long</span> <span class="n">ii</span> <span class="o">=</span> <span class="n">keyGenerator</span><span class="o">.</span><span class="na">getNextKey</span><span class="o">();</span>
+</span><span class='line'>              <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">ii</span><span class="o">);</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>        
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>参考：
+Java与模式</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:抽象工厂方法模式]]></title>
@@ -2547,231 +2975,6 @@
 </span><span class='line'><span class="p">}</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">//</span><span class="nt">130</span><span class="o">%</span><span class="err">表示</span><span class="nt">1</span><span class="nc">.3</span><span class="err">倍行高。</span>
-</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Titanium移动开发之每日自动构建]]></title>
-    <link href="http://blog.ubone.com/blog/2014/06/25/titaniumzi-dong-gou-jian/"/>
-    <updated>2014-06-25T11:19:18+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/06/25/titaniumzi-dong-gou-jian</id>
-    <content type="html"><![CDATA[<p>以下脚本用于构建Android 和 iOS版本的Titanium应用。可以将脚本加入cron中，每日定时构建。脚本还实现了自动获取svn日志，生成一个发布网页，直接上传到ftp的功能。</p>
-
-<!--more-->
-
-
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>#转到项目文件夹，更新脚本并执行Clean
-</span><span class='line'>cd /Users/mxs/Develop/CI/myProject
-</span><span class='line'>svn update 
-</span><span class='line'>titanium clean
-</span><span class='line'>
-</span><span class='line'>#Android打包
-</span><span class='line'>echo build Android version
-</span><span class='line'>titanium build --log-level warn --platform android --build-only --force -K /Users/mxs/keystore -P company -L oasuit -O /Users/mxs/Develop/CI/build -T dist-playstore &gt; ../android.build.log
-</span><span class='line'>
-</span><span class='line'>#文件名加上时间
-</span><span class='line'>fileTime="OA-`date +'%Y-%m-%d_%H%M'`"
-</span><span class='line'>localApkName="/Users/mxs/Develop/CI/build/"$fileTime".apk"
-</span><span class='line'>localApkZip=$fileTime".apk.zip"
-</span><span class='line'>localApkZipSource=$fileTime".apk"
-</span><span class='line'>remoteApkName="/moa/test/"$fileTime".apk.zip"
-</span><span class='line'>oaapk=/Users/mxs/Develop/CI/build/OA.apk
-</span><span class='line'>oaapkinfo=""
-</span><span class='line'>if [ ! -f $oaapk ]
-</span><span class='line'>then
-</span><span class='line'>  oaapkinfo='&lt;br/&gt;&lt;strong&gt;&lt;span style="color:red"&gt;OA.apk不存在，tiapp.xml配置不正确或者构建失败。&lt;/span&gt;&lt;/strong&gt;'
-</span><span class='line'>fi
-</span><span class='line'>mv $oaapk $localApkName
-</span><span class='line'>
-</span><span class='line'>#iOS打包
-</span><span class='line'>mv /Users/mxs/Develop/CI/i18n /Users/mxs/Develop/CI/myProject/i18n 
-</span><span class='line'>titanium clean
-</span><span class='line'>echo build iOS version
-</span><span class='line'>titanium build --log-level warn --platform ios --build-only --force --device-family iphone -O /Users/mxs/Develop/CI/build -P XXXXXXX -T dist-adhoc --distribution-name "Company Ltd./" &gt; ../ios.build.log
-</span><span class='line'>localIpaName="/Users/mxs/Develop/CI/build/"$fileTime".ipa"
-</span><span class='line'>localIpaZip=$fileTime".ipa.zip"
-</span><span class='line'>localIpaZipSource=$fileTime".ipa"
-</span><span class='line'>remoteIpaName="/moa/test/"$fileTime".ipa.zip"
-</span><span class='line'>oaipa=/Users/mxs/Develop/CI/build/OA.ipa
-</span><span class='line'>oaipainfo=""
-</span><span class='line'>if [ ! -f $oaipa ]
-</span><span class='line'>then
-</span><span class='line'>  oaipainfo='&lt;br/&gt;&lt;strong&gt;&lt;span style="color:red"&gt;OA.ipa不存在，tiapp.xml配置不正确或者构建失败。&lt;/span&gt;&lt;/string&gt;'
-</span><span class='line'>fi
-</span><span class='line'>mv $oaipa $localIpaName
-</span><span class='line'>mv /Users/mxs/Develop/CI/myProject/i18n /Users/mxs/Develop/CI/i18n 
-</span><span class='line'>
-</span><span class='line'>#获取昨天的日志，只要以#开始的注释
-</span><span class='line'>yesterday="`date -v -1d +'%Y-%m-%d'`"
-</span><span class='line'>today="`date +'%Y-%m-%d'`"
-</span><span class='line'>svn log -r {$yesterday}:{$today} &gt; ../log.tmp
-</span><span class='line'>grep '^#' ../log.tmp &gt; ../change.log
-</span><span class='line'>rm ../log.tmp
-</span><span class='line'>
-</span><span class='line'>#生成releasenote
-</span><span class='line'>releaseFileName="../build/releasenote-`date +'%Y-%m-%d'`.txt"
-</span><span class='line'>date "+&lt;h2&gt;%Y-%m-%d&lt;/h2&gt;&lt;hr/&gt;&lt;p&gt;构建时间：%Y-%m-%d %H:%M:%S&lt;/p&gt;" &gt; $releaseFileName
-</span><span class='line'>echo '&lt;p&gt;下载地址：&lt;a href="'$remoteIpaName'" target="_blank"&gt;iOS&lt;/a&gt; | &lt;a href="'$remoteApkName'" target="_blank"&gt;Android&lt;/a&gt;&lt;/p&gt;' &gt;&gt; $releaseFileName
-</span><span class='line'>echo '' &gt;&gt; $releaseFileName
-</span><span class='line'>echo '&lt;h3&gt;--------------变更日志-------------------&lt;/h3&gt;' &gt;&gt; $releaseFileName
-</span><span class='line'>echo '&lt;pre&gt;' &gt;&gt; $releaseFileName
-</span><span class='line'>cat ../change.log &gt;&gt; $releaseFileName
-</span><span class='line'>echo '&lt;/pre&gt;' &gt;&gt; $releaseFileName
-</span><span class='line'>echo '&lt;h3&gt;--------------构建日志-------------------&lt;/h3&gt;' &gt;&gt; $releaseFileName
-</span><span class='line'>echo '注：只显示警告和错误信息。' &gt;&gt; $releaseFileName
-</span><span class='line'>echo $oaapkinfo &gt;&gt; $releaseFileName
-</span><span class='line'>echo $oaipainfo &gt;&gt; $releaseFileName
-</span><span class='line'>echo '&lt;h4&gt;Android&lt;/h4&gt;' &gt;&gt; $releaseFileName
-</span><span class='line'>echo '&lt;pre&gt;' &gt;&gt; $releaseFileName
-</span><span class='line'>#删除Titanium构建日志的前4行
-</span><span class='line'>cat ../android.build.log  | sed 1d | sed 1d | sed 1d | sed 1d &gt;&gt; $releaseFileName
-</span><span class='line'>echo '&lt;/pre&gt;' &gt;&gt; $releaseFileName
-</span><span class='line'>echo '&lt;h4&gt;iOS&lt;/h4&gt;' &gt;&gt; $releaseFileName
-</span><span class='line'>echo '&lt;pre&gt;' &gt;&gt; $releaseFileName
-</span><span class='line'>cat ../ios.build.log  | sed 1d | sed 1d | sed 1d | sed 1d &gt;&gt; $releaseFileName
-</span><span class='line'>echo '&lt;/pre&gt;' &gt;&gt; $releaseFileName
-</span><span class='line'>indexFileName="../build/index.html"
-</span><span class='line'>historyFileName="../index_history.html"
-</span><span class='line'>indexTopFileName="../index_top.html"
-</span><span class='line'>cat $historyFileName &gt;&gt; $releaseFileName
-</span><span class='line'>rm $historyFileName
-</span><span class='line'>mv $releaseFileName $historyFileName
-</span><span class='line'>echo '' &gt; $indexFileName
-</span><span class='line'>cat $indexTopFileName &gt;&gt; $indexFileName
-</span><span class='line'>cat $historyFileName &gt;&gt; $indexFileName
-</span><span class='line'>rm ../change.log
-</span><span class='line'>rm ../android.build.log
-</span><span class='line'>rm ../ios.build.log
-</span><span class='line'>echo zip
-</span><span class='line'>#压缩成zip,必须切换到当前文件夹进行压缩操作，否则zip内容包括路径
-</span><span class='line'>cd ../build
-</span><span class='line'>zip $localApkZip $localApkZipSource
-</span><span class='line'>zip $localIpaZip $localIpaZipSource
-</span><span class='line'>
-</span><span class='line'>#上传到FTP服务器
-</span><span class='line'>echo 'ftp action'
-</span><span class='line'>HOST='192.168....'
-</span><span class='line'>USER='xxx'
-</span><span class='line'>PASSWD='xxx'
-</span><span class='line'>remoteIndex="/xxx/index.html"
-</span><span class='line'>ftp -n $HOST &lt;&lt;END_SCRIPT
-</span><span class='line'>quote USER $USER
-</span><span class='line'>quote PASS $PASSWD
-</span><span class='line'>binary
-</span><span class='line'>put $localIpaZip $remoteIpaName
-</span><span class='line'>put $localApkZip $remoteApkName
-</span><span class='line'>put $indexFileName $remoteIndex
-</span><span class='line'>quit
-</span><span class='line'>END_SCRIPT
-</span><span class='line'>exit 0
 </span></code></pre></td></tr></table></div></figure>
 
 ]]></content>
