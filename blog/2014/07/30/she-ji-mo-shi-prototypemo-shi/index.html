@@ -1,0 +1,409 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>设计模式: 原型（Prototype）模式 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="原型（Prototype）模式的用处是：对于给定的原型对象，用复制的方法创建出更多的同类型对象。之前学习的工厂方法模式常常需要有一个与产品等级相同的等级结构，而原型模式则不需要这样。Java语言天生就支持原型模式。原型模式的结构图如下： clone()方法 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">设计模式: 原型（Prototype）模式</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-30T20:58:15+08:00" pubdate data-updated="true">2014-07-30</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>原型（Prototype）模式的用处是：对于给定的原型对象，用复制的方法创建出更多的同类型对象。之前学习的工厂方法模式常常需要有一个与产品等级相同的等级结构，而原型模式则不需要这样。Java语言天生就支持原型模式。原型模式的结构图如下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-30_21.10.50.jpg" alt="image" /></p>
+
+<!--more-->
+
+
+<h2><code>clone()</code>方法</h2>
+
+<p>Java的Object类提供了<code>protected Object clone()</code>方法，用于复制对象。而<code>Cloneable</code>接口用于在运行期告诉JVM可以安全地使用<code>clone()</code>方法，否则JVM将会抛出<code>CloneNotSupportedException</code>异常。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//复制一个pandaA</span>
+</span><span class='line'><span class="n">pandaB</span> <span class="o">=</span> <span class="n">pandaA</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>一般而言，clone方法满足以下描述：</p>
+
+<ol>
+<li><code>x.clone() != x</code>，也就是说复制出来后，不是同一个对象。</li>
+<li>复制对象与被复制对象是同一种类型。</li>
+<li>在Java的API中，<code>x.clone().equals(x)</code>是成立的，因此建议要遵守这一条。</li>
+</ol>
+
+
+<h2>深复制和浅复制</h2>
+
+<ul>
+<li>浅复制：对象所有的变量与原来的对象值相同，所有对其它对象的引用仍然指向原来的对象。</li>
+<li>深复制：对象所有的变量与原来的对象值相同，所有对其它对象的引用也指向被复制的新对象。</li>
+</ul>
+
+
+<p><code>clone()</code>方法是浅复制，而深复制可以通过序列化实现。例如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DeepCloneDemo</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="n">DeepCloneDemo</span> <span class="nf">deepClone</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ClassNotFoundException</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">ByteArrayOutputStream</span> <span class="n">bo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">ObjectOutputStream</span> <span class="n">oo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectOutputStream</span><span class="o">(</span><span class="n">bo</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">oo</span><span class="o">.</span><span class="na">writeObject</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">ByteArrayInputStream</span> <span class="n">bi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">bo</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">());</span>
+</span><span class='line'>      <span class="n">ObjectInputStream</span> <span class="n">oi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectInputStream</span><span class="o">(</span><span class="n">bi</span><span class="o">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">return</span> <span class="o">(</span><span class="n">DeepCloneDemo</span><span class="o">)</span> <span class="n">oi</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">hashCode</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">//...</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">obj</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">//...</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//测试代码</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DeepCloneDemoTest</span> <span class="kd">extends</span> <span class="n">TestCase</span><span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testDeepClone</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">DeepCloneDemo</span> <span class="n">demo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DeepCloneDemo</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">demo</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">&quot;Demo&quot;</span><span class="o">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">DeepCloneDemo</span> <span class="n">demo2</span> <span class="o">=</span> <span class="n">demo</span><span class="o">.</span><span class="na">deepClone</span><span class="o">();</span>
+</span><span class='line'>          <span class="n">Assert</span><span class="o">.</span><span class="na">assertFalse</span><span class="o">(</span><span class="n">demo2</span> <span class="o">==</span> <span class="n">demo</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="n">demo</span><span class="o">,</span> <span class="n">demo2</span><span class="o">);</span>
+</span><span class='line'>          
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ClassNotFoundException</span> <span class="o">|</span> <span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>          <span class="n">Assert</span><span class="o">.</span><span class="na">assertFalse</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意要实现Serializable接口。如果不希望某个属性被序列化，可以使用<code>transient</code>关键字，例如：<code>private transient int age;</code>。</p>
+
+<h2>什么时候用原型模式</h2>
+
+<p>如果类是动态加载的，给每个类配备clone方法，就可以在运行时创建。</p>
+
+<p>原型模式的优点是：允许动态地增加或减少产品类；提供简化的创建结构，不需要工厂方法那样的等级结构；为软件提供动态加载新功能的能力；</p>
+
+<p>原型模式的缺点是：每个类都必须有clone方法，这对新类来说很容易，但已有的类就不一定，例如引用了不支持序列化的间接对象时，或者含有循环结构的时候。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-30T20:58:15+08:00" pubdate data-updated="true">2014-07-30</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/she-ji-mo-shi/'>设计模式</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/07/29/she-ji-mo-shi-buildermo-shi/" title="Previous Post: 设计模式:Builder模式">&laquo; 设计模式:Builder模式</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (8)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/">设计模式: 原型（Prototype）模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/29/she-ji-mo-shi-buildermo-shi/">设计模式:Builder模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong/">设计模式在序列生成器的应用</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/">设计模式:抽象工厂方法模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">设计模式:工厂方法模式</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fb4e47bf6950f9d2496daf84fe62cec59' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
