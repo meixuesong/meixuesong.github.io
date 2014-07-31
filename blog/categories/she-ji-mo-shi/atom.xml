@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 设计模式 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/she-ji-mo-shi/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-07-30T23:06:25+08:00</updated>
+  <updated>2014-07-31T22:30:20+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,67 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:组合（Composite）模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/"/>
+    <updated>2014-07-31T21:08:30+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi</id>
+    <content type="html"><![CDATA[<p>组合模式将对象以树状结构组织起来，达成“部分－整体”的层次结构，使得客户端对单个对象和组合对象的使用具有一致性。结构示意图：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-31_21.14.15.jpg" alt="image" /></p>
+
+<!--more-->
+
+
+<p>此模式涉及三个角色：</p>
+
+<ol>
+<li>Component角色：定义共有的接口及其默认行为。</li>
+<li>Leaf角色：叶节点，不能有下级子对象。</li>
+<li>Composite角色：树枝节点，可以有下级子对象的节点。</li>
+</ol>
+
+
+<p>组合模式根据实现方式的不同，分为安全方式和透明方式。区别主要在于接口的定义。Composite角色拥有add、remove、getChild等方法，这些方法对于Leaf角色完全没有用处。因此Component角色是否定义这些方法，就形成了两种实现方式。</p>
+
+<h3>透明方式</h3>
+
+<p>这种方式在Component中定义所有的方法，不管这些方法对于Leaf角色是否有用。这样做的好处是所有角色都有相同的接口，客户端可以统一的方式对待所有对象。缺点是不够安全，因为Leaf角色的add方法没有意义，可能在运行期出错。透明方式的组合模式结构图如下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-31_21.29.20.jpg" alt="image" /></p>
+
+<p>可以看出，这种方式的Leaf和Composite没有什么区别，都实现了Component的所有接口方法。但Leaf角色的add, remove等方法都是平庸实现。</p>
+
+<h3>安全方式</h3>
+
+<p>这种方式的Component只定义公共的接口，不包括Composite角色的add, remove等方法。结构如下图：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-31_22.11.35.jpg" alt="image" /></p>
+
+<p>不论采用哪种方式，其中composite属性都是指向父节点的引用。这样就可以很容易地遍历所有的父对象。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:缺省适配模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-que-sheng-gua-pei-mo-shi/"/>
+    <updated>2014-07-31T20:31:57+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-que-sheng-gua-pei-mo-shi</id>
+    <content type="html"><![CDATA[<p>缺省适配模式其实很简单，就是一个接口有很多方法，通过一个抽象类为这些方法提供默认实现，而具体的类继承这个抽象类，实现自己关心的方法即可。其结构如下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-31_20.37.12.jpg" alt="image" /></p>
+
+<p>什么情况下用缺省适配模式？如果不准备实现一个接口的所有方法时，可以通过一个抽象类，给出所有方法的实现。有用的方法要有实现，没用的方法也要有空的、平庸的实现。这样子类就不必实现所有方法了。对应适配器模式的三个角色：</p>
+
+<ul>
+<li>Adapter：子类</li>
+<li>Adaptee：抽象类</li>
+<li>Target：接口</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:适配器模式]]></title>
@@ -180,313 +241,6 @@ public class DeepCloneDemoTest extends TestCase{</p>
 <p><a href="/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">这篇博客</a>建议当构造器参数比较多时，考虑使用Builder模式。这是一种非常优雅的方式。</p>
 
 <p>我觉得Builder模式的好处一是使客户端的代码很清晰，不需要那么多的set方法；二是实现了产品构建的原子性，也就是可以在build时，确保产品构建是有效的，如果某些部分或者参数有问题、冲突，就能够在build时失败，避免残次的半成品出现。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式在序列生成器的应用]]></title>
-    <link href="http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong/"/>
-    <updated>2014-07-28T22:21:23+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong</id>
-    <content type="html"><![CDATA[<p>序列生成器是常见的一个应用组件。Oracle数据库有Sequence，但不是所有数据库都有序列。本文尝试将单例模式、多例模式应用于序列生成器。采用了以下方式实现：</p>
-
-<ol>
-<li>没有数据库的单例实现</li>
-<li>有数据库的单例实现</li>
-<li>有缓存的单例实现</li>
-<li>有缓存的多序列实现</li>
-<li>多序列的多例实现。</li>
-</ol>
-
-
-<!--more-->
-
-
-<h2>1. 没有数据库的单例实现</h2>
-
-<p>当没有数据库时，使用单例实现序列生成器非常简单，示例代码如下，注意<code>synchronized</code>关键字：</p>
-
-<p>```java
-/<em>*
- * 没有数据库的序列键生成器
- * @author mxs
- *
- </em>/
-public class KeyGenerator {</p>
-
-<pre><code>private long key = 0;
-private static KeyGenerator instance = new KeyGenerator();
-
-private KeyGenerator() {}
-
-public static KeyGenerator getInstance() {
-    return instance;
-}
-
-public synchronized long getNextKey() {
-    return key++;
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>单元测试代码：</p>
-
-<p>```java
-public class KeyGeneratorTest extends TestCase {</p>
-
-<pre><code>public void testKey() {
-    KeyGenerator keyGenerator = KeyGenerator.getInstance();
-
-    for(int i = 0; i &lt; 100; i++) {
-        Assert.assertEquals(i, keyGenerator.getNextKey());
-    }
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>这种实现没有持久化，一旦重启，序列又从0开始。因此我们需要一个有数据库持久化的方案。</p>
-
-<h2>2. 有数据库的单例实现</h2>
-
-<p>当有数据库时，每次获取序列都从数据库读取。</p>
-
-<p>```java
-/<em>*
- * 有数据库的序列键生成器
- * @author mxs
- *
- </em>/
-public class KeyGenerator {</p>
-
-<pre><code>private static KeyGenerator instance = new KeyGenerator();
-
-private KeyGenerator() {}
-
-public static KeyGenerator getInstance() {
-    return instance;
-}
-
-public synchronized long getNextKey() {
-    return getNextKeyFromDB();
-}
-
-private long getNextKeyFromDB() {
-    //update t_sequence set seq_value = seq_value + 1
-    //select seq_value from t_sequence
-    //返回结果
-    return 1000;
-}
-</code></pre>
-
-<p>}</p>
-
-<p>```</p>
-
-<h2>3. 有缓存的单例实现</h2>
-
-<p>第2种方法每次都要访问数据库，影响了性能，可以一次多取一些序列放到缓存中，只有缓存都取完时，才访问数据库。</p>
-
-<p>```java
-/<em>*
- * 有数据库、带缓存的序列键生成器
- * @author mxs
- *
- </em>/
-public class KeyGenerator {</p>
-
-<pre><code>private static KeyGenerator instance = new KeyGenerator();
-private static final int cacheSize = 20;
-private KeyInfo keyInfo;
-
-private KeyGenerator() {
-    keyInfo = new KeyInfo(cacheSize);
-}
-
-public static KeyGenerator getInstance() {
-    return instance;
-}
-
-public synchronized long getNextKey() {
-    return keyInfo.getNext();
-}
-</code></pre>
-
-<p>}</p>
-
-<p>public class KeyInfo {</p>
-
-<pre><code>private long max;
-private long min;
-private long nextKey;
-private int poolSize;
-
-public KeyInfo(int poolSize) {
-    this.poolSize = poolSize;
-    retrieveFromDB();
-}
-
-public long getNext() {
-    if (nextKey &gt;= max) {
-        retrieveFromDB();
-    }
-
-    return nextKey++;
-}
-
-private void retrieveFromDB() {
-    // update t_sequence set seq_value = seq_value + poolSize
-    // select seq_value from t_sequence
-    //以下为模拟数据库操作
-    long value = dbvalue[dbIndex ++];
-    min = value - poolSize;
-    max = value;
-    nextKey = min;
-}
-
-private int[] dbvalue = {20, 40, 60, 80, 100};
-private int dbIndex = 0;
-</code></pre>
-
-<p>}</p>
-
-<p>```</p>
-
-<h2>4. 有缓存的多序列实现</h2>
-
-<p>要实现多序列，只需要用HashMap改造第3种方法，保持KeyInfo不变，KeyGenerator修改为：</p>
-
-<p>```java
-/<em>*
- * 有数据库、带缓存的多序列键生成器
- * @author mxs
- *
- </em>/
-public class KeyGenerator {</p>
-
-<pre><code>private static KeyGenerator instance = new KeyGenerator();
-private static final int cacheSize = 20;
-
-private Map&lt;String, KeyInfo&gt; map;
-
-private KeyGenerator() {
-    map = new HashMap&lt;String, KeyInfo&gt;();
-}
-
-public static KeyGenerator getInstance() {
-    return instance;
-}
-
-public synchronized long getNextKey(String key) {
-    KeyInfo keyInfo;
-    if (map.containsKey(key)) {
-        keyInfo = map.get(key);
-    } else {
-        keyInfo = new KeyInfo(cacheSize);
-        map.put(key, keyInfo);
-    }
-
-    return keyInfo.getNext();
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h2>5. 多序列的多例实现</h2>
-
-<p>前面所有实现方案都是基于单例模式，其实还可以使用多例模式。多例模式允许一个类有多个实例，这些实例有自己的状态。保持KeyInfo不变，KeyGenerator修改为：</p>
-
-<p>```java
-/<em>*
- * 有数据库、带缓存的多序列键生成器，采用多例模式
- * @author mxs
- *
- </em>/
-public class KeyGenerator {</p>
-
-<pre><code>private static final int cacheSize = 20;
-private KeyInfo keyInfo;
-private static Map&lt;String, KeyGenerator&gt; instances = new HashMap&lt;String, KeyGenerator&gt;(10);
-
-private KeyGenerator() {
-    keyInfo = new KeyInfo(cacheSize);
-}
-
-public static synchronized KeyGenerator getInstance(String key) {
-    if (! instances.containsKey(key)) {
-        KeyGenerator generator = new KeyGenerator();
-        instances.put(key, generator);
-    }
-
-    return instances.get(key);
-}
-
-public synchronized long getNextKey() {
-    return keyInfo.getNext();
-}
-</code></pre>
-
-<p>}</p>
-
-<p>//测试代码：
-public class KeyGeneratorTest extends TestCase {</p>
-
-<pre><code>public void testKey() {
-    for(int j = 0; j &lt; 10; j ++) {
-        String key = "" + j;
-        KeyGenerator keyGenerator = KeyGenerator.getInstance(key);
-        for(int i = 0; i &lt; 90; i++) {
-            long ii = keyGenerator.getNextKey();
-            Assert.assertEquals(i, ii);
-        }
-    }       
-}
-</code></pre>
-
-<p>}</p>
-
-<p>```</p>
-
-<p>参考：
-Java与模式</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:抽象工厂方法模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/"/>
-    <updated>2014-07-28T19:45:29+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi</id>
-    <content type="html"><![CDATA[<p>简单工厂方法模式采用静态方法创建产品，工厂方式模式通过多层级的工厂方法创建一种产品等级结构。而抽象工厂方法模式则可以用于创建多个产品等级结构。因此，其类图示意如下：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-28_20.03.46.png" alt="image" /></p>
-
-<!--more-->
-
-
-<p>从上图可见，有两个产品等级：ProductA和ProductB。抽象工厂模式与工厂方法模式的最大区别就在于，工厂方法模式针对的是一个产品等级结构；而抽象工厂模式则需要面对多个产品等级结构。那么对于多个等级结构的产品，为什么要采用抽象工厂模式呢？</p>
-
-<p>如果采用工厂模式，就要N个独立的工厂等级结构来应对N个产品等级结构。由于这些产品等级结构的相似性，会导致N个平等的工厂等级结构。随着产品等级结构数目的增加，工厂方式模式所给出的工厂等级结构数目也会随之增加。</p>
-
-<p>所以，抽象工厂方法模式的好处是，同一个工厂等级结构应对N个这些相似的产品等级结构。例如上图中的ConcreteCreator1负责创建ProductA1和ProductB1。显然，这种方式更有效率。</p>
-
-<p>什么情况下应当使用抽象工厂模式？</p>
-
-<ol>
-<li>满足工厂模式的条件，即：一个系统不应当依赖于产品类实例如何被创建、组合和表达的细节时。</li>
-<li>多于一个的产品族，而系统只消费其中某一族的产品。如上图中有2个族（1，2），同时只消费其中一个族。</li>
-<li>同属于一个产品族的产品是一起使用的。</li>
-<li>系统提供一个产品类的库，所有的产品以同样的接口出现，从而使客户端不依赖于实现。</li>
-</ol>
-
-
-<p>举一个实际例子就很容易理解为什么需要，以及什么时候需要抽象工厂模式：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-28_21.41.37.png" alt="image" /></p>
 ]]></content>
   </entry>
   

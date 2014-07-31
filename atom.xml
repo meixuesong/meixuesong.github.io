@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-07-30T23:06:25+08:00</updated>
+  <updated>2014-07-31T22:30:20+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,67 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:组合（Composite）模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/"/>
+    <updated>2014-07-31T21:08:30+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi</id>
+    <content type="html"><![CDATA[<p>组合模式将对象以树状结构组织起来，达成“部分－整体”的层次结构，使得客户端对单个对象和组合对象的使用具有一致性。结构示意图：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-07-31_21.14.15.jpg" alt="image" /></p>
+
+<!--more-->
+
+
+<p>此模式涉及三个角色：</p>
+
+<ol>
+<li>Component角色：定义共有的接口及其默认行为。</li>
+<li>Leaf角色：叶节点，不能有下级子对象。</li>
+<li>Composite角色：树枝节点，可以有下级子对象的节点。</li>
+</ol>
+
+
+<p>组合模式根据实现方式的不同，分为安全方式和透明方式。区别主要在于接口的定义。Composite角色拥有add、remove、getChild等方法，这些方法对于Leaf角色完全没有用处。因此Component角色是否定义这些方法，就形成了两种实现方式。</p>
+
+<h3>透明方式</h3>
+
+<p>这种方式在Component中定义所有的方法，不管这些方法对于Leaf角色是否有用。这样做的好处是所有角色都有相同的接口，客户端可以统一的方式对待所有对象。缺点是不够安全，因为Leaf角色的add方法没有意义，可能在运行期出错。透明方式的组合模式结构图如下：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-07-31_21.29.20.jpg" alt="image" /></p>
+
+<p>可以看出，这种方式的Leaf和Composite没有什么区别，都实现了Component的所有接口方法。但Leaf角色的add, remove等方法都是平庸实现。</p>
+
+<h3>安全方式</h3>
+
+<p>这种方式的Component只定义公共的接口，不包括Composite角色的add, remove等方法。结构如下图：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-07-31_22.11.35.jpg" alt="image" /></p>
+
+<p>不论采用哪种方式，其中composite属性都是指向父节点的引用。这样就可以很容易地遍历所有的父对象。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:缺省适配模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-que-sheng-gua-pei-mo-shi/"/>
+    <updated>2014-07-31T20:31:57+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-que-sheng-gua-pei-mo-shi</id>
+    <content type="html"><![CDATA[<p>缺省适配模式其实很简单，就是一个接口有很多方法，通过一个抽象类为这些方法提供默认实现，而具体的类继承这个抽象类，实现自己关心的方法即可。其结构如下：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-07-31_20.37.12.jpg" alt="image" /></p>
+
+<p>什么情况下用缺省适配模式？如果不准备实现一个接口的所有方法时，可以通过一个抽象类，给出所有方法的实现。有用的方法要有实现，没用的方法也要有空的、平庸的实现。这样子类就不必实现所有方法了。对应适配器模式的三个角色：</p>
+
+<ul>
+<li>Adapter：子类</li>
+<li>Adaptee：抽象类</li>
+<li>Target：接口</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:适配器模式]]></title>
@@ -2503,453 +2564,6 @@ Java与模式</p>
 <p>注意SecureProxy类并不需要显式实现Accountable接口，因为在静态工厂方法中动态为其指定了将实现的接口。SecureProxy类必须实现InvocationHandler，该接口的一个重要方法就是invoke，客户端调用Accountable接口中的某个方法时，会触发代理的invoke方法，然后在其中调用真正的目标方法。通过isSecure方法来判断是否有权限调用某方法。</p>
 
 <p>总结一下，Account类是真正的业务实现类，SecureProxy作为代理，在Account的基础上增加了安全功能。关键方法包括Proxy.newProxyInstance和InvocationHandler接口。虽然示例太过简单无法用于实际业务，但它演示了<strong>两个重要原则：单一职责和开闭原则！</strong></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Effective Java-创建和销毁对象]]></title>
-    <link href="http://blog.ubone.com/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/"/>
-    <updated>2014-06-27T09:20:04+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang</id>
-    <content type="html"><![CDATA[<p>《Effective Java》是Java语言的经典著作，本文总结书中“创建和销毁对象”的论述。主要包括：</p>
-
-<ol>
-<li>用静态工厂方法代替构造器</li>
-<li>构造器参数比较多时，考虑使用Builder</li>
-<li>用私有构造方法或枚举强化单例属性</li>
-<li>通过private构造器强化不可实例化的能力</li>
-<li>避免创建不必要的对象</li>
-<li>消除过期的对象引用</li>
-<li>避免使用finalize方法</li>
-</ol>
-
-
-<!--more-->
-
-
-<h2>1.用静态工厂方法代替构造器</h2>
-
-<p>用静态工厂方法代替构造器有以下几个好处：</p>
-
-<ol>
-<li>静态工厂方法有名称，而构造器只能通过参数区分；</li>
-<li>静态工厂方法不必每次都创建一个新对象；</li>
-<li>静态工厂方法可以返回该类的任何子类；</li>
-<li>在创建参数化实例时，静态方法工厂使代码更加简单。</li>
-</ol>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//使用构造方法时：</span>
-</span><span class='line'><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;</span> <span class="n">m</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;();</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//假设有静态方法后：</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">K</span><span class="o">,</span> <span class="n">V</span><span class="o">&gt;</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span> <span class="n">V</span><span class="o">&gt;</span> <span class="n">newInstance</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span> <span class="n">V</span><span class="o">&gt;();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//只需要：</span>
-</span><span class='line'><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;</span> <span class="n">m</span> <span class="o">=</span> <span class="n">HashMap</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>实际上，Java 7和8在泛型类型推断上已经有了一些改进，可以让代码写得更简单些。因此上述第4条优势已经不明显。</p>
-
-<p>静态工厂方法的缺点：</p>
-
-<ol>
-<li>类如果没有public或protected构造方法，就无法被子类化。</li>
-<li>与其它静态方法没什么区别，无法明确标识出来。全靠命名惯例，常用的静态方法名包括：valueOf, of, getInstance, newInstance, getType, newType。</li>
-</ol>
-
-
-<h2>2.构造器参数比较多时，考虑使用Builder</h2>
-
-<p>构造器和静态方法的缺点是参数比较多时不方便，使用setter方法时，可能造成不一致，而且也无法把类做成不可变，影响线程安全。</p>
-
-<p>使用Builder模式就可以很好地解决这个问题。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BuilderDemoClass</span> <span class="o">{</span>
-</span><span class='line'>    <span class="c1">//1个必须属性，2个可选属性。</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">a_required</span><span class="o">;</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">b</span><span class="o">;</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">c</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Builder</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kd">private</span> <span class="kt">int</span> <span class="n">a_required</span><span class="o">;</span>
-</span><span class='line'>        <span class="kd">private</span> <span class="kt">int</span> <span class="n">b</span><span class="o">;</span>
-</span><span class='line'>        <span class="kd">private</span> <span class="kt">int</span> <span class="n">c</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kd">public</span> <span class="nf">Builder</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">this</span><span class="o">.</span><span class="na">a_required</span> <span class="o">=</span> <span class="n">a</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kd">public</span> <span class="n">Builder</span> <span class="nf">bb</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">this</span><span class="o">.</span><span class="na">b</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kd">public</span> <span class="n">Builder</span> <span class="nf">cc</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">this</span><span class="o">.</span><span class="na">c</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kd">public</span> <span class="n">BuilderDemoClass</span> <span class="nf">build</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">return</span> <span class="k">new</span> <span class="nf">BuilderDemoClass</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="nf">BuilderDemoClass</span><span class="o">(</span><span class="n">Builder</span> <span class="n">builder</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">a_required</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="na">a_required</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">b</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="na">b</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">c</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="na">c</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getA_required</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">a_required</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getB</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">b</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getC</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">c</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>测试代码：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BuilderDemoClassTest</span> <span class="kd">extends</span> <span class="n">TestCase</span><span class="o">{</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testBuilder</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">BuilderDemoClass</span> <span class="n">c</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BuilderDemoClass</span><span class="o">.</span><span class="na">Builder</span><span class="o">(</span><span class="mi">10</span><span class="o">).</span><span class="na">bb</span><span class="o">(</span><span class="mi">20</span><span class="o">).</span><span class="na">cc</span><span class="o">(</span><span class="mi">30</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getA_required</span><span class="o">(),</span> <span class="mi">10</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getB</span><span class="o">(),</span> <span class="mi">20</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getC</span><span class="o">(),</span> <span class="mi">30</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>3.用私有构造方法或枚举强化单例属性</h2>
-
-<p>这一条说的是实现单例的几种方法，推荐使用枚举类型。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">enum</span> <span class="n">MySingleton</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">INSTANCE</span><span class="o">;</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doSomething</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="o">...</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//调用：</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">MySingleton</span><span class="o">.</span><span class="na">INSTANCE</span><span class="o">.</span><span class="na">doSomething</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>之前有过详细总结：<a href="http://blog.ubone.com/blog/2014/06/25/just-a-test/">单例与枚举</a></p>
-
-<h2>4.通过private构造器强化不可实例化的能力</h2>
-
-<p>对于一些工具类，主要包括静态方法，可以将构造器private，避免其被实例化。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UtilityClass</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">//强调不能被实例化</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="nf">UtilityClass</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">throw</span> <span class="k">new</span> <span class="nf">AssertionError</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">someStaticMethod</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="o">...</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>5.避免创建不必要的对象</h2>
-
-<ul>
-<li>最好是重用对象，而不是每次创建一个相同功能的对象。</li>
-<li>对于同时提供了静态工厂和构造器的不可变类，通常使用静态工厂，例如Boolean.valueOf(String) 优先于Boolean(String)。</li>
-<li>对于某些已知不会被修改的可变对象，如果频繁用到，可以先缓存起来。</li>
-<li>优先使用基本类型而不是装箱基本类型，当心无意识的自动装箱。例如：</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testAutoBoxing</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">Long</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0L</span><span class="o">;</span>
-</span><span class='line'>    <span class="k">for</span><span class="o">(</span><span class="kt">long</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">Integer</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">;</span> <span class="n">i</span> <span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">sum</span> <span class="o">+=</span> <span class="n">i</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">sum</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的代码每次增加sum时，都构造了一个实例。把Long sum改成long sum后，我的Thinkpad X230运行时间从15秒减少到了3.3秒。</p>
-
-<h2>6.消除过期的对象引用</h2>
-
-<p>虽然Java有自动垃圾回收功能，但仍有许多要注意的事项。如果一个对象的引用被无意识地保留下来，则对象不会被回收，因此可能导致一连串的对象无法回收。</p>
-
-<ul>
-<li>只要类是自己管理内存，就要警惕内存泄漏问题。</li>
-<li>缓存是内存泄漏的常见来源。</li>
-<li>监听器和回调要注意显式取消注册。</li>
-</ul>
-
-
-<h2>7.避免使用finalize方法</h2>
-
-<p>finalize方法通常是不可预期的、危险的，并且常常是没必要的。</p>
-
-<ul>
-<li>无法保证该方法被执行，以及何时执行。因此时间敏感的工作绝不能放到该方法中。</li>
-<li>由于每种JVM的垃圾回收算法不同，因此该方法在一种JVM上运行良好，并不代表在其它JVM上也能正常工作。</li>
-<li>该方法的线程优先级比较低，因此无法保证它会运行。</li>
-<li>绝不要依赖该方法去更新关键持久化状态。例如去释放一个锁。</li>
-<li>System.gc和System.runFinalization两个方法并不能保证finalize方法一定会被执行。所以不要被它们迷惑。</li>
-<li>唯一能确保该方法被执行的是System.runFi- nalizersOnExit和Runtime.runFinalizersOnExit。但它们是臭名昭著的方法，本身有严重问题，尽量不要使用。</li>
-<li>使用该方法有严重的性能问题。</li>
-<li>。。。</li>
-</ul>
-
-
-<p><strong>有一万个理由不要使用finalize方法。因此你就别用它了！</strong></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java随机存取文件]]></title>
-    <link href="http://blog.ubone.com/blog/2014/06/26/javasui-ji-cun-qu-wen-jian/"/>
-    <updated>2014-06-26T21:56:12+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/06/26/javasui-ji-cun-qu-wen-jian</id>
-    <content type="html"><![CDATA[<p>RandomAccessFile提供了随机存取文件的支持，但是如何将对象持久化到文件中，并随机存取呢？</p>
-
-<!--more-->
-
-
-<h3>1.简介</h3>
-
-<p>使用RandomAccessFile随机存取文件。它提供了4种模式：</p>
-
-<ul>
-<li>r 只读；</li>
-<li>rw 读写，如果不存在将创建新文件；</li>
-<li>rws 同步更新，确保文件内容和元数据（如最近修改时间）持久化；</li>
-<li>rwd 同步更新，确保文件内容持久化。</li>
-</ul>
-
-
-<p>常用方法：</p>
-
-<ul>
-<li>seek快速移动文件指针；</li>
-<li>getFilePointer返回当前指针位置；</li>
-<li>length文件总字节数；</li>
-<li>一堆read和write方法。</li>
-</ul>
-
-
-<h3>2.写入对象</h3>
-
-<p>RandomAccessFile并不支持保存对象，需要将它们转换成字节数组。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">getBytes</span><span class="o">(</span><span class="n">Object</span> <span class="n">object</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">ByteArrayOutputStream</span> <span class="n">byteStream</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
-</span><span class='line'>    <span class="c1">//写入ObjectOutputStream的对象，被管接到ByteArrayOutputStream</span>
-</span><span class='line'>    <span class="n">ObjectOutputStream</span> <span class="n">outputStream</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectOutputStream</span><span class="o">(</span><span class="n">byteStream</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">outputStream</span><span class="o">.</span><span class="na">writeObject</span><span class="o">(</span><span class="n">object</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">outputStream</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="n">byteStream</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>写入代码：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">RandomAccessFile</span> <span class="n">db</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RandomAccessFile</span><span class="o">(</span><span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="n">fileName</span><span class="o">),</span> <span class="s">&quot;rw&quot;</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//在文件最后写入对象</span>
-</span><span class='line'><span class="n">db</span><span class="o">.</span><span class="na">seek</span><span class="o">(</span><span class="n">db</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
-</span><span class='line'><span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="n">getBytes</span><span class="o">(</span><span class="n">someObject</span><span class="o">);</span>
-</span><span class='line'><span class="n">db</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">bytes</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">bytes</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">db</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>3.读取对象</h3>
-
-<p>读取对象与写入对象正好相反。以适当的长度创建字节数组，然后调用readFully从RandomAccessFile读取并填充，再包装到ObjectInputStream。</p>
-
-<p>下面的示例代码读取指定长度（通常需要记录对象的长度，此处略去）的字节并转换成对象：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'>    <span class="kd">private</span> <span class="n">Object</span> <span class="nf">read</span><span class="o">(</span><span class="n">RandomAccessFile</span> <span class="n">db</span><span class="o">,</span> <span class="kt">int</span> <span class="n">length</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">length</span><span class="o">];</span>
-</span><span class='line'>        <span class="n">db</span><span class="o">.</span><span class="na">readFully</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">return</span> <span class="nf">readObject</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Object</span> <span class="nf">readObject</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">ObjectInputStream</span> <span class="n">input</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectInputStream</span><span class="o">(</span><span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">bytes</span><span class="o">));</span>
-</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>                <span class="k">return</span> <span class="n">input</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
-</span><span class='line'>            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ClassNotFoundException</span> <span class="n">unlikely</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>                <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>            <span class="o">}</span>
-</span><span class='line'>        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">input</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><a href="http://docs.oracle.com/javase/7/docs/api/java/io/RandomAccessFile.html">参考Java Doc</a></p>
 ]]></content>
   </entry>
   
