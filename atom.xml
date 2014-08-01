@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-07-31T22:30:20+08:00</updated>
+  <updated>2014-08-01T23:26:06+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,79 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:装饰模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/"/>
+    <updated>2014-08-01T20:00:16+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi</id>
+    <content type="html"><![CDATA[<p>装饰模式以对客户端透明的方式扩展对象的功能。客户端并不会觉得对象在装饰前和装饰后有什么不同。装饰模式可以在不使用创造更多子类的情况下，将对象的功能加以扩展。其类图所下：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-08-01_20.13.33.jpg" alt="image" /></p>
+
+<!--more-->
+
+
+<p>图中4个角色说明如下：</p>
+
+<ol>
+<li>Component角色，一个抽象接口，被装饰对象和装饰对象都遵循的接口。在实际中可以是接口、抽象或具体类。</li>
+<li>Concrete Component角色，被装饰的具体对象。</li>
+<li>Decorator角色，持有Component对象的实例，可以是抽象类。</li>
+<li>ConcreteDecorator角色，负责给构件对象贴上附加的责任。</li>
+</ol>
+
+
+<h3>什么情况下使用装饰模式？</h3>
+
+<ol>
+<li>需要扩展一个类的功能，或给一个类增加附加责任。</li>
+<li>需要动态给一个对象增加功能，这些功能可以再动态地撤销。</li>
+<li>需要增加由一些基本功能的排列组合而产生的非常大量的功能，而继承关系就变得不现实。</li>
+</ol>
+
+
+<h3>装饰模式的优缺点</h3>
+
+<p>装饰模式的优点包括：</p>
+
+<ol>
+<li>可以动态地贴上一个需要的装饰，或者除掉一个不需要的装饰。</li>
+<li>通过使用不同的具体装饰类，以及这些装饰类的排列组合，可以创造出很多不同行为的组合。</li>
+</ol>
+
+
+<p>装饰模式的缺点是比继承要使用更多的对象，更多的对象会使得查错变得困难。</p>
+
+<h3>装饰模式的简化</h3>
+
+<p>不论如何简化，必须保证：</p>
+
+<ol>
+<li>ConcreteDecorator类必须继承自一个共同的父类Component。</li>
+<li>尽量保持Component作为一个“轻”类。</li>
+</ol>
+
+
+<p>常见的简化包括：</p>
+
+<ol>
+<li>没有Component，只有ConcreteComponent，此时，Decorator可以是ConcreteComponent的子类，ConcreteComponent扮演双重角色。</li>
+<li>没有Decorator，只有ConcreteDecorator，但如果有两个以上的。</li>
+</ol>
+
+
+<h3>其它</h3>
+
+<p>纯粹的装饰模式对客户端的要求是不要声明ConcreteDecorator类型的变量，而应当声明Component类型的变量。这也就是针对抽象编程。因此，ConcreteDecorator不能有Component接口之外的方法。但现实中的装饰模式允许改变接口，增加新方法，即客户端可以声明ConcreteDecorator类型的变量。这就有点像是适配器模式。</p>
+
+<p>装饰模式与适配器模式其实是不一样的。适配器模式的目的是改变接口，常常改写或者增加新的方法来适配接口。而装饰模式是保持接口不变，增强或增加功能。它们的类图是不一样的。</p>
+
+<p>以Java的IO库为例，Reader类型的对象读入字符(Character)流，而InputStreamReader是一种Reader类型，把InputStream类型对象包装起来，从而把byte的API转换成字符流的API。这就是适配器模式的例子。即InputStreamReader把InputStream的API适配成Reader的API。</p>
+
+<p>而BufferredReader则是一个装饰类，因为它实现Reader，并且包装一个Reader，接口未变，但提供更优的性能。但它不是一个100％的装饰类，因为它提供了一个readLine()的新方法。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:组合（Composite）模式]]></title>
@@ -2369,201 +2442,6 @@ Java与模式</p>
 <p>采用界面原型＋系统用例来描述需求，能够以最少的文档描述明确的需求，帮助产品经理描述清晰、完整的需求；帮助开发人员理解业务需求，快速投入设计和开发工作；为测试人员提供测试用例设计和执行的依据。</p>
 
 <p>关于需求和文档，从来没有标准答案。只有不断实践才能找到最适合的方法！</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[利用反射和代理创建简单的安全账号]]></title>
-    <link href="http://blog.ubone.com/blog/2014/06/28/li-yong-fan-zhang-hao/"/>
-    <updated>2014-06-28T11:42:34+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/06/28/li-yong-fan-zhang-hao</id>
-    <content type="html"><![CDATA[<p>在实际业务中，总是会遇到权限管理和安全方面的需求。以一个帐户类（Account）为例，它实现了帐户的基本信息和余额管理。新的需求是余额修改相关的方法只能由授权用户调用。那么是不是直接修改Account类，在相关方法中加入权限验证代码呢？这样势必会让原来的代码变得混乱，破坏单一职责原则。应该怎么办呢？</p>
-
-<!--more-->
-
-
-<p>开闭原则告诉我们对扩展开放、对修改关闭。我们可以通过代理类实现这个业务需求。这是一个简单的示例，用于演示反射和代理的使用，并不能直接用于生产环境，仅仅提供一种思路供参考。</p>
-
-<p>首先看看这个示例的整体结构图：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/IMG_blog_20140628.jpg" alt="image" /></p>
-
-<p>Accountable接口:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Accountable</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">BigDecimal</span> <span class="nf">getBalance</span><span class="o">()</span> <span class="o">;</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getBankAba</span><span class="o">()</span> <span class="o">;</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setBankAba</span><span class="o">(</span><span class="n">String</span> <span class="n">bankAba</span><span class="o">)</span> <span class="o">;</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getBankAccountNumber</span><span class="o">()</span> <span class="o">;</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setBankAccountNumber</span><span class="o">(</span><span class="n">String</span> <span class="n">bankAccountNumber</span><span class="o">)</span> <span class="o">;</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">BankAccountType</span> <span class="nf">getBankAccountType</span><span class="o">()</span> <span class="o">;</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setBankAccountType</span><span class="o">(</span><span class="n">BankAccountType</span> <span class="n">bankAccountType</span><span class="o">)</span> <span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">credit</span><span class="o">(</span><span class="n">BigDecimal</span> <span class="n">amount</span><span class="o">);</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">transferFromBank</span><span class="o">(</span><span class="n">BigDecimal</span> <span class="n">amount</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>静态工厂方法封装具体的接口实现，客户端并不关心实现类是Account还是SecureProxy类。代码如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AccountFactory</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="nf">AccountFactory</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">AssertionError</span><span class="o">(</span><span class="s">&quot;作为静态工厂，不允许实例化！&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Accountable</span> <span class="nf">create</span><span class="o">(</span><span class="n">Permission</span> <span class="n">permission</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="c1">//如果有修改权限则返回Account，否则返回有权限限制的代理。</span>
-</span><span class='line'>        <span class="k">switch</span> <span class="o">(</span><span class="n">permission</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">case</span> <span class="nl">UPDATE:</span>
-</span><span class='line'>                <span class="k">return</span> <span class="k">new</span> <span class="nf">Account</span><span class="o">();</span>
-</span><span class='line'>            <span class="k">case</span> <span class="nl">READ_ONLY:</span>
-</span><span class='line'>                <span class="k">return</span> <span class="nf">createSecuredAccount</span><span class="o">();</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Accountable</span> <span class="nf">createSecuredAccount</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">SecureProxy</span> <span class="n">secureAccount</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SecureProxy</span><span class="o">(</span><span class="k">new</span> <span class="n">Account</span><span class="o">(),</span>
-</span><span class='line'>                <span class="c1">//传入不允许调用的方法名</span>
-</span><span class='line'>                <span class="s">&quot;credit&quot;</span><span class="o">,</span>
-</span><span class='line'>                <span class="s">&quot;setBankAba&quot;</span><span class="o">,</span>
-</span><span class='line'>                <span class="s">&quot;setBankAccountNumber&quot;</span><span class="o">,</span>
-</span><span class='line'>                <span class="s">&quot;setBankAccountType&quot;</span><span class="o">,</span>
-</span><span class='line'>                <span class="s">&quot;transferFromBank&quot;</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">//这句是关键</span>
-</span><span class='line'>        <span class="k">return</span> <span class="o">(</span><span class="n">Accountable</span><span class="o">)</span> <span class="n">Proxy</span><span class="o">.</span><span class="na">newProxyInstance</span><span class="o">(</span>
-</span><span class='line'>                <span class="n">Accountable</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getClassLoader</span><span class="o">(),</span>
-</span><span class='line'>                <span class="k">new</span> <span class="n">Class</span><span class="o">[]</span> <span class="o">{</span><span class="n">Accountable</span><span class="o">.</span><span class="na">class</span><span class="o">},</span>
-</span><span class='line'>                <span class="n">secureAccount</span>
-</span><span class='line'>        <span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>最后的return语句是动态建立代理的关键，第一个参数是接口的类加载器；第二个参数是接口类型的数组（这就是创建数组的语法），表示你希望代理类实现哪些接口；第三个是具体的代理对象。详细请参考<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/reflect/Proxy.html">JavaDoc</a>。</p>
-
-<p>SecureProxy的实现：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SecureProxy</span> <span class="kd">implements</span> <span class="n">InvocationHandler</span> <span class="o">{</span>
-</span><span class='line'>    <span class="c1">//需要授权的方法</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">secureMethods</span><span class="o">;</span>
-</span><span class='line'>    <span class="c1">//被代理对象</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Object</span> <span class="n">target</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">SecureProxy</span><span class="o">(</span><span class="n">Object</span> <span class="n">target</span><span class="o">,</span> <span class="n">String</span><span class="o">...</span> <span class="n">secureMethods</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">secureMethods</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">secureMethods</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Override</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">invoke</span><span class="o">(</span><span class="n">Object</span> <span class="n">proxy</span><span class="o">,</span> <span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Throwable</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>              <span class="c1">//权限验证</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">isSecure</span><span class="o">(</span><span class="n">method</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>                <span class="k">throw</span> <span class="k">new</span> <span class="nf">PermissionException</span><span class="o">();</span>
-</span><span class='line'>            <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1">//调用真正的方法</span>
-</span><span class='line'>            <span class="k">return</span> <span class="n">method</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="n">target</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InvocationTargetException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="c1">//如果调用真正的方法时有异常，getTargetException就是真正的异常原因。</span>
-</span><span class='line'>            <span class="k">throw</span> <span class="n">e</span><span class="o">.</span><span class="na">getTargetException</span><span class="o">();</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">isSecure</span><span class="o">(</span><span class="n">Method</span> <span class="n">method</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">secureMethods</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意SecureProxy类并不需要显式实现Accountable接口，因为在静态工厂方法中动态为其指定了将实现的接口。SecureProxy类必须实现InvocationHandler，该接口的一个重要方法就是invoke，客户端调用Accountable接口中的某个方法时，会触发代理的invoke方法，然后在其中调用真正的目标方法。通过isSecure方法来判断是否有权限调用某方法。</p>
-
-<p>总结一下，Account类是真正的业务实现类，SecureProxy作为代理，在Account的基础上增加了安全功能。关键方法包括Proxy.newProxyInstance和InvocationHandler接口。虽然示例太过简单无法用于实际业务，但它演示了<strong>两个重要原则：单一职责和开闭原则！</strong></p>
 ]]></content>
   </entry>
   

@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>设计模式:抽象工厂方法模式 - 码出人生</title>
+  <title>设计模式:装饰模式 - 码出人生</title>
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="简单工厂方法模式采用静态方法创建产品，工厂方式模式通过多层级的工厂方法创建一种产品等级结构。而抽象工厂方法模式则可以用于创建多个产品等级结构。因此，其类图示意如下： 从上图可见，有两个产品等级：ProductA和ProductB。抽象工厂模式与工厂方法模式的最大区别就在于， &hellip;">
+  <meta name="description" content="装饰模式以对客户端透明的方式扩展对象的功能。客户端并不会觉得对象在装饰前和装饰后有什么不同。装饰模式可以在不使用创造更多子类的情况下，将对象的功能加以扩展。其类图所下： 图中4个角色说明如下： Component角色，一个抽象接口，被装饰对象和装饰对象都遵循的接口。在实际中可以是接口、抽象或具体类 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi">
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
@@ -67,7 +67,7 @@
   
   <header>
     
-      <h1 class="entry-title">设计模式:抽象工厂方法模式</h1>
+      <h1 class="entry-title">设计模式:装饰模式</h1>
     
     
       <p class="meta">
@@ -83,7 +83,7 @@
   
 
 
-<time datetime="2014-07-28T19:45:29+08:00" pubdate data-updated="true">2014-07-28</time>
+<time datetime="2014-08-01T20:00:16+08:00" pubdate data-updated="true">2014-08-01</time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://blog.ubone.com">Comments</a>
@@ -93,32 +93,71 @@
   </header>
 
 
-<div class="entry-content"><p>简单工厂方法模式采用静态方法创建产品，工厂方式模式通过多层级的工厂方法创建一种产品等级结构。而抽象工厂方法模式则可以用于创建多个产品等级结构。因此，其类图示意如下：</p>
+<div class="entry-content"><p>装饰模式以对客户端透明的方式扩展对象的功能。客户端并不会觉得对象在装饰前和装饰后有什么不同。装饰模式可以在不使用创造更多子类的情况下，将对象的功能加以扩展。其类图所下：</p>
 
-<p><img src="/myresource/images/image_blog_2014-07-28_20.03.46.png" alt="image" /></p>
+<p><img src="/myresource/images/image_blog_2014-08-01_20.13.33.jpg" alt="image" /></p>
 
 <!--more-->
 
 
-<p>从上图可见，有两个产品等级：ProductA和ProductB。抽象工厂模式与工厂方法模式的最大区别就在于，工厂方法模式针对的是一个产品等级结构；而抽象工厂模式则需要面对多个产品等级结构。那么对于多个等级结构的产品，为什么要采用抽象工厂模式呢？</p>
-
-<p>如果采用工厂模式，就要N个独立的工厂等级结构来应对N个产品等级结构。由于这些产品等级结构的相似性，会导致N个平等的工厂等级结构。随着产品等级结构数目的增加，工厂方式模式所给出的工厂等级结构数目也会随之增加。</p>
-
-<p>所以，抽象工厂方法模式的好处是，同一个工厂等级结构应对N个这些相似的产品等级结构。例如上图中的ConcreteCreator1负责创建ProductA1和ProductB1。显然，这种方式更有效率。</p>
-
-<p>什么情况下应当使用抽象工厂模式？</p>
+<p>图中4个角色说明如下：</p>
 
 <ol>
-<li>满足工厂模式的条件，即：一个系统不应当依赖于产品类实例如何被创建、组合和表达的细节时。</li>
-<li>多于一个的产品族，而系统只消费其中某一族的产品。如上图中有2个族（1，2），同时只消费其中一个族。</li>
-<li>同属于一个产品族的产品是一起使用的。</li>
-<li>系统提供一个产品类的库，所有的产品以同样的接口出现，从而使客户端不依赖于实现。</li>
+<li>Component角色，一个抽象接口，被装饰对象和装饰对象都遵循的接口。在实际中可以是接口、抽象或具体类。</li>
+<li>Concrete Component角色，被装饰的具体对象。</li>
+<li>Decorator角色，持有Component对象的实例，可以是抽象类。</li>
+<li>ConcreteDecorator角色，负责给构件对象贴上附加的责任。</li>
 </ol>
 
 
-<p>举一个实际例子就很容易理解为什么需要，以及什么时候需要抽象工厂模式：</p>
+<h3>什么情况下使用装饰模式？</h3>
 
-<p><img src="/myresource/images/image_blog_2014-07-28_21.41.37.png" alt="image" /></p>
+<ol>
+<li>需要扩展一个类的功能，或给一个类增加附加责任。</li>
+<li>需要动态给一个对象增加功能，这些功能可以再动态地撤销。</li>
+<li>需要增加由一些基本功能的排列组合而产生的非常大量的功能，而继承关系就变得不现实。</li>
+</ol>
+
+
+<h3>装饰模式的优缺点</h3>
+
+<p>装饰模式的优点包括：</p>
+
+<ol>
+<li>可以动态地贴上一个需要的装饰，或者除掉一个不需要的装饰。</li>
+<li>通过使用不同的具体装饰类，以及这些装饰类的排列组合，可以创造出很多不同行为的组合。</li>
+</ol>
+
+
+<p>装饰模式的缺点是比继承要使用更多的对象，更多的对象会使得查错变得困难。</p>
+
+<h3>装饰模式的简化</h3>
+
+<p>不论如何简化，必须保证：</p>
+
+<ol>
+<li>ConcreteDecorator类必须继承自一个共同的父类Component。</li>
+<li>尽量保持Component作为一个“轻”类。</li>
+</ol>
+
+
+<p>常见的简化包括：</p>
+
+<ol>
+<li>没有Component，只有ConcreteComponent，此时，Decorator可以是ConcreteComponent的子类，ConcreteComponent扮演双重角色。</li>
+<li>没有Decorator，只有ConcreteDecorator，但如果有两个以上的。</li>
+</ol>
+
+
+<h3>其它</h3>
+
+<p>纯粹的装饰模式对客户端的要求是不要声明ConcreteDecorator类型的变量，而应当声明Component类型的变量。这也就是针对抽象编程。因此，ConcreteDecorator不能有Component接口之外的方法。但现实中的装饰模式允许改变接口，增加新方法，即客户端可以声明ConcreteDecorator类型的变量。这就有点像是适配器模式。</p>
+
+<p>装饰模式与适配器模式其实是不一样的。适配器模式的目的是改变接口，常常改写或者增加新的方法来适配接口。而装饰模式是保持接口不变，增强或增加功能。它们的类图是不一样的。</p>
+
+<p>以Java的IO库为例，Reader类型的对象读入字符(Character)流，而InputStreamReader是一种Reader类型，把InputStream类型对象包装起来，从而把byte的API转换成字符流的API。这就是适配器模式的例子。即InputStreamReader把InputStream的API适配成Reader的API。</p>
+
+<p>而BufferredReader则是一个装饰类，因为它实现Reader，并且包装一个Reader，接口未变，但提供更优的性能。但它不是一个100％的装饰类，因为它提供了一个readLine()的新方法。</p>
 </div>
 
 
@@ -141,7 +180,7 @@
   
 
 
-<time datetime="2014-07-28T19:45:29+08:00" pubdate data-updated="true">2014-07-28</time>
+<time datetime="2014-08-01T20:00:16+08:00" pubdate data-updated="true">2014-08-01</time>
       
 
 <span class="categories">
@@ -177,10 +216,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/" title="Previous Post: 设计模式:工厂方法模式">&laquo; 设计模式:工厂方法模式</a>
+        <a class="basic-alignment left" href="/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/" title="Previous Post: 设计模式:组合（Composite）模式">&laquo; 设计模式:组合（Composite）模式</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong/" title="Next Post: 设计模式在序列生成器的应用">设计模式在序列生成器的应用 &raquo;</a>
       
     </p>
   </footer>
@@ -261,8 +298,8 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/';
-        var disqus_url = 'http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/';
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/';
         var disqus_script = 'embed.js';
       
     (function () {

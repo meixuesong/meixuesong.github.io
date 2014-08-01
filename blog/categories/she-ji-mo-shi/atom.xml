@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 设计模式 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/she-ji-mo-shi/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-07-31T22:30:20+08:00</updated>
+  <updated>2014-08-01T23:26:06+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,79 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:装饰模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/"/>
+    <updated>2014-08-01T20:00:16+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi</id>
+    <content type="html"><![CDATA[<p>装饰模式以对客户端透明的方式扩展对象的功能。客户端并不会觉得对象在装饰前和装饰后有什么不同。装饰模式可以在不使用创造更多子类的情况下，将对象的功能加以扩展。其类图所下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-08-01_20.13.33.jpg" alt="image" /></p>
+
+<!--more-->
+
+
+<p>图中4个角色说明如下：</p>
+
+<ol>
+<li>Component角色，一个抽象接口，被装饰对象和装饰对象都遵循的接口。在实际中可以是接口、抽象或具体类。</li>
+<li>Concrete Component角色，被装饰的具体对象。</li>
+<li>Decorator角色，持有Component对象的实例，可以是抽象类。</li>
+<li>ConcreteDecorator角色，负责给构件对象贴上附加的责任。</li>
+</ol>
+
+
+<h3>什么情况下使用装饰模式？</h3>
+
+<ol>
+<li>需要扩展一个类的功能，或给一个类增加附加责任。</li>
+<li>需要动态给一个对象增加功能，这些功能可以再动态地撤销。</li>
+<li>需要增加由一些基本功能的排列组合而产生的非常大量的功能，而继承关系就变得不现实。</li>
+</ol>
+
+
+<h3>装饰模式的优缺点</h3>
+
+<p>装饰模式的优点包括：</p>
+
+<ol>
+<li>可以动态地贴上一个需要的装饰，或者除掉一个不需要的装饰。</li>
+<li>通过使用不同的具体装饰类，以及这些装饰类的排列组合，可以创造出很多不同行为的组合。</li>
+</ol>
+
+
+<p>装饰模式的缺点是比继承要使用更多的对象，更多的对象会使得查错变得困难。</p>
+
+<h3>装饰模式的简化</h3>
+
+<p>不论如何简化，必须保证：</p>
+
+<ol>
+<li>ConcreteDecorator类必须继承自一个共同的父类Component。</li>
+<li>尽量保持Component作为一个“轻”类。</li>
+</ol>
+
+
+<p>常见的简化包括：</p>
+
+<ol>
+<li>没有Component，只有ConcreteComponent，此时，Decorator可以是ConcreteComponent的子类，ConcreteComponent扮演双重角色。</li>
+<li>没有Decorator，只有ConcreteDecorator，但如果有两个以上的。</li>
+</ol>
+
+
+<h3>其它</h3>
+
+<p>纯粹的装饰模式对客户端的要求是不要声明ConcreteDecorator类型的变量，而应当声明Component类型的变量。这也就是针对抽象编程。因此，ConcreteDecorator不能有Component接口之外的方法。但现实中的装饰模式允许改变接口，增加新方法，即客户端可以声明ConcreteDecorator类型的变量。这就有点像是适配器模式。</p>
+
+<p>装饰模式与适配器模式其实是不一样的。适配器模式的目的是改变接口，常常改写或者增加新的方法来适配接口。而装饰模式是保持接口不变，增强或增加功能。它们的类图是不一样的。</p>
+
+<p>以Java的IO库为例，Reader类型的对象读入字符(Character)流，而InputStreamReader是一种Reader类型，把InputStream类型对象包装起来，从而把byte的API转换成字符流的API。这就是适配器模式的例子。即InputStreamReader把InputStream的API适配成Reader的API。</p>
+
+<p>而BufferredReader则是一个装饰类，因为它实现Reader，并且包装一个Reader，接口未变，但提供更优的性能。但它不是一个100％的装饰类，因为它提供了一个readLine()的新方法。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:组合（Composite）模式]]></title>
@@ -226,21 +299,6 @@ public class DeepCloneDemoTest extends TestCase{</p>
 <p>原型模式的优点是：允许动态地增加或减少产品类；提供简化的创建结构，不需要工厂方法那样的等级结构；为软件提供动态加载新功能的能力；</p>
 
 <p>原型模式的缺点是：每个类都必须有clone方法，这对新类来说很容易，但已有的类就不一定，例如引用了不支持序列化的间接对象时，或者含有循环结构的时候。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:Builder模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/07/29/she-ji-mo-shi-buildermo-shi/"/>
-    <updated>2014-07-29T22:28:54+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/07/29/she-ji-mo-shi-buildermo-shi</id>
-    <content type="html"><![CDATA[<p>Builder模式感觉没什么特别的，甚至都不值得称为一种模式。无非就是由Director构建部分，然后再使用一个方法完成构建过程。但Builder模式对于参数太多的构造器却非常有用。先看Builder模式的类图：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-29_22.38.17.png" alt="image" /></p>
-
-<p><a href="/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">这篇博客</a>建议当构造器参数比较多时，考虑使用Builder模式。这是一种非常优雅的方式。</p>
-
-<p>我觉得Builder模式的好处一是使客户端的代码很清晰，不需要那么多的set方法；二是实现了产品构建的原子性，也就是可以在build时，确保产品构建是有效的，如果某些部分或者参数有问题、冲突，就能够在build时失败，避免残次的半成品出现。</p>
 ]]></content>
   </entry>
   
