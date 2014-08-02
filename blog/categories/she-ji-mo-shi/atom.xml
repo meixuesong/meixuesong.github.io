@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 设计模式 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/she-ji-mo-shi/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-01T23:26:06+08:00</updated>
+  <updated>2014-08-03T00:47:03+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -83,6 +83,37 @@
 <p>以Java的IO库为例，Reader类型的对象读入字符(Character)流，而InputStreamReader是一种Reader类型，把InputStream类型对象包装起来，从而把byte的API转换成字符流的API。这就是适配器模式的例子。即InputStreamReader把InputStream的API适配成Reader的API。</p>
 
 <p>而BufferredReader则是一个装饰类，因为它实现Reader，并且包装一个Reader，接口未变，但提供更优的性能。但它不是一个100％的装饰类，因为它提供了一个readLine()的新方法。</p>
+
+<p>以InputStream相关类为例，如下所示：</p>
+
+<p><img src="/myresource/images/image_blog_20140803_002859.jpg" alt="image" /></p>
+
+<p>图中，红色类为适配器模式，将其它类型（如Byte数组）接口转换成InputStream接口。而绿色及其子类为适配器模式，各角色：</p>
+
+<ol>
+<li>Component角色：InputStream</li>
+<li>Concrete Component角色：红色的类</li>
+<li>Decorator角色：绿色的类</li>
+<li>ConcreteDecorator角色：最下面的四个类。</li>
+</ol>
+
+
+<p>附各类的主要用途：</p>
+
+<ol>
+<li>ByteArrayInputStream: 为多线程的通信提供缓冲区操作功能，接收Byte数组作为流的源。</li>
+<li>FileInputStream：接收一个File对象作为流的源。</li>
+<li>PipedInputStream：与PipedOutputStream配合使用，用于读入一个数据管道的数据，接收PipedOutputStream作为源。</li>
+<li>StringBufferInputStream：接收一个String对象作为流的源。</li>
+<li>FilterInputStream：过滤输入流，将另一个输入流作为流的源。</li>
+<li>BufferInputStream：内部提供内存缓冲区，从此缓冲区提供数据。</li>
+<li>DataInputStream：提供多字节的读取方法，读取原始数据类型的数据。</li>
+<li>LineNumberInputStream: 提供带有行计数功能和按行号读取数据的过滤输入流。不常用，主要用于编译器。</li>
+<li>PushbackInputStream：提供特殊功能，将已经读取的字节“推回”到输入流中。不常用，主要用于编译器。</li>
+<li>ObjectInputStream：读取使用ObjectOutputStream序列化的流，将其反序列化。</li>
+<li>SequenceInputStream：将两个已有的输入流连接起来，形成一个输入流。</li>
+</ol>
+
 ]]></content>
   </entry>
   
