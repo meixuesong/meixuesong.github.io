@@ -53,6 +53,32 @@ categories:
 
 而BufferredReader则是一个装饰类，因为它实现Reader，并且包装一个Reader，接口未变，但提供更优的性能。但它不是一个100％的装饰类，因为它提供了一个readLine()的新方法。
 
+以InputStream相关类为例，如下所示：
+
+![image](/myresource/images/image_blog_20140803_002859.jpg)
+
+图中，红色类为适配器模式，将其它类型（如Byte数组）接口转换成InputStream接口。而绿色及其子类为适配器模式，各角色：
+
+1. Component角色：InputStream
+2. Concrete Component角色：红色的类
+3. Decorator角色：绿色的类
+4. ConcreteDecorator角色：最下面的四个类。
+
+附各类的主要用途：
+
+1. ByteArrayInputStream: 为多线程的通信提供缓冲区操作功能，接收Byte数组作为流的源。
+2. FileInputStream：接收一个File对象作为流的源。
+3. PipedInputStream：与PipedOutputStream配合使用，用于读入一个数据管道的数据，接收PipedOutputStream作为源。
+4. StringBufferInputStream：接收一个String对象作为流的源。
+5. FilterInputStream：过滤输入流，将另一个输入流作为流的源。
+6. BufferInputStream：内部提供内存缓冲区，从此缓冲区提供数据。
+7. DataInputStream：提供多字节的读取方法，读取原始数据类型的数据。
+8. LineNumberInputStream: 提供带有行计数功能和按行号读取数据的过滤输入流。不常用，主要用于编译器。
+9. PushbackInputStream：提供特殊功能，将已经读取的字节“推回”到输入流中。不常用，主要用于编译器。
+10. ObjectInputStream：读取使用ObjectOutputStream序列化的流，将其反序列化。
+11. SequenceInputStream：将两个已有的输入流连接起来，形成一个输入流。
+
+
 
 
 
