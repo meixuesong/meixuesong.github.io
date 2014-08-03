@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 设计模式 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/she-ji-mo-shi/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-03T20:15:42+08:00</updated>
+  <updated>2014-08-04T00:04:12+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,57 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:桥梁模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/"/>
+    <updated>2014-08-03T22:09:23+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi</id>
+    <content type="html"><![CDATA[<p>桥梁模式的用意是“将抽象化与实现化解耦，使二者可以独立变化。”这里的解耦就是将它们之间的强关联改变成弱关联。所谓强关联就是继承关系，在编译期就已经确定。而弱关联就是动态确定并且可以在运行期动态改变的关联。因此对于Java，继承是强关联，而聚合关系是弱关联。因此桥梁模式中的解耦，就是指将抽象化与实现化之间的继承关系换成组合/聚合关系，使两者可以独立变化。桥梁模式的结构图如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140803_233716.jpg" alt="image" /></p>
+
+<!--more-->
+
+
+<ol>
+<li>抽象化角色（Abstraction）：抽象化给出的定义，并保存一个对实现化对象的引用。</li>
+<li>修正抽象化角色（Refined Abstraction）：扩展抽象化角色，改变和修正父类的定义。</li>
+<li>实现化角色（Implementor）：给出实现化角色的接口，但不给出具体实现。这个接口不一定与抽象化角色接口相同，实际上，这两个接口可以非常不一样。实现化角色应当只给出底层操作，而抽象化角色应当只给出基于底层操作的更高一层的操作。</li>
+<li>具体实现化角色（Concrete Implementor）：给出实现化角色接口的具体实现。当具体实现化类只有一个ConcreteImplementor的情况下，实现化角色就可以省略了。</li>
+</ol>
+
+
+<p>抽象化等级结构中的方法通过向对应的实现化对象的委派实现自己的功能。一般来说，实现化角色中的每一个方法都应当有一个抽象化角色中的某一个方法与之对应，但反过来则不一定。即抽象化角色的接口比实现化角色的接口宽，抽象化角色还可能提供其它的商业方法。而实现化角色则仅仅为实现抽象化角色的相关行为而存在。</p>
+
+<p>桥梁模式是为了分享抽象化与实现，使两者的接口可以不同。而适配器模式是为了改变已有接口，使它们相容。因此这两种模式是不一样的。</p>
+
+<p>什么情况下应当使用桥梁模式？</p>
+
+<ul>
+<li>如果一个系统需要在构件的抽象化角色和具体化角色之间增加更多的灵活性，避免在两个层次之间建立静态的联系。</li>
+<li>设计要求实现化角色的任何改变不应当影响客户端。</li>
+<li>一个构件有多个抽象化角色和实现化角色，系统需要它们之间进行动态耦合。</li>
+<li>虽然在系统中使用继承没有问题，但由于抽象化角色和具体角色需要独立变化，设计要求需要独立管理这两者。</li>
+</ul>
+
+
+<p>桥梁模式的一个例子是Java AWT的Peer架构。Java应用在不同的操作系统上有不同的Look and Feel。Java为AWT中的每一个GUI构件都提供了一个Peer构件。Java程序员只需要关心Button对象提供的接口，当运行时，Button对象动态地与一个本地环境的底层Peer对象联系起来，这个Peer对象会按照指令执行正确的操作。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:门面模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi/"/>
+    <updated>2014-08-03T21:59:42+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi</id>
+    <content type="html"><![CDATA[<p>门面(Facade)模式的作用是屏蔽众多子系统的复杂性，为客户端提供一个统一的门面(Facade)对象，方便客户端调用。门面模式没有统一的结构。一般是一个子系统提供一个门面。要注意的是门面只负责协调子系统去服务客户端的请求，不能在门面类中增加功能和职责。</p>
+
+<p>什么情况下使用门面模式？如果子系统演化得越来越复杂，客户端的调用变得很复杂，产生很大的依赖性，则可以引入门面模式将一个子系统与它的客户端以及其他子系统分离。</p>
+
+<p>这与迪米特法则也是相符的，该法则要求不要与陌生人说话，只与你直接朋友通信。采用门面模式，客户端只要与门面打交道，不需要去协调多个子系统。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:享元模式]]></title>
@@ -205,67 +256,6 @@
 <li>ObjectInputStream：读取使用ObjectOutputStream序列化的流，将其反序列化。</li>
 <li>SequenceInputStream：将两个已有的输入流连接起来，形成一个输入流。</li>
 </ol>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:组合（Composite）模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/"/>
-    <updated>2014-07-31T21:08:30+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi</id>
-    <content type="html"><![CDATA[<p>组合模式将对象以树状结构组织起来，达成“部分－整体”的层次结构，使得客户端对单个对象和组合对象的使用具有一致性。结构示意图：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-31_21.14.15.jpg" alt="image" /></p>
-
-<!--more-->
-
-
-<p>此模式涉及三个角色：</p>
-
-<ol>
-<li>Component角色：定义共有的接口及其默认行为。</li>
-<li>Leaf角色：叶节点，不能有下级子对象。</li>
-<li>Composite角色：树枝节点，可以有下级子对象的节点。</li>
-</ol>
-
-
-<p>组合模式根据实现方式的不同，分为安全方式和透明方式。区别主要在于接口的定义。Composite角色拥有add、remove、getChild等方法，这些方法对于Leaf角色完全没有用处。因此Component角色是否定义这些方法，就形成了两种实现方式。</p>
-
-<h3>透明方式</h3>
-
-<p>这种方式在Component中定义所有的方法，不管这些方法对于Leaf角色是否有用。这样做的好处是所有角色都有相同的接口，客户端可以统一的方式对待所有对象。缺点是不够安全，因为Leaf角色的add方法没有意义，可能在运行期出错。透明方式的组合模式结构图如下：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-31_21.29.20.jpg" alt="image" /></p>
-
-<p>可以看出，这种方式的Leaf和Composite没有什么区别，都实现了Component的所有接口方法。但Leaf角色的add, remove等方法都是平庸实现。</p>
-
-<h3>安全方式</h3>
-
-<p>这种方式的Component只定义公共的接口，不包括Composite角色的add, remove等方法。结构如下图：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-31_22.11.35.jpg" alt="image" /></p>
-
-<p>不论采用哪种方式，其中composite属性都是指向父节点的引用。这样就可以很容易地遍历所有的父对象。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:缺省适配模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-que-sheng-gua-pei-mo-shi/"/>
-    <updated>2014-07-31T20:31:57+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-que-sheng-gua-pei-mo-shi</id>
-    <content type="html"><![CDATA[<p>缺省适配模式其实很简单，就是一个接口有很多方法，通过一个抽象类为这些方法提供默认实现，而具体的类继承这个抽象类，实现自己关心的方法即可。其结构如下：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-31_20.37.12.jpg" alt="image" /></p>
-
-<p>什么情况下用缺省适配模式？如果不准备实现一个接口的所有方法时，可以通过一个抽象类，给出所有方法的实现。有用的方法要有实现，没用的方法也要有空的、平庸的实现。这样子类就不必实现所有方法了。对应适配器模式的三个角色：</p>
-
-<ul>
-<li>Adapter：子类</li>
-<li>Adaptee：抽象类</li>
-<li>Target：接口</li>
-</ul>
 
 ]]></content>
   </entry>

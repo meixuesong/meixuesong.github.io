@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-03T20:15:42+08:00</updated>
+  <updated>2014-08-04T00:04:12+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,57 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:桥梁模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/"/>
+    <updated>2014-08-03T22:09:23+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi</id>
+    <content type="html"><![CDATA[<p>桥梁模式的用意是“将抽象化与实现化解耦，使二者可以独立变化。”这里的解耦就是将它们之间的强关联改变成弱关联。所谓强关联就是继承关系，在编译期就已经确定。而弱关联就是动态确定并且可以在运行期动态改变的关联。因此对于Java，继承是强关联，而聚合关系是弱关联。因此桥梁模式中的解耦，就是指将抽象化与实现化之间的继承关系换成组合/聚合关系，使两者可以独立变化。桥梁模式的结构图如下：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_20140803_233716.jpg" alt="image" /></p>
+
+<!--more-->
+
+
+<ol>
+<li>抽象化角色（Abstraction）：抽象化给出的定义，并保存一个对实现化对象的引用。</li>
+<li>修正抽象化角色（Refined Abstraction）：扩展抽象化角色，改变和修正父类的定义。</li>
+<li>实现化角色（Implementor）：给出实现化角色的接口，但不给出具体实现。这个接口不一定与抽象化角色接口相同，实际上，这两个接口可以非常不一样。实现化角色应当只给出底层操作，而抽象化角色应当只给出基于底层操作的更高一层的操作。</li>
+<li>具体实现化角色（Concrete Implementor）：给出实现化角色接口的具体实现。当具体实现化类只有一个ConcreteImplementor的情况下，实现化角色就可以省略了。</li>
+</ol>
+
+
+<p>抽象化等级结构中的方法通过向对应的实现化对象的委派实现自己的功能。一般来说，实现化角色中的每一个方法都应当有一个抽象化角色中的某一个方法与之对应，但反过来则不一定。即抽象化角色的接口比实现化角色的接口宽，抽象化角色还可能提供其它的商业方法。而实现化角色则仅仅为实现抽象化角色的相关行为而存在。</p>
+
+<p>桥梁模式是为了分享抽象化与实现，使两者的接口可以不同。而适配器模式是为了改变已有接口，使它们相容。因此这两种模式是不一样的。</p>
+
+<p>什么情况下应当使用桥梁模式？</p>
+
+<ul>
+<li>如果一个系统需要在构件的抽象化角色和具体化角色之间增加更多的灵活性，避免在两个层次之间建立静态的联系。</li>
+<li>设计要求实现化角色的任何改变不应当影响客户端。</li>
+<li>一个构件有多个抽象化角色和实现化角色，系统需要它们之间进行动态耦合。</li>
+<li>虽然在系统中使用继承没有问题，但由于抽象化角色和具体角色需要独立变化，设计要求需要独立管理这两者。</li>
+</ul>
+
+
+<p>桥梁模式的一个例子是Java AWT的Peer架构。Java应用在不同的操作系统上有不同的Look and Feel。Java为AWT中的每一个GUI构件都提供了一个Peer构件。Java程序员只需要关心Button对象提供的接口，当运行时，Button对象动态地与一个本地环境的底层Peer对象联系起来，这个Peer对象会按照指令执行正确的操作。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:门面模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi/"/>
+    <updated>2014-08-03T21:59:42+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi</id>
+    <content type="html"><![CDATA[<p>门面(Facade)模式的作用是屏蔽众多子系统的复杂性，为客户端提供一个统一的门面(Facade)对象，方便客户端调用。门面模式没有统一的结构。一般是一个子系统提供一个门面。要注意的是门面只负责协调子系统去服务客户端的请求，不能在门面类中增加功能和职责。</p>
+
+<p>什么情况下使用门面模式？如果子系统演化得越来越复杂，客户端的调用变得很复杂，产生很大的依赖性，则可以引入门面模式将一个子系统与它的客户端以及其他子系统分离。</p>
+
+<p>这与迪米特法则也是相符的，该法则要求不要与陌生人说话，只与你直接朋友通信。采用门面模式，客户端只要与门面打交道，不需要去协调多个子系统。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:享元模式]]></title>
@@ -1803,408 +1854,6 @@ Java与模式</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Effective Java-类和接口]]></title>
-    <link href="http://blog.ubone.com/blog/2014/07/08/effective-java-lei-he-jie-kou/"/>
-    <updated>2014-07-08T18:58:31+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/07/08/effective-java-lei-he-jie-kou</id>
-    <content type="html"><![CDATA[<p>本文总结《Effective Java》中“类和接口”的论述。</p>
-
-<!--more-->
-
-
-<h2>13.使类和成员的可访问性最小化</h2>
-
-<p>最小化可访问性的目的是隐藏信息，隐藏信息的原因主要是为了模块解耦。正确地使用修饰符（private, protected和public）很重要。</p>
-
-<p>第一条规则是：尽可能地使每个类或者成员不被外界访问。对于顶层（非嵌套）类和接口，应该只有两种可能的访问级别：包级私有（即没有修饰符时）和public。包级私有仍然是这个包的实现的一部分，以后可以对它进行修改，无需担心客户端。但如果是public，则有责任永远支持它。</p>
-
-<p>如果一个包级私有的顶层类/接口只在某一个类的内部被使用，仍应该考虑将它变成那个类的私有嵌套类。</p>
-
-<p>长度非零的数组总是可变的，所以，类具有公有的静态final数组域，或者返回这种域的访问方法，这几乎总是错误的！</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//潜在安全漏洞</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Thing</span><span class="o">[]</span> <span class="n">VALUES</span> <span class="o">=</span> <span class="o">{...};</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//可改为：</span>
-</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Thing</span><span class="o">[]</span> <span class="n">PRIVATE_VALUES</span> <span class="o">=</span> <span class="o">{...};</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Thing</span><span class="o">&gt;</span> <span class="n">VALUES</span> <span class="o">=</span>
-</span><span class='line'>  <span class="n">Collections</span><span class="o">.</span><span class="na">unmodifiableList</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">PRIVATE_VALUES</span><span class="o">));</span>
-</span><span class='line'>  
-</span><span class='line'><span class="c1">//或者返回一个数组的备份：</span>
-</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Thing</span><span class="o">[]</span> <span class="n">PRIVATE_VALUES</span> <span class="o">=</span> <span class="o">{...};</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Thing</span><span class="o">[]</span> <span class="n">values</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">PRIVATE_VALUES</span><span class="o">.</span><span class="na">clones</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>  
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>14.在public类中使用访问方法而非公有域</h2>
-
-<p>简单说，就是public类的属性不要public，而是提供访问方法（如getter, setter）。如果属性不是final的，直接公开属性将表示放弃对该值的控制。即使该属性是final，但如果它引用了可变对象，一样会存在问题。</p>
-
-<h2>15.使可变性最小化</h2>
-
-<p>不可变类是其实例无法修改的类。不可变类不容易出错，本质上是线程安全的，不要求同步。要使类成为不可变，要遵循以下五条规则：</p>
-
-<ol>
-<li>不提供任何会修改对象状态的方法。</li>
-<li>保证类不会被扩展。</li>
-<li>使所有域都是final的。</li>
-<li>使所有域都成为私有的。</li>
-<li>确保对任何可变组件的互斥访问。如果类中有指向可变对象的域，必须确保客户端无法获得指向这些对象的引用。<strong>永远不要用客户端提供的对象引用来初始化这样的域，也不要从任何访问方法返回该对象的引用。</strong>可使用保护性拷贝技术。</li>
-</ol>
-
-
-<p>不可变类唯一的缺点是，对每个不同的值都需要一个单独的对象。对大型对象代价会很高。</p>
-
-<p>其中第2条，保证类不会被扩展，除了使类成为final外，也可以将类的构造器为私有或者包级私有，然后提供静态工厂。</p>
-
-<p>如果你选择让自己的不可变类实现Serializable接口，并且它包含指向可变对象的域，就必须提供一个显式的readObject或者readResolve方法，或者使用ObjectOutputStream.writeUnshared和ObjectInputStream.readUnshared方法。否则攻击者可能从不可变类创建可变的实例。</p>
-
-<p>如果类不能被做成不可变的，仍然应该尽可能地限制它的可变性。尽量使域/属性成为final。</p>
-
-<p>构造器应该创建完全初始化的对象。尽量不要在构造器或者静态工厂之外再提供公有的初始化方法。同时也不应该提供“重新初始化”方法。</p>
-
-<h2>16.复合优先于继承</h2>
-
-<p>继承打破了封装性。子类依赖于父类中特定功能的实现细节。父类的实现有可能会随着发行版本的不同而有所变化。</p>
-
-<p>通过复合（Composition），现有类变成了新类的一个组件，新类提供方法调用现有类实例中对应的方法，并返回它的结果。这被称为转发。</p>
-
-<p>包装类几乎没有缺点。但包装类不适用于回调框架中。在回调框架中，对象把自己的引用传递给其他对象，用于后续调用。而被包装起来的对象并不知道它外面的包装对象，所以它传递一个指向自身的引用（this），回调时避开了外面的包装对象。这被称为<strong>SELF问题</strong>。</p>
-
-<p>只有当子类真正是父类的子类型时，即它们是“is-a”的关系时，才适合用继承。</p>
-
-<h2>17.要么为继承而设计，并提供文档说明，要么就禁止继承</h2>
-
-<p>文档必须精确地描述覆盖每个方法所带来的影响。
-对于为了继承而设计的类，唯一的测试方法就是编写子类。
-<strong>为了允许继承，构造器决不能调用可被覆盖的方法，无论是直接调用还是间接调用！</strong>
-对于为了继承而设计的类，实现Cloneable和Serializable这两个接口都不是好主意，因为将实际负担转嫁给了扩展这个类的程序员身上。还要注意clone和readObject这两个方法非常类似于构造器，也不能调用可覆盖的方法，不管是直接还是间接调用。如果实现了Serializable，并且该类还有readResolve或writeReplace方法，就必须将该方法成为protected方法，不能是private。</p>
-
-<p>对于那些并非为了安全地进行子类化而设计和编写文档的类，要禁止子类化。有两种办法：声明为final或者将所有构造器都变成私有或包级私有，并增加一个公有静态工厂。</p>
-
-<h2>18.接口优于抽象类</h2>
-
-<h2>19.接口只用于定义类型</h2>
-
-<p>书中建议不要用接口来定义常量，这是接口的不良使用。接口应该只用于定义类型，而常量可以通过以下方法实现：</p>
-
-<ul>
-<li>如果某些常量与某个现有类或接口紧密相关，就应该把这些常量加到这个类或接口中。例如Integer的MIN_VALUE常量。</li>
-<li>如果这些常量最好被看作是枚举类型的成员，就应该使用枚举类型。</li>
-<li>否则应该使用不可实例化的工具类来定义这些常量，例如：</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PhysicalConstants</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="nf">PhysicalConstants</span><span class="o">()</span> <span class="o">{}</span> <span class="c1">//避免实例化</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">AVOGADROS_NUMBER</span> <span class="o">=</span> <span class="mf">6.0221419e23</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">...</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>20.类层次优于标签类</h2>
-
-<p>标签类（Tagged class）是指那些用一个类来表示多种对象的类。例如用一个类来表示矩形和圆。通过一个标签来区分当前实例是矩形还是圆。</p>
-
-<p>标签类过于冗长，容易出错，而且效率低下。这种情况应该通过类层次来定义。</p>
-
-<h2>21.用函数对象表示策略</h2>
-
-<p>如果一个类，它的方法执行其他对象的操作，这个类仅导出一个这样的方法，它的实例就等同于一个指向该方法的指针。这样的实例就称为函数对象（function object）。例如：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">StringLengthComparator</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">String</span> <span class="n">s1</span><span class="o">,</span> <span class="n">String</span> <span class="n">s2</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">s1</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="n">s2</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面这个类没有属性，因此适合于单例。为了把该类的实例传递给方法，应该定义一个接口，并让类实现这个接口。这就是一个策略接口：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Comparator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">T</span> <span class="n">t1</span><span class="o">,</span> <span class="n">T</span> <span class="n">t2</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>函数指针的主要用途就是实现策略模式。为了在Java中实现这种模式，要声明一个接口来表示该策略，并且为每个具体策略声明一个实现了该接口的类。当一个具体策略只使用一次时，通常使用匿名类，如果可以重复使用，通常实现为私有的静态成员类，并通过公有的静态final属性导出，其类型为该策略接口。</p>
-
-<h2>22.优先使用静态成员类</h2>
-
-<p>嵌套类（nested class）有四种：静态成员类、非静态成员类、匿名类和局部类。后面三种都被称为内部类（inner class）。</p>
-
-<p>非静态成员类的每个实例都隐含着与一个外围实例的关联，在其内部可以调用外围实例的方法。非静态成员类的一种常见用法是定义一个Adapter。</p>
-
-<p>如果成员类不要求访问外围实例，就要始终把static放在它的声明中，使它成为静态成员类。</p>
-
-<p>匿名类的适用性受到很多限制，它没有名字，不是外围类的成员。它在使用的同时被声明和实例化。不能实现多个接口或者扩展一个类，并同时扩展类和实现接口。它们必须保持简短，大约10行或更少。它主要用于：</p>
-
-<ul>
-<li>创建函数对象，例如匿名的Comparator实例。</li>
-<li>创建过程对象，例如Runnable, Thread或者TimerTask实例。</li>
-<li>在静态工厂方法的内部。参考第18条。</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java泛型]]></title>
-    <link href="http://blog.ubone.com/blog/2014/07/02/javafan-xing/"/>
-    <updated>2014-07-02T22:24:37+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/07/02/javafan-xing</id>
-    <content type="html"><![CDATA[<p>Java泛型功能强大，用起来也很简单。看到一些代码，有时候用?号，有时候又可以直接使用<code>&lt;T&gt;</code>，都有哪些区别呢？系统地了解一下吧。</p>
-
-<!--more-->
-
-
-<h2>1.参数化类型</h2>
-
-<p>参数化类型，也就是泛型。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Date</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HaspMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Date</span><span class="o">&gt;();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面这些都是很常见的用法。或者我们创建一个参数化的类型：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MultiHashMap</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span> <span class="n">V</span><span class="o">&gt;</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>  <span class="c1">//Java 7中可以省略类型了。   </span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">put</span><span class="o">(</span><span class="n">K</span> <span class="n">key</span><span class="o">,</span> <span class="n">V</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">List</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;</span> <span class="n">values</span> <span class="o">=</span> <span class="n">map</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
-</span><span class='line'>      <span class="o">...</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>2.擦拭法</h2>
-
-<p>要实现参数化类型，有多种方法。C++采用的方法是为每种参数化类都创建一个全新的类型定义。例如<code>MultiHashMap&lt;Date, String&gt;</code>将会创建一个新类：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//注：这不是Java的做法。</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MultiHashMap</span><span class="o">&lt;</span><span class="n">Date</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="o">{</span>
-</span><span class='line'>  <span class="o">...</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>但这不是Java的做法。Java使用一种叫做“擦拭法”的方法。每个类型参数缺省使用顶级类如Object，客户端的绑定信息被擦去。例如MultiHashMap会被翻译成：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MultiHashMap</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="n">Map</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">();</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">put</span><span class="o">(</span><span class="n">K</span> <span class="n">key</span><span class="o">,</span> <span class="n">V</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">List</span> <span class="n">values</span> <span class="o">=</span> <span class="o">(</span><span class="n">List</span><span class="o">)</span><span class="n">map</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
-</span><span class='line'>      <span class="o">...</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>  
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个上限也可以指定，例如：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EventMap</span><span class="o">&lt;</span><span class="n">K</span> <span class="kd">extends</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">Date</span><span class="o">,</span> <span class="n">V</span><span class="o">&gt;</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>表示K必须是Date或者其子类。</p>
-
-<h2>3.通配符</h2>
-
-<p>假设你有个方法想对某种类型的List进行遍历处理：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">concatenate</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  
-</span><span class='line'><span class="err">｝</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>一旦你如上面一样定义了<code>List&lt;Object&gt;</code>参数，则无法将其它类型的列表传入。你可以向<code>List&lt;Object&gt;</code>加入Object及其子类的对象，例如：<code>list.add(new Date())</code>。因为Date是Object的子类。但是，当一个方法的参数是<code>List&lt;Object&gt;</code>时，你不能将<code>List&lt;Date&gt;</code>类型的变量作为参数传入这个方法。原因是<code>List&lt;Date&gt;</code>不是<code>List&lt;Object&gt;</code>的子类！例如将<code>List&lt;String&gt;</code>类型作为参数传入将导致无法编译。这时候你可以使用通配符：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">concatenate</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;?&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">//遍历时就可以使用Object了。</span>
-</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">Object</span> <span class="n">item</span> <span class="o">:</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="o">...</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="err">｝</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>但通配符也隐含了一些问题。例如，下面的代码编译错误：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">pad</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;?&gt;</span> <span class="n">list</span><span class="o">,</span> <span class="n">Object</span> <span class="n">object</span><span class="o">,</span> <span class="kt">int</span> <span class="n">count</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">count</span><span class="o">;</span> <span class="n">i</span> <span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">object</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>错误的原因是<code>List&lt;?&gt;</code>指示了一个未知的类型，编译器无法判断指定的操作是否安全，因此它就全部禁止了。</p>
-
-<blockquote><p><code>List&lt;?&gt;</code>声明了List中包含的元素类型是未知的。通配符所代表的其实是一组类型，但具体的类型是未知的。<code>List&lt;?&gt;</code>所声明的就是所有类型都是可以的。但是<code>List&lt;?&gt;</code>并不等同于<code>List&lt;Object&gt;</code>。<code>List&lt;Object&gt;</code>实际上确定了List中包含的是Object及其子类，在使用的时候都可以通过Object来进行引用。而<code>List&lt;?&gt;</code>则其中所包含的元素类型是不确定。其中可能包含的是String，也可能是 Integer。如果它包含了String的话，往里面添加Integer类型的元素就是错误的。正因为类型未知，就不能通过<code>new ArrayList&lt;?&gt;()</code>的方法来创建一个新的ArrayList对象。因为编译器无法知道具体的类型是什么。</p></blockquote>
-
-<p>那么应该如何解决这个问题呢？可以使用泛型方法：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SomeClass</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="n">pad</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">,</span> <span class="n">T</span> <span class="n">object</span><span class="o">,</span> <span class="kt">int</span> <span class="n">count</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">count</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">object</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
-</span><span class='line'>        <span class="n">pad</span><span class="o">(</span><span class="n">list</span><span class="o">,</span> <span class="s">&quot;Hello&quot;</span><span class="o">,</span> <span class="mi">5</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">list</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//结果为：</span>
-</span><span class='line'><span class="o">[</span><span class="n">Hello</span><span class="o">,</span> <span class="n">Hello</span><span class="o">,</span> <span class="n">Hello</span><span class="o">,</span> <span class="n">Hello</span><span class="o">,</span> <span class="n">Hello</span><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>再来个例子，将通配符与泛型方法结合起来用，将一个List从头至尾交换一遍：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">static</span> <span class="kt">void</span> <span class="nf">inPlaceReverse</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;?&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">list</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
-</span><span class='line'>    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">swap</span><span class="o">(</span><span class="n">list</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">len</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">i</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="n">swap</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i</span><span class="o">,</span> <span class="kt">int</span> <span class="n">opposite</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">T</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">list</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">list</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">list</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">opposite</span><span class="o">));</span>
-</span><span class='line'>    <span class="n">list</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">opposite</span><span class="o">,</span> <span class="n">temp</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>通配符的上、下界</strong>，super和extends</p>
-
-<p>因为对于<code>List&lt;?&gt;</code>中的元素只能用Object来引用，在有些情况下不是很方便。在这些情况下，可以使用上下界来限制未知类型的范围。 如<code>List&lt;? extends Number&gt;</code>说明List中可能包含的元素类型是Number及其子类。而<code>List&lt;? super Number&gt;</code>则说明List中包含的是Number及其父类。当引入了上界之后，在使用类型的时候就可以使用上界类中定义的方法。比如访问 <code>List&lt;? extends Number&gt;</code>的时候，就可以使用Number类的intValue等方法。</p>
-
-<h2>总结</h2>
-
-<p>擦拭法是理解问题的关键。</p>
-
-<h2>参考</h2>
-
-<ul>
-<li>《Agile Java》</li>
-<li><a href="http://www.infoq.com/cn/articles/cf-java-generics">http://www.infoq.com/cn/articles/cf-java-generics</a></li>
-</ul>
 
 ]]></content>
   </entry>
