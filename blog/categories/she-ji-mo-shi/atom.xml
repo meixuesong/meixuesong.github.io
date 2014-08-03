@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 设计模式 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/she-ji-mo-shi/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-03T00:47:03+08:00</updated>
+  <updated>2014-08-03T12:44:58+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,51 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:代理模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/"/>
+    <updated>2014-08-03T11:56:48+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi</id>
+    <content type="html"><![CDATA[<p>代理模式是对象的结构模式。代理模式给某一个对象提供一个代理对象，并由代理对象控制对原对象的引用。代理模式的结构如下图：</p>
+
+<p><img src="/myresource/images/image_blog_20140803_120304.jpg" alt="image" /></p>
+
+<!--more-->
+
+
+<p>各角色说明如下：</p>
+
+<ul>
+<li>抽象主题角色：是真实主题和代理主题的共同接口，任何可以使用真实主题的地方都可以使用代理主题。</li>
+<li>代理主题角色：内部含有对真实主题的引用，可以在任何时候操作真实主题对象。</li>
+<li>真实主题角色：真实的对象。</li>
+</ul>
+
+
+<p><strong>常见的代理种类：</strong></p>
+
+<ul>
+<li>远程(Remote)代理：位于不同地址空间的代理对象。</li>
+<li>虚拟(Virtual)代理：当创建真实对象需要消耗较大资源时，通过虚拟代理实现只有真正需要时才创建资源。例如加载图像。</li>
+<li>Copy-on-Write代理：虚拟代理的一种，把复制拖延到只有客户端需要时才执行。</li>
+<li>保护(Protect or Access)代理：控制对一个对象的访问，可以为不同的客户端提供不同级别的权限。</li>
+<li>Cache代理：为真实对象操作的结果提供临时的存储空间，以便多个客户端可共享该结果。</li>
+<li>防火墙(Firewall)代理：保护目标，不让恶意用户接近。</li>
+<li>同步化(Synchronization)代理：使多个用户能够同时使用一个对象而没有冲突。</li>
+<li>智能(Smart Reference)引用：当一个对象被引用时，提供一些额外的操作，例如记录调用次数。</li>
+</ul>
+
+
+<p>反射与代理常常一起使用，<a href="/blog/2014/06/28/li-yong-fan-zhang-hao/">这篇博文</a>就是代理模式的一个例子。</p>
+
+<p>代理模式与适配器模式的区别是，后者的用意是改变接口，而前者不能改变接口。代理模式与装饰模式都保持接口不变，但它们区别是，后者应当提供增加的功能/性能，而前者是对原对象施加控制，并不提供增强功能。</p>
+
+<h3>虚拟代理的例子</h3>
+
+<p>为了更好的用户体验，在应用中显示网络图片时，先显示“加载中”或者占位符，等待图片下载完成后再替换成图片。这就是虚拟代理的真实例子。对于客户端仍然是创建图片并显示，但实际创建的是图片代理，图片代理先显示“加载中”，然后启动另一线程去下载图片，当下载完成后，才真正显示图片。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:装饰模式]]></title>
@@ -219,117 +264,6 @@
 <li>对象的适配器可用于改变多个已有的子类的接口。</li>
 </ol>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式: 原型（Prototype）模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/"/>
-    <updated>2014-07-30T20:58:15+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi</id>
-    <content type="html"><![CDATA[<p>原型（Prototype）模式的用处是：对于给定的原型对象，用复制的方法创建出更多的同类型对象。之前学习的工厂方法模式常常需要有一个与产品等级相同的等级结构，而原型模式则不需要这样。Java语言天生就支持原型模式。原型模式的结构图如下：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-30_21.10.50.jpg" alt="image" /></p>
-
-<!--more-->
-
-
-<h2><code>clone()</code>方法</h2>
-
-<p>Java的Object类提供了<code>protected Object clone()</code>方法，用于复制对象。而<code>Cloneable</code>接口用于在运行期告诉JVM可以安全地使用<code>clone()</code>方法，否则JVM将会抛出<code>CloneNotSupportedException</code>异常。</p>
-
-<p><code>java
-//复制一个pandaA
-pandaB = pandaA.clone();
-</code></p>
-
-<p>一般而言，clone方法满足以下描述：</p>
-
-<ol>
-<li><code>x.clone() != x</code>，也就是说复制出来后，不是同一个对象。</li>
-<li>复制对象与被复制对象是同一种类型。</li>
-<li>在Java的API中，<code>x.clone().equals(x)</code>是成立的，因此建议要遵守这一条。</li>
-</ol>
-
-
-<h2>深复制和浅复制</h2>
-
-<ul>
-<li>浅复制：对象所有的变量与原来的对象值相同，所有对其它对象的引用仍然指向原来的对象。</li>
-<li>深复制：对象所有的变量与原来的对象值相同，所有对其它对象的引用也指向被复制的新对象。</li>
-</ul>
-
-
-<p><code>clone()</code>方法是浅复制，而深复制可以通过序列化实现。例如：</p>
-
-<p>```java
-public class DeepCloneDemo implements Serializable {</p>
-
-<pre><code>private String name;
-
-public String getName() {
-    return name;
-}
-
-public void setName(String name) {
-    this.name = name;
-}
-
-public DeepCloneDemo deepClone() throws IOException, ClassNotFoundException {
-    ByteArrayOutputStream bo = new ByteArrayOutputStream();
-    ObjectOutputStream oo = new ObjectOutputStream(bo);
-    oo.writeObject(this);
-
-    ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
-    ObjectInputStream oi = new ObjectInputStream(bi);
-
-    return (DeepCloneDemo) oi.readObject();
-}
-
-@Override
-public int hashCode() {
-    //...
-}
-
-@Override
-public boolean equals(Object obj) {
-    //...
-}
-</code></pre>
-
-<p>}</p>
-
-<p>//测试代码
-public class DeepCloneDemoTest extends TestCase{</p>
-
-<pre><code>public void testDeepClone() {
-    DeepCloneDemo demo = new DeepCloneDemo();
-    demo.setName("Demo");
-
-    try {
-        DeepCloneDemo demo2 = demo.deepClone();
-        Assert.assertFalse(demo2 == demo);
-        Assert.assertEquals(demo, demo2);
-
-    } catch (ClassNotFoundException | IOException e) {
-        e.printStackTrace();
-        Assert.assertFalse(true);
-    }
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>注意要实现Serializable接口。如果不希望某个属性被序列化，可以使用<code>transient</code>关键字，例如：<code>private transient int age;</code>。</p>
-
-<h2>什么时候用原型模式</h2>
-
-<p>如果类是动态加载的，给每个类配备clone方法，就可以在运行时创建。</p>
-
-<p>原型模式的优点是：允许动态地增加或减少产品类；提供简化的创建结构，不需要工厂方法那样的等级结构；为软件提供动态加载新功能的能力；</p>
-
-<p>原型模式的缺点是：每个类都必须有clone方法，这对新类来说很容易，但已有的类就不一定，例如引用了不支持序列化的间接对象时，或者含有循环结构的时候。</p>
 ]]></content>
   </entry>
   
