@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="桥梁模式的用意是“将抽象化与实现化解耦，使二者可以独立变化。”这里的解耦就是将它们之间的强关联改变成弱关联。所谓强关联就是继承关系，在编译期就已经确定。而弱关联就是动态确定并且可以在运行期动态改变的关联。因此对于Java，继承是强关联，而聚合关系是弱关联。因此桥梁模式中的解耦， &hellip;">
+  <meta name="description" content="从这个模式开始学习行为模式。行为模式是对在不同的对象之间划分责任和算法的抽象化。行为模式不仅仅是关于类和对象的，而且是关于它们之间的相互作用的。行为模式分为类的行为模式（使用继承在几个类之间分配行为）和对象的行为模式（使用对象的聚合来分配行为）。 不变（Immutable）模式是指一个对象创建之后 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,54 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/">设计模式:不变模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-09T18:08:28+08:00" pubdate data-updated="true">2014-08-09</time>
+        
+           | <a href="/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>从这个模式开始学习行为模式。行为模式是对在不同的对象之间划分责任和算法的抽象化。行为模式不仅仅是关于类和对象的，而且是关于它们之间的相互作用的。行为模式分为类的行为模式（使用继承在几个类之间分配行为）和对象的行为模式（使用对象的聚合来分配行为）。</p>
+
+<p>不变（Immutable）模式是指一个对象创建之后，它的状态将不再变化。不变模式不需要类图描述，它分为弱不变模式和强不变模式。</p>
+
+<p>不变与只读的区别：只读表示值不能直接修改，但可能随其它变量改变而发生改变。例如出生日期是不变的，但年龄是只读的，因为它会随着时间而改变。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -480,51 +528,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/29/she-ji-mo-shi-buildermo-shi/">设计模式:Builder模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-29T22:28:54+08:00" pubdate data-updated="true">2014-07-29</time>
-        
-           | <a href="/blog/2014/07/29/she-ji-mo-shi-buildermo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/29/she-ji-mo-shi-buildermo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Builder模式感觉没什么特别的，甚至都不值得称为一种模式。无非就是由Director构建部分，然后再使用一个方法完成构建过程。但Builder模式对于参数太多的构造器却非常有用。先看Builder模式的类图：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-29_22.38.17.png" alt="image" /></p>
-
-<p><a href="/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">这篇博客</a>建议当构造器参数比较多时，考虑使用Builder模式。这是一种非常优雅的方式。</p>
-
-<p>我觉得Builder模式的好处一是使客户端的代码很清晰，不需要那么多的set方法；二是实现了产品构建的原子性，也就是可以在build时，确保产品构建是有效的，如果某些部分或者参数有问题、冲突，就能够在build时失败，避免残次的半成品出现。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -544,10 +547,14 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (16)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (17)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/">设计模式:不变模式</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/">设计模式:桥梁模式</a>
@@ -563,10 +570,6 @@
     
       <li class="post">
         <a href="/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/">设计模式:代理模式</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/">设计模式:装饰模式</a>
       </li>
     
   </ul>

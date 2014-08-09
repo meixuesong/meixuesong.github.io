@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>设计模式:不变模式 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="从这个模式开始学习行为模式。行为模式是对在不同的对象之间划分责任和算法的抽象化。行为模式不仅仅是关于类和对象的，而且是关于它们之间的相互作用的。行为模式分为类的行为模式（使用继承在几个类之间分配行为）和对象的行为模式（使用对象的聚合来分配行为）。 不变（Immutable）模式是指一个对象创建之后 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">设计模式:不变模式</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-09T18:08:28+08:00" pubdate data-updated="true">2014-08-09</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>从这个模式开始学习行为模式。行为模式是对在不同的对象之间划分责任和算法的抽象化。行为模式不仅仅是关于类和对象的，而且是关于它们之间的相互作用的。行为模式分为类的行为模式（使用继承在几个类之间分配行为）和对象的行为模式（使用对象的聚合来分配行为）。</p>
+
+<p>不变（Immutable）模式是指一个对象创建之后，它的状态将不再变化。不变模式不需要类图描述，它分为弱不变模式和强不变模式。</p>
+
+<p>不变与只读的区别：只读表示值不能直接修改，但可能随其它变量改变而发生改变。例如出生日期是不变的，但年龄是只读的，因为它会随着时间而改变。</p>
+
+<!--more-->
+
+
+<h3>弱不变模式</h3>
+
+<p>类的实例状态是不可变化的，但其子类的实例可能会变化，这就是弱不变模式。要实现弱不变模式，必须满足以下条件：</p>
+
+<ol>
+<li>类没有任何方法会修改对象的状态；</li>
+<li>所有属性都应当是私有的；</li>
+<li>如果引用了其它可变对象，必须设法限制外界对可变对象的访问。应当尽量避免在客户端初始化可变对象，否则应该复制一份，而不要直接使用客户端传入的引用。</li>
+</ol>
+
+
+<h3>强不变模式</h3>
+
+<p>类的实例状态是不可变化的，同时它的子类也是不可变化的状态，这就是强不变模式。一个类在满足弱不变模式的前提下，需要满足以下条件之一才是强不变模式：</p>
+
+<ol>
+<li>类的所有方法都应当是final，因此子类不能置换掉此类的方法。</li>
+<li>这个类本身就是final的，因此不可能会有子类。</li>
+</ol>
+
+
+<h3>不变模式的优缺点</h3>
+
+<p>一个不变的对象比可变的对象更加容易维护。不变对象天生就是线程安全的，可以省掉同步化的开销。不变模式唯一的缺点是如果需要频繁地修改不变对象，会创建出大量的对象，这是一种资源的浪费。</p>
+
+<p>在设计任何一个类时，除非有变化的必要，不然就应该将它设计成不变类。</p>
+
+<p>与享元模式的区别：不变模式可以用于实现享元模式，但享元对象并不一定非得是不变对象，只要它的内部状态与环境无关就不会影响享元对象的共享。</p>
+
+<p>几个问题：</p>
+
+<ol>
+<li>构造方法需不需要同步化？（不需要，对象创建只可能发生在一个纯种中）</li>
+<li>子类是否可以置换掉父类的同步方法，它是同步还是不同步？（可以置换，但父类的同步特性没有改变，如果明显地调用父类的同步方法，那么这个方法将是同步调用的）</li>
+</ol>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-09T18:08:28+08:00" pubdate data-updated="true">2014-08-09</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/she-ji-mo-shi/'>设计模式</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/" title="Previous Post: 设计模式:桥梁模式">&laquo; 设计模式:桥梁模式</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (1)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (17)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/">设计模式:不变模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/">设计模式:桥梁模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi/">设计模式:门面模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/">设计模式:享元模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/">设计模式:代理模式</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fb4e47bf6950f9d2496daf84fe62cec59' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

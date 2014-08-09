@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 设计模式 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/she-ji-mo-shi/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-04T00:04:12+08:00</updated>
+  <updated>2014-08-09T20:13:52+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,59 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:不变模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/"/>
+    <updated>2014-08-09T18:08:28+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi</id>
+    <content type="html"><![CDATA[<p>从这个模式开始学习行为模式。行为模式是对在不同的对象之间划分责任和算法的抽象化。行为模式不仅仅是关于类和对象的，而且是关于它们之间的相互作用的。行为模式分为类的行为模式（使用继承在几个类之间分配行为）和对象的行为模式（使用对象的聚合来分配行为）。</p>
+
+<p>不变（Immutable）模式是指一个对象创建之后，它的状态将不再变化。不变模式不需要类图描述，它分为弱不变模式和强不变模式。</p>
+
+<p>不变与只读的区别：只读表示值不能直接修改，但可能随其它变量改变而发生改变。例如出生日期是不变的，但年龄是只读的，因为它会随着时间而改变。</p>
+
+<!--more-->
+
+
+<h3>弱不变模式</h3>
+
+<p>类的实例状态是不可变化的，但其子类的实例可能会变化，这就是弱不变模式。要实现弱不变模式，必须满足以下条件：</p>
+
+<ol>
+<li>类没有任何方法会修改对象的状态；</li>
+<li>所有属性都应当是私有的；</li>
+<li>如果引用了其它可变对象，必须设法限制外界对可变对象的访问。应当尽量避免在客户端初始化可变对象，否则应该复制一份，而不要直接使用客户端传入的引用。</li>
+</ol>
+
+
+<h3>强不变模式</h3>
+
+<p>类的实例状态是不可变化的，同时它的子类也是不可变化的状态，这就是强不变模式。一个类在满足弱不变模式的前提下，需要满足以下条件之一才是强不变模式：</p>
+
+<ol>
+<li>类的所有方法都应当是final，因此子类不能置换掉此类的方法。</li>
+<li>这个类本身就是final的，因此不可能会有子类。</li>
+</ol>
+
+
+<h3>不变模式的优缺点</h3>
+
+<p>一个不变的对象比可变的对象更加容易维护。不变对象天生就是线程安全的，可以省掉同步化的开销。不变模式唯一的缺点是如果需要频繁地修改不变对象，会创建出大量的对象，这是一种资源的浪费。</p>
+
+<p>在设计任何一个类时，除非有变化的必要，不然就应该将它设计成不变类。</p>
+
+<p>与享元模式的区别：不变模式可以用于实现享元模式，但享元对象并不一定非得是不变对象，只要它的内部状态与环境无关就不会影响享元对象的共享。</p>
+
+<p>几个问题：</p>
+
+<ol>
+<li>构造方法需不需要同步化？（不需要，对象创建只可能发生在一个纯种中）</li>
+<li>子类是否可以置换掉父类的同步方法，它是同步还是不同步？（可以置换，但父类的同步特性没有改变，如果明显地调用父类的同步方法，那么这个方法将是同步调用的）</li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:桥梁模式]]></title>
@@ -153,110 +206,6 @@
 <h3>虚拟代理的例子</h3>
 
 <p>为了更好的用户体验，在应用中显示网络图片时，先显示“加载中”或者占位符，等待图片下载完成后再替换成图片。这就是虚拟代理的真实例子。对于客户端仍然是创建图片并显示，但实际创建的是图片代理，图片代理先显示“加载中”，然后启动另一线程去下载图片，当下载完成后，才真正显示图片。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:装饰模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/"/>
-    <updated>2014-08-01T20:00:16+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi</id>
-    <content type="html"><![CDATA[<p>装饰模式以对客户端透明的方式扩展对象的功能。客户端并不会觉得对象在装饰前和装饰后有什么不同。装饰模式可以在不使用创造更多子类的情况下，将对象的功能加以扩展。其类图所下：</p>
-
-<p><img src="/myresource/images/image_blog_2014-08-01_20.13.33.jpg" alt="image" /></p>
-
-<!--more-->
-
-
-<p>图中4个角色说明如下：</p>
-
-<ol>
-<li>Component角色，一个抽象接口，被装饰对象和装饰对象都遵循的接口。在实际中可以是接口、抽象或具体类。</li>
-<li>Concrete Component角色，被装饰的具体对象。</li>
-<li>Decorator角色，持有Component对象的实例，可以是抽象类。</li>
-<li>ConcreteDecorator角色，负责给构件对象贴上附加的责任。</li>
-</ol>
-
-
-<h3>什么情况下使用装饰模式？</h3>
-
-<ol>
-<li>需要扩展一个类的功能，或给一个类增加附加责任。</li>
-<li>需要动态给一个对象增加功能，这些功能可以再动态地撤销。</li>
-<li>需要增加由一些基本功能的排列组合而产生的非常大量的功能，而继承关系就变得不现实。</li>
-</ol>
-
-
-<h3>装饰模式的优缺点</h3>
-
-<p>装饰模式的优点包括：</p>
-
-<ol>
-<li>可以动态地贴上一个需要的装饰，或者除掉一个不需要的装饰。</li>
-<li>通过使用不同的具体装饰类，以及这些装饰类的排列组合，可以创造出很多不同行为的组合。</li>
-</ol>
-
-
-<p>装饰模式的缺点是比继承要使用更多的对象，更多的对象会使得查错变得困难。</p>
-
-<h3>装饰模式的简化</h3>
-
-<p>不论如何简化，必须保证：</p>
-
-<ol>
-<li>ConcreteDecorator类必须继承自一个共同的父类Component。</li>
-<li>尽量保持Component作为一个“轻”类。</li>
-</ol>
-
-
-<p>常见的简化包括：</p>
-
-<ol>
-<li>没有Component，只有ConcreteComponent，此时，Decorator可以是ConcreteComponent的子类，ConcreteComponent扮演双重角色。</li>
-<li>没有Decorator，只有ConcreteDecorator，但如果有两个以上的。</li>
-</ol>
-
-
-<h3>其它</h3>
-
-<p>纯粹的装饰模式对客户端的要求是不要声明ConcreteDecorator类型的变量，而应当声明Component类型的变量。这也就是针对抽象编程。因此，ConcreteDecorator不能有Component接口之外的方法。但现实中的装饰模式允许改变接口，增加新方法，即客户端可以声明ConcreteDecorator类型的变量。这就有点像是适配器模式。</p>
-
-<p>装饰模式与适配器模式其实是不一样的。适配器模式的目的是改变接口，常常改写或者增加新的方法来适配接口。而装饰模式是保持接口不变，增强或增加功能。它们的类图是不一样的。</p>
-
-<p>以Java的IO库为例，Reader类型的对象读入字符(Character)流，而InputStreamReader是一种Reader类型，把InputStream类型对象包装起来，从而把byte的API转换成字符流的API。这就是适配器模式的例子。即InputStreamReader把InputStream的API适配成Reader的API。</p>
-
-<p>而BufferredReader则是一个装饰类，因为它实现Reader，并且包装一个Reader，接口未变，但提供更优的性能。但它不是一个100％的装饰类，因为它提供了一个readLine()的新方法。</p>
-
-<p>以InputStream相关类为例，如下所示：</p>
-
-<p><img src="/myresource/images/image_blog_20140803_002859.jpg" alt="image" /></p>
-
-<p>图中，红色类为适配器模式，将其它类型（如Byte数组）接口转换成InputStream接口。而绿色及其子类为适配器模式，各角色：</p>
-
-<ol>
-<li>Component角色：InputStream</li>
-<li>Concrete Component角色：红色的类</li>
-<li>Decorator角色：绿色的类</li>
-<li>ConcreteDecorator角色：最下面的四个类。</li>
-</ol>
-
-
-<p>附各类的主要用途：</p>
-
-<ol>
-<li>ByteArrayInputStream: 为多线程的通信提供缓冲区操作功能，接收Byte数组作为流的源。</li>
-<li>FileInputStream：接收一个File对象作为流的源。</li>
-<li>PipedInputStream：与PipedOutputStream配合使用，用于读入一个数据管道的数据，接收PipedOutputStream作为源。</li>
-<li>StringBufferInputStream：接收一个String对象作为流的源。</li>
-<li>FilterInputStream：过滤输入流，将另一个输入流作为流的源。</li>
-<li>BufferInputStream：内部提供内存缓冲区，从此缓冲区提供数据。</li>
-<li>DataInputStream：提供多字节的读取方法，读取原始数据类型的数据。</li>
-<li>LineNumberInputStream: 提供带有行计数功能和按行号读取数据的过滤输入流。不常用，主要用于编译器。</li>
-<li>PushbackInputStream：提供特殊功能，将已经读取的字节“推回”到输入流中。不常用，主要用于编译器。</li>
-<li>ObjectInputStream：读取使用ObjectOutputStream序列化的流，将其反序列化。</li>
-<li>SequenceInputStream：将两个已有的输入流连接起来，形成一个输入流。</li>
-</ol>
-
 ]]></content>
   </entry>
   
