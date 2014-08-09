@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>哈尔滨印象 - 码出人生</title>
+  <title>设计模式:策略模式 - 码出人生</title>
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="8月初，恰逢有机会去哈尔滨出差，来到这个古老、精致的城市，印象还不错。街道很干净，建筑很有特色。 街边一景 圣索菲亚教堂 随处可见的音乐一角，都是俄罗斯风格的音乐。 松花江畔 防洪纪念塔，本以为是98年建的，其实不是，以前就有了，但可以看到水位高度。 中央大街一景 这么多人排队 &hellip;">
+  <meta name="description" content="策略模式把行为和环境分割开。环境类负责维持和查询行为类，各种算法则在具体策略类中提供。由于算法和环境独立开来，算法的增减、修改都不会影响环境和客户端。准备一组算法，并将每一个算法封装起来，使得它们可以互换。策略模式的类图如下： 各角色如下： 环境角色：持有一个Strategy类的引用。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.ubone.com/blog/2014/08/09/ha-er-bin-yin-xiang">
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
@@ -67,7 +67,7 @@
   
   <header>
     
-      <h1 class="entry-title">哈尔滨印象</h1>
+      <h1 class="entry-title">设计模式:策略模式</h1>
     
     
       <p class="meta">
@@ -83,7 +83,7 @@
   
 
 
-<time datetime="2014-08-09T20:16:24+08:00" pubdate data-updated="true">2014-08-09</time>
+<time datetime="2014-08-09T22:55:42+08:00" pubdate data-updated="true">2014-08-09</time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://blog.ubone.com">Comments</a>
@@ -93,86 +93,35 @@
   </header>
 
 
-<div class="entry-content"><p>8月初，恰逢有机会去哈尔滨出差，来到这个古老、精致的城市，印象还不错。街道很干净，建筑很有特色。</p>
+<div class="entry-content"><p>策略模式把行为和环境分割开。环境类负责维持和查询行为类，各种算法则在具体策略类中提供。由于算法和环境独立开来，算法的增减、修改都不会影响环境和客户端。准备一组算法，并将每一个算法封装起来，使得它们可以互换。策略模式的类图如下：</p>
 
-<p>街边一景</p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1304.jpg" alt="image" /></p>
+<p><img src="/myresource/images/image_blog_20140809_230502.jpg" alt="image" /></p>
 
 <!--more-->
 
 
-<p>圣索菲亚教堂</p>
+<p>各角色如下：</p>
 
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1266.jpg" alt="image" /></p>
+<ol>
+<li>环境角色：持有一个Strategy类的引用。</li>
+<li>抽象策略角色：抽象角色，通常是接口或者抽象类，给出接口。</li>
+<li>具体策略角色：包装相关的算法或行为。通常具体策略角色会有多个。</li>
+</ol>
 
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1268.jpg" alt="image" /></p>
 
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1269.jpg" alt="image" /></p>
+<p>从策略模式中是看不出具体策略适用于哪一种情况的，应当由客户端自己决定在什么情况下使用什么具体策略角色。策略模式仅仅封装算法，提供新算法插入到已有系统中，以及老算法从系统中退出。</p>
 
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1275.jpg" alt="image" /></p>
+<p>策略模式适合于在多个算法中选择一种的情形，不适用于需要多个算法或者嵌套多于一个算法的情形。</p>
 
-<p>随处可见的音乐一角，都是俄罗斯风格的音乐。</p>
+<p>什么情况下使用策略模式？</p>
 
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1276.jpg" alt="image" /></p>
+<ol>
+<li>如果系统有很多类，它们之间的区别仅在于它们的行为，策略模式可动态地让一个对象在许多行为中选择一种行为。</li>
+<li>系统需要动态地在几种算法中选择一种。</li>
+</ol>
 
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1277.jpg" alt="image" /></p>
 
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1278.jpg" alt="image" /></p>
-
-<p>松花江畔</p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1279.jpg" alt="image" /></p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1281.jpg" alt="image" /></p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1282.jpg" alt="image" /></p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1283.jpg" alt="image" /></p>
-
-<p>防洪纪念塔，本以为是98年建的，其实不是，以前就有了，但可以看到水位高度。</p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1285.jpg" alt="image" /></p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1288.jpg" alt="image" /></p>
-
-<p>中央大街一景</p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1289.jpg" alt="image" /></p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1291.jpg" alt="image" /></p>
-
-<p>这么多人排队</p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1295.jpg" alt="image" /></p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1298.jpg" alt="image" /></p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1300.jpg" alt="image" /></p>
-
-<p>从黑龙江移动大楼上看松花江</p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1306.jpg" alt="image" /></p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1307.jpg" alt="image" /></p>
-
-<p>哈尔滨火车站</p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1316.jpg" alt="image" /></p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1317.jpg" alt="image" /></p>
-
-<p>哈工大</p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1319.jpg" alt="image" /></p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1320.jpg" alt="image" /></p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1321.jpg" alt="image" /></p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1322.jpg" alt="image" /></p>
-
-<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1323.jpg" alt="image" /></p>
+<p>策略模式的缺点：客户端必须知道所有的策略类，并自行决定使用哪一个策略类。</p>
 </div>
 
 
@@ -195,12 +144,12 @@
   
 
 
-<time datetime="2014-08-09T20:16:24+08:00" pubdate data-updated="true">2014-08-09</time>
+<time datetime="2014-08-09T22:55:42+08:00" pubdate data-updated="true">2014-08-09</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/sheng-huo/'>生活</a>
+    <a class='category' href='/blog/categories/she-ji-mo-shi/'>设计模式</a>
   
 </span>
 
@@ -257,17 +206,21 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (17)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (18)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2014/08/09/ha-er-bin-yin-xiang/">哈尔滨印象</a>
+        <a href="/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/">设计模式:策略模式</a>
       </li>
     
       <li class="post">
         <a href="/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/">设计模式:不变模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/07/ha-er-bin-yin-xiang/">哈尔滨印象</a>
       </li>
     
       <li class="post">
@@ -276,10 +229,6 @@
     
       <li class="post">
         <a href="/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi/">设计模式:门面模式</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/">设计模式:享元模式</a>
       </li>
     
   </ul>
@@ -313,8 +262,8 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.ubone.com/blog/2014/08/09/ha-er-bin-yin-xiang/';
-        var disqus_url = 'http://blog.ubone.com/blog/2014/08/09/ha-er-bin-yin-xiang/';
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/';
         var disqus_script = 'embed.js';
       
     (function () {

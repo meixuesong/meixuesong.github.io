@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-09T21:30:31+08:00</updated>
+  <updated>2014-08-09T23:27:42+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -14,10 +14,100 @@
 
   
   <entry>
+    <title type="html"><![CDATA[设计模式:策略模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/"/>
+    <updated>2014-08-09T22:55:42+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi</id>
+    <content type="html"><![CDATA[<p>策略模式把行为和环境分割开。环境类负责维持和查询行为类，各种算法则在具体策略类中提供。由于算法和环境独立开来，算法的增减、修改都不会影响环境和客户端。准备一组算法，并将每一个算法封装起来，使得它们可以互换。策略模式的类图如下：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_20140809_230502.jpg" alt="image" /></p>
+
+<!--more-->
+
+
+<p>各角色如下：</p>
+
+<ol>
+<li>环境角色：持有一个Strategy类的引用。</li>
+<li>抽象策略角色：抽象角色，通常是接口或者抽象类，给出接口。</li>
+<li>具体策略角色：包装相关的算法或行为。通常具体策略角色会有多个。</li>
+</ol>
+
+
+<p>从策略模式中是看不出具体策略适用于哪一种情况的，应当由客户端自己决定在什么情况下使用什么具体策略角色。策略模式仅仅封装算法，提供新算法插入到已有系统中，以及老算法从系统中退出。</p>
+
+<p>策略模式适合于在多个算法中选择一种的情形，不适用于需要多个算法或者嵌套多于一个算法的情形。</p>
+
+<p>什么情况下使用策略模式？</p>
+
+<ol>
+<li>如果系统有很多类，它们之间的区别仅在于它们的行为，策略模式可动态地让一个对象在许多行为中选择一种行为。</li>
+<li>系统需要动态地在几种算法中选择一种。</li>
+</ol>
+
+
+<p>策略模式的缺点：客户端必须知道所有的策略类，并自行决定使用哪一个策略类。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:不变模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/"/>
+    <updated>2014-08-09T18:08:28+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi</id>
+    <content type="html"><![CDATA[<p>从这个模式开始学习行为模式。行为模式是对在不同的对象之间划分责任和算法的抽象化。行为模式不仅仅是关于类和对象的，而且是关于它们之间的相互作用的。行为模式分为类的行为模式（使用继承在几个类之间分配行为）和对象的行为模式（使用对象的聚合来分配行为）。</p>
+
+<p>不变（Immutable）模式是指一个对象创建之后，它的状态将不再变化。不变模式不需要类图描述，它分为弱不变模式和强不变模式。</p>
+
+<p>不变与只读的区别：只读表示值不能直接修改，但可能随其它变量改变而发生改变。例如出生日期是不变的，但年龄是只读的，因为它会随着时间而改变。</p>
+
+<!--more-->
+
+
+<h3>弱不变模式</h3>
+
+<p>类的实例状态是不可变化的，但其子类的实例可能会变化，这就是弱不变模式。要实现弱不变模式，必须满足以下条件：</p>
+
+<ol>
+<li>类没有任何方法会修改对象的状态；</li>
+<li>所有属性都应当是私有的；</li>
+<li>如果引用了其它可变对象，必须设法限制外界对可变对象的访问。应当尽量避免在客户端初始化可变对象，否则应该复制一份，而不要直接使用客户端传入的引用。</li>
+</ol>
+
+
+<h3>强不变模式</h3>
+
+<p>类的实例状态是不可变化的，同时它的子类也是不可变化的状态，这就是强不变模式。一个类在满足弱不变模式的前提下，需要满足以下条件之一才是强不变模式：</p>
+
+<ol>
+<li>类的所有方法都应当是final，因此子类不能置换掉此类的方法。</li>
+<li>这个类本身就是final的，因此不可能会有子类。</li>
+</ol>
+
+
+<h3>不变模式的优缺点</h3>
+
+<p>一个不变的对象比可变的对象更加容易维护。不变对象天生就是线程安全的，可以省掉同步化的开销。不变模式唯一的缺点是如果需要频繁地修改不变对象，会创建出大量的对象，这是一种资源的浪费。</p>
+
+<p>在设计任何一个类时，除非有变化的必要，不然就应该将它设计成不变类。</p>
+
+<p>与享元模式的区别：不变模式可以用于实现享元模式，但享元对象并不一定非得是不变对象，只要它的内部状态与环境无关就不会影响享元对象的共享。</p>
+
+<p>几个问题：</p>
+
+<ol>
+<li>构造方法需不需要同步化？（不需要，对象创建只可能发生在一个纯种中）</li>
+<li>子类是否可以置换掉父类的同步方法，它是同步还是不同步？（可以置换，但父类的同步特性没有改变，如果明显地调用父类的同步方法，那么这个方法将是同步调用的）</li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[哈尔滨印象]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/09/ha-er-bin-yin-xiang/"/>
-    <updated>2014-08-09T20:16:24+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/09/ha-er-bin-yin-xiang</id>
+    <link href="http://blog.ubone.com/blog/2014/08/07/ha-er-bin-yin-xiang/"/>
+    <updated>2014-08-07T20:16:24+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/07/ha-er-bin-yin-xiang</id>
     <content type="html"><![CDATA[<p>8月初，恰逢有机会去哈尔滨出差，来到这个古老、精致的城市，印象还不错。街道很干净，建筑很有特色。</p>
 
 <p>街边一景</p>
@@ -98,59 +188,6 @@
 <p><img src="http://blog.ubone.com/myresource/images/haerbin201408/HA_ER_BIN_IMG_1322.jpg" alt="image" /></p>
 
 <p><img src="http://blog.ubone.com/myresource/images/haerbin201408/HA_ER_BIN_IMG_1323.jpg" alt="image" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:不变模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/"/>
-    <updated>2014-08-09T18:08:28+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi</id>
-    <content type="html"><![CDATA[<p>从这个模式开始学习行为模式。行为模式是对在不同的对象之间划分责任和算法的抽象化。行为模式不仅仅是关于类和对象的，而且是关于它们之间的相互作用的。行为模式分为类的行为模式（使用继承在几个类之间分配行为）和对象的行为模式（使用对象的聚合来分配行为）。</p>
-
-<p>不变（Immutable）模式是指一个对象创建之后，它的状态将不再变化。不变模式不需要类图描述，它分为弱不变模式和强不变模式。</p>
-
-<p>不变与只读的区别：只读表示值不能直接修改，但可能随其它变量改变而发生改变。例如出生日期是不变的，但年龄是只读的，因为它会随着时间而改变。</p>
-
-<!--more-->
-
-
-<h3>弱不变模式</h3>
-
-<p>类的实例状态是不可变化的，但其子类的实例可能会变化，这就是弱不变模式。要实现弱不变模式，必须满足以下条件：</p>
-
-<ol>
-<li>类没有任何方法会修改对象的状态；</li>
-<li>所有属性都应当是私有的；</li>
-<li>如果引用了其它可变对象，必须设法限制外界对可变对象的访问。应当尽量避免在客户端初始化可变对象，否则应该复制一份，而不要直接使用客户端传入的引用。</li>
-</ol>
-
-
-<h3>强不变模式</h3>
-
-<p>类的实例状态是不可变化的，同时它的子类也是不可变化的状态，这就是强不变模式。一个类在满足弱不变模式的前提下，需要满足以下条件之一才是强不变模式：</p>
-
-<ol>
-<li>类的所有方法都应当是final，因此子类不能置换掉此类的方法。</li>
-<li>这个类本身就是final的，因此不可能会有子类。</li>
-</ol>
-
-
-<h3>不变模式的优缺点</h3>
-
-<p>一个不变的对象比可变的对象更加容易维护。不变对象天生就是线程安全的，可以省掉同步化的开销。不变模式唯一的缺点是如果需要频繁地修改不变对象，会创建出大量的对象，这是一种资源的浪费。</p>
-
-<p>在设计任何一个类时，除非有变化的必要，不然就应该将它设计成不变类。</p>
-
-<p>与享元模式的区别：不变模式可以用于实现享元模式，但享元对象并不一定非得是不变对象，只要它的内部状态与环境无关就不会影响享元对象的共享。</p>
-
-<p>几个问题：</p>
-
-<ol>
-<li>构造方法需不需要同步化？（不需要，对象创建只可能发生在一个纯种中）</li>
-<li>子类是否可以置换掉父类的同步方法，它是同步还是不同步？（可以置换，但父类的同步特性没有改变，如果明显地调用父类的同步方法，那么这个方法将是同步调用的）</li>
-</ol>
-
 ]]></content>
   </entry>
   
@@ -1564,195 +1601,6 @@ Java与模式</p>
 <p>下面这张图演示了各种关系：</p>
 
 <p><img src="http://blog.ubone.com/myresource/images/img_blog_20140723.jpg" alt="image" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[分布式系统的基础知识]]></title>
-    <link href="http://blog.ubone.com/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/"/>
-    <updated>2014-07-22T20:04:40+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi</id>
-    <content type="html"><![CDATA[<p>这是一篇学习笔记，内容为《大型网站系统与Java中间件实践》的第一章。</p>
-
-<p>组成计算机的5要素为：输入、输出、运算器、控制器、存储器（内存、外存）。分布式系统也一样，可以分为这5个要素。因此这本书会对分布式系统中，这5个要素的变化进行说明。</p>
-
-<!--more-->
-
-
-<p>阿姆达尔定律（Amdahl&rsquo;s law）说明程序中可以并行的代码的比例，决定了你增加处理器能带来的速度提升的上限。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>S(N) = 1 / ((1 - P) + P / N)
-</span><span class='line'>
-</span><span class='line'>P: 可并行的程序在单核上执行时间的占比
-</span><span class='line'>N: 处理器的个数
-</span><span class='line'>S(N): 程序在N个处理器（总核心数）相对于单个处理器中的速度提升比。
-</span><span class='line'>
-</span><span class='line'>当P=0.2, S(N)的上限为1.25
-</span><span class='line'>当P=0.5, S(N)的上限为2</span></code></pre></td></tr></table></div></figure>
-
-
-<p>根据阿姆达尔定律，提升P非常的重要！</p>
-
-<h2>1.多线程模式</h2>
-
-<p>这里所说的多线程，是指单进程内的多线程。</p>
-
-<h3>1.1互不通信的多线程模式</h3>
-
-<p>线程之间没有交集，各自执行各自的任务和逻辑。这种模式的编程最简单，与单线程差不多。</p>
-
-<h3>1.2基于共享容器的多线程模式</h3>
-
-<p>例如多个线程共用一个队列。对于存储数据的容器或者对象，分为线程安全和线程不安全。</p>
-
-<ul>
-<li>如果是线程不安全的，一般可以通过加锁或者Copy On Write（COW）的方式控制并发。对于加锁的情况，如果是读多写少，可以用读写锁而不是互斥锁。</li>
-<li>如果是线程安全的，就可以直接使用。</li>
-</ul>
-
-
-<h3>1.3通过事件协同的多线程模式</h3>
-
-<p>某个线程需要等到某个状态或者事件发生后才能继续自己的工作，而这个状态或者事件与另一个线程有关，这时候就需要完成线程间的协调。<strong>为了防止死锁，一般要原子性地获取所需的多个锁，或者注意以相同的顺序获取多个锁。</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//原子性地获取多个锁</span>
-</span><span class='line'><span class="n">Thread</span> <span class="mi">1</span>
-</span><span class='line'><span class="n">GetLocks</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">B</span><span class="o">);</span> <span class="c1">//伪代码，一次性获取两个锁，不同平台支持不同。</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">Thread</span> <span class="mi">2</span>
-</span><span class='line'><span class="n">GetLocks</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">B</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//或者同样的顺序获取多个锁</span>
-</span><span class='line'><span class="n">Thread</span> <span class="mi">1</span>
-</span><span class='line'><span class="n">A</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
-</span><span class='line'>  <span class="n">B</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
-</span><span class='line'>  
-</span><span class='line'><span class="n">Thread</span> <span class="mi">2</span>
-</span><span class='line'><span class="n">A</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
-</span><span class='line'>  <span class="n">B</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
-</span><span class='line'><span class="c1">//两个线程的加锁顺序一致，如果Thread 2中的顺序反过来，则很可能造成锁死。      </span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>2.多进程模式</h2>
-
-<p>进程之间的内存空间是独立的，因此多进程相对会容易一些。但也正因为内存空间独立，因此数据共享就涉及序列化和反序列化。</p>
-
-<p>对于多进程，单个进程的问题不会造成整体的不可用。</p>
-
-<h2>3.网络基础</h2>
-
-<h3>3.1 OSI七层模型</h3>
-
-<p>OSI七层模型还记得？从上到下依次是：</p>
-
-<ul>
-<li>应用层：为应用程序（如Email）提供网络服务。</li>
-<li>表示层：确保一个应用层发送的信息可被另一个系统的应用层读取。</li>
-<li>会话层：通过传输层建立数据传输的通路。</li>
-<li>传输层：定义传输数据的协议和端口。</li>
-<li>网络层：在位于不同位置的网络中的两个主机系统之间提供连接和路径选择。</li>
-<li>数据链路层：定义如何让格式化数据以进行传输。</li>
-<li>物理层：定义物理设备标准，传输比特流。</li>
-</ul>
-
-
-<h3>3.2 网络IO实现方式</h3>
-
-<ul>
-<li>BIO（Blocking IO），阻塞方式，一个Socket需要一个线程来处理。</li>
-<li>NIO（Nonblocking IO），基于事件驱动思想，采用Reactor模式。</li>
-<li>AIO (Asynchronous IO)，异步IO，采用Proactor模式。</li>
-</ul>
-
-
-<p>Reactor模式和Proactor模式，后续要再研究一下。</p>
-
-<h2>4.从单机到分布式</h2>
-
-<h3>4.1 输入、输出设备的变化</h3>
-
-<p>除了传统意义的人机交互输入、输出设备，分布式环境中的其它节点也可以看作是输入或输出设备。</p>
-
-<h3>4.2 控制器的变化</h3>
-
-<p>在单机中，控制器是CPU中的控制器。在分布式系统中，控制器是控制方式。</p>
-
-<ol>
-<li>使用硬件负载均衡</li>
-<li>使用软件负载均衡，如LVS</li>
-<li>通过名称服务器</li>
-<li>通过规则服务器</li>
-<li>Master + Worker的方式</li>
-</ol>
-
-
-<p>前面两种一般称为透明代理。有两种缺点，一是增加了流量，即代理服务器与请求处理服务器之间多了一次发送和返回。当然，LVS通过配置，可以将请求的处理结果直接返回给客户端，不通过中间代理。二是如果代理出现问题，会影响到所有请求。</p>
-
-<p>第三、四种控制方式，都是客户端先访问名称服务器或者规则服务器，得到真正的请求处理服务器地址，然后直接与该地址进行连接。</p>
-
-<p>第五种一般用来管理任务，由Master把任务分给不同的Worker处理。</p>
-
-<h3>4.3 运算器的变化</h3>
-
-<p>分布式系统中的运算器包括多个节点的计算能力。</p>
-
-<ol>
-<li>通过DNS解析，实现调度和控制</li>
-<li>使用负载均衡设备或软件</li>
-<li>使用Master+Worker方式</li>
-<li>使用规则服务器等。</li>
-</ol>
-
-
-<h3>4.4 存储器的变化</h3>
-
-<p>与前面的类似，也可以通过：</p>
-
-<ol>
-<li>直接访问存储服务器</li>
-<li>通过代理服务器访问存储服务器</li>
-<li>使用名称服务</li>
-<li>使用规则服务</li>
-<li>使用Master控制。但没有Worker了。与规则服务不同，这里的Master根据请求返回存储服务器的地址，而不是返回所有地址。</li>
-</ol>
-
-
-<h2>5. 分布式系统的难点</h2>
-
-<ol>
-<li>缺乏全局时钟</li>
-<li>面对故障独立性。故障独立性指整个系统的一部分有问题，而其他部分正常。</li>
-<li>处理单点故障。如果某个功能或角色只有一台单机在支撑，这个节点就称为单点。它发生的故障就是单点故障（SPoF, Single Point of Failure）</li>
-<li>事务的挑战。即ACID和CAP。</li>
-</ol>
-
-
-<p>后续将研究文中提到的COW、读写锁、互斥锁，以及Reactor模式和Proactor模式。</p>
 ]]></content>
   </entry>
   

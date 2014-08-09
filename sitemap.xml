@@ -3,14 +3,20 @@
   
   
   <url>
-    <loc>http://blog.ubone.com/blog/2014/08/09/ha-er-bin-yin-xiang/</loc>
-    <lastmod>2014-08-09T20:16:24+08:00</lastmod>
+    <loc>http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/</loc>
+    <lastmod>2014-08-09T22:55:42+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/</loc>
     <lastmod>2014-08-09T18:08:28+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.ubone.com/blog/2014/08/07/ha-er-bin-yin-xiang/</loc>
+    <lastmod>2014-08-07T20:16:24+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   
@@ -215,14 +221,14 @@
   
   <url>
     <loc>http://blog.ubone.com/blog/archives/</loc>
-    <lastmod>2014-08-09T21:30:31+08:00</lastmod>
+    <lastmod>2014-08-09T23:27:42+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.ubone.com/</loc>
-    <lastmod>2014-08-09T21:30:31+08:00</lastmod>
+    <lastmod>2014-08-09T23:27:42+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>

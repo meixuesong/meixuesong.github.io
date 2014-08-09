@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 设计模式 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/she-ji-mo-shi/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-09T21:30:31+08:00</updated>
+  <updated>2014-08-09T23:27:42+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,43 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:策略模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/"/>
+    <updated>2014-08-09T22:55:42+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi</id>
+    <content type="html"><![CDATA[<p>策略模式把行为和环境分割开。环境类负责维持和查询行为类，各种算法则在具体策略类中提供。由于算法和环境独立开来，算法的增减、修改都不会影响环境和客户端。准备一组算法，并将每一个算法封装起来，使得它们可以互换。策略模式的类图如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140809_230502.jpg" alt="image" /></p>
+
+<!--more-->
+
+
+<p>各角色如下：</p>
+
+<ol>
+<li>环境角色：持有一个Strategy类的引用。</li>
+<li>抽象策略角色：抽象角色，通常是接口或者抽象类，给出接口。</li>
+<li>具体策略角色：包装相关的算法或行为。通常具体策略角色会有多个。</li>
+</ol>
+
+
+<p>从策略模式中是看不出具体策略适用于哪一种情况的，应当由客户端自己决定在什么情况下使用什么具体策略角色。策略模式仅仅封装算法，提供新算法插入到已有系统中，以及老算法从系统中退出。</p>
+
+<p>策略模式适合于在多个算法中选择一种的情形，不适用于需要多个算法或者嵌套多于一个算法的情形。</p>
+
+<p>什么情况下使用策略模式？</p>
+
+<ol>
+<li>如果系统有很多类，它们之间的区别仅在于它们的行为，策略模式可动态地让一个对象在许多行为中选择一种行为。</li>
+<li>系统需要动态地在几种算法中选择一种。</li>
+</ol>
+
+
+<p>策略模式的缺点：客户端必须知道所有的策略类，并自行决定使用哪一个策略类。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:不变模式]]></title>
@@ -161,51 +198,6 @@
 
 
 <p>享元模式的优点是大幅降低内存中对象的数量，但享元模式可能使系统更复杂，需要将一些状态外部化，这可能使逻辑变得复杂。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:代理模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/"/>
-    <updated>2014-08-03T11:56:48+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi</id>
-    <content type="html"><![CDATA[<p>代理模式是对象的结构模式。代理模式给某一个对象提供一个代理对象，并由代理对象控制对原对象的引用。代理模式的结构如下图：</p>
-
-<p><img src="/myresource/images/image_blog_20140803_120304.jpg" alt="image" /></p>
-
-<!--more-->
-
-
-<p>各角色说明如下：</p>
-
-<ul>
-<li>抽象主题角色：是真实主题和代理主题的共同接口，任何可以使用真实主题的地方都可以使用代理主题。</li>
-<li>代理主题角色：内部含有对真实主题的引用，可以在任何时候操作真实主题对象。</li>
-<li>真实主题角色：真实的对象。</li>
-</ul>
-
-
-<p><strong>常见的代理种类：</strong></p>
-
-<ul>
-<li>远程(Remote)代理：位于不同地址空间的代理对象。</li>
-<li>虚拟(Virtual)代理：当创建真实对象需要消耗较大资源时，通过虚拟代理实现只有真正需要时才创建资源。例如加载图像。</li>
-<li>Copy-on-Write代理：虚拟代理的一种，把复制拖延到只有客户端需要时才执行。</li>
-<li>保护(Protect or Access)代理：控制对一个对象的访问，可以为不同的客户端提供不同级别的权限。</li>
-<li>Cache代理：为真实对象操作的结果提供临时的存储空间，以便多个客户端可共享该结果。</li>
-<li>防火墙(Firewall)代理：保护目标，不让恶意用户接近。</li>
-<li>同步化(Synchronization)代理：使多个用户能够同时使用一个对象而没有冲突。</li>
-<li>智能(Smart Reference)引用：当一个对象被引用时，提供一些额外的操作，例如记录调用次数。</li>
-</ul>
-
-
-<p>反射与代理常常一起使用，<a href="/blog/2014/06/28/li-yong-fan-zhang-hao/">这篇博文</a>就是代理模式的一个例子。</p>
-
-<p>代理模式与适配器模式的区别是，后者的用意是改变接口，而前者不能改变接口。代理模式与装饰模式都保持接口不变，但它们区别是，后者应当提供增加的功能/性能，而前者是对原对象施加控制，并不提供增强功能。</p>
-
-<h3>虚拟代理的例子</h3>
-
-<p>为了更好的用户体验，在应用中显示网络图片时，先显示“加载中”或者占位符，等待图片下载完成后再替换成图片。这就是虚拟代理的真实例子。对于客户端仍然是创建图片并显示，但实际创建的是图片代理，图片代理先显示“加载中”，然后启动另一线程去下载图片，当下载完成后，才真正显示图片。</p>
 ]]></content>
   </entry>
   
