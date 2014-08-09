@@ -7,7 +7,7 @@ categories:
 - 生活
 ---
 
-InfoQ举办的全球架构师会议(ArchSummit 2014)18、19号在深圳万科国际会议中心举办。万科国际会议中心也是万科的总部所在地，建筑是风格独特，在可持续发展和绿色节能方面具有很多尝试。参见[百度百科](http://baike.baidu.com/view/6272136.htm)。
+InfoQ举办的全球架构师会议(ArchSummit 2014)18、19号在深圳万科国际会议中心举办。万科国际会议中心也是万科的总部所在地，建筑风格独特，在可持续发展和绿色节能方面具有很多尝试。参见[百度百科](http://baike.baidu.com/view/6272136.htm)。
 
 ![image](/myresource/images/archsummit201407/archsummit201407_IMG_1153.jpg)
 <!--more-->

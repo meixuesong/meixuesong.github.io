@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "哈尔滨印象"
-date: 2014-08-09 20:16:24 +0800
+date: 2014-08-07 20:16:24 +0800
 comments: true
 categories: 
 - 生活
