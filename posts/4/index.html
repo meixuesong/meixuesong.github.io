@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="RandomAccessFile提供了随机存取文件的支持，但是如何将对象持久化到文件中，并随机存取呢？ ">
+  <meta name="description" content="在实际业务中，总是会遇到权限管理和安全方面的需求。以一个帐户类（Account）为例，它实现了帐户的基本信息和余额管理。新的需求是余额修改相关的方法只能由授权用户调用。那么是不是直接修改Account类，在相关方法中加入权限验证代码呢？这样势必会让原来的代码变得混乱，破坏单一职责原则。应该怎么办呢 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,105 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/28/li-yong-fan-zhang-hao/">利用反射和代理创建简单的安全账号</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-28T11:42:34+08:00" pubdate data-updated="true">2014-06-28</time>
+        
+           | <a href="/blog/2014/06/28/li-yong-fan-zhang-hao/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/06/28/li-yong-fan-zhang-hao/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在实际业务中，总是会遇到权限管理和安全方面的需求。以一个帐户类（Account）为例，它实现了帐户的基本信息和余额管理。新的需求是余额修改相关的方法只能由授权用户调用。那么是不是直接修改Account类，在相关方法中加入权限验证代码呢？这样势必会让原来的代码变得混乱，破坏单一职责原则。应该怎么办呢？</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/06/28/li-yong-fan-zhang-hao/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">Effective Java-创建和销毁对象</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-27T09:20:04+08:00" pubdate data-updated="true">2014-06-27</time>
+        
+           | <a href="/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>《Effective Java》是Java语言的经典著作，本文总结书中“创建和销毁对象”的论述。主要包括：</p>
+
+<ol>
+<li>用静态工厂方法代替构造器</li>
+<li>构造器参数比较多时，考虑使用Builder</li>
+<li>用私有构造方法或枚举强化单例属性</li>
+<li>通过private构造器强化不可实例化的能力</li>
+<li>避免创建不必要的对象</li>
+<li>消除过期的对象引用</li>
+<li>避免使用finalize方法</li>
+</ol>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -346,10 +445,18 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (18)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (20)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/10/she-ji-mo-shi-guan-cha-zhe-mo-shi/">设计模式:观察者模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/10/she-ji-mo-shi-mo-ban-fang-fa-mo-shi/">设计模式:模板方法模式</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/">设计模式:策略模式</a>
@@ -361,14 +468,6 @@
     
       <li class="post">
         <a href="/blog/2014/08/07/ha-er-bin-yin-xiang/">哈尔滨印象</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/">设计模式:桥梁模式</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi/">设计模式:门面模式</a>
       </li>
     
   </ul>
