@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 设计模式 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/she-ji-mo-shi/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-10T11:55:18+08:00</updated>
+  <updated>2014-08-10T16:43:04+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,50 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:迭代子模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/10/she-ji-mo-shi-die-dai-zi-mo-shi/"/>
+    <updated>2014-08-10T12:18:42+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/10/she-ji-mo-shi-die-dai-zi-mo-shi</id>
+    <content type="html"><![CDATA[<p>迭代子模式是最常见的几个设计模式之一，Java Collection广泛使用迭代子来遍历其元素。之所以需要迭代子模式，是因为它将迭代逻辑与聚集对象分离，两者可以自由演变。其结构示意图如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140810_163841.jpg" alt="image" /></p>
+
+<!--more-->
+
+
+<ol>
+<li>Iterator：定义遍历元素所需的接口。</li>
+<li>ConcreteIterator：实现Iterator接口，维护迭代过程中的游标位置。</li>
+<li>Aggregate：给出创建迭代子对象的接口。</li>
+<li>ConcreteAggregate：实现创建迭代子对象的接口，返回一个合适的具体迭代子实例。</li>
+<li>Client：拥有对聚集和迭代子对象的引用，调用迭代子对象的迭代接口。</li>
+</ol>
+
+
+<h3>宽接口与窄接口</h3>
+
+<p>宽接口是指聚集提供了可以用来修改聚集元素的方法；否则就是窄接口。宽接口的典型示例是公开了类的一个List，因此破坏了聚集对象的封装。</p>
+
+<p>聚集对象可以提供两个接口，对迭代子公开宽接口，而对外提供窄接口。因此，可以将迭代子类设计成聚集类的内部成员类。</p>
+
+<h3>Java Iterator和ListIterator</h3>
+
+<p>Java Collection接口方法iterator()返回Iterator，而Java的List接口的listIterator()返回ListIterator类型。</p>
+
+<p><img src="/myresource/images/image_blog_20140810_163856.jpg" alt="image" /></p>
+
+<p>ListIterator提供了安全的修改方法add, remove和set。它们能够在迭代的过程中安全地修改List的内容。</p>
+
+<ul>
+<li>add()方法，在List当前位置插入一个对象。所谓当前位置就是：add方法增加对象后，调用previous()方法将返回这个对象。</li>
+<li>remove()方法，将当前元素删除。所谓当前元素就是：如果刚调用了next()或previous()方法，当前元素就是它们返回的元素。<strong>注：每调用一次remove()，都需要先调用一次next()或者previous()，如果刚调用了add()，也必须先调用一次next()或者previous()。</strong></li>
+<li>set()方法，更新当前元素。当前元素的定义与remove()方法相同。每次set()之前，也必须调用next()或previous()。</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:观察者模式]]></title>
@@ -130,44 +174,6 @@
 <li>子类是否可以置换掉父类的同步方法，它是同步还是不同步？（可以置换，但父类的同步特性没有改变，如果明显地调用父类的同步方法，那么这个方法将是同步调用的）</li>
 </ol>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:桥梁模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/"/>
-    <updated>2014-08-03T22:09:23+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi</id>
-    <content type="html"><![CDATA[<p>桥梁模式的用意是“将抽象化与实现化解耦，使二者可以独立变化。”这里的解耦就是将它们之间的强关联改变成弱关联。所谓强关联就是继承关系，在编译期就已经确定。而弱关联就是动态确定并且可以在运行期动态改变的关联。因此对于Java，继承是强关联，而聚合关系是弱关联。因此桥梁模式中的解耦，就是指将抽象化与实现化之间的继承关系换成组合/聚合关系，使两者可以独立变化。桥梁模式的结构图如下：</p>
-
-<p><img src="/myresource/images/image_blog_20140803_233716.jpg" alt="image" /></p>
-
-<!--more-->
-
-
-<ol>
-<li>抽象化角色（Abstraction）：抽象化给出的定义，并保存一个对实现化对象的引用。</li>
-<li>修正抽象化角色（Refined Abstraction）：扩展抽象化角色，改变和修正父类的定义。</li>
-<li>实现化角色（Implementor）：给出实现化角色的接口，但不给出具体实现。这个接口不一定与抽象化角色接口相同，实际上，这两个接口可以非常不一样。实现化角色应当只给出底层操作，而抽象化角色应当只给出基于底层操作的更高一层的操作。</li>
-<li>具体实现化角色（Concrete Implementor）：给出实现化角色接口的具体实现。当具体实现化类只有一个ConcreteImplementor的情况下，实现化角色就可以省略了。</li>
-</ol>
-
-
-<p>抽象化等级结构中的方法通过向对应的实现化对象的委派实现自己的功能。一般来说，实现化角色中的每一个方法都应当有一个抽象化角色中的某一个方法与之对应，但反过来则不一定。即抽象化角色的接口比实现化角色的接口宽，抽象化角色还可能提供其它的商业方法。而实现化角色则仅仅为实现抽象化角色的相关行为而存在。</p>
-
-<p>桥梁模式是为了分享抽象化与实现，使两者的接口可以不同。而适配器模式是为了改变已有接口，使它们相容。因此这两种模式是不一样的。</p>
-
-<p>什么情况下应当使用桥梁模式？</p>
-
-<ul>
-<li>如果一个系统需要在构件的抽象化角色和具体化角色之间增加更多的灵活性，避免在两个层次之间建立静态的联系。</li>
-<li>设计要求实现化角色的任何改变不应当影响客户端。</li>
-<li>一个构件有多个抽象化角色和实现化角色，系统需要它们之间进行动态耦合。</li>
-<li>虽然在系统中使用继承没有问题，但由于抽象化角色和具体角色需要独立变化，设计要求需要独立管理这两者。</li>
-</ul>
-
-
-<p>桥梁模式的一个例子是Java AWT的Peer架构。Java应用在不同的操作系统上有不同的Look and Feel。Java为AWT中的每一个GUI构件都提供了一个Peer构件。Java程序员只需要关心Button对象提供的接口，当运行时，Button对象动态地与一个本地环境的底层Peer对象联系起来，这个Peer对象会按照指令执行正确的操作。</p>
 ]]></content>
   </entry>
   
