@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 设计模式 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/she-ji-mo-shi/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-10T23:57:24+08:00</updated>
+  <updated>2014-08-12T00:08:25+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,57 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:命令模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/11/she-ji-mo-shi-ming-ling-mo-shi/"/>
+    <updated>2014-08-11T22:58:11+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/11/she-ji-mo-shi-ming-ling-mo-shi</id>
+    <content type="html"><![CDATA[<p>命令模式将发出命令和执行命令的责任分割开，委派给不同的对象。类图如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140811_233515.jpg" alt="image" /></p>
+
+<!--more-->
+
+
+<ol>
+<li>Client角色：创建具体命令对象，并确定接收者。</li>
+<li>Command角色：声明抽象接口，通常是接口或抽象类。</li>
+<li>ConcreteCommand角色：定义一个接收者和行为之间的弱耦合；负责调用接收者的相应操作。</li>
+<li>Invoker角色：负责调用命令对象执行请求。</li>
+<li>Reciever角色：负责具体实施和执行一个请求。任何一个类都可以成为接收者。</li>
+</ol>
+
+
+<p>Client的示例代码：</p>
+
+<p>```java
+public static void main(String[] args) {</p>
+
+<pre><code>Receiver receiver = new Receiver();
+Command command = new ConcreteCommand(receiver);
+Invoker invoker = new Invoker(command);
+invoker.action();
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面的代码中，invoker.action调用command.execute，execute方法调用receiver.action，receiver.action是真正实施命令的方法。</p>
+
+<p>模式实现时，可以考虑命令是“重”还是“轻”。如果轻，则命令只是提供请求者与接收者之间的耦合。如果是重，则命令执行也可放在命令中，接收者可以省略。更常见的是中间情况，由命令类动态决定调用哪一个接收者类。如果要支持undo, redo，则命令类要存储状态信息。</p>
+
+<p>可以把命令对象集合在一起，实现宏命令。命令模式的缺点是命令可能会非常多。命令模式可用于：</p>
+
+<ol>
+<li>需要在不同的时间指定请求，将请求排队。命令对象可以在序列化之后发送到另一台机器上。</li>
+<li>支持undo, redo操作。</li>
+<li>从日志中读回所有命令，重新执行execute方法，恢复系统数据。</li>
+<li>需要支持交易的系统，一个交易结构封装了一组数据更新命令。命令模式可以使系统增加新的交易类型。</li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:责任链模式]]></title>
@@ -106,43 +157,6 @@
 <li>具体模板角色：实现父类的抽象方法。</li>
 </ol>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:策略模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/"/>
-    <updated>2014-08-09T22:55:42+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi</id>
-    <content type="html"><![CDATA[<p>策略模式把行为和环境分割开。环境类负责维持和查询行为类，各种算法则在具体策略类中提供。由于算法和环境独立开来，算法的增减、修改都不会影响环境和客户端。准备一组算法，并将每一个算法封装起来，使得它们可以互换。策略模式的类图如下：</p>
-
-<p><img src="/myresource/images/image_blog_20140809_230502.jpg" alt="image" /></p>
-
-<!--more-->
-
-
-<p>各角色如下：</p>
-
-<ol>
-<li>环境角色：持有一个Strategy类的引用。</li>
-<li>抽象策略角色：抽象角色，通常是接口或者抽象类，给出接口。</li>
-<li>具体策略角色：包装相关的算法或行为。通常具体策略角色会有多个。</li>
-</ol>
-
-
-<p>从策略模式中是看不出具体策略适用于哪一种情况的，应当由客户端自己决定在什么情况下使用什么具体策略角色。策略模式仅仅封装算法，提供新算法插入到已有系统中，以及老算法从系统中退出。</p>
-
-<p>策略模式适合于在多个算法中选择一种的情形，不适用于需要多个算法或者嵌套多于一个算法的情形。</p>
-
-<p>什么情况下使用策略模式？</p>
-
-<ol>
-<li>如果系统有很多类，它们之间的区别仅在于它们的行为，策略模式可动态地让一个对象在许多行为中选择一种行为。</li>
-<li>系统需要动态地在几种算法中选择一种。</li>
-</ol>
-
-
-<p>策略模式的缺点：客户端必须知道所有的策略类，并自行决定使用哪一个策略类。</p>
 ]]></content>
   </entry>
   

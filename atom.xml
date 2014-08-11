@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-10T23:57:24+08:00</updated>
+  <updated>2014-08-12T00:08:25+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,60 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:命令模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/11/she-ji-mo-shi-ming-ling-mo-shi/"/>
+    <updated>2014-08-11T22:58:11+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/11/she-ji-mo-shi-ming-ling-mo-shi</id>
+    <content type="html"><![CDATA[<p>命令模式将发出命令和执行命令的责任分割开，委派给不同的对象。类图如下：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_20140811_233515.jpg" alt="image" /></p>
+
+<!--more-->
+
+
+<ol>
+<li>Client角色：创建具体命令对象，并确定接收者。</li>
+<li>Command角色：声明抽象接口，通常是接口或抽象类。</li>
+<li>ConcreteCommand角色：定义一个接收者和行为之间的弱耦合；负责调用接收者的相应操作。</li>
+<li>Invoker角色：负责调用命令对象执行请求。</li>
+<li>Reciever角色：负责具体实施和执行一个请求。任何一个类都可以成为接收者。</li>
+</ol>
+
+
+<p>Client的示例代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">Receiver</span> <span class="n">receiver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Receiver</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">Command</span> <span class="n">command</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcreteCommand</span><span class="o">(</span><span class="n">receiver</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">Invoker</span> <span class="n">invoker</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Invoker</span><span class="o">(</span><span class="n">command</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">invoker</span><span class="o">.</span><span class="na">action</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码中，invoker.action调用command.execute，execute方法调用receiver.action，receiver.action是真正实施命令的方法。</p>
+
+<p>模式实现时，可以考虑命令是“重”还是“轻”。如果轻，则命令只是提供请求者与接收者之间的耦合。如果是重，则命令执行也可放在命令中，接收者可以省略。更常见的是中间情况，由命令类动态决定调用哪一个接收者类。如果要支持undo, redo，则命令类要存储状态信息。</p>
+
+<p>可以把命令对象集合在一起，实现宏命令。命令模式的缺点是命令可能会非常多。命令模式可用于：</p>
+
+<ol>
+<li>需要在不同的时间指定请求，将请求排队。命令对象可以在序列化之后发送到另一台机器上。</li>
+<li>支持undo, redo操作。</li>
+<li>从日志中读回所有命令，重新执行execute方法，恢复系统数据。</li>
+<li>需要支持交易的系统，一个交易结构封装了一组数据更新命令。命令模式可以使系统增加新的交易类型。</li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:责任链模式]]></title>
@@ -1272,68 +1326,6 @@ Java与模式</p>
 <p>举一个实际例子就很容易理解为什么需要，以及什么时候需要抽象工厂模式：</p>
 
 <p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-07-28_21.41.37.png" alt="image" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:工厂方法模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/"/>
-    <updated>2014-07-27T22:11:04+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa</id>
-    <content type="html"><![CDATA[<p>前文说到简单工厂方法的工厂类，对“开－闭”原则支持不够，当有新产品时，需要修改工厂类。而工厂方法模式可以解决这个问题。工厂方法模式的用意是定义一个创建产品对象的工厂接口，将实际创建工作推迟到子类中。其结构可表示为：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-07-27_22.10.30.png" alt="image" /></p>
-
-<!--more-->
-
-
-<p>上图中，Factory和SomeProduct可以是接口或者抽象类，工厂方法factory的返回类型必须是SomeProduct，这也是针对接口编程的一个体现。</p>
-
-<p>在实际项目中，产品类可能有多个层级，对应工厂类也有多个层级。当使Factory为抽象类时，可以将公共代码尽量往上层抽象。</p>
-
-<p>工厂方法返回的对象不一定是新建的，有可能是之前新建的对象，缓存在那里。但一定是自己创建的，不可以是别的对象传入的对象。</p>
-
-<p>ConcreteFactory1示例代码：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConcreteFactory1</span> <span class="kd">implements</span> <span class="n">Factory</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="n">SomeProduct</span> <span class="nf">factory</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="k">new</span> <span class="nf">SomeConcreteProduct1</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Client代码示例：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Client</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">Factory</span> <span class="n">concreteFactory1</span><span class="o">,</span><span class="n">concreteFactory2</span><span class="o">;</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">SomeProduct</span> <span class="n">concreteProduct1</span><span class="o">,</span> <span class="n">concreteProduct2</span><span class="o">;</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">concreteFactory1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcreteFactory1</span><span class="o">();</span>
-</span><span class='line'>      <span class="n">concreteProduct1</span> <span class="o">=</span> <span class="n">concreteFactory1</span><span class="o">.</span><span class="na">factory</span><span class="o">();</span>
-</span><span class='line'>      <span class="n">concreteFactory2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcreteFactory2</span><span class="o">();</span>
-</span><span class='line'>      <span class="n">concreteProduct2</span> <span class="o">=</span> <span class="n">concreteFactory2</span><span class="o">.</span><span class="na">factory</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
 ]]></content>
   </entry>
   
