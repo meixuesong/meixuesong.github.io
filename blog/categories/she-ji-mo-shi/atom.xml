@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 设计模式 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/she-ji-mo-shi/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-12T00:08:25+08:00</updated>
+  <updated>2014-08-15T23:50:08+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,98 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:备忘录模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/13/she-ji-mo-shi-bei-wang-lu-mo-shi/"/>
+    <updated>2014-08-13T23:00:58+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/13/she-ji-mo-shi-bei-wang-lu-mo-shi</id>
+    <content type="html"><![CDATA[<p>备忘录(Memento)模式又叫做快照模式。备忘录对象是一个用来存储另外一个对象内部状态快照的对象。备忘录模式的用意是在不破坏封装的条件下，将一个对象的状态存储在外部，从而在合适的时候把这个对象还原到原来的状态。通常系统不止存储一个状态，而是存储多个状态（快照）。每一个快照所处的位置就是Check Point。其结构如下图：</p>
+
+<p><img src="/myresource/images/image_blog_20140813_231854.jpg" alt="image" /></p>
+
+<!--more-->
+
+
+<ol>
+<li>备忘录(Memento)角色：一是将发起人(Originator)对象的内部状态存储起来；二是保护其内容不被发起人以外的任何对象所读取，即图中宽接口和窄接口的作用。</li>
+<li>发起人(Originator)角色：创建备忘录对象，并使用该对象存储其内部状态。</li>
+<li>负责人(Caretaker)角色：负责保存备忘录对象，不管备忘录对象的内容。</li>
+</ol>
+
+
+<h3>白箱实现</h3>
+
+<p>在Java中实现宽、窄两个接口并不容易，白箱实现就是只提供宽接口。类图示意如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140813_235928.jpg" alt="image" /></p>
+
+<p>上面的发起人只有一个状态“state”，发起人创建备忘录对象，并传入state，而负责人可以保存和获得备忘录对象。上图中备忘录对负责人也是宽接口，因此负责人可以访问到state值。<strong>所以，白箱实现的缺点是破坏了对发起人状态的封闭。</strong>下面的Client的示意代码：</p>
+
+<p>```java
+Originator o = new Originator();
+Caretaker c = new Caretaker();</p>
+
+<p>o.setState(&ldquo;On&rdquo;);
+Memento m = o.createMemento();
+c.saveMemento(m);</p>
+
+<p>o.setState(&ldquo;Off&rdquo;);
+o.restoreMemento(c.retrieveMemento());
+//此时o.state = &ldquo;On&rdquo;
+```</p>
+
+<h3>双重接口实现（黑盒实现）</h3>
+
+<p>如何用Java实现宽、窄两个接口呢？也就是对发起人是宽接口，对其它任何对象都是窄接口。可以将备忘录对象作为发起人的内部类，因此发起人可以访问备忘录的所有属性和方法。而窄接口，是备忘录对象实现一个标识接口(MementoIF，没有任何方法的接口)，同时备忘录对象的方法为私有方法，所有其它对象都通过标识接口获得备忘录对象的引用，却无法访问备忘录对象的状态和方法。这就是双重接口的实现。如下图所示：</p>
+
+<p><img src="/myresource/images/image_blog_20140814_220438.jpg" alt="image" /></p>
+
+<p>客户端的代码与白盒实现完全相同，但是Caretaker再也无法访问备忘录对象的状态了。</p>
+
+<p>上面的两种实现，都由客户端持有发起人和负责人的引用。实际上也可以由负责人完成备忘录对象的创建和必要时恢复发起人状态。</p>
+
+<h3>多重检查点</h3>
+
+<p>前面的例子都只存储一个状态，在实际业务中，常需要存储多个状态，也就是多个检查点。实现方式可以在备忘录对象中建立<code>List&lt;String&gt; states</code>存储多个检查点。</p>
+
+<h3>“自述历史”模式</h3>
+
+<p>自述历史模式其实是指发起人角色兼任负责人角色时的备忘录模式。类图如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140815_221228.jpg" alt="image" /></p>
+
+<p>Memento类是发起人的内部类。</p>
+
+<h3>“假如”协议模式</h3>
+
+<p>备忘录的操作过程是，先创建备忘录对象保存发起人状态，然后修改发起人状态，如果需要的话，可以撤消这一步。也就是通过备忘录对象恢复发起人的状态。简单地说，就是先保存状态，然后执行修改，如果需要则恢复原状态。</p>
+
+<p>而“假如”协议则是将发起人对象做一个拷贝，然后再拷贝上执行备忘录操作，如果成功并且状态有效，则在原对象上执行这个操作。如果失败或者状态无效，则扔掉拷贝并触发异常处理。</p>
+
+<p>“假如”协议的优点是安全，相当于先试验没总是后才在原始对象上执行。缺点是同一个操作要执行两遍。因此“假如”协议适合于成功率较低的场景。</p>
+
+<h3>备忘录模式的优点</h3>
+
+<ol>
+<li>有时一些发起人对象的内部信息必须保存在发起人对象以外的地方，但是必须要由发起人对象自己读取，这时，使用备忘录模式可以把复杂的发起人内部信息对其他的对象屏蔽起来，从而可以恰当地保持封装的边界。</li>
+<li>本模式简化了发起人。发起人不再需要管理和保存其内部状态的一个个版本，客户端可以自行管理他们所需要的这些状态的版本。</li>
+<li>当发起人角色的状态改变的时候，有可能这个状态无效，这时候就可以使用暂时存储起来的备忘录将状态复原。</li>
+</ol>
+
+
+<h3>备忘录模式的缺点：</h3>
+
+<ol>
+<li>如果发起人角色的状态需要完整地存储到备忘录对象中，那么在资源消耗上面备忘录对象会很昂贵。</li>
+<li>当负责人角色将一个备忘录存储起来的时候，负责人可能并不知道这个状态会占用多大的存储空间，从而无法提醒用户一个操作是否很昂贵。</li>
+<li>当发起人角色的状态改变的时候，有可能这个协议无效。如果状态改变的成功率不高的话，不如采取“假如”协议模式。</li>
+</ol>
+
+
+<p>——《Java与模式》读书笔记。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:命令模式]]></title>
@@ -140,23 +232,6 @@ invoker.action();
 <p><img src="/myresource/images/image_blog_20140810_115301.jpg" alt="image" /></p>
 
 <p>在实际应用中，如果有多个ConcreteSubject，也可以将Subject变成抽象类，将observers和notifyObservers方法上移到抽象Subject。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:模板方法模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/10/she-ji-mo-shi-mo-ban-fang-fa-mo-shi/"/>
-    <updated>2014-08-10T09:52:25+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/10/she-ji-mo-shi-mo-ban-fang-fa-mo-shi</id>
-    <content type="html"><![CDATA[<p>模板方法（Template Method）模式是最常见的模式，几乎每个人都用过。它将部分逻辑以具体方法以及具体构造子的形式实现。抽象类定义顶级逻辑，具体类实现具体方法。类图如下：</p>
-
-<p><img src="/myresource/images/image_blog_20140810_095857.jpg" alt="image" /></p>
-
-<ol>
-<li>抽象模板角色：定义一个或多个抽象操作，以便让子类实现。定义并实现一个模板方法，给出顶级逻辑的骨架。</li>
-<li>具体模板角色：实现父类的抽象方法。</li>
-</ol>
-
 ]]></content>
   </entry>
   
