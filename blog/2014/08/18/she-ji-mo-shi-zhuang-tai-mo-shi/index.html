@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Macbook Pro，送给自己的生日礼物 - 码出人生</title>
+  <title>设计模式:状态模式 - 码出人生</title>
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="这台Macbook Pro配置还不错，8G RAM ＋ 256G SSD，用个5、6年应该没问题吧。 上一次买笔记本还是2007年的事，当时买的T61比这个还贵2000多，一点都不含糊，说买就买了。而这次却犹豫了一段时间。直到快生日时，才给自己找了个借口！:) Retina屏幕就是爽啊，非常清晰！ &hellip;">
+  <meta name="description" content="状态模式把对象的行为包装在不同的状态对象里，所有状态对象都属于抽象状态类的子类。状态模式的意图是让一个对象在其内部状态改变的时候，其行为也随之改变。类图示意如下： State角色：定义接口，用于封装Context对象的一个特定的状态所对应的行为。
+ConcreteState角色： &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.ubone.com/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu">
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
@@ -67,7 +68,7 @@
   
   <header>
     
-      <h1 class="entry-title">Macbook Pro，送给自己的生日礼物</h1>
+      <h1 class="entry-title">设计模式:状态模式</h1>
     
     
       <p class="meta">
@@ -83,7 +84,7 @@
   
 
 
-<time datetime="2014-07-21T23:08:33+08:00" pubdate data-updated="true">2014-07-21</time>
+<time datetime="2014-08-18T20:22:06+08:00" pubdate data-updated="true">2014-08-18</time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://blog.ubone.com">Comments</a>
@@ -93,18 +94,43 @@
   </header>
 
 
-<div class="entry-content"><p>这台Macbook Pro配置还不错，8G RAM ＋ 256G SSD，用个5、6年应该没问题吧。</p>
+<div class="entry-content"><p>状态模式把对象的行为包装在不同的状态对象里，所有状态对象都属于抽象状态类的子类。状态模式的意图是让一个对象在其内部状态改变的时候，其行为也随之改变。类图示意如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140818_224041.jpg" alt="image" /></p>
 
 <!--more-->
 
 
-<p>上一次买笔记本还是2007年的事，当时买的T61比这个还贵2000多，一点都不含糊，说买就买了。而这次却犹豫了一段时间。直到快生日时，才给自己找了个借口！:)</p>
+<ol>
+<li>State角色：定义接口，用于封装Context对象的一个特定的状态所对应的行为。</li>
+<li>ConcreteState角色：每个具体状态类实现Context的一个状态所对应的行为。</li>
+<li>Context角色：定义客户端所感兴趣的接口，并且保留一个具体状态类的实例，即当前的状态。上图中Context.someOperation的行为是委派给具体State类来执行的。当Context.state变化时，动态地将具体类指向另一个具体状态类，从而改变改变其行为。</li>
+</ol>
 
-<p>Retina屏幕就是爽啊，非常清晰！本来准备买个Air算了，觉得性价比高，最后到苹果店里一对比。Air的屏幕简直惨不忍睹，Retina屏，必须的！</p>
 
-<p><img src="/myresource/images/IMG_blog_20140721_1.jpg" alt="image" /></p>
+<h3>什么情况下使用状态模式</h3>
 
-<p><img src="/myresource/images/IMG_blog_20140721_2.jpg" alt="image" /></p>
+<ol>
+<li>对象的行为依赖于它所处的状态，对象的行为必须随着其状态的改变而改变。</li>
+<li>对象在某个方法里依赖于一重或多重的条件转移语句，其中有大量的代码。状态模式可以把条件转移语句的每一个分支包装到一个状态类中。</li>
+</ol>
+
+
+<p>TcpConnection就是一个状态模式的经典例子，TCP连接的三个状态（Established, Listening, Closed）分别对应三个状态类（TcpEstablished, TcpListen, TcpClosed）。</p>
+
+<p>在绘图软件中，状态模式广泛用于建立编辑器框架。使客户端能够轻易地挂接新工具。</p>
+
+<h3>模式实现</h3>
+
+<p>状态的变化由谁来定义？状态模式并没有对此进行规定。可以由外部事件、Context控制或者具体State自行决定。</p>
+
+<p>状态对象的创建和销毁，可以按需创建或者预先创建。</p>
+
+<h3>与其它模式的关系</h3>
+
+<p>状态模式与策略模式很相似，类图也很相似。但是策略模式的特点是，一旦环境类选择了一个具体策略，那么在其生命周期内就不会改变这个具体策略类。而状态模式在环境类的生命周期中会有多个不同的状态对象被使用。</p>
+
+<p>——《Java与模式》读书笔记</p>
 </div>
 
 
@@ -127,12 +153,12 @@
   
 
 
-<time datetime="2014-07-21T23:08:33+08:00" pubdate data-updated="true">2014-07-21</time>
+<time datetime="2014-08-18T20:22:06+08:00" pubdate data-updated="true">2014-08-18</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/sheng-huo/'>生活</a>
+    <a class='category' href='/blog/categories/she-ji-mo-shi/'>设计模式</a>
   
 </span>
 
@@ -163,10 +189,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/07/19/archsummit-2014shen-zhen/" title="Previous Post: ArchSummit 2014深圳">&laquo; ArchSummit 2014深圳</a>
+        <a class="basic-alignment left" href="/blog/2014/08/13/she-ji-mo-shi-bei-wang-lu-mo-shi/" title="Previous Post: 设计模式:备忘录模式">&laquo; 设计模式:备忘录模式</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/" title="Next Post: 分布式系统的基础知识">分布式系统的基础知识 &raquo;</a>
       
     </p>
   </footer>
@@ -247,8 +271,8 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.ubone.com/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/';
-        var disqus_url = 'http://blog.ubone.com/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/';
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/';
         var disqus_script = 'embed.js';
       
     (function () {

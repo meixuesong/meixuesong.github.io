@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 设计模式 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/she-ji-mo-shi/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-15T23:50:08+08:00</updated>
+  <updated>2014-08-18T23:06:42+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,51 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:状态模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/"/>
+    <updated>2014-08-18T20:22:06+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi</id>
+    <content type="html"><![CDATA[<p>状态模式把对象的行为包装在不同的状态对象里，所有状态对象都属于抽象状态类的子类。状态模式的意图是让一个对象在其内部状态改变的时候，其行为也随之改变。类图示意如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140818_224041.jpg" alt="image" /></p>
+
+<!--more-->
+
+
+<ol>
+<li>State角色：定义接口，用于封装Context对象的一个特定的状态所对应的行为。</li>
+<li>ConcreteState角色：每个具体状态类实现Context的一个状态所对应的行为。</li>
+<li>Context角色：定义客户端所感兴趣的接口，并且保留一个具体状态类的实例，即当前的状态。上图中Context.someOperation的行为是委派给具体State类来执行的。当Context.state变化时，动态地将具体类指向另一个具体状态类，从而改变改变其行为。</li>
+</ol>
+
+
+<h3>什么情况下使用状态模式</h3>
+
+<ol>
+<li>对象的行为依赖于它所处的状态，对象的行为必须随着其状态的改变而改变。</li>
+<li>对象在某个方法里依赖于一重或多重的条件转移语句，其中有大量的代码。状态模式可以把条件转移语句的每一个分支包装到一个状态类中。</li>
+</ol>
+
+
+<p>TcpConnection就是一个状态模式的经典例子，TCP连接的三个状态（Established, Listening, Closed）分别对应三个状态类（TcpEstablished, TcpListen, TcpClosed）。</p>
+
+<p>在绘图软件中，状态模式广泛用于建立编辑器框架。使客户端能够轻易地挂接新工具。</p>
+
+<h3>模式实现</h3>
+
+<p>状态的变化由谁来定义？状态模式并没有对此进行规定。可以由外部事件、Context控制或者具体State自行决定。</p>
+
+<p>状态对象的创建和销毁，可以按需创建或者预先创建。</p>
+
+<h3>与其它模式的关系</h3>
+
+<p>状态模式与策略模式很相似，类图也很相似。但是策略模式的特点是，一旦环境类选择了一个具体策略，那么在其生命周期内就不会改变这个具体策略类。而状态模式在环境类的生命周期中会有多个不同的状态对象被使用。</p>
+
+<p>——《Java与模式》读书笔记</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:备忘录模式]]></title>
@@ -219,19 +264,6 @@ invoker.action();
 <li>set()方法，更新当前元素。当前元素的定义与remove()方法相同。每次set()之前，也必须调用next()或previous()。</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:观察者模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/10/she-ji-mo-shi-guan-cha-zhe-mo-shi/"/>
-    <updated>2014-08-10T11:36:40+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/10/she-ji-mo-shi-guan-cha-zhe-mo-shi</id>
-    <content type="html"><![CDATA[<p>观察者模式也称为发布-订阅模式，它定义了一种一对多的依赖关系，让多个观察者同时监听一个主题对象。当主题对象的状态发生变化时，会通知观察者对象，使它们能够自动更新自己。它的类图如下所示：</p>
-
-<p><img src="/myresource/images/image_blog_20140810_115301.jpg" alt="image" /></p>
-
-<p>在实际应用中，如果有多个ConcreteSubject，也可以将Subject变成抽象类，将observers和notifyObservers方法上移到抽象Subject。</p>
 ]]></content>
   </entry>
   
