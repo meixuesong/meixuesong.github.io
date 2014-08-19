@@ -3,6 +3,12 @@
   
   
   <url>
+    <loc>http://blog.ubone.com/blog/2014/08/19/she-ji-mo-shi-fang-wen-zhe-mo-shi/</loc>
+    <lastmod>2014-08-19T22:17:28+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.ubone.com/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/</loc>
     <lastmod>2014-08-18T20:22:06+08:00</lastmod>
     <priority>0.8</priority>
@@ -263,14 +269,14 @@
   
   <url>
     <loc>http://blog.ubone.com/blog/archives/</loc>
-    <lastmod>2014-08-18T23:06:42+08:00</lastmod>
+    <lastmod>2014-08-19T23:22:31+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.ubone.com/</loc>
-    <lastmod>2014-08-18T23:06:42+08:00</lastmod>
+    <lastmod>2014-08-19T23:22:31+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>

@@ -1,0 +1,358 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>设计模式:访问者模式 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="访问者(Visitor)模式的目的是封装一些施加于某种数据结构元素之上的操作，一旦这些操作需要修改的话，接受这个操作的数据结构则可以保持不变。假如要对一个不同类型的聚集进行遍历，为了判断不同的类型对象，需要写很多的if else，而访问者模式可以解决此问题。示意类图如下： Visitor角色： &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/08/19/she-ji-mo-shi-fang-wen-zhe-mo-shi">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">设计模式:访问者模式</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-19T22:17:28+08:00" pubdate data-updated="true">2014-08-19</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>访问者(Visitor)模式的目的是封装一些施加于某种数据结构元素之上的操作，一旦这些操作需要修改的话，接受这个操作的数据结构则可以保持不变。假如要对一个不同类型的聚集进行遍历，为了判断不同的类型对象，需要写很多的if else，而访问者模式可以解决此问题。示意类图如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140819_232009.jpg" alt="image" /></p>
+
+<!--more-->
+
+
+<ol>
+<li>Visitor角色：声明一个或多个访问操作。</li>
+<li>ConcreteVisitor角色：实现接口方法。</li>
+<li>Node角色：声明一个接受操作，接受一个访问者对象作为一个参数。</li>
+<li>Concrete Node角色：实现接受操作。</li>
+<li>ObjectStructure角色：遍历结构中的所有元素，如果需要，提供高层次的接口让访问者对象可以访问每一个元素；如果需要，可以设计成一个复合对象或者一个聚集，如List或Set。</li>
+</ol>
+
+
+<h3>单分派和多分派</h3>
+
+<p>方法的接收者（即方法所属的对象）和方法的参量统称为方法的宗量。单分派语言根据一个宗量的类型进行方法的选择，多分派语言根据多于一个的宗量的类型对方法进行选择。</p>
+
+<p>Java语言支持静态的多分派和动态的单分派。对于Java方法重载（Overload），在编译期会根据方法的接收者类型和方法的所有参量类型进行分派，因此是静态多分派。而方法覆盖（Override），是在运行时仅仅根据方法的接收者类型进行分派。</p>
+
+<p>在访问者模式中，数据结构的每一个节点都可以接受一个访问者的调用，此节点向访问者对象传入节点对象，而访问者对象则反过来执行节点对象的操作。这样的过程就叫做“双重分派”。</p>
+
+<h3>示例代码</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//class ConcreteVisitor</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">visitA</span><span class="o">(</span><span class="n">NodeA</span> <span class="n">node</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">node</span><span class="o">.</span><span class="na">operationA</span><span class="o">());</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//class NodeA</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">accept</span><span class="o">(</span><span class="n">Visitor</span> <span class="n">visitor</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">visitor</span><span class="o">.</span><span class="na">visitA</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//class ObjectStructure</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">action</span><span class="o">(</span><span class="n">Visitor</span> <span class="n">visitor</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">Enumeration</span> <span class="n">e</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="na">elements</span><span class="o">();</span> <span class="n">e</span><span class="o">.</span><span class="na">hasMoreElements</span><span class="o">();)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">node</span> <span class="o">=</span> <span class="o">(</span><span class="n">Node</span><span class="o">)</span><span class="n">e</span><span class="o">.</span><span class="na">nextElement</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">node</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">visitor</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//class Client</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">ObjectStructure</span> <span class="n">aObjects</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectStructure</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">aObjects</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">NodeA</span><span class="o">());</span>
+</span><span class='line'>  <span class="n">aObjects</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">NodeB</span><span class="o">());</span>
+</span><span class='line'>  <span class="n">Visitor</span> <span class="n">visitor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcreteVisitor</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">aObjects</span><span class="o">.</span><span class="na">action</span><span class="o">(</span><span class="n">visitor</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>访问者模式的优缺点</h3>
+
+<p>访问者模式仅应当用在被访问的类结构非常稳定的情况。如果出现需要加入新的Node的情况，则必须在每一个访问对象中加入一个对应于这个新节点的访问操作，这将是一个大规模修改，违背“开-闭”原则。</p>
+
+<p>如果系统有比较稳定的数据结构，又有易于变化的算法，使用访问者模式就比较合适。</p>
+
+<p>访问者模式的优点包括：</p>
+
+<ol>
+<li>增加新的操作变得非常容易，只需要增加一个新的访问者。</li>
+<li>此模式将行为集中到一个访问者对象中，而不是分散到节点类中。因此可以在访问的过程中将执行操作的状态积累在自己内部（例如计算合计值）。</li>
+</ol>
+
+
+<p>访问者模式的缺点：增加新的节点类变得很困难。每增加一个新的节点都要在抽象访问者角色中增加一个新的抽象操作，并在每个具体访问者类中增加相应的具体操作。</p>
+
+<p>访问者模式是一个存争议的设计模式。</p>
+
+<p>——《Java与模式》读书笔记</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-19T22:17:28+08:00" pubdate data-updated="true">2014-08-19</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/she-ji-mo-shi/'>设计模式</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/" title="Previous Post: 设计模式:状态模式">&laquo; 设计模式:状态模式</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (9)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (26)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/19/she-ji-mo-shi-fang-wen-zhe-mo-shi/">设计模式:访问者模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/">设计模式:状态模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/13/she-ji-mo-shi-bei-wang-lu-mo-shi/">设计模式:备忘录模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/11/she-ji-mo-shi-ming-ling-mo-shi/">设计模式:命令模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/10/she-ji-mo-shi-ze-ren-lian-mo-shi/">设计模式:责任链模式</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fb4e47bf6950f9d2496daf84fe62cec59' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/08/19/she-ji-mo-shi-fang-wen-zhe-mo-shi/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/08/19/she-ji-mo-shi-fang-wen-zhe-mo-shi/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

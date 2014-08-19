@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-18T23:06:42+08:00</updated>
+  <updated>2014-08-19T23:22:31+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,114 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:访问者模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/19/she-ji-mo-shi-fang-wen-zhe-mo-shi/"/>
+    <updated>2014-08-19T22:17:28+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/19/she-ji-mo-shi-fang-wen-zhe-mo-shi</id>
+    <content type="html"><![CDATA[<p>访问者(Visitor)模式的目的是封装一些施加于某种数据结构元素之上的操作，一旦这些操作需要修改的话，接受这个操作的数据结构则可以保持不变。假如要对一个不同类型的聚集进行遍历，为了判断不同的类型对象，需要写很多的if else，而访问者模式可以解决此问题。示意类图如下：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_20140819_232009.jpg" alt="image" /></p>
+
+<!--more-->
+
+
+<ol>
+<li>Visitor角色：声明一个或多个访问操作。</li>
+<li>ConcreteVisitor角色：实现接口方法。</li>
+<li>Node角色：声明一个接受操作，接受一个访问者对象作为一个参数。</li>
+<li>Concrete Node角色：实现接受操作。</li>
+<li>ObjectStructure角色：遍历结构中的所有元素，如果需要，提供高层次的接口让访问者对象可以访问每一个元素；如果需要，可以设计成一个复合对象或者一个聚集，如List或Set。</li>
+</ol>
+
+
+<h3>单分派和多分派</h3>
+
+<p>方法的接收者（即方法所属的对象）和方法的参量统称为方法的宗量。单分派语言根据一个宗量的类型进行方法的选择，多分派语言根据多于一个的宗量的类型对方法进行选择。</p>
+
+<p>Java语言支持静态的多分派和动态的单分派。对于Java方法重载（Overload），在编译期会根据方法的接收者类型和方法的所有参量类型进行分派，因此是静态多分派。而方法覆盖（Override），是在运行时仅仅根据方法的接收者类型进行分派。</p>
+
+<p>在访问者模式中，数据结构的每一个节点都可以接受一个访问者的调用，此节点向访问者对象传入节点对象，而访问者对象则反过来执行节点对象的操作。这样的过程就叫做“双重分派”。</p>
+
+<h3>示例代码</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//class ConcreteVisitor</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">visitA</span><span class="o">(</span><span class="n">NodeA</span> <span class="n">node</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">node</span><span class="o">.</span><span class="na">operationA</span><span class="o">());</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//class NodeA</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">accept</span><span class="o">(</span><span class="n">Visitor</span> <span class="n">visitor</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">visitor</span><span class="o">.</span><span class="na">visitA</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//class ObjectStructure</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">action</span><span class="o">(</span><span class="n">Visitor</span> <span class="n">visitor</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">Enumeration</span> <span class="n">e</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="na">elements</span><span class="o">();</span> <span class="n">e</span><span class="o">.</span><span class="na">hasMoreElements</span><span class="o">();)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">node</span> <span class="o">=</span> <span class="o">(</span><span class="n">Node</span><span class="o">)</span><span class="n">e</span><span class="o">.</span><span class="na">nextElement</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">node</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">visitor</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//class Client</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">ObjectStructure</span> <span class="n">aObjects</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectStructure</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">aObjects</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">NodeA</span><span class="o">());</span>
+</span><span class='line'>  <span class="n">aObjects</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">NodeB</span><span class="o">());</span>
+</span><span class='line'>  <span class="n">Visitor</span> <span class="n">visitor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcreteVisitor</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">aObjects</span><span class="o">.</span><span class="na">action</span><span class="o">(</span><span class="n">visitor</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>访问者模式的优缺点</h3>
+
+<p>访问者模式仅应当用在被访问的类结构非常稳定的情况。如果出现需要加入新的Node的情况，则必须在每一个访问对象中加入一个对应于这个新节点的访问操作，这将是一个大规模修改，违背“开-闭”原则。</p>
+
+<p>如果系统有比较稳定的数据结构，又有易于变化的算法，使用访问者模式就比较合适。</p>
+
+<p>访问者模式的优点包括：</p>
+
+<ol>
+<li>增加新的操作变得非常容易，只需要增加一个新的访问者。</li>
+<li>此模式将行为集中到一个访问者对象中，而不是分散到节点类中。因此可以在访问的过程中将执行操作的状态积累在自己内部（例如计算合计值）。</li>
+</ol>
+
+
+<p>访问者模式的缺点：增加新的节点类变得很困难。每增加一个新的节点都要在抽象访问者角色中增加一个新的抽象操作，并在每个具体访问者类中增加相应的具体操作。</p>
+
+<p>访问者模式是一个存争议的设计模式。</p>
+
+<p>——《Java与模式》读书笔记</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:状态模式]]></title>
@@ -996,21 +1104,6 @@
 <p>原型模式的优点是：允许动态地增加或减少产品类；提供简化的创建结构，不需要工厂方法那样的等级结构；为软件提供动态加载新功能的能力；</p>
 
 <p>原型模式的缺点是：每个类都必须有clone方法，这对新类来说很容易，但已有的类就不一定，例如引用了不支持序列化的间接对象时，或者含有循环结构的时候。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:Builder模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/07/29/she-ji-mo-shi-buildermo-shi/"/>
-    <updated>2014-07-29T22:28:54+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/07/29/she-ji-mo-shi-buildermo-shi</id>
-    <content type="html"><![CDATA[<p>Builder模式感觉没什么特别的，甚至都不值得称为一种模式。无非就是由Director构建部分，然后再使用一个方法完成构建过程。但Builder模式对于参数太多的构造器却非常有用。先看Builder模式的类图：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-07-29_22.38.17.png" alt="image" /></p>
-
-<p><a href="http://blog.ubone.com/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">这篇博客</a>建议当构造器参数比较多时，考虑使用Builder模式。这是一种非常优雅的方式。</p>
-
-<p>我觉得Builder模式的好处一是使客户端的代码很清晰，不需要那么多的set方法；二是实现了产品构建的原子性，也就是可以在build时，确保产品构建是有效的，如果某些部分或者参数有问题、冲突，就能够在build时失败，避免残次的半成品出现。</p>
 ]]></content>
   </entry>
   
