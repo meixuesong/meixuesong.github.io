@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-20T19:43:41+08:00</updated>
+  <updated>2014-08-20T22:55:41+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,23 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:解释器模式与调停者模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/"/>
+    <updated>2014-08-20T22:31:36+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi</id>
+    <content type="html"><![CDATA[<p>之所以将这两个模式放在一起，是因为它们很少用得到。</p>
+
+<h3>解释器(Interpreter)模式</h3>
+
+<p>给定一个语言之后，解释器模式可以定义出其文法的一种表示，并同时提供一个解释器。客户端可以使用这个解释器来解释这个语言中的句子。例如对于数学运算表达式（a + b + c），如果a, b和c的值已知，如何得到结果？一种办法是使用直接计算值的方法写一个算法，但是如果有很多个表达式呢？不可能为每一个表达式写一个算法。这时候解释器模式就能派上用场了。</p>
+
+<h3>调停者(Mediator)模式</h3>
+
+<p>当对象之间的关系成网状时，就会耦合得过于紧密。通过调停者模式转换成星状结构，调停者在中心，所有对象都只与调停者打交道，实现对象间的解耦。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Effective Java-方法]]></title>
@@ -1041,50 +1058,6 @@
 <li>Adaptee：抽象类</li>
 <li>Target：接口</li>
 </ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:适配器模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/07/30/she-ji-mo-shi-gua-pei-qi-mo-shi/"/>
-    <updated>2014-07-30T22:31:42+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/07/30/she-ji-mo-shi-gua-pei-qi-mo-shi</id>
-    <content type="html"><![CDATA[<p>适配器模式分为类的适配器和对象的适配器。它们都是把被适配类的API转换成目标类的API。但前者使用继承关系，而后者使用委派关系。它们的结构如下图：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-07-30_22.38.26.jpg" alt="image" /> <img src="http://blog.ubone.com/myresource/images/image_blog_2014-07-30_22.40.21.jpg" alt="image" /></p>
-
-<!--more-->
-
-
-<p>上图中的三个角色：</p>
-
-<ol>
-<li>Target接口，这是目标接口，表示要适配成这个接口。</li>
-<li>Adaptee，这是被适配的对象，表示要将它适配成Target。</li>
-<li>Adapter，适配器，将Adaptee适配成Target。</li>
-</ol>
-
-
-<p>第一张图对应的是类的适配器，第二张图是对象的适配器。从图上看，区别主要是Adapter到Adaptee的连线不一样，一个是继承，一个是依赖。</p>
-
-<h2>类的适配器</h2>
-
-<p>先看类的适配器，即第一张图。Adapter继承自Adaptee，因此继承了方法operation1，再加上它自己实现的方法operation2，从而实现了Target接口，完成适配。由于是继承关系，因此Adaptee必须是一个类，不能是接口。</p>
-
-<h2>对象的适配器</h2>
-
-<p>对第二张图，Adaptee是被适配的接口，可以是接口或者类。Adapter包含一个对Adaptee的引用。Adapter的operation1方法，只需调用Adaptee.operation1，同时增加operation2，从而实现Target接口，完成适配。</p>
-
-<p>因为没有了继承关系，因此一个适配器可以把多种不同的源适配到同一个目标。</p>
-
-<h2>什么情况下使用适配器模式</h2>
-
-<ol>
-<li>系统需要使用现有类，而此类的接口不符合系统需要。</li>
-<li>建立一个可重复使用的类，用于与一些彼此没有太大关联的一些类一起工作。</li>
-<li>对象的适配器可用于改变多个已有的子类的接口。</li>
-</ol>
 
 ]]></content>
   </entry>

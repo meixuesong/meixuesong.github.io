@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>设计模式:不变模式 - 码出人生</title>
+  <title>设计模式:解释器模式与调停者模式 - 码出人生</title>
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="从这个模式开始学习行为模式。行为模式是对在不同的对象之间划分责任和算法的抽象化。行为模式不仅仅是关于类和对象的，而且是关于它们之间的相互作用的。行为模式分为类的行为模式（使用继承在几个类之间分配行为）和对象的行为模式（使用对象的聚合来分配行为）。 不变（Immutable）模式是指一个对象创建之后 &hellip;">
+  <meta name="description" content="之所以将这两个模式放在一起，是因为它们很少用得到。 解释器(Interpreter)模式 给定一个语言之后，解释器模式可以定义出其文法的一种表示，并同时提供一个解释器。客户端可以使用这个解释器来解释这个语言中的句子。例如对于数学运算表达式（a + b + c），如果a, b和c的值已知， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi">
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
@@ -67,7 +67,7 @@
   
   <header>
     
-      <h1 class="entry-title">设计模式:不变模式</h1>
+      <h1 class="entry-title">设计模式:解释器模式与调停者模式</h1>
     
     
       <p class="meta">
@@ -83,7 +83,7 @@
   
 
 
-<time datetime="2014-08-09T18:08:28+08:00" pubdate data-updated="true">2014-08-09</time>
+<time datetime="2014-08-20T22:31:36+08:00" pubdate data-updated="true">2014-08-20</time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://blog.ubone.com">Comments</a>
@@ -93,51 +93,15 @@
   </header>
 
 
-<div class="entry-content"><p>从这个模式开始学习行为模式。行为模式是对在不同的对象之间划分责任和算法的抽象化。行为模式不仅仅是关于类和对象的，而且是关于它们之间的相互作用的。行为模式分为类的行为模式（使用继承在几个类之间分配行为）和对象的行为模式（使用对象的聚合来分配行为）。</p>
+<div class="entry-content"><p>之所以将这两个模式放在一起，是因为它们很少用得到。</p>
 
-<p>不变（Immutable）模式是指一个对象创建之后，它的状态将不再变化。不变模式不需要类图描述，它分为弱不变模式和强不变模式。</p>
+<h3>解释器(Interpreter)模式</h3>
 
-<p>不变与只读的区别：只读表示值不能直接修改，但可能随其它变量改变而发生改变。例如出生日期是不变的，但年龄是只读的，因为它会随着时间而改变。</p>
+<p>给定一个语言之后，解释器模式可以定义出其文法的一种表示，并同时提供一个解释器。客户端可以使用这个解释器来解释这个语言中的句子。例如对于数学运算表达式（a + b + c），如果a, b和c的值已知，如何得到结果？一种办法是使用直接计算值的方法写一个算法，但是如果有很多个表达式呢？不可能为每一个表达式写一个算法。这时候解释器模式就能派上用场了。</p>
 
-<!--more-->
+<h3>调停者(Mediator)模式</h3>
 
-
-<h3>弱不变模式</h3>
-
-<p>类的实例状态是不可变化的，但其子类的实例可能会变化，这就是弱不变模式。要实现弱不变模式，必须满足以下条件：</p>
-
-<ol>
-<li>类没有任何方法会修改对象的状态；</li>
-<li>所有属性都应当是私有的；</li>
-<li>如果引用了其它可变对象，必须设法限制外界对可变对象的访问。应当尽量避免在客户端初始化可变对象，否则应该复制一份，而不要直接使用客户端传入的引用。</li>
-</ol>
-
-
-<h3>强不变模式</h3>
-
-<p>类的实例状态是不可变化的，同时它的子类也是不可变化的状态，这就是强不变模式。一个类在满足弱不变模式的前提下，需要满足以下条件之一才是强不变模式：</p>
-
-<ol>
-<li>类的所有方法都应当是final，因此子类不能置换掉此类的方法。</li>
-<li>这个类本身就是final的，因此不可能会有子类。</li>
-</ol>
-
-
-<h3>不变模式的优缺点</h3>
-
-<p>一个不变的对象比可变的对象更加容易维护。不变对象天生就是线程安全的，可以省掉同步化的开销。不变模式唯一的缺点是如果需要频繁地修改不变对象，会创建出大量的对象，这是一种资源的浪费。</p>
-
-<p>在设计任何一个类时，除非有变化的必要，不然就应该将它设计成不变类。</p>
-
-<p>与享元模式的区别：不变模式可以用于实现享元模式，但享元对象并不一定非得是不变对象，只要它的内部状态与环境无关就不会影响享元对象的共享。</p>
-
-<p>几个问题：</p>
-
-<ol>
-<li>构造方法需不需要同步化？（不需要，对象创建只可能发生在一个纯种中）</li>
-<li>子类是否可以置换掉父类的同步方法，它是同步还是不同步？（可以置换，但父类的同步特性没有改变，如果明显地调用父类的同步方法，那么这个方法将是同步调用的）</li>
-</ol>
-
+<p>当对象之间的关系成网状时，就会耦合得过于紧密。通过调停者模式转换成星状结构，调停者在中心，所有对象都只与调停者打交道，实现对象间的解耦。</p>
 </div>
 
 
@@ -160,7 +124,7 @@
   
 
 
-<time datetime="2014-08-09T18:08:28+08:00" pubdate data-updated="true">2014-08-09</time>
+<time datetime="2014-08-20T22:31:36+08:00" pubdate data-updated="true">2014-08-20</time>
       
 
 <span class="categories">
@@ -196,10 +160,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/08/07/ha-er-bin-yin-xiang/" title="Previous Post: 哈尔滨印象">&laquo; 哈尔滨印象</a>
+        <a class="basic-alignment left" href="/blog/2014/08/20/effective-java-fang-fa/" title="Previous Post: Effective Java-方法">&laquo; Effective Java-方法</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/" title="Next Post: 设计模式:策略模式">设计模式:策略模式 &raquo;</a>
       
     </p>
   </footer>
@@ -280,8 +242,8 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/';
-        var disqus_url = 'http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/';
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/';
         var disqus_script = 'embed.js';
       
     (function () {

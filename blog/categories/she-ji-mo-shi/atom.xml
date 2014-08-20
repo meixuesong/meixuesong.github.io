@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 设计模式 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/she-ji-mo-shi/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-20T19:43:41+08:00</updated>
+  <updated>2014-08-20T22:55:41+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,23 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式:解释器模式与调停者模式]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/"/>
+    <updated>2014-08-20T22:31:36+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi</id>
+    <content type="html"><![CDATA[<p>之所以将这两个模式放在一起，是因为它们很少用得到。</p>
+
+<h3>解释器(Interpreter)模式</h3>
+
+<p>给定一个语言之后，解释器模式可以定义出其文法的一种表示，并同时提供一个解释器。客户端可以使用这个解释器来解释这个语言中的句子。例如对于数学运算表达式（a + b + c），如果a, b和c的值已知，如何得到结果？一种办法是使用直接计算值的方法写一个算法，但是如果有很多个表达式呢？不可能为每一个表达式写一个算法。这时候解释器模式就能派上用场了。</p>
+
+<h3>调停者(Mediator)模式</h3>
+
+<p>当对象之间的关系成网状时，就会耦合得过于紧密。通过调停者模式转换成星状结构，调停者在中心，所有对象都只与调停者打交道，实现对象间的解耦。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[设计模式:访问者模式]]></title>
@@ -294,28 +311,6 @@ invoker.action();
 <li>需要支持交易的系统，一个交易结构封装了一组数据更新命令。命令模式可以使系统增加新的交易类型。</li>
 </ol>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:责任链模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/10/she-ji-mo-shi-ze-ren-lian-mo-shi/"/>
-    <updated>2014-08-10T23:24:28+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/10/she-ji-mo-shi-ze-ren-lian-mo-shi</id>
-    <content type="html"><![CDATA[<p>多个对象和下家的引用连接起来形成一条链。请求在这个链上传递，直到链上的某个对象处理此请求。类图如下：</p>
-
-<p><img src="/myresource/images/image_blog_20140810_235454.jpg" alt="image" /></p>
-
-<!--more-->
-
-
-<p>一个纯的责任链模式要求具体的处理者对象只能在两个行为中选择一个：一是处理请求；二是把责任传给下家。不允许出现一个对象即处理请求，又把责任往下传。纯的责任链很难找到，一般看到的例子都是不纯的。</p>
-
-<p>Java 1.0版的AWT事件处理机制就是责任链模式。事件触发后，可以一直浮升，直到有容器处理事件。容器可以选择继续传下去或者处理事件。</p>
-
-<p>针对DHTML的事件处理，Netscape与IE是不一样的。Netscape是从Window->Document往下，最后到达事件产生的对象。而IE则相反，事件产生的对象是链的第一个。</p>
-
-<p>责任链模式并不负责创建责任链，责任链的创建必须由系统的其它部分完成。一个链可以是一条线、树甚至环。责任链模式并不指定链的拓扑结构，但要求在同一时间里，命令只可以被传给一个下家（或者处理请求），不可以同时传给多个下家。</p>
 ]]></content>
   </entry>
   

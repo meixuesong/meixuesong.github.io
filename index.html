@@ -9,13 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="读书笔记： 检查参数的有效性
-必要时进行保护性拷贝
-谨慎设计方法签名
-慎用重载
-慎用可变参数
-返回零长度的数组或者集合，而不是null
-44. 为所有导出的API元素编写文档注释 ">
+  <meta name="description" content="之所以将这两个模式放在一起，是因为它们很少用得到。 解释器(Interpreter)模式 给定一个语言之后，解释器模式可以定义出其文法的一种表示，并同时提供一个解释器。客户端可以使用这个解释器来解释这个语言中的句子。例如对于数学运算表达式（a + b + c），如果a, b和c的值已知， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +64,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/">设计模式:解释器模式与调停者模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-20T22:31:36+08:00" pubdate data-updated="true">2014-08-20</time>
+        
+           | <a href="/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>之所以将这两个模式放在一起，是因为它们很少用得到。</p>
+
+<h3>解释器(Interpreter)模式</h3>
+
+<p>给定一个语言之后，解释器模式可以定义出其文法的一种表示，并同时提供一个解释器。客户端可以使用这个解释器来解释这个语言中的句子。例如对于数学运算表达式（a + b + c），如果a, b和c的值已知，如何得到结果？一种办法是使用直接计算值的方法写一个算法，但是如果有很多个表达式呢？不可能为每一个表达式写一个算法。这时候解释器模式就能派上用场了。</p>
+
+<h3>调停者(Mediator)模式</h3>
+
+<p>当对象之间的关系成网状时，就会耦合得过于紧密。通过调停者模式转换成星状结构，调停者在中心，所有对象都只与调停者打交道，实现对象间的解耦。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -492,52 +533,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/">设计模式:策略模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-09T22:55:42+08:00" pubdate data-updated="true">2014-08-09</time>
-        
-           | <a href="/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>策略模式把行为和环境分割开。环境类负责维持和查询行为类，各种算法则在具体策略类中提供。由于算法和环境独立开来，算法的增减、修改都不会影响环境和客户端。准备一组算法，并将每一个算法封装起来，使得它们可以互换。策略模式的类图如下：</p>
-
-<p><img src="/myresource/images/image_blog_20140809_230502.jpg" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -557,10 +552,14 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (10)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (26)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (10)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/">设计模式:解释器模式与调停者模式</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/08/20/effective-java-fang-fa/">Effective Java-方法</a>
@@ -576,10 +575,6 @@
     
       <li class="post">
         <a href="/blog/2014/08/13/she-ji-mo-shi-bei-wang-lu-mo-shi/">设计模式:备忘录模式</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/11/she-ji-mo-shi-ming-ling-mo-shi/">设计模式:命令模式</a>
       </li>
     
   </ul>

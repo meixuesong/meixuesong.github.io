@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="从这个模式开始学习行为模式。行为模式是对在不同的对象之间划分责任和算法的抽象化。行为模式不仅仅是关于类和对象的，而且是关于它们之间的相互作用的。行为模式分为类的行为模式（使用继承在几个类之间分配行为）和对象的行为模式（使用对象的聚合来分配行为）。 不变（Immutable）模式是指一个对象创建之后 &hellip;">
+  <meta name="description" content="策略模式把行为和环境分割开。环境类负责维持和查询行为类，各种算法则在具体策略类中提供。由于算法和环境独立开来，算法的增减、修改都不会影响环境和客户端。准备一组算法，并将每一个算法封装起来，使得它们可以互换。策略模式的类图如下： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,52 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/">设计模式:策略模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-09T22:55:42+08:00" pubdate data-updated="true">2014-08-09</time>
+        
+           | <a href="/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>策略模式把行为和环境分割开。环境类负责维持和查询行为类，各种算法则在具体策略类中提供。由于算法和环境独立开来，算法的增减、修改都不会影响环境和客户端。准备一组算法，并将每一个算法封装起来，使得它们可以互换。策略模式的类图如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140809_230502.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -484,52 +530,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/30/she-ji-mo-shi-gua-pei-qi-mo-shi/">设计模式:适配器模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-30T22:31:42+08:00" pubdate data-updated="true">2014-07-30</time>
-        
-           | <a href="/blog/2014/07/30/she-ji-mo-shi-gua-pei-qi-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/30/she-ji-mo-shi-gua-pei-qi-mo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>适配器模式分为类的适配器和对象的适配器。它们都是把被适配类的API转换成目标类的API。但前者使用继承关系，而后者使用委派关系。它们的结构如下图：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-30_22.38.26.jpg" alt="image" /> <img src="/myresource/images/image_blog_2014-07-30_22.40.21.jpg" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/30/she-ji-mo-shi-gua-pei-qi-mo-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -551,10 +551,14 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (10)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (26)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (10)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/">设计模式:解释器模式与调停者模式</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/08/20/effective-java-fang-fa/">Effective Java-方法</a>
@@ -570,10 +574,6 @@
     
       <li class="post">
         <a href="/blog/2014/08/13/she-ji-mo-shi-bei-wang-lu-mo-shi/">设计模式:备忘录模式</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/11/she-ji-mo-shi-ming-ling-mo-shi/">设计模式:命令模式</a>
       </li>
     
   </ul>
