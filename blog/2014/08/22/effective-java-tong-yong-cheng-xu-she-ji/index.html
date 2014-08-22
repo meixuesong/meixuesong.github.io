@@ -1,0 +1,370 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Effective Java-通用程序设计 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="Effective Java 通用程序设计，读书笔记： 将局部变量的作用域最小化
+for-each循环优先于传统的for循环
+使用类库
+如果需要精确值，就避免使用float和double
+基本类型优先于装箱基本类型
+如果其它类型更合适，则尽量避免使用字符串
+小心字符串拼接的性能问题 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Effective Java-通用程序设计</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-22T20:06:07+08:00" pubdate data-updated="true">2014-08-22</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Effective Java 通用程序设计，读书笔记：</p>
+
+<ol>
+<li>将局部变量的作用域最小化</li>
+<li>for-each循环优先于传统的for循环</li>
+<li>使用类库</li>
+<li>如果需要精确值，就避免使用float和double</li>
+<li>基本类型优先于装箱基本类型</li>
+<li>如果其它类型更合适，则尽量避免使用字符串</li>
+<li>小心字符串拼接的性能问题</li>
+<li>通过接口引用对象</li>
+<li>接口优先于反射机制</li>
+<li>谨慎使用本地方法</li>
+<li>谨慎进行优化</li>
+<li>遵守普遍接受的命名惯例</li>
+</ol>
+
+
+<!--more-->
+
+
+<h2>45 将局部变量的作用域最小化</h2>
+
+<p>局部变量只在第一次使用它的地方声明。每个局部变量的声明都应该包含一个初始化表达式。</p>
+
+<h2>46 for-each循环优先于传统的for循环</h2>
+
+<p><code>for(String str : list)</code>这样的for-each语句在简洁性和预防Bug方面有着传统for循环无法比拟的优势，并且没有性能损失。但如果在遍历时删除、替换、前移等操作时，无法使用for-each语句。</p>
+
+<h2>47 使用类库</h2>
+
+<p>不要重新发明轮子，尽量使用标准类库。例如随机数应该使用Random.nextInt(int)，而不是自己去写一个生成随机数的类。Java程序员应该精通java.lang, java.util包中的内容，还应该熟悉java.io, Collection, concurrent类库。</p>
+
+<h2>48 如果需要精确值，就避免使用float和double</h2>
+
+<p>要计算精确的结果，可以使用BigDecimal，它还包括8种舍入模式。但是它的缺点是不太方便并且有性能上的损失。也可以自己处理小数点和舍入，使用int, long。数据数值没有超过9位十进制数字，可以使用int，如果不超过18位数字，可以使用long。如果可能超过18位，就必须使用BigDecimal</p>
+
+<h2>49 基本类型优先于装箱基本类型</h2>
+
+<p>也就是int，boolean等优先于Integer和Boolean等。下面方法的返回值是多少？</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">Integer</span> <span class="n">first</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">second</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>     <span class="k">return</span> <span class="n">first</span> <span class="o">&lt;</span> <span class="n">second</span> <span class="o">?</span> <span class="o">-</span><span class="mi">1</span> <span class="o">:</span> <span class="o">(</span><span class="n">first</span> <span class="o">==</span> <span class="n">second</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">compare</span><span class="o">(</span><span class="k">new</span> <span class="n">Integer</span><span class="o">(</span><span class="mi">42</span><span class="o">),</span> <span class="k">new</span> <span class="n">Integer</span><span class="o">(</span><span class="mi">42</span><span class="o">));</span>  <span class="c1">//结果为1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>原因是装箱类型是对象引用，<code>first == second</code> 为false。除此之外，需要注意的是装箱类型可能是null，可能因此引起一些潜在隐患。而装箱类型的性能也可能是个问题（如创建和销毁对象中第5条“避免创建不必要的对象”中提到的循环累计时的Long性能不如long）/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/</p>
+
+<h2>50 如果其它类型更合适，则尽量避免使用字符串</h2>
+
+<ol>
+<li>字符串不适合代替其它的值类型，例如从文件中的int值以字符串存在，读出后就应该还原成int类型。</li>
+<li>字符串不适合代替枚举类型</li>
+<li>字符串不适合代替聚集类型。如用001_003代表两个东西，更好的办法是用一个私有静态成员类。</li>
+</ol>
+
+
+<h2>51 小心字符串拼接的性能问题</h2>
+
+<h2>52 通过接口引用对象</h2>
+
+<p>养成用接口作为类型的习惯。如果没有合适的接口存在，完全可以用（基）类来引用对象。</p>
+
+<h2>53 接口优先于反射机制</h2>
+
+<p>反射机制是一种功能强大的机制，对于特定的复杂系统编程任务，它是非常必要的，但它也有一些缺点：</p>
+
+<ol>
+<li>丧失了编译时类型检查的好处</li>
+<li>执行反射访问所需的代码笨拙而冗长</li>
+<li>性能损失</li>
+</ol>
+
+
+<p>因此，如果你编写的程序必须要与编译时未知的类一起工作，如有可能，就应该仅仅使用反射机制来实例化对象，而访问对象时则使用编译时已知的某个接口或者父类。例如未知的类实现了Set，则可以用反射机制实例化它，但访问它的方法时，使用Set的方法。</p>
+
+<h2>54 谨慎使用本地方法</h2>
+
+<p>Java Native Interface(JNI)允许Java调用本地方法（指本地程序设计语言如C, C++编写的特殊方法）。Java早期时，本地方法的用途是访问特定平台的能力（如注册表）、访问遗留代码库和提高性能。但现在已经没有太大必要了。</p>
+
+<h2>55 谨慎进行优化</h2>
+
+<p>不要费力去编写快速的程序，应该努力编写好的程序。在设计API、数据格式时，一定要考虑性能的因素。例如API，如果后期将公有的类型变成可变的（mutable），可能会导致大量不必要的保护性拷贝，影响性能。同样地，在适合使用复合模式的公有类使用了继承，会把这个类永远与父类绑在一起，人为地限制了子类的性能。如果在API中使用实现类型而不是接口，就会被束缚在一个具体的实现上，即使将来出现了更快的实现你也无法使用。</p>
+
+<h2>56 遵守普遍接受的命名惯例</h2>
+
+<p>对于类型参数：</p>
+
+<ul>
+<li>T表示任意类型</li>
+<li>E表示集合的元素类型</li>
+<li>K和V表示Map的键和值</li>
+<li>X表示异常</li>
+<li>任何类型的序列可以是T, U, V或者T1, T2, T3</li>
+</ul>
+
+
+<p>对于转换对象的方法，返回不同类型的独立对象的方法，通常被称为toType，如toString, toArray。返回视图的方法通常称为asType，如asList。静态工厂的常用名称为valueOf, of, getInstance, newInstance, getType和newType。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-22T20:06:07+08:00" pubdate data-updated="true">2014-08-22</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/" title="Previous Post: 设计模式:解释器模式与调停者模式">&laquo; 设计模式:解释器模式与调停者模式</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (11)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/">Effective Java-通用程序设计</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/">设计模式:解释器模式与调停者模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/20/effective-java-fang-fa/">Effective Java-方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/19/she-ji-mo-shi-fang-wen-zhe-mo-shi/">设计模式:访问者模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/">设计模式:状态模式</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fb4e47bf6950f9d2496daf84fe62cec59' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

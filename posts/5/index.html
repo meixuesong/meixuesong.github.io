@@ -9,7 +9,12 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="RandomAccessFile提供了随机存取文件的支持，但是如何将对象持久化到文件中，并随机存取呢？ ">
+  <meta name="description" content="《Effective Java》是Java语言的经典著作，本文总结书中“创建和销毁对象”的论述。主要包括： 用静态工厂方法代替构造器
+构造器参数比较多时，考虑使用Builder
+用私有构造方法或枚举强化单例属性
+通过private构造器强化不可实例化的能力
+避免创建不必要的对象
+消除过期的对象引用 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +69,61 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">Effective Java-创建和销毁对象</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-27T09:20:04+08:00" pubdate data-updated="true">2014-06-27</time>
+        
+           | <a href="/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>《Effective Java》是Java语言的经典著作，本文总结书中“创建和销毁对象”的论述。主要包括：</p>
+
+<ol>
+<li>用静态工厂方法代替构造器</li>
+<li>构造器参数比较多时，考虑使用Builder</li>
+<li>用私有构造方法或枚举强化单例属性</li>
+<li>通过private构造器强化不可实例化的能力</li>
+<li>避免创建不必要的对象</li>
+<li>消除过期的对象引用</li>
+<li>避免使用finalize方法</li>
+</ol>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -346,10 +406,14 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (10)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (11)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/">Effective Java-通用程序设计</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/">设计模式:解释器模式与调停者模式</a>
@@ -365,10 +429,6 @@
     
       <li class="post">
         <a href="/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/">设计模式:状态模式</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/13/she-ji-mo-shi-bei-wang-lu-mo-shi/">设计模式:备忘录模式</a>
       </li>
     
   </ul>

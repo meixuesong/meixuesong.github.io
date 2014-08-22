@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-20T22:55:41+08:00</updated>
+  <updated>2014-08-22T20:09:18+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,118 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Effective Java-通用程序设计]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/"/>
+    <updated>2014-08-22T20:06:07+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji</id>
+    <content type="html"><![CDATA[<p>Effective Java 通用程序设计，读书笔记：</p>
+
+<ol>
+<li>将局部变量的作用域最小化</li>
+<li>for-each循环优先于传统的for循环</li>
+<li>使用类库</li>
+<li>如果需要精确值，就避免使用float和double</li>
+<li>基本类型优先于装箱基本类型</li>
+<li>如果其它类型更合适，则尽量避免使用字符串</li>
+<li>小心字符串拼接的性能问题</li>
+<li>通过接口引用对象</li>
+<li>接口优先于反射机制</li>
+<li>谨慎使用本地方法</li>
+<li>谨慎进行优化</li>
+<li>遵守普遍接受的命名惯例</li>
+</ol>
+
+
+<!--more-->
+
+
+<h2>45 将局部变量的作用域最小化</h2>
+
+<p>局部变量只在第一次使用它的地方声明。每个局部变量的声明都应该包含一个初始化表达式。</p>
+
+<h2>46 for-each循环优先于传统的for循环</h2>
+
+<p><code>for(String str : list)</code>这样的for-each语句在简洁性和预防Bug方面有着传统for循环无法比拟的优势，并且没有性能损失。但如果在遍历时删除、替换、前移等操作时，无法使用for-each语句。</p>
+
+<h2>47 使用类库</h2>
+
+<p>不要重新发明轮子，尽量使用标准类库。例如随机数应该使用Random.nextInt(int)，而不是自己去写一个生成随机数的类。Java程序员应该精通java.lang, java.util包中的内容，还应该熟悉java.io, Collection, concurrent类库。</p>
+
+<h2>48 如果需要精确值，就避免使用float和double</h2>
+
+<p>要计算精确的结果，可以使用BigDecimal，它还包括8种舍入模式。但是它的缺点是不太方便并且有性能上的损失。也可以自己处理小数点和舍入，使用int, long。数据数值没有超过9位十进制数字，可以使用int，如果不超过18位数字，可以使用long。如果可能超过18位，就必须使用BigDecimal</p>
+
+<h2>49 基本类型优先于装箱基本类型</h2>
+
+<p>也就是int，boolean等优先于Integer和Boolean等。下面方法的返回值是多少？</p>
+
+<p>```java
+public int compare(Integer first, Integer second) {</p>
+
+<pre><code> return first &lt; second ? -1 : (first == second ? 0 : 1);
+</code></pre>
+
+<p>}</p>
+
+<p>compare(new Integer(42), new Integer(42));  //结果为1
+```</p>
+
+<p>原因是装箱类型是对象引用，<code>first == second</code> 为false。除此之外，需要注意的是装箱类型可能是null，可能因此引起一些潜在隐患。而装箱类型的性能也可能是个问题（如创建和销毁对象中第5条“避免创建不必要的对象”中提到的循环累计时的Long性能不如long）/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/</p>
+
+<h2>50 如果其它类型更合适，则尽量避免使用字符串</h2>
+
+<ol>
+<li>字符串不适合代替其它的值类型，例如从文件中的int值以字符串存在，读出后就应该还原成int类型。</li>
+<li>字符串不适合代替枚举类型</li>
+<li>字符串不适合代替聚集类型。如用001_003代表两个东西，更好的办法是用一个私有静态成员类。</li>
+</ol>
+
+
+<h2>51 小心字符串拼接的性能问题</h2>
+
+<h2>52 通过接口引用对象</h2>
+
+<p>养成用接口作为类型的习惯。如果没有合适的接口存在，完全可以用（基）类来引用对象。</p>
+
+<h2>53 接口优先于反射机制</h2>
+
+<p>反射机制是一种功能强大的机制，对于特定的复杂系统编程任务，它是非常必要的，但它也有一些缺点：</p>
+
+<ol>
+<li>丧失了编译时类型检查的好处</li>
+<li>执行反射访问所需的代码笨拙而冗长</li>
+<li>性能损失</li>
+</ol>
+
+
+<p>因此，如果你编写的程序必须要与编译时未知的类一起工作，如有可能，就应该仅仅使用反射机制来实例化对象，而访问对象时则使用编译时已知的某个接口或者父类。例如未知的类实现了Set，则可以用反射机制实例化它，但访问它的方法时，使用Set的方法。</p>
+
+<h2>54 谨慎使用本地方法</h2>
+
+<p>Java Native Interface(JNI)允许Java调用本地方法（指本地程序设计语言如C, C++编写的特殊方法）。Java早期时，本地方法的用途是访问特定平台的能力（如注册表）、访问遗留代码库和提高性能。但现在已经没有太大必要了。</p>
+
+<h2>55 谨慎进行优化</h2>
+
+<p>不要费力去编写快速的程序，应该努力编写好的程序。在设计API、数据格式时，一定要考虑性能的因素。例如API，如果后期将公有的类型变成可变的（mutable），可能会导致大量不必要的保护性拷贝，影响性能。同样地，在适合使用复合模式的公有类使用了继承，会把这个类永远与父类绑在一起，人为地限制了子类的性能。如果在API中使用实现类型而不是接口，就会被束缚在一个具体的实现上，即使将来出现了更快的实现你也无法使用。</p>
+
+<h2>56 遵守普遍接受的命名惯例</h2>
+
+<p>对于类型参数：</p>
+
+<ul>
+<li>T表示任意类型</li>
+<li>E表示集合的元素类型</li>
+<li>K和V表示Map的键和值</li>
+<li>X表示异常</li>
+<li>任何类型的序列可以是T, U, V或者T1, T2, T3</li>
+</ul>
+
+
+<p>对于转换对象的方法，返回不同类型的独立对象的方法，通常被称为toType，如toString, toArray。返回视图的方法通常称为asType，如asList。静态工厂的常用名称为valueOf, of, getInstance, newInstance, getType和newType。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Effective Java-方法]]></title>
@@ -647,189 +759,6 @@ public interface Comparator<T> {</p>
 <li>创建函数对象，例如匿名的Comparator实例。</li>
 <li>创建过程对象，例如Runnable, Thread或者TimerTask实例。</li>
 <li>在静态工厂方法的内部。参考第18条。</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java泛型]]></title>
-    <link href="http://blog.ubone.com/blog/2014/07/02/javafan-xing/"/>
-    <updated>2014-07-02T22:24:37+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/07/02/javafan-xing</id>
-    <content type="html"><![CDATA[<p>Java泛型功能强大，用起来也很简单。看到一些代码，有时候用?号，有时候又可以直接使用<code>&lt;T&gt;</code>，都有哪些区别呢？系统地了解一下吧。</p>
-
-<!--more-->
-
-
-<h2>1.参数化类型</h2>
-
-<p>参数化类型，也就是泛型。</p>
-
-<p>```java
-List<String> list = new ArrayList<String>();</p>
-
-<p>Map&lt;String, Date> map = new HaspMap&lt;String, Date>();
-```</p>
-
-<p>上面这些都是很常见的用法。或者我们创建一个参数化的类型：</p>
-
-<p>```java
-public class MultiHashMap&lt;K, V> {</p>
-
-<pre><code>private Map&lt;K, List&lt;V&gt;&gt; map = new HashMap&lt;&gt;();  //Java 7中可以省略类型了。 
-public void put(K key, V value) {
-    List&lt;V&gt; values = map.get(key);
-    ...
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h2>2.擦拭法</h2>
-
-<p>要实现参数化类型，有多种方法。C++采用的方法是为每种参数化类都创建一个全新的类型定义。例如<code>MultiHashMap&lt;Date, String&gt;</code>将会创建一个新类：</p>
-
-<p>```java
-//注：这不是Java的做法。
-public class MultiHashMap&lt;Date, String> {</p>
-
-<pre><code>...
-</code></pre>
-
-<p>}</p>
-
-<p>```</p>
-
-<p>但这不是Java的做法。Java使用一种叫做“擦拭法”的方法。每个类型参数缺省使用顶级类如Object，客户端的绑定信息被擦去。例如MultiHashMap会被翻译成：</p>
-
-<p>```java
-public class MultiHashMap {</p>
-
-<pre><code>private Map map = new HashMap();
-
-public void put(K key, V value) {
-    List values = (List)map.get(key);
-    ...
-}
-</code></pre>
-
-<p>} <br/>
-```</p>
-
-<p>这个上限也可以指定，例如：</p>
-
-<p>```java
-public class EventMap<K extends java.util.Date, V> {</p>
-
-<p>}
-```</p>
-
-<p>表示K必须是Date或者其子类。</p>
-
-<h2>3.通配符</h2>
-
-<p>假设你有个方法想对某种类型的List进行遍历处理：</p>
-
-<p>```java</p>
-
-<pre><code>public static String concatenate(List&lt;Object&gt; list) {
-
-｝   
-</code></pre>
-
-<p>```</p>
-
-<p>一旦你如上面一样定义了<code>List&lt;Object&gt;</code>参数，则无法将其它类型的列表传入。你可以向<code>List&lt;Object&gt;</code>加入Object及其子类的对象，例如：<code>list.add(new Date())</code>。因为Date是Object的子类。但是，当一个方法的参数是<code>List&lt;Object&gt;</code>时，你不能将<code>List&lt;Date&gt;</code>类型的变量作为参数传入这个方法。原因是<code>List&lt;Date&gt;</code>不是<code>List&lt;Object&gt;</code>的子类！例如将<code>List&lt;String&gt;</code>类型作为参数传入将导致无法编译。这时候你可以使用通配符：</p>
-
-<p>```java</p>
-
-<pre><code>public static String concatenate(List&lt;?&gt; list) {
-    //遍历时就可以使用Object了。
-    for(Object item : list) {
-        ...
-    }
-｝
-</code></pre>
-
-<p>```</p>
-
-<p>但通配符也隐含了一些问题。例如，下面的代码编译错误：</p>
-
-<p>```java
-public static void pad(List&lt;?> list, Object object, int count) {</p>
-
-<pre><code>for (int i = 0; i &lt; count; i ++) {
-    list.add(object);
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>错误的原因是<code>List&lt;?&gt;</code>指示了一个未知的类型，编译器无法判断指定的操作是否安全，因此它就全部禁止了。</p>
-
-<blockquote><p><code>List&lt;?&gt;</code>声明了List中包含的元素类型是未知的。通配符所代表的其实是一组类型，但具体的类型是未知的。<code>List&lt;?&gt;</code>所声明的就是所有类型都是可以的。但是<code>List&lt;?&gt;</code>并不等同于<code>List&lt;Object&gt;</code>。<code>List&lt;Object&gt;</code>实际上确定了List中包含的是Object及其子类，在使用的时候都可以通过Object来进行引用。而<code>List&lt;?&gt;</code>则其中所包含的元素类型是不确定。其中可能包含的是String，也可能是 Integer。如果它包含了String的话，往里面添加Integer类型的元素就是错误的。正因为类型未知，就不能通过<code>new ArrayList&lt;?&gt;()</code>的方法来创建一个新的ArrayList对象。因为编译器无法知道具体的类型是什么。</p></blockquote>
-
-<p>那么应该如何解决这个问题呢？可以使用泛型方法：</p>
-
-<p>```java
-public class SomeClass {</p>
-
-<pre><code>public static &lt;T&gt; void pad(List&lt;T&gt; list, T object, int count) {
-    for(int i = 0; i &lt; count; i++) {
-        list.add(object);
-    }
-}
-
-public static void main(String[] args) {
-    List&lt;String&gt; list = new ArrayList&lt;String&gt;();
-    pad(list, "Hello", 5);
-
-    System.out.println(list);
-}
-</code></pre>
-
-<p>}</p>
-
-<p>//结果为：
-[Hello, Hello, Hello, Hello, Hello]
-```</p>
-
-<p>再来个例子，将通配符与泛型方法结合起来用，将一个List从头至尾交换一遍：</p>
-
-<p>```java</p>
-
-<pre><code>static void inPlaceReverse(List&lt;?&gt; list) {
-    int len = list.size();
-    for(int i = 0; i &lt; len; i++) {
-        swap(list, i, len - 1 - i);
-    }
-}
-
-private static &lt;T&gt; void swap(List&lt;T&gt; list, int i, int opposite) {
-    T temp = list.get(i);
-    list.set(i, list.get(opposite));
-    list.set(opposite, temp);
-}
-</code></pre>
-
-<p>```</p>
-
-<p><strong>通配符的上、下界</strong>，super和extends</p>
-
-<p>因为对于<code>List&lt;?&gt;</code>中的元素只能用Object来引用，在有些情况下不是很方便。在这些情况下，可以使用上下界来限制未知类型的范围。 如<code>List&lt;? extends Number&gt;</code>说明List中可能包含的元素类型是Number及其子类。而<code>List&lt;? super Number&gt;</code>则说明List中包含的是Number及其父类。当引入了上界之后，在使用类型的时候就可以使用上界类中定义的方法。比如访问 <code>List&lt;? extends Number&gt;</code>的时候，就可以使用Number类的intValue等方法。</p>
-
-<h2>总结</h2>
-
-<p>擦拭法是理解问题的关键。</p>
-
-<h2>参考</h2>
-
-<ul>
-<li>《Agile Java》</li>
-<li><a href="http://www.infoq.com/cn/articles/cf-java-generics">http://www.infoq.com/cn/articles/cf-java-generics</a></li>
 </ul>
 
 ]]></content>
