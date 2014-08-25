@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-22T20:09:18+08:00</updated>
+  <updated>2014-08-25T20:05:34+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -146,7 +146,7 @@ public int compare(Integer first, Integer second) {</p>
 <!--more-->
 
 
-<h1>38 检查参数的有效性</h1>
+<h2>38 检查参数的有效性</h2>
 
 <p>检查方法参数的有效性，以便更早地发现问题。对于公有方法，要用Javadoc的@throw标签在文档中说明违反参数限制时会抛出的异常。例如：IllegalArgumentException, IndexOutOfBundsException或NullPointerException。对于非公有方法，一般采用断言来检查参数。</p>
 

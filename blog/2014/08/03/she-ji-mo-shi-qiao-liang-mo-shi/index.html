@@ -103,7 +103,7 @@
 <ol>
 <li>抽象化角色（Abstraction）：抽象化给出的定义，并保存一个对实现化对象的引用。</li>
 <li>修正抽象化角色（Refined Abstraction）：扩展抽象化角色，改变和修正父类的定义。</li>
-<li>实现化角色（Implementor）：给出实现化角色的接口，但不给出具体实现。这个接口不一定与抽象化角色接口相同，实际上，这两个接口可以非常不一样。实现化角色应当只给出底层操作，而抽象化角色应当只给出基于底层操作的更高一层的操作。</li>
+<li>实现化角色（Implementor）：给出实现化角色的接口，但不给出具体实现。这个接口不一定与抽象化角色接口相同，实际上，这两个接口可以非常不一样。<strong>实现化角色应当只给出底层操作，而抽象化角色应当只给出基于底层操作的更高一层的操作。</strong></li>
 <li>具体实现化角色（Concrete Implementor）：给出实现化角色接口的具体实现。当具体实现化类只有一个ConcreteImplementor的情况下，实现化角色就可以省略了。</li>
 </ol>
 
@@ -123,6 +123,8 @@
 
 
 <p>桥梁模式的一个例子是Java AWT的Peer架构。Java应用在不同的操作系统上有不同的Look and Feel。Java为AWT中的每一个GUI构件都提供了一个Peer构件。Java程序员只需要关心Button对象提供的接口，当运行时，Button对象动态地与一个本地环境的底层Peer对象联系起来，这个Peer对象会按照指令执行正确的操作。</p>
+
+<p><img src="/myresource/images/image_blog_20140825_200404.jpg" alt="image" /></p>
 </div>
 
 
