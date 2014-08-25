@@ -36,7 +36,7 @@ categories:
 ### 装饰模式的简化
 不论如何简化，必须保证：
 
-1. ConcreteDecorator类必须继承自一个共同的父类Component。
+1. ConcreteDecorator类必须实现/继承自一个共同的父类Component。
 2. 尽量保持Component作为一个“轻”类。
 
 常见的简化包括：
