@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Others | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/others/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-26T20:59:59+08:00</updated>
+  <updated>2014-08-26T22:22:10+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -41,7 +41,12 @@
 
 <p>除了按位计数，还有<strong>罗马计数法</strong>，例如钟表表盘。没有0，使用I(1), V(5), X(10), L(50), C(100), D(500), M(1000)来记数，将并排的数字加起来就是所表示的数。其中有“减法规则”，如IV，在V的左侧写I，表示5-1。例如：</p>
 
-<blockquote><p>MCMXCVIII = (M) + (CM) + (XC) + (V) + (III) = (1000) + (1000 &ndash; 100) + (100 &ndash; 10) + (5) + (3) = 1998</p></blockquote>
+<ul>
+<li>MCMXCVIII = (M) + (CM) + (XC) + (V) + (III)</li>
+<li>= (1000) + (1000 &ndash; 100) + (100 &ndash; 10) + (5) + (3)</li>
+<li>= 1998</li>
+</ul>
+
 
 <h3>第2章 逻辑</h3>
 
@@ -55,7 +60,11 @@
 
 <p>德摩根定律指的是(﹁指非，^表示并且， V表示或者)：</p>
 
-<blockquote><p>(﹁A)V(﹁B) = ﹁(A ^ B), (﹁A)<sup>﹁B</sup> = ﹁(A V B)</p></blockquote>
+<ul>
+<li>(﹁A)V(﹁B) = ﹁(A ^ B)</li>
+<li>(﹁A)<sup>﹁B</sup> = ﹁(A V B)</li>
+</ul>
+
 
 <h3>卡诺图</h3>
 
