@@ -1,0 +1,426 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>程序员的数学 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="这是一篇《程序员的数学》读书笔记。这本书没有讲高深的数学理论，而是用浅显易懂的道理推导出一些数学知识。整本书浅显易懂，学不了太多东西，但对启发数学思维有一点用处。 全书共分为8章，每章的内容或要点摘录如下： 第1章 0的故事 本章首先介绍了10进制、2进制计数法。它们都属于按位计数， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/08/25/cheng-xu-yuan-de-shu-zi">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">程序员的数学</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-25T22:22:26+08:00" pubdate data-updated="true">2014-08-25</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>这是一篇《程序员的数学》读书笔记。这本书没有讲高深的数学理论，而是用浅显易懂的道理推导出一些数学知识。整本书浅显易懂，学不了太多东西，但对启发数学思维有一点用处。</p>
+
+<!--more-->
+
+
+<p>全书共分为8章，每章的内容或要点摘录如下：</p>
+
+<h2>第1章 0的故事</h2>
+
+<p>本章首先介绍了10进制、2进制计数法。它们都属于<strong>按位计数</strong>，例如10进制的2503可表示为：</p>
+
+<blockquote><p><strong>2</strong> * 10<sup>3</sup> + <strong>5</strong> * 10<sup>2</sup> + <strong>0</strong> * 10<sup>1</sup> + <strong>3</strong> * 10<sup>0</sup></p></blockquote>
+
+<p>同样地，2进制的1100可表示为：</p>
+
+<blockquote><p><strong>1</strong> * 2<sup>3</sup> + <strong>1</strong> * 2<sup>2</sup> + <strong>0</strong> * 2<sup>1</sup> + <strong>0</strong> * 2<sup>0</sup></p></blockquote>
+
+<p>将10进制的转换成2进制，只需要除以2，将将余数排列起来就可以了，如下图，将12转换成2进制，变成1100：</p>
+
+<p><img src="/myresource/images/image_blog_20140825_m01.jpg" alt="image" /></p>
+
+<p>除了按位计数，还有<strong>罗马计数法</strong>，例如钟表表盘。没有0，使用I(1), V(5), X(10), L(50), C(100), D(500), M(1000)来记数，将并排的数字加起来就是所表示的数。其中有“减法规则”，如IV，在V的左侧写I，表示5-1。例如：</p>
+
+<blockquote><p>MCMXCVIII = (M) + (CM) + (XC) + (V) + (III) = (1000) + (1000 &ndash; 100) + (100 &ndash; 10) + (5) + (3) = 1998</p></blockquote>
+
+<h3>第2章 逻辑</h3>
+
+<p>逻辑的基本思路：完整性（有没有遗漏？）和排他性（有没有重复？）。可以画一根数轴来检查：</p>
+
+<p><img src="/myresource/images/image_blog_20140825_m02.jpg" alt="image" /></p>
+
+<p><strong>最容易出错的地方往往发生在边界值上！</strong></p>
+
+<p>除了常见的逻辑运算（非、并且、或者）外，异或指的是：A⊕B，仅当A和B不同时为True, 相同时为False。</p>
+
+<p>德摩根定律指的是(﹁指非，^表示并且， V表示或者)：</p>
+
+<blockquote><p>(﹁A)V(﹁B) = ﹁(A ^ B), (﹁A)<sup>﹁B</sup> = ﹁(A V B)</p></blockquote>
+
+<h3>卡诺图</h3>
+
+<p>卡诺图是一个非常好的工具，它能够简化复杂的逻辑表达式。例如对于这样的规则：</p>
+
+<p>当发生以下情况时按下按钮：</p>
+
+<ol>
+<li>绿灯、黄灯、红灯都灭</li>
+<li>黄灯灭，红灯亮</li>
+<li>绿灯灭，黄灯亮</li>
+<li>绿灯、黄灯、红灯都亮</li>
+</ol>
+
+
+<p>可以设有以下命题，画出卡诺图：</p>
+
+<ol type="a">
+<li>绿灯亮</li>
+<li>黄灯亮</li>
+<li>红灯亮</li>
+</ol>
+
+
+<p><img src="/myresource/images/image_blog_20140825_m03.jpg" alt="image" /></p>
+
+<p>最后得出逻辑表达式：当(﹁A)V C时，按下按钮。</p>
+
+<h2>第3章 余数</h2>
+
+<p>将较大的数字除一下，就能根据余数分组。例如求10<sup>100</sup>天以后是星期几？此外，还有奇偶校验的问题。将大问题转换成小问题，余数是一种重要武器。</p>
+
+<h2>第4章 数学归纳法</h2>
+
+<p>两个步骤：</p>
+
+<ol>
+<li>证明P(0)成立。</li>
+<li>证明不论k为0以上的哪个整数，若P(k)成立，则P(k + 1)也成立。</li>
+</ol>
+
+
+<h2>第5章 排列组合</h2>
+
+<ul>
+<li>加法法则：|A U B| = |A| + |B|</li>
+<li>乘法法则：|A x B| = |A| x |B|</li>
+</ul>
+
+
+<p>基本知识：n位2进制数可以表示的数的总数为2<sup>n</sup>。</p>
+
+<h3>置换</h3>
+
+<p>如果将A, B, C三张牌按照ABC, ACB, BAC&hellip;等顺序排列，共有多少种排法？</p>
+
+<ul>
+<li>第1张牌有3种选法</li>
+<li>第2张牌，扣除了第1张牌，因此有2种选法</li>
+<li>第3张牌，有1张选法。</li>
+</ul>
+
+
+<p>因此共有3 x 2 x 1 = 6种排法。</p>
+
+<p>将n个事务按顺序进行排列称为置换（Substitution）。n张牌的置换总数为n的阶乘：n! = n x (n &ndash; 1) x (n &ndash; 2) x &hellip; x 2 x 1。</p>
+
+<h3>排列</h3>
+
+<p>从n个事物中取出一部分进行排列（Permutation）。从A、B、C、D、E共5张牌，选出3张牌进行排列，有多少种排法？</p>
+
+<ul>
+<li>第1张的取法有5种</li>
+<li>第2张的取法有4种</li>
+<li>第3张的取法有3种</li>
+</ul>
+
+
+<p>因此共有：5x4x3=60种排列。即从n张牌中取出k张进行排列的种数为：P<sub>n</sub><sup>k</sup> = n x (n &ndash; 1) x (n &ndash; 2) x &hellip; x (n &ndash; k + 1) = n! /(n-k)!</p>
+
+<h3>组合</h3>
+
+<p>从n个事物中取出一部分，不考虑它们的顺序，称为组合（Combination）。从n张牌，选出k张牌，不考虑顺序，有多少种取法？可以先按排列一样，考虑顺序进行计数，然后除以重复计数的部分。即：</p>
+
+<ul>
+<li>C<sub>n</sub><sup>k</sup> = n张里面取k张的排列总数 / k张的置换总数</li>
+<li>= P<sub>n</sub><sup>k</sup> / P<sub>k</sub><sup>k</sup></li>
+<li>= n! / ((n-1)!k!)</li>
+</ul>
+
+
+<h3>置换、排列和组合的关系</h3>
+
+<p>置换和组合相结合就是排列。为什么？置换表示“3张牌的交替排列方法”，组合表示“3张牌的取法”，两者结合起来就是“取出3张牌，进行交替排列”，即表示排列。</p>
+
+<h2>第6章 递归</h2>
+
+<p>递归就是要将复杂的问题简化。假设现在要找出问题中的递归结构，可以按以下步骤进行：
+* 从n层的整体问题中隐去部分问题。
+* 判断剩余部分是否是n-1层的问题。</p>
+
+<p>即要发现F(n)与F(n-1)，甚至F(n-2)之间的关系。</p>
+
+<h2>第7章 指数爆炸</h2>
+
+<p>1mm厚的纸，在对折39次之后，就达到54万公里，超过了地球与月亮之间的距离！这就是指数爆炸。利用指数爆炸可以解决一些计算问题。例如二分法查找，在15个数中查找特定的数，最多只需要3次。</p>
+
+<p>对于很大的数，处理时可以转换成对数处理。</p>
+
+<p>处理指数爆炸的四种方法：</p>
+
+<ol>
+<li>极力求解，即增加计算机性能。</li>
+<li>变相求解，即转换成简单问题求解。</li>
+<li>近似求解。</li>
+<li>概率求解，处于研究中。</li>
+</ol>
+
+
+<h2>第8章 不可解问题</h2>
+
+<p>反证法，就是首先假设“命题的否定形式”成立，然后根据假设论证，推导出矛盾的结果。例如论证“为什么不存在最大的整数”。假设存在，且M就是最大的整数，那么M + 1 > M，与假设矛盾。因此不存在最大的整数。</p>
+
+<p>什么是<strong>可数</strong>？集合的元素是有限的，或者集合中的所有元素都与正整数一一对应，那么这个集合就被定义为<strong>可数（Countable）</strong>。书中举例了一些可数的集合（有限集合、0以上的所有偶数的集合、所有整数的集合、所有有理数的集合、程序的集合），以及不可数的集合（所有整数数列的集合、所有实数的集合、所有函数的集合），并用反证法进行了证明。</p>
+
+<p>不可解问题是“原则上不能用程序来解决的问题”。书中举了“停机”问题的例子，即判断“某程序在给定数据下，是否会在有限时间内结束运行”的问题。</p>
+
+<h2>总结</h2>
+
+<p>在解决问题时，要学会使用“先用较小的数试算”的方法，发现规律、性质、结构、循环、一致性等，认清隐含在问题中的模式。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-25T22:22:26+08:00" pubdate data-updated="true">2014-08-25</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/others/'>others</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/" title="Previous Post: Effective Java-通用程序设计">&laquo; Effective Java-通用程序设计</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (11)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/">程序员的数学</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/">Effective Java-通用程序设计</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/">设计模式:解释器模式与调停者模式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/20/effective-java-fang-fa/">Effective Java-方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/19/she-ji-mo-shi-fang-wen-zhe-mo-shi/">设计模式:访问者模式</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fb4e47bf6950f9d2496daf84fe62cec59' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -3,6 +3,12 @@
   
   
   <url>
+    <loc>http://blog.ubone.com/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/</loc>
+    <lastmod>2014-08-25T22:22:26+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.ubone.com/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/</loc>
     <lastmod>2014-08-22T20:06:07+08:00</lastmod>
     <priority>0.8</priority>
@@ -287,14 +293,14 @@
   
   <url>
     <loc>http://blog.ubone.com/blog/archives/</loc>
-    <lastmod>2014-08-25T20:05:34+08:00</lastmod>
+    <lastmod>2014-08-26T20:59:59+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.ubone.com/</loc>
-    <lastmod>2014-08-25T20:05:34+08:00</lastmod>
+    <lastmod>2014-08-26T20:59:59+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
