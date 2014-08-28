@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-26T22:22:10+08:00</updated>
+  <updated>2014-08-28T23:23:53+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,165 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Effective Java - 异常]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/28/effective-java-yi-chang/"/>
+    <updated>2014-08-28T23:15:18+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/28/effective-java-yi-chang</id>
+    <content type="html"><![CDATA[<p>Effective Java 通用程序设计，读书笔记：</p>
+
+<ol>
+<li>只对异常情况才使用异常</li>
+<li>对可恢复的情况使用受检异常，对编程错误使用运行时异常</li>
+<li>避免不必要地使用受检的异常</li>
+<li>优先使用标准的异常</li>
+<li>抛出与抽象相对应的异常</li>
+<li>每个方法抛出的异常都要有文档</li>
+<li>在细节消息中包含能捕获失败的消息</li>
+<li>努力使失败保持原子性</li>
+<li>不要忽略异常</li>
+</ol>
+
+
+<!--more-->
+
+
+<h2>57 只对异常情况才使用异常</h2>
+
+<p>永远不要将异常用于正常的控制流。下面的代码试图使用异常退出循环，这是有问题的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//有问题的代码</span>
+</span><span class='line'><span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>     <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>     <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">range</span><span class="o">[</span><span class="n">i</span><span class="o">++].</span><span class="na">climb</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ArrayIndexOutOfBoundsException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>设计良好的API不应该强迫客户端为了正常的控制流而使用异常。可以考虑提供“状态测试”方法，例如Iterator的next()方法有一个对应的“状态测试方法” hasNext()。</p>
+
+<h2>58 对可恢复的情况使用受检异常，对编程错误使用运行时异常</h2>
+
+<p>如果期望调用者能够适当地恢复，应该使用受检的异常。对于程序错误，则使用运行时异常。对于受检异常，可以提供一些辅助方法，通过这些方法调用者可以获得一些有助于恢复的信息。例如用户取款时余额不足，可以提供一个方法获取余额。</p>
+
+<h2>59 避免不必要地使用受检的异常</h2>
+
+<p>当以下两个条件都成立时，才使用受检异常：</p>
+
+<ol>
+<li>正确地使用API并不能阻止这种异常条件的产生（例如网络、文件）。</li>
+<li>一旦产生异常，使用API的程序员可以立即采取有用的动作，这种负担被认为是正当的。</li>
+</ol>
+
+
+<p>把受检异常变成运行时异常的一种方法是，把这个抛出异常的方法分成两个方法，其中一个返回boolean，表明是否应该抛出异常。例如前述的hasNext()。</p>
+
+<h2>60 优先使用标准的异常</h2>
+
+<p>使用标准的异常至少有以下好处：</p>
+
+<ol>
+<li>API更加易于学习和使用</li>
+<li>可读性更好</li>
+<li>异常类越少，内存印迹（footprint）就越少，装载这些类的时间开销也越少。</li>
+</ol>
+
+
+<p>常见的可重用异常包括：</p>
+
+<ol>
+<li>IllegalArgumentException 非Null的参数值不正确</li>
+<li>IllegalStateException 对于方法调用而言，对象状态不合适。</li>
+<li>NullPointException</li>
+<li>IndexOutOfBoundsException</li>
+<li>ConcurrentModificationException 禁止并修改时，检测到对象的并发修改</li>
+<li>UnsupportedOperationException</li>
+</ol>
+
+
+<h2>61 抛出与抽象相对应的异常</h2>
+
+<p>更高层的实现应该捕获低层的异常，同时抛出可以按照高层抽象进行解释的异常。这种做法也就是<strong>异常转译</strong>。</p>
+
+<p>如果低层的异常对于调试导致高层异常的问题非常有帮助，使用异常链就很合适。大多数标准异常都支持链的构造器，如果不支持，可以利用Throwable的initCause方法设置原因。下面代码展示了异常转译和异常链：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">try</span><span class="o">{</span>
+</span><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">LowerLevelException</span> <span class="n">cause</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>     <span class="k">throw</span> <span class="k">new</span> <span class="nf">HigherLevelException</span><span class="o">(</span><span class="n">cause</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">class</span> <span class="nc">HigherLevelException</span> <span class="kd">extends</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>     <span class="n">HigherLevelException</span><span class="o">(</span><span class="n">Throwable</span> <span class="n">cause</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="kd">super</span><span class="o">(</span><span class="n">cause</span><span class="o">);</span>
+</span><span class='line'>     <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>62 每个方法抛出的异常都要有文档</h2>
+
+<p>始终要单独地声明受检的异常，并利用Javadoc的<code>@throws</code>标记，准确地记录下抛出每个异常的条件 。如果一个方法可能抛出多个异常，不要使用“快捷方式”，声明它们的某个父类。永远不要声明一个方法“throws Exception”，因为它不仅没有提供任何有用的信息，而且掩盖了其它可能抛出的异常。</p>
+
+<p>对于接口中的方法，在文档中记录下它可能抛出的未受检异常也很重要。也就是用Javadoc的<code>@throws</code>标记进行说明，但在方法的声明中不使用throws关键字。</p>
+
+<h2>63 在细节消息中包含能捕获失败的消息</h2>
+
+<p>为了捕获失败，异常的细节信息应该包含所有“对该异常有贡献”的参数和域的值。例如IndexOutOfBoundsException就包括了三个信息：上界、下界以及不在界内的下标值。但是包含大量的描述信息也没有什么意义，因为堆栈轨迹的用途是与源文件结合起来使用的。</p>
+
+<p>异常的细节消息不应该与“用户层次的错误信息”混为一谈。</p>
+
+<p>为了确保异常的细节消息中包含足够的能捕获失败的消息，通常在异常的构造器中引入这些信息。如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="nf">IndexOutOfBoundsException</span><span class="o">(</span><span class="kt">int</span> <span class="n">lowerBound</span><span class="o">,</span> <span class="kt">int</span> <span class="n">upperBound</span><span class="o">,</span> <span class="kt">int</span> <span class="n">index</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>     <span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>64 努力使失败保持原子性</h2>
+
+<p>一般而言，失败的方法调用应该使对象保持在被调用之前的状态。具有这种属性的方法称为具有失败原子性。</p>
+
+<p>要实现失败原子性，最简单的办法是设计不可变对象。对于可变对象，可采取的办法包括：</p>
+
+<ol>
+<li>执行操作前，检查参数的有效性。</li>
+<li>调整计算处理的顺序，使任何可能会失败的计算部分在对象状态被修改之前发生。</li>
+<li>编写一段恢复代码。（这种办法主要用于永久性的数据结构，如磁盘）</li>
+<li>在对象的一份临时拷贝上执行操作，操作完成后再用临时拷贝中的结果替换对象的内容。</li>
+</ol>
+
+
+<h2>65 不要忽略异常</h2>
+
+<p>空的catch块会使异常达不到应有的目的。如果确实需要空catch块，至少也要包含一条说明，为什么可以忽略此异常。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[程序员的数学]]></title>
@@ -1195,110 +1354,6 @@
 <h3>虚拟代理的例子</h3>
 
 <p>为了更好的用户体验，在应用中显示网络图片时，先显示“加载中”或者占位符，等待图片下载完成后再替换成图片。这就是虚拟代理的真实例子。对于客户端仍然是创建图片并显示，但实际创建的是图片代理，图片代理先显示“加载中”，然后启动另一线程去下载图片，当下载完成后，才真正显示图片。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:装饰模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/"/>
-    <updated>2014-08-01T20:00:16+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi</id>
-    <content type="html"><![CDATA[<p>装饰模式以对客户端透明的方式扩展对象的功能。客户端并不会觉得对象在装饰前和装饰后有什么不同。装饰模式可以在不使用创造更多子类的情况下，将对象的功能加以扩展。其类图所下：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-08-01_20.13.33.jpg" alt="image" /></p>
-
-<!--more-->
-
-
-<p>图中4个角色说明如下：</p>
-
-<ol>
-<li>Component角色，一个抽象接口，被装饰对象和装饰对象都遵循的接口。在实际中可以是接口、抽象或具体类。</li>
-<li>Concrete Component角色，被装饰的具体对象。</li>
-<li>Decorator角色，持有Component对象的实例，可以是抽象类。</li>
-<li>ConcreteDecorator角色，负责给构件对象贴上附加的责任。</li>
-</ol>
-
-
-<h3>什么情况下使用装饰模式？</h3>
-
-<ol>
-<li>需要扩展一个类的功能，或给一个类增加附加责任。</li>
-<li>需要动态给一个对象增加功能，这些功能可以再动态地撤销。</li>
-<li>需要增加由一些基本功能的排列组合而产生的非常大量的功能，而继承关系就变得不现实。</li>
-</ol>
-
-
-<h3>装饰模式的优缺点</h3>
-
-<p>装饰模式的优点包括：</p>
-
-<ol>
-<li>可以动态地贴上一个需要的装饰，或者除掉一个不需要的装饰。</li>
-<li>通过使用不同的具体装饰类，以及这些装饰类的排列组合，可以创造出很多不同行为的组合。</li>
-</ol>
-
-
-<p>装饰模式的缺点是比继承要使用更多的对象，更多的对象会使得查错变得困难。</p>
-
-<h3>装饰模式的简化</h3>
-
-<p>不论如何简化，必须保证：</p>
-
-<ol>
-<li>ConcreteDecorator类必须实现/继承自一个共同的父类Component。</li>
-<li>尽量保持Component作为一个“轻”类。</li>
-</ol>
-
-
-<p>常见的简化包括：</p>
-
-<ol>
-<li>没有Component，只有ConcreteComponent，此时，Decorator可以是ConcreteComponent的子类，ConcreteComponent扮演双重角色。</li>
-<li>没有Decorator，只有ConcreteDecorator，但如果有两个以上的。</li>
-</ol>
-
-
-<h3>其它</h3>
-
-<p>纯粹的装饰模式对客户端的要求是不要声明ConcreteDecorator类型的变量，而应当声明Component类型的变量。这也就是针对抽象编程。因此，ConcreteDecorator不能有Component接口之外的方法。但现实中的装饰模式允许改变接口，增加新方法，即客户端可以声明ConcreteDecorator类型的变量。这就有点像是适配器模式。</p>
-
-<p>装饰模式与适配器模式其实是不一样的。适配器模式的目的是改变接口，常常改写或者增加新的方法来适配接口。而装饰模式是保持接口不变，增强或增加功能。它们的类图是不一样的。</p>
-
-<p>以Java的IO库为例，Reader类型的对象读入字符(Character)流，而InputStreamReader是一种Reader类型，把InputStream类型对象包装起来，从而把byte的API转换成字符流的API。这就是适配器模式的例子。即InputStreamReader把InputStream的API适配成Reader的API。</p>
-
-<p>而BufferredReader则是一个装饰类，因为它实现Reader，并且包装一个Reader，接口未变，但提供更优的性能。但它不是一个100％的装饰类，因为它提供了一个readLine()的新方法。</p>
-
-<p>以InputStream相关类为例，如下所示：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_20140803_002859.jpg" alt="image" /></p>
-
-<p>图中，红色类为适配器模式，将其它类型（如Byte数组）接口转换成InputStream接口。而绿色及其子类为适配器模式，各角色：</p>
-
-<ol>
-<li>Component角色：InputStream</li>
-<li>Concrete Component角色：红色的类</li>
-<li>Decorator角色：绿色的类</li>
-<li>ConcreteDecorator角色：最下面的四个类。</li>
-</ol>
-
-
-<p>附各类的主要用途：</p>
-
-<ol>
-<li>ByteArrayInputStream: 为多线程的通信提供缓冲区操作功能，接收Byte数组作为流的源。</li>
-<li>FileInputStream：接收一个File对象作为流的源。</li>
-<li>PipedInputStream：与PipedOutputStream配合使用，用于读入一个数据管道的数据，接收PipedOutputStream作为源。</li>
-<li>StringBufferInputStream：接收一个String对象作为流的源。</li>
-<li>FilterInputStream：过滤输入流，将另一个输入流作为流的源。</li>
-<li>BufferInputStream：内部提供内存缓冲区，从此缓冲区提供数据。</li>
-<li>DataInputStream：提供多字节的读取方法，读取原始数据类型的数据。</li>
-<li>LineNumberInputStream: 提供带有行计数功能和按行号读取数据的过滤输入流。不常用，主要用于编译器。</li>
-<li>PushbackInputStream：提供特殊功能，将已经读取的字节“推回”到输入流中。不常用，主要用于编译器。</li>
-<li>ObjectInputStream：读取使用ObjectOutputStream序列化的流，将其反序列化。</li>
-<li>SequenceInputStream：将两个已有的输入流连接起来，形成一个输入流。</li>
-</ol>
-
 ]]></content>
   </entry>
   

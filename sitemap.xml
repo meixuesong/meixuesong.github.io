@@ -3,6 +3,12 @@
   
   
   <url>
+    <loc>http://blog.ubone.com/blog/2014/08/28/effective-java-yi-chang/</loc>
+    <lastmod>2014-08-28T23:15:18+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.ubone.com/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/</loc>
     <lastmod>2014-08-25T22:22:26+08:00</lastmod>
     <priority>0.8</priority>
@@ -293,14 +299,14 @@
   
   <url>
     <loc>http://blog.ubone.com/blog/archives/</loc>
-    <lastmod>2014-08-26T22:22:10+08:00</lastmod>
+    <lastmod>2014-08-28T23:23:53+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.ubone.com/</loc>
-    <lastmod>2014-08-26T22:22:10+08:00</lastmod>
+    <lastmod>2014-08-28T23:23:53+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
