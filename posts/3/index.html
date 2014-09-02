@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="装饰模式以对客户端透明的方式扩展对象的功能。客户端并不会觉得对象在装饰前和装饰后有什么不同。装饰模式可以在不使用创造更多子类的情况下，将对象的功能加以扩展。其类图所下： ">
+  <meta name="description" content="享元模式以共享的方式支持大量的细粒度对象。Java的String类型其实就使用了享元模式。享元对象具有内部状态(Internal State)和外部状态(External State)。内部状态是享元对象内部的，一旦创建就不会再改变，因此具有内部状态的享元对象可以进行共享。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,98 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/">设计模式:享元模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-03T19:10:40+08:00" pubdate data-updated="true">2014-08-03</time>
+        
+           | <a href="/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>享元模式以共享的方式支持大量的细粒度对象。Java的String类型其实就使用了享元模式。享元对象具有内部状态(Internal State)和外部状态(External State)。内部状态是享元对象内部的，一旦创建就不会再改变，因此具有内部状态的享元对象可以进行共享。外部状态是随环境改变而改变的，是不可以共享的状态。享元对象的外部状态必须由客户端保存，通常以方法参数的方式传给享元对象，以改变方法的行为，但不会改变内在状态。享元模式可以分为单纯享元模式和复合享元模式。结构图如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140803_193842.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/">设计模式:代理模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-03T11:56:48+08:00" pubdate data-updated="true">2014-08-03</time>
+        
+           | <a href="/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>代理模式是对象的结构模式。代理模式给某一个对象提供一个代理对象，并由代理对象控制对原对象的引用。代理模式的结构如下图：</p>
+
+<p><img src="/myresource/images/image_blog_20140803_120304.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -443,96 +535,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">设计模式:工厂方法模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-27T22:11:04+08:00" pubdate data-updated="true">2014-07-27</time>
-        
-           | <a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>前文说到简单工厂方法的工厂类，对“开－闭”原则支持不够，当有新产品时，需要修改工厂类。而工厂方法模式可以解决这个问题。工厂方法模式的用意是定义一个创建产品对象的工厂接口，将实际创建工作推迟到子类中。其结构可表示为：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-27_22.10.30.png" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/27/titanium-vs-worklight/">Titanium vs Worklight</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-27T13:52:25+08:00" pubdate data-updated="true">2014-07-27</time>
-        
-           | <a href="/blog/2014/07/27/titanium-vs-worklight/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/27/titanium-vs-worklight/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>因工作需要，对两个跨平台移动开发工具（Titanium，Worklight）进行比较的。本文主要从跨平台特性、性能、社区等进行比较。实际上，本文同样适用于Titanium VS Phonegap。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/27/titanium-vs-worklight/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -554,10 +556,18 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (12)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (14)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/02/javabing-fa-er/">Java并发编程（二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/30/javabing-fa-bian-cheng/">Java并发编程（一）</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/08/28/effective-java-yi-chang/">Effective Java - 异常</a>
@@ -569,14 +579,6 @@
     
       <li class="post">
         <a href="/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/">Effective Java-通用程序设计</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/">设计模式:解释器模式与调停者模式</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/20/effective-java-fang-fa/">Effective Java-方法</a>
       </li>
     
   </ul>

@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="迭代子模式是最常见的几个设计模式之一，Java Collection广泛使用迭代子来遍历其元素。之所以需要迭代子模式，是因为它将迭代逻辑与聚集对象分离，两者可以自由演变。其结构示意图如下： ">
+  <meta name="description" content="命令模式将发出命令和执行命令的责任分割开，委派给不同的对象。类图如下： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,98 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/11/she-ji-mo-shi-ming-ling-mo-shi/">设计模式:命令模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-11T22:58:11+08:00" pubdate data-updated="true">2014-08-11</time>
+        
+           | <a href="/blog/2014/08/11/she-ji-mo-shi-ming-ling-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/11/she-ji-mo-shi-ming-ling-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>命令模式将发出命令和执行命令的责任分割开，委派给不同的对象。类图如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140811_233515.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/11/she-ji-mo-shi-ming-ling-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/10/she-ji-mo-shi-ze-ren-lian-mo-shi/">设计模式:责任链模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-10T23:24:28+08:00" pubdate data-updated="true">2014-08-10</time>
+        
+           | <a href="/blog/2014/08/10/she-ji-mo-shi-ze-ren-lian-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/10/she-ji-mo-shi-ze-ren-lian-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>多个对象和下家的引用连接起来形成一条链。请求在这个链上传递，直到链上的某个对象处理此请求。类图如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140810_235454.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/10/she-ji-mo-shi-ze-ren-lian-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -432,98 +524,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/">设计模式:享元模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-03T19:10:40+08:00" pubdate data-updated="true">2014-08-03</time>
-        
-           | <a href="/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>享元模式以共享的方式支持大量的细粒度对象。Java的String类型其实就使用了享元模式。享元对象具有内部状态(Internal State)和外部状态(External State)。内部状态是享元对象内部的，一旦创建就不会再改变，因此具有内部状态的享元对象可以进行共享。外部状态是随环境改变而改变的，是不可以共享的状态。享元对象的外部状态必须由客户端保存，通常以方法参数的方式传给享元对象，以改变方法的行为，但不会改变内在状态。享元模式可以分为单纯享元模式和复合享元模式。结构图如下：</p>
-
-<p><img src="/myresource/images/image_blog_20140803_193842.jpg" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/">设计模式:代理模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-03T11:56:48+08:00" pubdate data-updated="true">2014-08-03</time>
-        
-           | <a href="/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>代理模式是对象的结构模式。代理模式给某一个对象提供一个代理对象，并由代理对象控制对原对象的引用。代理模式的结构如下图：</p>
-
-<p><img src="/myresource/images/image_blog_20140803_120304.jpg" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -545,10 +545,18 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (12)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (14)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/02/javabing-fa-er/">Java并发编程（二）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/30/javabing-fa-bian-cheng/">Java并发编程（一）</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/08/28/effective-java-yi-chang/">Effective Java - 异常</a>
@@ -560,14 +568,6 @@
     
       <li class="post">
         <a href="/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/">Effective Java-通用程序设计</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/">设计模式:解释器模式与调停者模式</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/20/effective-java-fang-fa/">Effective Java-方法</a>
       </li>
     
   </ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-08-28T23:23:53+08:00</updated>
+  <updated>2014-09-02T23:17:42+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,1093 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Java并发编程（二）]]></title>
+    <link href="http://blog.ubone.com/blog/2014/09/02/javabing-fa-er/"/>
+    <updated>2014-09-02T21:03:49+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/09/02/javabing-fa-er</id>
+    <content type="html"><![CDATA[<p>本文是《Java编程思想》第21章并发的读书笔记。<a href="http://blog.ubone.com/blog/2014/08/30/javabing-fa-bian-cheng/">Java并发编程（一）</a></p>
+
+<!--more-->
+
+
+<h2>3. 终结任务</h2>
+
+<h3>3.1 阻塞</h3>
+
+<p>一个任务进入阻塞状态，可能有如下原因：</p>
+
+<ol>
+<li>调用sleep(milliseconds)</li>
+<li>调用wait()挂起线程，直到线程得到了notify()或notifyAll()（Java5中的signal或signalAll）</li>
+<li>等待某个输入/输出完成</li>
+<li>试图在某个对象上调用同步控制方法，但对象锁不可用。</li>
+</ol>
+
+
+<p>早期代码中还有suspend()和resume()来阻塞和唤醒线程，但现在已经被废止了（可能导致死锁），还有stop()也已经废止了（因为不释放线程获得的锁）。</p>
+
+<h3>3.2 中断</h3>
+
+<p>有几种方法中断线程。</p>
+
+<p>一是声明一个变量canceled，然后正常的run方法中循环检查它的值，从而决定是否跳出循环，退出run方法。</p>
+
+<p>二是调用Thread类的interrupt()方法，该方法提供了离开run()循环而不抛出异常的第二种方式。这种方式必须持有Thread对象。</p>
+
+<p>如果调用Executor的shutdownNow()，那么它将发送一个interrupt()调用给它启动的所有线程。如果想只中断某一个线程，可以使用Future的cancel方法。下面是各种中断的示例：</p>
+
+<h4>中断Sleep Runnable</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ThreadInterrupt</span> <span class="o">{</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">ExecutorService</span> <span class="n">exec</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newCachedThreadPool</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">Future</span> <span class="n">f</span> <span class="o">=</span> <span class="n">exec</span><span class="o">.</span><span class="na">submit</span><span class="o">(</span><span class="k">new</span> <span class="n">SleepInterruptThread</span><span class="o">());</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">f</span><span class="o">.</span><span class="na">cancel</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>          
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;退出主程序&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SleepInterrupt</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;end sleep 10s&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;exit SleepInterrupt run&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码可以正常中断Sleep线程，捕获了InterruptedException异常。</p>
+
+<h4>中断Sleep Thread</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ThreadInterrupt</span> <span class="o">{</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">Thread</span> <span class="n">f</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SleepInterruptThread</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">f</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">f</span><span class="o">.</span><span class="na">interrupt</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;退出主程序&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SleepInterruptThread</span> <span class="kd">extends</span> <span class="n">Thread</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;exit SleepInterrupt run&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码可以正常中断Sleep线程，捕获了InterruptedException异常。</p>
+
+<h4>中断IO线程</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ThreadInterrupt</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">ExecutorService</span> <span class="n">exec</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newCachedThreadPool</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">Future</span> <span class="n">f</span> <span class="o">=</span> <span class="n">exec</span><span class="o">.</span><span class="na">submit</span><span class="o">(</span><span class="k">new</span> <span class="n">IOInterrupt</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">in</span><span class="o">));</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">f</span><span class="o">.</span><span class="na">cancel</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>          
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;退出主程序&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">IOInterrupt</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">InputStream</span> <span class="n">in</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">IOInterrupt</span><span class="o">(</span><span class="n">InputStream</span> <span class="n">is</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">in</span> <span class="o">=</span> <span class="n">is</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;exit run&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>对于IO阻塞线程，则无法进行中断！从catch语句中没有InterruptedException也可以看出。</strong>同样无法中断的还有SynchronizedBlocked，也就是如果线程进入synchronized方法或临界区中后，将无法中断。</p>
+
+<p>对于网络访问这样的IO阻塞，如果不能中断有时挺烦人的。一个较笨的办法是关闭底层资源（例如关闭连接。）示例如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">InputStream</span> <span class="n">socketInput</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Socket</span><span class="o">(</span><span class="s">&quot;localhost&quot;</span><span class="o">,</span> <span class="mi">8080</span><span class="o">).</span><span class="na">getInputStream</span><span class="o">();</span>
+</span><span class='line'><span class="n">exec</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">IOBlocked</span><span class="o">(</span><span class="n">socketInput</span><span class="o">));</span>
+</span><span class='line'><span class="c1">//...</span>
+</span><span class='line'><span class="n">exec</span><span class="o">.</span><span class="na">shutdownNow</span><span class="o">();</span> <span class="c1">//无法中断线程</span>
+</span><span class='line'><span class="c1">//...</span>
+</span><span class='line'><span class="n">socketInput</span><span class="o">.</span><span class="na">close</span><span class="o">();</span> <span class="c1">//关闭后，解除阻塞。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Java提供的各种nio类具有更人性化的I/O中断，被阻塞的nio通道会自动地响应中断。</strong></p>
+
+<p><strong>synchronized方法或临界区上的阻塞，存在锁住程序的可能。而ReentrantLock上的阻塞则具备被中断的能力。</strong>例如当线程1 lock后，线程2也请求lock，在等待的过程中将产生阻塞，调用Thread.interrupt或Future.cancel可以将其中断。</p>
+
+<h3>3.3 检查中断</h3>
+
+<p>当你在线程上调用interrupt()时，如何保证安全地退出run方法，释放该释放的资源？</p>
+
+<p>如果类必须响应interrupt()，那么就必须建立一种策略。当创建了需要清理的对象后，就必须紧跟try-finally子句，使得无论run()循环如何退出，都能正常清理。</p>
+
+<h2>4. 线程之间的协作</h2>
+
+<h3>4.1 wait()与notifyAll()</h3>
+
+<p>调用sleep()和yield()时，锁并没有被释放。而调用wait()时，线程的执行被挂起，对象上的锁被释放。wait()表示无限期等待下去，直到notify或notifyAll，它也可以传入参数表示时间到期后恢复。当wait恢复时，会首先重新获取进入wait时释放的锁，在这个锁变为可用之前，是不会被唤醒的。</p>
+
+<p><strong>只能在同步控制方法或者同步控制块里调用wait(), notify()和notifyAll()！</strong>否则虽然能够编译通过，但运行时将报异常：IllegalMonitorStateException。为什么要这样设计？<a href="http://javarevisited.blogspot.sg/2011/05/wait-notify-and-notifyall-in-java.html">这篇博客</a>作了解释。如果不这样做，就没有锁，就可能导致下一节中的“错失的信号”。</p>
+
+<p>当从wait唤醒时，往往需要判断特定条件是否满足，如果不满足就返回到wait中，惯用的方法就是使用while来编写这种代码。下例是一个汽车打蜡抛光的示例，其它两个线程未列出。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">Car</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">private</span> <span class="kt">boolean</span> <span class="n">waxOn</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">waxed</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="n">waxOn</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'><span class="n">notifyAll</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">buffed</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="n">waxOn</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'><span class="n">notifyAll</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">waitForWaxing</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'><span class="k">while</span> <span class="o">(</span><span class="n">waxOn</span> <span class="o">==</span> <span class="kc">false</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">wait</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">waitForBuffing</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'><span class="k">while</span> <span class="o">(</span><span class="n">waxOn</span> <span class="o">==</span> <span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">wait</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>错失的信号</h4>
+
+<p>当两个线程协作时，要特别注意可能会错过某个信号，例如下例T1通知T2，但是有可能T2收不到这个信号：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nl">T1:</span>
+</span><span class='line'><span class="kd">synchronized</span><span class="o">(</span><span class="n">shareMonitor</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>     <span class="c1">//&lt;setup condition for T2&gt;</span>
+</span><span class='line'>     <span class="n">shareMonitor</span><span class="o">.</span><span class="na">notify</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nl">T2:</span>
+</span><span class='line'><span class="k">while</span><span class="o">(</span><span class="n">someCondition</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>     <span class="c1">//Point 1</span>
+</span><span class='line'>     <span class="kd">synchronized</span><span class="o">(</span><span class="n">shareMonitor</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">shareMonitor</span><span class="o">.</span><span class="na">wait</span><span class="o">();</span>
+</span><span class='line'>     <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上代码运行到Point1时，如果调度到了T1，则T2收不到通知，就会永远在那里等待。T2正确的做法是：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">synchronized</span><span class="o">(</span><span class="n">shareMonitor</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>     <span class="k">while</span><span class="o">(</span><span class="n">someCondition</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">shareMonitor</span><span class="o">.</span><span class="na">wait</span><span class="o">();</span>
+</span><span class='line'>     <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4.2 notify()与notifyAll()</h3>
+
+<p>两者的不同之处在于，前者只唤醒一个线程，而后者唤醒同一锁定的所有线程。当有多个等待线程时，notify唤醒哪一个线程由调度决定。notifyAll唤醒多个线程后，它们将先为锁而战，先取得锁的线程先执行。</p>
+
+<p>什么情况下使用notify或者notifyAll？在多个等待的线程中，如果它们都在等同一个条件，并且当条件变为真时，只有一个线程从中受益，那么用notify比notifyAll更好，因为它避免浪费CPU循环。 notify()只唤醒其中一个。因此当你使用notify时要确保只唤醒正确的那个。</p>
+
+<p>notifyAll并不是唤醒所有等待线程，而是等待某个特定锁的所有线程。</p>
+
+<h3>4.3 生产者和消费者</h3>
+
+<p>除了wait()、notify()和notifyAll()方法用于同步方法或者同步代码块外，也可以使用Lock、Condition、await()、signal()和signalAll()方法。示例如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">Car</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Lock</span> <span class="n">lock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReentrantLock</span><span class="o">();</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Condition</span> <span class="n">condition</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="na">newCondition</span><span class="o">();</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">waxOn</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">waxed</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">waxOn</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">condition</span><span class="o">.</span><span class="na">signalAll</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">waitForWaxing</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">while</span> <span class="o">(</span><span class="n">waxOn</span> <span class="o">==</span> <span class="kc">false</span><span class="o">)</span>
+</span><span class='line'>              <span class="n">condition</span><span class="o">.</span><span class="na">await</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="c1">//...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意，每个lock()的调用都必须紧跟一个try-finally子句，以保证所有情况都可以释放锁。在await()、signal()或signalAll()之前，必须拥有这个锁。</p>
+
+<p>使用wait()和notifyAll()这样的方法来解决任务互操作的问题比较复杂。在典型的生产者-消费者实现中，常使用先进先出队列来存储被生产和消费的对象。BlockingQueue接口提供了这样的同步队列，该接口有多种实现，常见的是LinkedBlockingQueue和ArrayBlockingQueue(固定尺寸)。</p>
+
+<p>如果消费者试图从队列中获取对象，而此时该队列为空，那么消费者将挂起，直到队列中有可消费的内容。阻塞队列可以解决很多问题，比wait()和notifyAll()相比，要简单得多，也更加可靠。示例如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">LiftOffRunner</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">BlockingQueue</span><span class="o">&lt;</span><span class="n">LiftOff</span><span class="o">&gt;</span> <span class="n">rockets</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">LiftOffRunner</span><span class="o">(</span><span class="n">BlockingQueue</span><span class="o">&lt;</span><span class="n">LiftOff</span><span class="o">&gt;</span> <span class="n">queue</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">rockets</span> <span class="o">=</span> <span class="n">queue</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">add</span><span class="o">(</span><span class="n">LiftOff</span> <span class="n">lo</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">rockets</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">lo</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">print</span><span class="o">(</span><span class="s">&quot;Interrupted during put&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">while</span><span class="o">(!</span> <span class="n">Thread</span><span class="o">.</span><span class="na">interrupted</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">LiftOff</span> <span class="n">rocket</span> <span class="o">=</span> <span class="n">rockets</span><span class="o">.</span><span class="na">take</span><span class="o">();</span> <span class="c1">//阻塞直至rockets中有东西</span>
+</span><span class='line'>              <span class="n">rocket</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">print</span><span class="o">(</span><span class="s">&quot;Exiting LiftOffRunner&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//其它线程可以往rockets中添加内容，无需同步方法或者锁。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4.4 任务间使用管道进行输入/输出</h3>
+
+<p>通过输入/输出在线程间进行通信也很有用。这种管道在Java IO库中的对应物就是PipedWriter类和PipedReader类。这也是“生产者-消费者”的变体。示例如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">Sender</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">PipedWriter</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PipedWriter</span><span class="o">();</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">PipedWriter</span> <span class="nf">getWriter</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">out</span><span class="o">;}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="k">for</span><span class="o">(</span><span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="sc">&#39;A&#39;</span><span class="o">;</span> <span class="n">c</span> <span class="o">&lt;=</span> <span class="sc">&#39;z&#39;</span><span class="o">;</span> <span class="n">c</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>                  <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
+</span><span class='line'>                  <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">rand</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="mi">500</span><span class="o">));</span>
+</span><span class='line'>              <span class="o">}</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="c1">//...</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span> <span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="c1">//...</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kd">class</span> <span class="nc">Receiver</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">PipedReader</span> <span class="n">in</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">Receiver</span><span class="o">(</span><span class="n">Sender</span> <span class="n">sender</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PipedReader</span><span class="o">(</span><span class="n">sender</span><span class="o">.</span><span class="na">getWriter</span><span class="o">());</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">print</span><span class="o">(</span><span class="s">&quot;read: &quot;</span> <span class="o">+</span> <span class="o">(</span><span class="kt">char</span><span class="o">)</span> <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">());</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="c1">//...</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//与普通I/O不能interrupt不同，PipedReader是可以中断的。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>相比之下，BlockingQueue使用起来更加健壮而容易。</p>
+
+<h2>5. 死锁</h2>
+
+<p>当以下四个条件同时满足时，就会发生死锁：</p>
+
+<ol>
+<li>互斥条件。任务使用的资源中至少有一个是不能共享的。</li>
+<li>至少有一个任务必须持有一个资源且正在等待获取一个当前被别的任务持有的资源。</li>
+<li>资源不能被任务抢占，任务必须把资源释放当作普通事件。</li>
+<li>必须有循环等待。A等待B持有的资源，B又等待C持有的资源，这样一直下去之后，直到X在等待A所持有的资源。</li>
+</ol>
+
+
+<p>要防止死锁，只需破坏上述四条中的任意一条。破坏第4条是最容易的。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Java并发编程（一）]]></title>
+    <link href="http://blog.ubone.com/blog/2014/08/30/javabing-fa-bian-cheng/"/>
+    <updated>2014-08-30T21:58:15+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/08/30/javabing-fa-bian-cheng</id>
+    <content type="html"><![CDATA[<p>本文是《Java编程思想》第21章并发的读书笔记。</p>
+
+<!--more-->
+
+
+<p>操作系统：抢占式（调度机制会周期性地中断线程，将上下文切换到另一个线程）、协作式（每个任务自己放弃控制）。</p>
+
+<h2>1. 基本线程机制</h2>
+
+<h3>1.1 定义任务</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LiftOff</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+</span><span class='line'>     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>          <span class="c1">//...</span>
+</span><span class='line'>          <span class="n">Thread</span><span class="o">.</span><span class="na">yield</span><span class="o">();</span> <span class="c1">//声明，我已经干完重要的事，可以把CPU让给其他任务了。</span>
+</span><span class='line'>     <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>1.2 Thread类</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="k">new</span> <span class="n">LiftOff</span><span class="o">());</span>
+</span><span class='line'><span class="n">t</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>1.3 使用Executor</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">ExecutorService</span> <span class="n">exec</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newCachedThreadPool</span><span class="o">();</span> <span class="c1">//or newFixedThreadPool, newSingleThreadExecutor</span>
+</span><span class='line'><span class="n">exec</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">LiftOff</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">exec</span><span class="o">.</span><span class="na">shutdown</span><span class="o">();</span> <span class="c1">//防止加入新任务。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>1.4 从任务中产生返回值</h3>
+
+<p>Runnable不返回任何值，Callable接口可以返回值。两者的区别只是后者的方法是call()而不是run()。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">TaskWithResult</span> <span class="kd">implements</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>     <span class="kd">public</span> <span class="n">String</span> <span class="nf">call</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="s">&quot;result&quot;</span><span class="o">;</span>
+</span><span class='line'>     <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ExecutorService</span> <span class="n">exec</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newSingleThreadExecutor</span><span class="o">();</span>
+</span><span class='line'><span class="n">Future</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">future</span> <span class="o">=</span> <span class="n">exec</span><span class="o">.</span><span class="na">submit</span><span class="o">(</span><span class="k">new</span> <span class="n">TaskWithResult</span><span class="o">());</span>
+</span><span class='line'><span class="n">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="na">get</span><span class="o">();</span> <span class="c1">//get方法会一直等线程结束后返回结果。isDone()查询Future是否已经完成。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>1.5 休眠</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SleepingTask</span> <span class="kd">extends</span> <span class="n">LiftOff</span> <span class="o">{</span>
+</span><span class='line'>     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>               <span class="k">while</span><span class="o">(</span><span class="n">countDown</span><span class="o">--</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="c1">//...</span>
+</span><span class='line'>                    <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">100</span><span class="o">);</span>
+</span><span class='line'>               <span class="o">}</span>
+</span><span class='line'>          <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>               <span class="c1">//...</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>     <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>1.6 优先级</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">setPriority</span><span class="o">(</span><span class="n">Thread</span><span class="o">.</span><span class="na">MAX_PRIORITY</span><span class="o">);</span>
+</span><span class='line'> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Windows有7个优先级， Solaris有2<sup>31</sup>个优先级。各操作系统不一致，因此建议只使用三个优先级：Thread.MAX_PRIORITY, NORM_PRIORITY, MIN_PRIORITY。</p>
+
+<h3>1.7 后台线程</h3>
+
+<p>后台线程指程序运行时在后台提供通用服务的线程，并且不属性程序中不可或缺的部分。<strong>当所有非后台线程结束时，程序就终止了，同时会杀死所有后台线程。</strong>如果有非后台线程还在运行，则程序不会终止。</p>
+
+<p>要设置为后台线程，必须在线程启动之前调用setDaemon()方法。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="n">Thread</span> <span class="n">daemon</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="k">new</span> <span class="n">LiftOff</span><span class="o">()</span> <span class="o">);</span>
+</span><span class='line'> <span class="n">daemon</span><span class="o">.</span><span class="na">setDaemon</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span> <span class="c1">//必须在start()方法前调用</span>
+</span><span class='line'> <span class="n">daemon</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可以通过定制的ThreadFactory创建后台线程，例如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DaemonThreadFactory</span> <span class="kd">implements</span> <span class="n">ThreadFactory</span> <span class="o">{</span>
+</span><span class='line'>     <span class="kd">public</span> <span class="n">Thread</span> <span class="nf">newThread</span><span class="o">(</span><span class="n">Runnable</span> <span class="n">r</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="n">r</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">t</span><span class="o">.</span><span class="na">setDaemon</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>          <span class="c1">//还可以设置优先级、名称等，这些将成为新线程的默认值。</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="k">return</span> <span class="n">t</span><span class="o">;</span>
+</span><span class='line'>     <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ExecutorService</span> <span class="n">exec</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newCachedThreadPool</span><span class="o">(</span><span class="k">new</span> <span class="n">DaemonThreadFactory</span><span class="o">());</span> <span class="c1">//这个Factory将用于创建新的线程。</span>
+</span><span class='line'><span class="n">exec</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">LiftOff</span><span class="o">());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>isDaemon()</code>方法用于判断是否后台线程。后台线程创建的任何线程都将自动设置为后台线程。</p>
+
+<p>注意！对于后台线程，在不会执行<code>finally</code>子句的情况下就会终止其<code>run()</code>方法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">ADaemon</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="c1">//...</span>
+</span><span class='line'>          <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="c1">//...</span>
+</span><span class='line'>          <span class="c1">//注意，此时已经是false, 因为异常被捕获时将清理这个标志</span>
+</span><span class='line'>          <span class="n">print</span><span class="o">(</span><span class="s">&quot;isInterrupted(): &quot;</span> <span class="o">+</span> <span class="n">isInterrupted</span><span class="o">());</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">print</span><span class="o">(</span><span class="s">&quot;会运行到这吗？&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DaemonsDontRunFinally</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="k">new</span> <span class="n">ADaemon</span><span class="o">());</span>
+</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="na">setDaemon</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>一旦<code>setDaemon(true)</code>，finally并没有被执行。因为一旦main结束，所有后台线程就立即终止了。</p>
+
+<h3>1.8 编码的变体</h3>
+
+<p>除了实现Runnable，也可以直接继承Thread类。但是由于Java不支持多重继承，所以继承自Thread适应的场景要少一些。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kd">class</span> <span class="nc">SampleThread</span> <span class="kd">extends</span> <span class="n">Thread</span><span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">SampleThread</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="kd">super</span><span class="o">(</span><span class="s">&quot;线程名称&quot;</span><span class="o">);</span>  <span class="c1">//线程名称可通过getName()获取。</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">//...</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>自管理的Runnable</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SelfManaged</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">SelfManaged</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>  <span class="c1">//注，不建议在构造器中启动线程，可能会有问题，建议使用Executor</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">//...</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nf">SelfManaged</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>1.9 加入一个线程</h3>
+
+<p>某个线程在另一个线程t上调用<code>t.join()</code>方法，此线程被挂起，直到t线程结束（即<code>t.isActive() == false</code>）。join方法也可以加超时参数，表示如果时间到期还未结束的话，join()方法总能返回。</p>
+
+<h3>1.10 捕获异常</h3>
+
+<p>线程中的未捕获的异常会导致系统不稳定，但常规方法并不能在外面捕获这些异常，因此需要借助特殊处理。下面的例子创建了一个新类型的ThreadFactory，它将在每个新创建的Thread对象上附着一个Thread.UncaughtExceptionHandler。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">MyUncaughtExceptionHandler</span> <span class="kd">implements</span> <span class="n">Thread</span><span class="o">.</span><span class="na">UncaughtExceptionHandler</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">uncaughtException</span><span class="o">(</span><span class="n">Thread</span> <span class="n">t</span><span class="o">,</span> <span class="n">Throwable</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">// TODO Auto-generated method stub</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">class</span> <span class="nc">HandlerThreadFactory</span> <span class="kd">implements</span> <span class="n">ThreadFactory</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Thread</span> <span class="nf">newThread</span><span class="o">(</span><span class="n">Runnable</span> <span class="n">r</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="n">r</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="na">setUncaughtExceptionHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">MyUncaughtExceptionHandler</span><span class="o">());</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">return</span> <span class="n">t</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ExecutorService</span> <span class="n">exec</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newCachedThreadPool</span><span class="o">(</span><span class="k">new</span> <span class="n">HandlerThreadFactory</span><span class="o">());</span>
+</span><span class='line'><span class="n">exec</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">SomeThread</span><span class="o">());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果你知道将要在代码中处处使用相同的异常处理器，那么更简单的方式是在Thread类中设置一个表态域，示例如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Thread</span><span class="o">.</span><span class="na">setDefaultUncaughtExceptionHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">MyUncaughtExceptionHandler</span><span class="o">());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>2. 共享受限资源</h2>
+
+<h3>2.1  解决共享资源竞争</h3>
+
+<p>Java提供了关键字synchronized，为防止资源冲突提供支持。如果某个线程处于一个对synchronized方法的调用中，那么这个线程在从该方法返回之前，其它所有调用类中任何synchronized方法的线程都会被阻塞。也就是说，对于某个特定对象来说，其所有synchronized方法共享同一个锁。</p>
+
+<p>线程可以多次获得对象的锁，例如先调用synchronized方法获得锁后，又调用该类的其它方法获得锁。JVM会跟踪对象加锁的计数，每次调用加1，离开synchronized方法时减1。当计数变为0则锁被完全释放。</p>
+
+<p>synchronized static方法可以在类的范围内防止对static数据的并发访问。</p>
+
+<p>如果你正在写一个变量，它可能接下来被另一个线程读取，或者在读取一个上一次已经被另一个线程写过的变量，那么你必须使用同步，并且，读写线程都必须用相同的监视器锁同步。</p>
+
+<p>Lock对象也用于解决共享资源竞争。它必须被显式地创建、锁定和释放。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MutexEvenGenerator</span> <span class="kd">extends</span> <span class="n">IntGenerator</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Lock</span> <span class="n">lock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReentrantLock</span><span class="o">();</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">next</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="c1">//...</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="c1">//注意！必须在try中返回值，以避免lock.unlock之后将数据暴露给其它线程。</span>
+</span><span class='line'>          <span class="k">return</span> <span class="n">someValue</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="c1">//不要在这里返回值</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lock提供了更细粒度的控制能力。使用Lock，可以更加自由地控制锁。例如尝试获得锁，如果获取不到，可以先干点别的事：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kt">boolean</span> <span class="n">captured</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="na">tryLock</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//设置超时时间，超时则触发异常。</span>
+</span><span class='line'><span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kt">boolean</span> <span class="n">captured</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="na">tryLock</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2.2 原子性和易变性</h3>
+
+<p>原子性可用于除long、double之外的所有基本类型上的“简单操作”（读取和写入）。可以保证它们会被当作不可分（原子）的操作来操作内存。但JVM在读取和写入64位（long和double变量）时，可以拆成两个32位操作。因此可能导致“字撕裂”。作为普通开发者，<strong>不要依赖原子操作而移除了同步，那会得不偿失。</strong></p>
+
+<p>关键字<code>volatile</code>可以帮助获得原子性。<code>volatile</code>还确保了数据的可视性。当一个域声明为<code>volatile</code>时，那么只要对它进行了写操作，即使使用了本地缓存，其它读操作也可以看到这个修改。因为<code>volatile</code>域会被立即写入主内存中，而读取操作就发生在主存中。</p>
+
+<p>非<code>volatile</code>域上的原子操作不必刷新到主存，因此其它任务读取该域时可能看不到新值（修改操作的任务可以看到新值）。如果多个任务(线程)在同时访问某个域，那么这个域就应该是<code>volatile</code>的，否则这个域就应该经由同步来访问。同步也会导致向主存刷新。</p>
+
+<h3>2.3 原子类</h3>
+
+<p>Java引入了AtomicInteger, AtomicLong, AtomicReference等特殊的原子性变量类，它们提供机器级别上的原子性。常规编程很少派上用场，但在涉及性能调优时，会有用武之地。</p>
+
+<p>需要强调的是，Atomic类被设计用来构建java.util.concurrent中的类，因此只有在特殊情况下才在自己的代码中使用它们。通常依赖于锁（Lock, synchronized）更安全一些。</p>
+
+<h3>2.4 临界区(Critical section)</h3>
+
+<p>以下同步控制块就是临界区：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">synchronized</span><span class="o">(</span><span class="n">synObject</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="c1">//这部分代码一次只能被一个线程访问</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用同步控制块，可以防止整个方法都同步，显著提高性能。但要注意，上面例子中，只要没有退出同步控制块，那么被同步对象synObject的所有同步方法都无法被其它线程调用。</p>
+
+<h3>2.5 线程本地存储</h3>
+
+<p>去除变量共享，在线程本地存储也是防止共享资源冲突的一种方法。如果你有5个线程都要使用变量x所表示的对象，那么线程本地存储就会生成5个用于x的不同的存储块。ThreadLocal对象用于线程本地存储。</p>
+
+<p>ThreadLocal对象通常当作静态域存储。示例如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ThreadLocalVariableHolder</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">ThreadLocal</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">value</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ThreadLocal</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="nd">@Override</span>
+</span><span class='line'>      <span class="kd">protected</span> <span class="kd">synchronized</span> <span class="n">Integer</span> <span class="nf">initialValue</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="mi">10</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">};</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">increment</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">value</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">value</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Accessor</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">ThreadLocalVariableHolder</span><span class="o">.</span><span class="na">increment</span><span class="o">();</span>
+</span><span class='line'>      <span class="c1">//..</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Effective Java - 异常]]></title>
@@ -1262,98 +2349,6 @@
 <p>什么情况下使用门面模式？如果子系统演化得越来越复杂，客户端的调用变得很复杂，产生很大的依赖性，则可以引入门面模式将一个子系统与它的客户端以及其他子系统分离。</p>
 
 <p>这与迪米特法则也是相符的，该法则要求不要与陌生人说话，只与你直接朋友通信。采用门面模式，客户端只要与门面打交道，不需要去协调多个子系统。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:享元模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/"/>
-    <updated>2014-08-03T19:10:40+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi</id>
-    <content type="html"><![CDATA[<p>享元模式以共享的方式支持大量的细粒度对象。Java的String类型其实就使用了享元模式。享元对象具有内部状态(Internal State)和外部状态(External State)。内部状态是享元对象内部的，一旦创建就不会再改变，因此具有内部状态的享元对象可以进行共享。外部状态是随环境改变而改变的，是不可以共享的状态。享元对象的外部状态必须由客户端保存，通常以方法参数的方式传给享元对象，以改变方法的行为，但不会改变内在状态。享元模式可以分为单纯享元模式和复合享元模式。结构图如下：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_20140803_193842.jpg" alt="image" /></p>
-
-<!--more-->
-
-
-<p>左边为单纯享元模式，右边为复合享元模式。复合享元模式只多了一个ConcreteCompositeFlyweight，它们的角色如下：</p>
-
-<ul>
-<li>抽象享元角色(Flyweight)：定义公共接口。</li>
-<li>具体享元角色(ConcreteFlyweight)：实现抽象享元角色接口，维护内部状态。内部状态必须与外部环境元关，一旦创建就不能修改。</li>
-<li>享元工厂角色(FlyweightFactory)：负责创建和管理享元角色，保证享元对象可以被系统共享。当客户端调用工厂方法时，通常会判断是否有符合要求的享元对象，如果有就返回，如果没有则创建。此角色一般只有一个，可以使用单例模式。</li>
-<li>客户端角色(Client)：调用享元工厂创建享元对象，维护享元对象的外部状态。</li>
-<li>复合享元角色(ConcreteCompositeFlyweight)：由单纯的享元对象复合而成，因此提供了add这样的方法。由于聚焦元素是在复合享元对象创建之后加入的，因此复合享元对象的状态是可以改变的，所以此角色<strong>不可以共享</strong>。</li>
-</ul>
-
-
-<p><strong>一些例子</strong></p>
-
-<p>一个咖啡摊所售的咖啡只有固定的几种口味，一坏咖啡一旦生产出来它的口味就不会改变，其内部状态就是口味。因此系统不用为每一杯咖啡创建一个对象，可以使用享元模式为每种口味创建一个对象，然后进行共享。</p>
-
-<p>又例如一个文字编辑器，输入的内部是固定的A..Z，但字母所处的位置、字体是变化的。如果用享元模式，内部状态就是字母，外部状态是位置和字体。</p>
-
-<p><strong>什么情况下使用享元模式</strong></p>
-
-<p>当以下条件都满足时，可以考虑使用享元模式：</p>
-
-<ol>
-<li>系统有大量的对象。</li>
-<li>这些对象耗费大量的内存。</li>
-<li>这些对象的大部分状态都可以外部化。</li>
-<li>这些对象可以按照内部状态分成很多组，剔除外部状态后，每一组都可以仅用一个对象代替。</li>
-<li>系统不依赖于这些对象的身份，即这些对象可以是不可分辨的。</li>
-<li>系统需要记录所有已有的享元对象，这需要消耗资源，因此应当在只有足够多的享元实例可供共享时才值得使用享元模式。</li>
-</ol>
-
-
-<p>享元模式的优点是大幅降低内存中对象的数量，但享元模式可能使系统更复杂，需要将一些状态外部化，这可能使逻辑变得复杂。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:代理模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/"/>
-    <updated>2014-08-03T11:56:48+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi</id>
-    <content type="html"><![CDATA[<p>代理模式是对象的结构模式。代理模式给某一个对象提供一个代理对象，并由代理对象控制对原对象的引用。代理模式的结构如下图：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_20140803_120304.jpg" alt="image" /></p>
-
-<!--more-->
-
-
-<p>各角色说明如下：</p>
-
-<ul>
-<li>抽象主题角色：是真实主题和代理主题的共同接口，任何可以使用真实主题的地方都可以使用代理主题。</li>
-<li>代理主题角色：内部含有对真实主题的引用，可以在任何时候操作真实主题对象。</li>
-<li>真实主题角色：真实的对象。</li>
-</ul>
-
-
-<p><strong>常见的代理种类：</strong></p>
-
-<ul>
-<li>远程(Remote)代理：位于不同地址空间的代理对象。</li>
-<li>虚拟(Virtual)代理：当创建真实对象需要消耗较大资源时，通过虚拟代理实现只有真正需要时才创建资源。例如加载图像。</li>
-<li>Copy-on-Write代理：虚拟代理的一种，把复制拖延到只有客户端需要时才执行。</li>
-<li>保护(Protect or Access)代理：控制对一个对象的访问，可以为不同的客户端提供不同级别的权限。</li>
-<li>Cache代理：为真实对象操作的结果提供临时的存储空间，以便多个客户端可共享该结果。</li>
-<li>防火墙(Firewall)代理：保护目标，不让恶意用户接近。</li>
-<li>同步化(Synchronization)代理：使多个用户能够同时使用一个对象而没有冲突。</li>
-<li>智能(Smart Reference)引用：当一个对象被引用时，提供一些额外的操作，例如记录调用次数。</li>
-</ul>
-
-
-<p>反射与代理常常一起使用，<a href="http://blog.ubone.com/blog/2014/06/28/li-yong-fan-zhang-hao/">这篇博文</a>就是代理模式的一个例子。</p>
-
-<p>代理模式与适配器模式的区别是，后者的用意是改变接口，而前者不能改变接口。代理模式与装饰模式都保持接口不变，但它们区别是，后者应当提供增加的功能/性能，而前者是对原对象施加控制，并不提供增强功能。</p>
-
-<h3>虚拟代理的例子</h3>
-
-<p>为了更好的用户体验，在应用中显示网络图片时，先显示“加载中”或者占位符，等待图片下载完成后再替换成图片。这就是虚拟代理的真实例子。对于客户端仍然是创建图片并显示，但实际创建的是图片代理，图片代理先显示“加载中”，然后启动另一线程去下载图片，当下载完成后，才真正显示图片。</p>
 ]]></content>
   </entry>
   
