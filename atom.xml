@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-09-03T23:27:29+08:00</updated>
+  <updated>2014-09-03T23:31:00+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -609,8 +609,6 @@
 </span><span class='line'><span class="cm">*/</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>Collections.synchronizedList</p>
 ]]></content>
   </entry>
   
