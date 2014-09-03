@@ -3,6 +3,12 @@
   
   
   <url>
+    <loc>http://blog.ubone.com/blog/2014/09/02/javabing-fa-bian-cheng-san/</loc>
+    <lastmod>2014-09-02T23:13:06+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.ubone.com/blog/2014/09/02/javabing-fa-er/</loc>
     <lastmod>2014-09-02T21:03:49+08:00</lastmod>
     <priority>0.8</priority>
@@ -311,14 +317,14 @@
   
   <url>
     <loc>http://blog.ubone.com/blog/archives/</loc>
-    <lastmod>2014-09-02T23:17:42+08:00</lastmod>
+    <lastmod>2014-09-03T23:27:29+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.ubone.com/</loc>
-    <lastmod>2014-09-02T23:17:42+08:00</lastmod>
+    <lastmod>2014-09-03T23:27:29+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
