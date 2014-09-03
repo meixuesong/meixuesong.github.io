@@ -327,9 +327,3 @@ public class ExchangerTest {
 线程pool-1-thread-1换回数据为drug
 */
 ```
-
-
-
-
-
-Collections.synchronizedList
