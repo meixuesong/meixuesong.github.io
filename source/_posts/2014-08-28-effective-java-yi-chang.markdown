@@ -111,3 +111,18 @@ public IndexOutOfBoundsException(int lowerBound, int upperBound, int index) {
 
 ##65 不要忽略异常
 空的catch块会使异常达不到应有的目的。如果确实需要空catch块，至少也要包含一条说明，为什么可以忽略此异常。
+
+如果在finally中return，将会丢失异常：
+
+```java
+public class LostException {
+	public static void main(String[] args) {
+		try {
+			throw new RuntimeException("afsd");
+		} finally {
+			//将会隐藏前面抛出的异常
+			return;
+		}
+	}
+}
+```
