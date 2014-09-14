@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-09-03T23:31:00+08:00</updated>
+  <updated>2014-09-14T21:20:21+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -1302,6 +1302,24 @@ public IndexOutOfBoundsException(int lowerBound, int upperBound, int index) {</p
 <h2>65 不要忽略异常</h2>
 
 <p>空的catch块会使异常达不到应有的目的。如果确实需要空catch块，至少也要包含一条说明，为什么可以忽略此异常。</p>
+
+<p>如果在finally中return，将会丢失异常：</p>
+
+<p>```java
+public class LostException {</p>
+
+<pre><code>public static void main(String[] args) {
+    try {
+        throw new RuntimeException("afsd");
+    } finally {
+        //将会隐藏前面抛出的异常
+        return;
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
 ]]></content>
   </entry>
   
