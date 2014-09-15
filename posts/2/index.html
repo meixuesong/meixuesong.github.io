@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="备忘录(Memento)模式又叫做快照模式。备忘录对象是一个用来存储另外一个对象内部状态快照的对象。备忘录模式的用意是在不破坏封装的条件下，将一个对象的状态存储在外部，从而在合适的时候把这个对象还原到原来的状态。通常系统不止存储一个状态，而是存储多个状态（快照）。每一个快照所处的位置就是Check &hellip;">
+  <meta name="description" content="状态模式把对象的行为包装在不同的状态对象里，所有状态对象都属于抽象状态类的子类。状态模式的意图是让一个对象在其内部状态改变的时候，其行为也随之改变。类图示意如下： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,52 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/">设计模式:状态模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-18T20:22:06+08:00" pubdate data-updated="true">2014-08-18</time>
+        
+           | <a href="/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>状态模式把对象的行为包装在不同的状态对象里，所有状态对象都属于抽象状态类的子类。状态模式的意图是让一个对象在其内部状态改变的时候，其行为也随之改变。类图示意如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140818_224041.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -481,52 +527,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/">设计模式:桥梁模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-03T22:09:23+08:00" pubdate data-updated="true">2014-08-03</time>
-        
-           | <a href="/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>桥梁模式的用意是“将抽象化与实现化解耦，使二者可以独立变化。”这里的解耦就是将它们之间的强关联改变成弱关联。所谓强关联就是继承关系，在编译期就已经确定。而弱关联就是动态确定并且可以在运行期动态改变的关联。因此对于Java，继承是强关联，而聚合关系是弱关联。因此桥梁模式中的解耦，就是指将抽象化与实现化之间的继承关系换成组合/聚合关系，使两者可以独立变化。桥梁模式的结构图如下：</p>
-
-<p><img src="/myresource/images/image_blog_20140803_233716.jpg" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -548,10 +548,14 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (15)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (16)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/14/java-i-slash-o/">Java I/O</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/09/02/javabing-fa-bian-cheng-san/">Java并发编程(三)</a>
@@ -567,10 +571,6 @@
     
       <li class="post">
         <a href="/blog/2014/08/28/effective-java-yi-chang/">Effective Java - 异常</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/">程序员的数学</a>
       </li>
     
   </ul>

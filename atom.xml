@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-09-14T21:20:21+08:00</updated>
+  <updated>2014-09-16T00:19:45+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,784 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Java I/O]]></title>
+    <link href="http://blog.ubone.com/blog/2014/09/14/java-i-slash-o/"/>
+    <updated>2014-09-14T21:22:58+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/09/14/java-i-slash-o</id>
+    <content type="html"><![CDATA[<h2>1. File类</h2>
+
+<h3>1.1 目录列表器</h3>
+
+<p>下面的代码示例，通过正则表达式过滤并返回指定文件的下级列表：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span><span class="o">[]</span> <span class="nf">dirList</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">ptn</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">File</span> <span class="n">file</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">ptn</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">ptn</span><span class="o">.</span><span class="na">trim</span><span class="o">()))</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="na">list</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">FilenameFilter</span> <span class="n">fnf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FilenameFilter</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="kd">private</span> <span class="n">Pattern</span> <span class="n">pattern</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="n">ptn</span><span class="o">);</span>
+</span><span class='line'>      <span class="nd">@Override</span>
+</span><span class='line'>      <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">accept</span><span class="o">(</span><span class="n">File</span> <span class="n">dir</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="n">pattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="n">name</span><span class="o">).</span><span class="na">matches</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">};</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="na">list</span><span class="o">(</span><span class="n">fnf</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>1.2 目录实用工具</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">File</span><span class="o">[]</span> <span class="nf">local</span><span class="o">(</span><span class="n">File</span> <span class="n">dir</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">regex</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">dir</span><span class="o">.</span><span class="na">listFiles</span><span class="o">(</span><span class="k">new</span> <span class="n">FilenameFilter</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="kd">private</span> <span class="n">Pattern</span> <span class="n">pattern</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="n">regex</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">accept</span><span class="o">(</span><span class="n">File</span> <span class="n">dir</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="n">pattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="n">name</span><span class="o">).</span><span class="na">getName</span><span class="o">()).</span><span class="na">matches</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">});</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">以及</span><span class="n">File</span><span class="err">类的</span><span class="n">exists</span><span class="o">(),</span> <span class="n">isDirectory</span><span class="o">(),</span> <span class="n">isFile</span><span class="o">(),</span> <span class="n">mkdirs</span><span class="o">(),</span> <span class="n">delete</span><span class="o">(),</span> <span class="n">renameTo</span><span class="o">()</span><span class="err">等方法。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<h2>2. I/O流的典型使用方式</h2>
+
+<h3>2.1 缓冲输入文件</h3>
+
+<p>下面的例子适用于字符输入：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BufferedInputFile</span> <span class="o">{</span>
+</span><span class='line'>  <span class="c1">// Throw exceptions to console:</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">read</span><span class="o">(</span><span class="n">String</span> <span class="n">filename</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">// Reading input by lines:</span>
+</span><span class='line'>      <span class="n">BufferedReader</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="n">filename</span><span class="o">));</span>
+</span><span class='line'>      <span class="n">String</span> <span class="n">s</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">StringBuilder</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
+</span><span class='line'>      <span class="k">while</span> <span class="o">((</span><span class="n">s</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">s</span> <span class="o">+</span> <span class="s">&quot;\n&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">in</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">sb</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">read</span><span class="o">(</span><span class="s">&quot;BufferedInputFile.java&quot;</span><span class="o">));</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2.2 从内存输入</h3>
+
+<p>在下面的示例中，从BufferedInputFile.read()读入的String结果被用来创建一个StringReader。然后调用read()每次读取一个字符：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">MemoryInput</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">StringReader</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringReader</span><span class="o">(</span>
+</span><span class='line'>              <span class="n">BufferedInputFile</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="s">&quot;MemoryInput.java&quot;</span><span class="o">));</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">c</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">while</span> <span class="o">((</span><span class="n">c</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">())</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">((</span><span class="kt">char</span><span class="o">)</span> <span class="n">c</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2.3 格式化的内存输入</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">DataInputStream</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataInputStream</span><span class="o">(</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nf">ByteArrayInputStream</span><span class="o">(</span>
+</span><span class='line'>              <span class="n">BufferedInputFile</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="s">&quot;FormattedMemoryInput.java&quot;</span><span class="o">)</span>
+</span><span class='line'>              <span class="o">.</span><span class="na">getBytes</span><span class="o">()));</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">in</span><span class="o">.</span><span class="na">readInt</span><span class="o">();</span>
+</span><span class='line'><span class="n">in</span><span class="o">.</span><span class="na">readChar</span><span class="o">();</span>           
+</span><span class='line'>              
+</span><span class='line'><span class="n">DataInputStream</span> <span class="n">in2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataInputStream</span><span class="o">(</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nf">BufferedInputStream</span><span class="o">(</span>
+</span><span class='line'>              <span class="k">new</span> <span class="nf">FileInputStream</span><span class="o">(</span><span class="s">&quot;TestEOF.java&quot;</span><span class="o">)));</span>                            
+</span><span class='line'><span class="k">while</span> <span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">available</span><span class="o">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">((</span><span class="kt">char</span><span class="o">)</span> <span class="n">in</span><span class="o">.</span><span class="na">readByte</span><span class="o">());</span>
+</span><span class='line'><span class="cm">/*注意available()的工作方式会随着媒介类型的不同而不同。</span>
+</span><span class='line'><span class="cm">  表示“在没有阻塞的情况下所能读取的字节数”，</span>
+</span><span class='line'><span class="cm">  对于文件，这意味着整个文件，但不同类型的流可能不是这样。</span>
+</span><span class='line'><span class="cm">*/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2.4 基本的文件输出</h3>
+
+<p>FileWriter可用于向文件写入数据，通常会用BufferedWriter将其包装。下例写入文本文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">PrintWriter</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PrintWriter</span><span class="o">(</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nf">BufferedWriter</span><span class="o">(</span>
+</span><span class='line'>              <span class="k">new</span> <span class="nf">FileWriter</span><span class="o">(</span><span class="s">&quot;something.out&quot;</span><span class="o">)));</span>
+</span><span class='line'><span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Hello!&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">out</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//对于文本文件有快捷方式：</span>
+</span><span class='line'><span class="n">PrintWriter</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PrintWriter</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
+</span><span class='line'><span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Hello!&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">out</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2.5 存储和恢复数据</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">StoringAndRecoveringData</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">DataOutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataOutputStream</span><span class="o">(</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nf">BufferedOutputStream</span><span class="o">(</span>
+</span><span class='line'>        <span class="k">new</span> <span class="nf">FileOutputStream</span><span class="o">(</span><span class="s">&quot;Data.txt&quot;</span><span class="o">)));</span>
+</span><span class='line'>    <span class="n">out</span><span class="o">.</span><span class="na">writeDouble</span><span class="o">(</span><span class="mf">3.14159</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">out</span><span class="o">.</span><span class="na">writeUTF</span><span class="o">(</span><span class="s">&quot;That was pi&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">out</span><span class="o">.</span><span class="na">writeDouble</span><span class="o">(</span><span class="mf">1.41413</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">out</span><span class="o">.</span><span class="na">writeUTF</span><span class="o">(</span><span class="s">&quot;Square root of 2&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">out</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">DataInputStream</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataInputStream</span><span class="o">(</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nf">BufferedInputStream</span><span class="o">(</span>
+</span><span class='line'>        <span class="k">new</span> <span class="nf">FileInputStream</span><span class="o">(</span><span class="s">&quot;Data.txt&quot;</span><span class="o">)));</span>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">readDouble</span><span class="o">());</span>
+</span><span class='line'>    <span class="c1">// Only readUTF() will recover the</span>
+</span><span class='line'>    <span class="c1">// Java-UTF String properly:</span>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">readUTF</span><span class="o">());</span>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">readDouble</span><span class="o">());</span>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">readUTF</span><span class="o">());</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2.6 读写随机访问文件</h3>
+
+<p>使用RandomAccessFile，类似于组合使用DataInputStream和DataOutputStream。它不支持装饰，所以不能与InputStream和OutputStream子类的任何部分组合起来。可以假定其已经被正确地缓冲。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UsingRandomAccessFile</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">static</span> <span class="n">String</span> <span class="n">file</span> <span class="o">=</span> <span class="s">&quot;rtest.dat&quot;</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">static</span> <span class="kt">void</span> <span class="nf">display</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">RandomAccessFile</span> <span class="n">rf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RandomAccessFile</span><span class="o">(</span><span class="n">file</span><span class="o">,</span> <span class="s">&quot;r&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span>
+</span><span class='line'>        <span class="s">&quot;Value &quot;</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="s">&quot;: &quot;</span> <span class="o">+</span> <span class="n">rf</span><span class="o">.</span><span class="na">readDouble</span><span class="o">());</span>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">rf</span><span class="o">.</span><span class="na">readUTF</span><span class="o">());</span>
+</span><span class='line'>    <span class="n">rf</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">RandomAccessFile</span> <span class="n">rf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RandomAccessFile</span><span class="o">(</span><span class="n">file</span><span class="o">,</span> <span class="s">&quot;rw&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span><span class='line'>      <span class="n">rf</span><span class="o">.</span><span class="na">writeDouble</span><span class="o">(</span><span class="n">i</span><span class="o">*</span><span class="mf">1.414</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">rf</span><span class="o">.</span><span class="na">writeUTF</span><span class="o">(</span><span class="s">&quot;The end of the file&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">rf</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">display</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">rf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RandomAccessFile</span><span class="o">(</span><span class="n">file</span><span class="o">,</span> <span class="s">&quot;rw&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">rf</span><span class="o">.</span><span class="na">seek</span><span class="o">(</span><span class="mi">5</span><span class="o">*</span><span class="mi">8</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">rf</span><span class="o">.</span><span class="na">writeDouble</span><span class="o">(</span><span class="mf">47.0001</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">rf</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">display</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>3. NIO</h2>
+
+<p>新的I/O速度提升来自于所使用的结构更接近于操作系统执行I/O的方式：通道和缓冲器。我们只和缓冲器交互，并把缓冲器派送到通道。通道要么从缓冲器获得数据，要么向缓冲器发送数据。以下示例演示了三种类型的流，用以产生可写、可读可写以及可读的通道。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">GetChannel</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">BSIZE</span> <span class="o">=</span> <span class="mi">1024</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">// Write a file:</span>
+</span><span class='line'>      <span class="n">FileChannel</span> <span class="n">fc</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">&quot;/Users/mxs/Desktop/data.txt&quot;</span><span class="o">)</span>
+</span><span class='line'>              <span class="o">.</span><span class="na">getChannel</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">fc</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">ByteBuffer</span><span class="o">.</span><span class="na">wrap</span><span class="o">(</span><span class="s">&quot;Some text &quot;</span><span class="o">.</span><span class="na">getBytes</span><span class="o">()));</span>
+</span><span class='line'>      <span class="n">fc</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>      <span class="c1">// Add to the end of the file:</span>
+</span><span class='line'>      <span class="n">fc</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RandomAccessFile</span><span class="o">(</span><span class="s">&quot;/Users/mxs/Desktop/data.txt&quot;</span><span class="o">,</span> <span class="s">&quot;rw&quot;</span><span class="o">)</span>
+</span><span class='line'>              <span class="o">.</span><span class="na">getChannel</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">fc</span><span class="o">.</span><span class="na">position</span><span class="o">(</span><span class="n">fc</span><span class="o">.</span><span class="na">size</span><span class="o">());</span> <span class="c1">// Move to the end</span>
+</span><span class='line'>      <span class="n">fc</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">ByteBuffer</span><span class="o">.</span><span class="na">wrap</span><span class="o">(</span><span class="s">&quot;Some more&quot;</span><span class="o">.</span><span class="na">getBytes</span><span class="o">()));</span>
+</span><span class='line'>      <span class="n">fc</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>      <span class="c1">// Read the file:</span>
+</span><span class='line'>      <span class="n">fc</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">&quot;/Users/mxs/Desktop/data.txt&quot;</span><span class="o">).</span><span class="na">getChannel</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">ByteBuffer</span> <span class="n">buff</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="n">BSIZE</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">fc</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buff</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">buff</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
+</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">buff</span><span class="o">.</span><span class="na">hasRemaining</span><span class="o">())</span>
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">((</span><span class="kt">char</span><span class="o">)</span> <span class="n">buff</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span> <span class="cm">/*</span>
+</span><span class='line'><span class="cm"> * Output: Some text Some more</span>
+</span><span class='line'><span class="cm"> */</span><span class="c1">// :~</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3.1 转换数据</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BufferToText</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">BSIZE</span> <span class="o">=</span> <span class="mi">1024</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">FileChannel</span> <span class="n">fc</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">&quot;/Users/mxs/Desktop/data2.txt&quot;</span><span class="o">).</span><span class="na">getChannel</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">fc</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">ByteBuffer</span><span class="o">.</span><span class="na">wrap</span><span class="o">(</span><span class="s">&quot;Some text&quot;</span><span class="o">.</span><span class="na">getBytes</span><span class="o">()));</span>
+</span><span class='line'>      <span class="n">fc</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">fc</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">&quot;/Users/mxs/Desktop/data2.txt&quot;</span><span class="o">).</span><span class="na">getChannel</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">ByteBuffer</span> <span class="n">buff</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="n">BSIZE</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">fc</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buff</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">buff</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
+</span><span class='line'>      <span class="c1">// Doesn&#39;t work:</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">buff</span><span class="o">.</span><span class="na">asCharBuffer</span><span class="o">());</span>
+</span><span class='line'>      <span class="c1">// Decode using this system&#39;s default Charset:</span>
+</span><span class='line'>      <span class="n">buff</span><span class="o">.</span><span class="na">rewind</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">String</span> <span class="n">encoding</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;file.encoding&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Decoded using &quot;</span> <span class="o">+</span> <span class="n">encoding</span> <span class="o">+</span> <span class="s">&quot;: &quot;</span>
+</span><span class='line'>              <span class="o">+</span> <span class="n">Charset</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="n">encoding</span><span class="o">).</span><span class="na">decode</span><span class="o">(</span><span class="n">buff</span><span class="o">));</span>
+</span><span class='line'>      <span class="c1">// Or, we could encode with something that will print:</span>
+</span><span class='line'>      <span class="n">fc</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">&quot;/Users/mxs/Desktop/data2.txt&quot;</span><span class="o">).</span><span class="na">getChannel</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">fc</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">ByteBuffer</span><span class="o">.</span><span class="na">wrap</span><span class="o">(</span><span class="s">&quot;Some text&quot;</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(</span><span class="s">&quot;UTF-16BE&quot;</span><span class="o">)));</span>
+</span><span class='line'>      <span class="n">fc</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>      <span class="c1">// Now try reading again:</span>
+</span><span class='line'>      <span class="n">fc</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">&quot;/Users/mxs/Desktop/data2.txt&quot;</span><span class="o">).</span><span class="na">getChannel</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">buff</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">fc</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buff</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">buff</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">buff</span><span class="o">.</span><span class="na">asCharBuffer</span><span class="o">());</span>
+</span><span class='line'>      <span class="c1">// Use a CharBuffer to write through:</span>
+</span><span class='line'>      <span class="n">fc</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">&quot;/Users/mxs/Desktop/data2.txt&quot;</span><span class="o">).</span><span class="na">getChannel</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">buff</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">24</span><span class="o">);</span> <span class="c1">// More than needed</span>
+</span><span class='line'>      <span class="n">buff</span><span class="o">.</span><span class="na">asCharBuffer</span><span class="o">().</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;Some text&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">fc</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buff</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">fc</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>      <span class="c1">// Read and display:</span>
+</span><span class='line'>      <span class="n">fc</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">&quot;/Users/mxs/Desktop/data2.txt&quot;</span><span class="o">).</span><span class="na">getChannel</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">buff</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">fc</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buff</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">buff</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">buff</span><span class="o">.</span><span class="na">asCharBuffer</span><span class="o">());</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> * Output: ???? Decoded using Cp1252: Some text Some text Some text</span>
+</span><span class='line'><span class="cm"> */</span><span class="c1">// :~</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3.2 获取基本类型</h3>
+
+<p>下面的示例演示了怎样插入和抽取各种数值：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">GetData</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">BSIZE</span> <span class="o">=</span> <span class="mi">1024</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">ByteBuffer</span> <span class="n">bb</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="n">BSIZE</span><span class="o">);</span>
+</span><span class='line'>      <span class="c1">// Allocation automatically zeroes the ByteBuffer:</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">i</span><span class="o">++</span> <span class="o">&lt;</span> <span class="n">bb</span><span class="o">.</span><span class="na">limit</span><span class="o">())</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">bb</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span>
+</span><span class='line'>              <span class="n">print</span><span class="o">(</span><span class="s">&quot;nonzero&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">print</span><span class="o">(</span><span class="s">&quot;i = &quot;</span> <span class="o">+</span> <span class="n">i</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">bb</span><span class="o">.</span><span class="na">rewind</span><span class="o">();</span>
+</span><span class='line'>      <span class="c1">// Store and read a char array:</span>
+</span><span class='line'>      <span class="n">bb</span><span class="o">.</span><span class="na">asCharBuffer</span><span class="o">().</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;Howdy!&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="kt">char</span> <span class="n">c</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">while</span> <span class="o">((</span><span class="n">c</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="na">getChar</span><span class="o">())</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">printnb</span><span class="o">(</span><span class="n">c</span> <span class="o">+</span> <span class="s">&quot; &quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">print</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">bb</span><span class="o">.</span><span class="na">rewind</span><span class="o">();</span>
+</span><span class='line'>      <span class="c1">// Store and read a short:</span>
+</span><span class='line'>      <span class="n">bb</span><span class="o">.</span><span class="na">asShortBuffer</span><span class="o">().</span><span class="na">put</span><span class="o">((</span><span class="kt">short</span><span class="o">)</span> <span class="mi">471142</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">print</span><span class="o">(</span><span class="n">bb</span><span class="o">.</span><span class="na">getShort</span><span class="o">());</span>
+</span><span class='line'>      <span class="n">bb</span><span class="o">.</span><span class="na">rewind</span><span class="o">();</span>
+</span><span class='line'>      <span class="c1">// Store and read an int:</span>
+</span><span class='line'>      <span class="n">bb</span><span class="o">.</span><span class="na">asIntBuffer</span><span class="o">().</span><span class="na">put</span><span class="o">(</span><span class="mi">99471142</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">print</span><span class="o">(</span><span class="n">bb</span><span class="o">.</span><span class="na">getInt</span><span class="o">());</span>
+</span><span class='line'>      <span class="n">bb</span><span class="o">.</span><span class="na">rewind</span><span class="o">();</span>
+</span><span class='line'>      <span class="c1">// Store and read a long:</span>
+</span><span class='line'>      <span class="n">bb</span><span class="o">.</span><span class="na">asLongBuffer</span><span class="o">().</span><span class="na">put</span><span class="o">(</span><span class="mi">99471142</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">print</span><span class="o">(</span><span class="n">bb</span><span class="o">.</span><span class="na">getLong</span><span class="o">());</span>
+</span><span class='line'>      <span class="n">bb</span><span class="o">.</span><span class="na">rewind</span><span class="o">();</span>
+</span><span class='line'>      <span class="c1">// Store and read a float:</span>
+</span><span class='line'>      <span class="n">bb</span><span class="o">.</span><span class="na">asFloatBuffer</span><span class="o">().</span><span class="na">put</span><span class="o">(</span><span class="mi">99471142</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">print</span><span class="o">(</span><span class="n">bb</span><span class="o">.</span><span class="na">getFloat</span><span class="o">());</span>
+</span><span class='line'>      <span class="n">bb</span><span class="o">.</span><span class="na">rewind</span><span class="o">();</span>
+</span><span class='line'>      <span class="c1">// Store and read a double:</span>
+</span><span class='line'>      <span class="n">bb</span><span class="o">.</span><span class="na">asDoubleBuffer</span><span class="o">().</span><span class="na">put</span><span class="o">(</span><span class="mi">99471142</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">print</span><span class="o">(</span><span class="n">bb</span><span class="o">.</span><span class="na">getDouble</span><span class="o">());</span>
+</span><span class='line'>      <span class="n">bb</span><span class="o">.</span><span class="na">rewind</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Output:</span>
+</span><span class='line'><span class="cm">i = 1025</span>
+</span><span class='line'><span class="cm">H o w d y !</span>
+</span><span class='line'><span class="cm">12390</span>
+</span><span class='line'><span class="cm">99471142</span>
+</span><span class='line'><span class="cm">99471142</span>
+</span><span class='line'><span class="cm">9.9471144E7</span>
+</span><span class='line'><span class="cm">9.9471142E7</span>
+</span><span class='line'><span class="cm">*/</span><span class="c1">//:~</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3.3 视图缓冲器</h3>
+
+<p>视图缓冲器（View buffer）可以让我们通过某个特定的基本数据类型的视窗查看其底层的ByteBuffer。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">IntBufferDemo</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">BSIZE</span> <span class="o">=</span> <span class="mi">1024</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">ByteBuffer</span> <span class="n">bb</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="n">BSIZE</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">IntBuffer</span> <span class="n">ib</span> <span class="o">=</span> <span class="n">bb</span><span class="o">.</span><span class="na">asIntBuffer</span><span class="o">();</span>
+</span><span class='line'>    <span class="c1">// Store an array of int:</span>
+</span><span class='line'>    <span class="n">ib</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="k">new</span> <span class="kt">int</span><span class="o">[]{</span> <span class="mi">11</span><span class="o">,</span> <span class="mi">42</span><span class="o">,</span> <span class="mi">47</span><span class="o">,</span> <span class="mi">99</span><span class="o">,</span> <span class="mi">143</span><span class="o">,</span> <span class="mi">811</span><span class="o">,</span> <span class="mi">1016</span> <span class="o">});</span>
+</span><span class='line'>    <span class="c1">// Absolute location read and write:</span>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ib</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">3</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">ib</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">1811</span><span class="o">);</span>
+</span><span class='line'>    <span class="c1">// Setting a new limit before rewinding the buffer.</span>
+</span><span class='line'>    <span class="n">ib</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">while</span><span class="o">(</span><span class="n">ib</span><span class="o">.</span><span class="na">hasRemaining</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">ib</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span> <span class="cm">/* Output:</span>
+</span><span class='line'><span class="cm">99</span>
+</span><span class='line'><span class="cm">11</span>
+</span><span class='line'><span class="cm">42</span>
+</span><span class='line'><span class="cm">47</span>
+</span><span class='line'><span class="cm">1811</span>
+</span><span class='line'><span class="cm">143</span>
+</span><span class='line'><span class="cm">811</span>
+</span><span class='line'><span class="cm">1016</span>
+</span><span class='line'><span class="cm">*/</span><span class="c1">//:~</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ViewBuffers</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">ByteBuffer</span> <span class="n">bb</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">wrap</span><span class="o">(</span>
+</span><span class='line'>      <span class="k">new</span> <span class="kt">byte</span><span class="o">[]{</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="sc">&#39;a&#39;</span> <span class="o">});</span>
+</span><span class='line'>    <span class="n">bb</span><span class="o">.</span><span class="na">rewind</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">printnb</span><span class="o">(</span><span class="s">&quot;Byte Buffer &quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">while</span><span class="o">(</span><span class="n">bb</span><span class="o">.</span><span class="na">hasRemaining</span><span class="o">())</span>
+</span><span class='line'>      <span class="n">printnb</span><span class="o">(</span><span class="n">bb</span><span class="o">.</span><span class="na">position</span><span class="o">()+</span> <span class="s">&quot; -&gt; &quot;</span> <span class="o">+</span> <span class="n">bb</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;, &quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">print</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">CharBuffer</span> <span class="n">cb</span> <span class="o">=</span>
+</span><span class='line'>      <span class="o">((</span><span class="n">ByteBuffer</span><span class="o">)</span><span class="n">bb</span><span class="o">.</span><span class="na">rewind</span><span class="o">()).</span><span class="na">asCharBuffer</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">printnb</span><span class="o">(</span><span class="s">&quot;Char Buffer &quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">while</span><span class="o">(</span><span class="n">cb</span><span class="o">.</span><span class="na">hasRemaining</span><span class="o">())</span>
+</span><span class='line'>      <span class="n">printnb</span><span class="o">(</span><span class="n">cb</span><span class="o">.</span><span class="na">position</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot; -&gt; &quot;</span> <span class="o">+</span> <span class="n">cb</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;, &quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">print</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">FloatBuffer</span> <span class="n">fb</span> <span class="o">=</span>
+</span><span class='line'>      <span class="o">((</span><span class="n">ByteBuffer</span><span class="o">)</span><span class="n">bb</span><span class="o">.</span><span class="na">rewind</span><span class="o">()).</span><span class="na">asFloatBuffer</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">printnb</span><span class="o">(</span><span class="s">&quot;Float Buffer &quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">while</span><span class="o">(</span><span class="n">fb</span><span class="o">.</span><span class="na">hasRemaining</span><span class="o">())</span>
+</span><span class='line'>      <span class="n">printnb</span><span class="o">(</span><span class="n">fb</span><span class="o">.</span><span class="na">position</span><span class="o">()+</span> <span class="s">&quot; -&gt; &quot;</span> <span class="o">+</span> <span class="n">fb</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;, &quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">print</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">IntBuffer</span> <span class="n">ib</span> <span class="o">=</span>
+</span><span class='line'>      <span class="o">((</span><span class="n">ByteBuffer</span><span class="o">)</span><span class="n">bb</span><span class="o">.</span><span class="na">rewind</span><span class="o">()).</span><span class="na">asIntBuffer</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">printnb</span><span class="o">(</span><span class="s">&quot;Int Buffer &quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">while</span><span class="o">(</span><span class="n">ib</span><span class="o">.</span><span class="na">hasRemaining</span><span class="o">())</span>
+</span><span class='line'>      <span class="n">printnb</span><span class="o">(</span><span class="n">ib</span><span class="o">.</span><span class="na">position</span><span class="o">()+</span> <span class="s">&quot; -&gt; &quot;</span> <span class="o">+</span> <span class="n">ib</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;, &quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">print</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">LongBuffer</span> <span class="n">lb</span> <span class="o">=</span>
+</span><span class='line'>      <span class="o">((</span><span class="n">ByteBuffer</span><span class="o">)</span><span class="n">bb</span><span class="o">.</span><span class="na">rewind</span><span class="o">()).</span><span class="na">asLongBuffer</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">printnb</span><span class="o">(</span><span class="s">&quot;Long Buffer &quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">while</span><span class="o">(</span><span class="n">lb</span><span class="o">.</span><span class="na">hasRemaining</span><span class="o">())</span>
+</span><span class='line'>      <span class="n">printnb</span><span class="o">(</span><span class="n">lb</span><span class="o">.</span><span class="na">position</span><span class="o">()+</span> <span class="s">&quot; -&gt; &quot;</span> <span class="o">+</span> <span class="n">lb</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;, &quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">print</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">ShortBuffer</span> <span class="n">sb</span> <span class="o">=</span>
+</span><span class='line'>      <span class="o">((</span><span class="n">ByteBuffer</span><span class="o">)</span><span class="n">bb</span><span class="o">.</span><span class="na">rewind</span><span class="o">()).</span><span class="na">asShortBuffer</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">printnb</span><span class="o">(</span><span class="s">&quot;Short Buffer &quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">while</span><span class="o">(</span><span class="n">sb</span><span class="o">.</span><span class="na">hasRemaining</span><span class="o">())</span>
+</span><span class='line'>      <span class="n">printnb</span><span class="o">(</span><span class="n">sb</span><span class="o">.</span><span class="na">position</span><span class="o">()+</span> <span class="s">&quot; -&gt; &quot;</span> <span class="o">+</span> <span class="n">sb</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;, &quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">print</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">DoubleBuffer</span> <span class="n">db</span> <span class="o">=</span>
+</span><span class='line'>      <span class="o">((</span><span class="n">ByteBuffer</span><span class="o">)</span><span class="n">bb</span><span class="o">.</span><span class="na">rewind</span><span class="o">()).</span><span class="na">asDoubleBuffer</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">printnb</span><span class="o">(</span><span class="s">&quot;Double Buffer &quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">while</span><span class="o">(</span><span class="n">db</span><span class="o">.</span><span class="na">hasRemaining</span><span class="o">())</span>
+</span><span class='line'>      <span class="n">printnb</span><span class="o">(</span><span class="n">db</span><span class="o">.</span><span class="na">position</span><span class="o">()+</span> <span class="s">&quot; -&gt; &quot;</span> <span class="o">+</span> <span class="n">db</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;, &quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="cm">/* Output:</span>
+</span><span class='line'><span class="cm">Byte Buffer 0 -&gt; 0, 1 -&gt; 0, 2 -&gt; 0, 3 -&gt; 0, 4 -&gt; 0, 5 -&gt; 0, 6 -&gt; 0, 7 -&gt; 97,</span>
+</span><span class='line'><span class="cm">Char Buffer 0 -&gt;  , 1 -&gt;  , 2 -&gt;  , 3 -&gt; a,</span>
+</span><span class='line'><span class="cm">Float Buffer 0 -&gt; 0.0, 1 -&gt; 1.36E-43,</span>
+</span><span class='line'><span class="cm">Int Buffer 0 -&gt; 0, 1 -&gt; 97,</span>
+</span><span class='line'><span class="cm">Long Buffer 0 -&gt; 97,</span>
+</span><span class='line'><span class="cm">Short Buffer 0 -&gt; 0, 1 -&gt; 0, 2 -&gt; 0, 3 -&gt; 97,</span>
+</span><span class='line'><span class="cm">Double Buffer 0 -&gt; 4.8E-322,</span>
+</span><span class='line'><span class="cm">*/</span><span class="c1">//:~</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3.4 用缓冲器操纵数据</h3>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_20140916_001220.jpg" alt="image" /></p>
+
+<h3>3.5 缓冲器的细节</h3>
+
+<p>Buffer由数据和四个索引组成：mark, position, limit, capacity。相关的方法：</p>
+
+<ul>
+<li>capacity() 返回缓冲区容量。</li>
+<li>clear() 清空缓冲区，position设置为0，limit设置为容量。</li>
+<li>flip() 将limit设置为position, position设置为0.用于准备从缓冲区读取已经写入的数据。</li>
+<li>limit() 返回limit值。</li>
+<li>limit(int lim) 设置limit值。</li>
+<li>mark() 将mark设置为position。</li>
+<li>position() 返回position值。</li>
+<li>position(int pos) 设置position值。</li>
+<li>remaining() 返回（limit &ndash; position）。</li>
+<li>hasRemaining() 若有介于position和limit之间的元素，则返回true。</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Java并发编程(三)]]></title>
@@ -1696,6 +2474,96 @@
 </span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<h2>慎用延迟初始化</h2>
+
+<p>在并发编程时，延迟初始化可能导致问题。除非绝对必要，否则就不要使用延迟初始化。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//正常的初始化</span>
+</span><span class='line'><span class="kd">private</span> <span class="kd">final</span> <span class="n">FieldType</span> <span class="n">field</span> <span class="o">=</span> <span class="n">computeFieldValue</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果要使用延迟初始化，就要使用同步方法，例如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">FieldType</span> <span class="n">field</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">synchronized</span> <span class="n">FieldType</span> <span class="nf">getField</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>     <span class="k">if</span> <span class="o">(</span><span class="n">field</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">field</span> <span class="o">=</span> <span class="n">computeFieldValue</span><span class="o">();</span>
+</span><span class='line'>     <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>     <span class="k">return</span> <span class="n">field</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果出于性能考虑，需要对静态域使用延迟初始化，就使用<strong>Lazy initialization holder class</strong>模式：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="n">Class</span> <span class="n">FieldHolder</span> <span class="o">{</span>
+</span><span class='line'>     <span class="kd">static</span> <span class="kd">final</span> <span class="n">FieldType</span> <span class="n">field</span> <span class="o">=</span> <span class="n">computefieldValue</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">static</span> <span class="n">FieldType</span> <span class="nf">getField</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">FieldHolder</span><span class="o">.</span><span class="na">field</span><span class="o">;</span> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果出于性能考虑，需要对实例域使用延迟初始化，就使用双重检查模式(Double check idiom)：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kd">volatile</span> <span class="n">FieldType</span> <span class="n">field</span><span class="o">;</span>
+</span><span class='line'><span class="n">FieldType</span> <span class="nf">getField</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="n">FieldType</span> <span class="n">result</span> <span class="o">=</span> <span class="n">field</span><span class="o">;</span>
+</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">synchronized</span><span class="o">(</span><span class="k">this</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">result</span> <span class="o">=</span> <span class="n">field</span><span class="o">;</span>
+</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">field</span> <span class="o">=</span> <span class="n">result</span> <span class="o">=</span> <span class="n">computeFieldValue</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意上面的代码：</p>
+
+<ol>
+<li>使用volatile很重要；</li>
+<li>使用局域变量result可以提高性能。据称在作者的机器上使用局域变量要快25%。</li>
+<li>对于静态域，没有必要使用双重检查，<strong>Lazy initialization holder class</strong>是更好的选择。</li>
+<li>如果延迟初始化可以接受重复初始化的实例域，则可以省去第二次检查。</li>
+</ol>
+
 ]]></content>
   </entry>
   
@@ -2920,46 +3788,6 @@
 <p><img src="http://blog.ubone.com/myresource/images/haerbin201408/HA_ER_BIN_IMG_1322.jpg" alt="image" /></p>
 
 <p><img src="http://blog.ubone.com/myresource/images/haerbin201408/HA_ER_BIN_IMG_1323.jpg" alt="image" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:桥梁模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/"/>
-    <updated>2014-08-03T22:09:23+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi</id>
-    <content type="html"><![CDATA[<p>桥梁模式的用意是“将抽象化与实现化解耦，使二者可以独立变化。”这里的解耦就是将它们之间的强关联改变成弱关联。所谓强关联就是继承关系，在编译期就已经确定。而弱关联就是动态确定并且可以在运行期动态改变的关联。因此对于Java，继承是强关联，而聚合关系是弱关联。因此桥梁模式中的解耦，就是指将抽象化与实现化之间的继承关系换成组合/聚合关系，使两者可以独立变化。桥梁模式的结构图如下：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_20140803_233716.jpg" alt="image" /></p>
-
-<!--more-->
-
-
-<ol>
-<li>抽象化角色（Abstraction）：抽象化给出的定义，并保存一个对实现化对象的引用。</li>
-<li>修正抽象化角色（Refined Abstraction）：扩展抽象化角色，改变和修正父类的定义。</li>
-<li>实现化角色（Implementor）：给出实现化角色的接口，但不给出具体实现。这个接口不一定与抽象化角色接口相同，实际上，这两个接口可以非常不一样。<strong>实现化角色应当只给出底层操作，而抽象化角色应当只给出基于底层操作的更高一层的操作。</strong></li>
-<li>具体实现化角色（Concrete Implementor）：给出实现化角色接口的具体实现。当具体实现化类只有一个ConcreteImplementor的情况下，实现化角色就可以省略了。</li>
-</ol>
-
-
-<p>抽象化等级结构中的方法通过向对应的实现化对象的委派实现自己的功能。一般来说，实现化角色中的每一个方法都应当有一个抽象化角色中的某一个方法与之对应，但反过来则不一定。即抽象化角色的接口比实现化角色的接口宽，抽象化角色还可能提供其它的商业方法。而实现化角色则仅仅为实现抽象化角色的相关行为而存在。</p>
-
-<p>桥梁模式是为了分享抽象化与实现，使两者的接口可以不同。而适配器模式是为了改变已有接口，使它们相容。因此这两种模式是不一样的。</p>
-
-<p>什么情况下应当使用桥梁模式？</p>
-
-<ul>
-<li>如果一个系统需要在构件的抽象化角色和具体化角色之间增加更多的灵活性，避免在两个层次之间建立静态的联系。</li>
-<li>设计要求实现化角色的任何改变不应当影响客户端。</li>
-<li>一个构件有多个抽象化角色和实现化角色，系统需要它们之间进行动态耦合。</li>
-<li>虽然在系统中使用继承没有问题，但由于抽象化角色和具体角色需要独立变化，设计要求需要独立管理这两者。</li>
-</ul>
-
-
-<p>桥梁模式的一个例子是Java AWT的Peer架构。Java应用在不同的操作系统上有不同的Look and Feel。Java为AWT中的每一个GUI构件都提供了一个Peer构件。Java程序员只需要关心Button对象提供的接口，当运行时，Button对象动态地与一个本地环境的底层Peer对象联系起来，这个Peer对象会按照指令执行正确的操作。</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_20140825_200404.jpg" alt="image" /></p>
 ]]></content>
   </entry>
   

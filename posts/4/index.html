@@ -9,7 +9,11 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="简单工厂方法模式采用静态方法创建产品，工厂方式模式通过多层级的工厂方法创建一种产品等级结构。而抽象工厂方法模式则可以用于创建多个产品等级结构。因此，其类图示意如下： ">
+  <meta name="description" content="序列生成器是常见的一个应用组件。Oracle数据库有Sequence，但不是所有数据库都有序列。本文尝试将单例模式、多例模式应用于序列生成器。采用了以下方式实现： 没有数据库的单例实现
+有数据库的单例实现
+有缓存的单例实现
+有缓存的多序列实现
+多序列的多例实现。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +68,59 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong/">设计模式在序列生成器的应用</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-28T22:21:23+08:00" pubdate data-updated="true">2014-07-28</time>
+        
+           | <a href="/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>序列生成器是常见的一个应用组件。Oracle数据库有Sequence，但不是所有数据库都有序列。本文尝试将单例模式、多例模式应用于序列生成器。采用了以下方式实现：</p>
+
+<ol>
+<li>没有数据库的单例实现</li>
+<li>有数据库的单例实现</li>
+<li>有缓存的单例实现</li>
+<li>有缓存的多序列实现</li>
+<li>多序列的多例实现。</li>
+</ol>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -482,50 +539,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/09/javazhu-jie/">Java注解</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-09T22:22:10+08:00" pubdate data-updated="true">2014-07-09</time>
-        
-           | <a href="/blog/2014/07/09/javazhu-jie/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/09/javazhu-jie/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本文记录Java注解的基本用法。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/09/javazhu-jie/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/5">&larr; Older</a>
@@ -547,10 +560,14 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (15)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (16)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/14/java-i-slash-o/">Java I/O</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/09/02/javabing-fa-bian-cheng-san/">Java并发编程(三)</a>
@@ -566,10 +583,6 @@
     
       <li class="post">
         <a href="/blog/2014/08/28/effective-java-yi-chang/">Effective Java - 异常</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/">程序员的数学</a>
       </li>
     
   </ul>
