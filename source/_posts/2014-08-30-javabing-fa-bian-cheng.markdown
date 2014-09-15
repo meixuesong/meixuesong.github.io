@@ -310,3 +310,60 @@ public class Accessor implements Runnable {
 	}
 }
 ```
+
+## 慎用延迟初始化
+在并发编程时，延迟初始化可能导致问题。除非绝对必要，否则就不要使用延迟初始化。
+
+```java
+//正常的初始化
+private final FieldType field = computeFieldValue();
+```
+
+如果要使用延迟初始化，就要使用同步方法，例如：
+
+```java
+private FieldType field;
+
+synchronized FieldType getField() {
+     if (field == null) {
+          field = computeFieldValue();
+     }
+
+     return field;
+}
+```
+
+如果出于性能考虑，需要对静态域使用延迟初始化，就使用**Lazy initialization holder class**模式：
+
+```java
+private static Class FieldHolder {
+     static final FieldType field = computefieldValue();
+}
+
+static FieldType getField() { return FieldHolder.field; }
+```
+
+
+如果出于性能考虑，需要对实例域使用延迟初始化，就使用双重检查模式(Double check idiom)：
+```java
+private volatile FieldType field;
+FieldType getField() {
+FieldType result = field;
+if (result == null) {
+synchronized(this) {
+result = field;
+if (result == null) {
+field = result = computeFieldValue();
+}
+}
+}
+return result;
+}
+```
+
+注意上面的代码：
+
+1. 使用volatile很重要；
+2. 使用局域变量result可以提高性能。据称在作者的机器上使用局域变量要快25%。
+3. 对于静态域，没有必要使用双重检查，**Lazy initialization holder class**是更好的选择。
+4. 如果延迟初始化可以接受重复初始化的实例域，则可以省去第二次检查。
