@@ -7,6 +7,10 @@ categories:
 - java
 ---
 
+本文是《Java编程思想》第18章Java I/O系统的读书笔记。涉及Java I/O, NIO和压缩等内容。
+
+<!--more-->
+
 ##1. File类
 ### 1.1 目录列表器
 下面的代码示例，通过正则表达式过滤并返回指定文件的下级列表：
@@ -429,3 +433,129 @@ Buffer由数据和四个索引组成：mark, position, limit, capacity。相关�
 * position(int pos) 设置position值。
 * remaining() 返回（limit - position）。
 * hasRemaining() 若有介于position和limit之间的元素，则返回true。
+
+### 3.6 内存映射文件
+它帮助我们创建和修改那些因为太大而不能放入内存的文件。以了它，我们可以假定整个文件都放在内存中，而且可以完全把它当作非常大的数组来访问。映射文件访问往往可以显著地加快速度。
+
+```java
+public class LargeMappedFiles {
+  static int length = 0x8FFFFFF; // 128 MB
+  public static void main(String[] args) throws Exception {
+    MappedByteBuffer out =
+      new RandomAccessFile("test.dat", "rw").getChannel()
+      .map(FileChannel.MapMode.READ_WRITE, 0, length);
+    for(int i = 0; i < length; i++)
+      out.put((byte)'x');
+    print("Finished writing");
+    for(int i = length/2; i < length/2 + 6; i++)
+      printnb((char)out.get(i));
+  }
+}
+```
+
+### 3.7 文件加锁
+
+```java
+public class FileLocking {
+  public static void main(String[] args) throws Exception {
+    FileOutputStream fos= new FileOutputStream("file.txt");
+    FileLock fl = fos.getChannel().tryLock(); //获得锁
+    if(fl != null) {
+      System.out.println("Locked File");
+      TimeUnit.MILLISECONDS.sleep(100);
+      fl.release();  //释放锁
+      System.out.println("Released Lock");
+    }
+    fos.close();
+  }
+} /* Output:
+Locked File
+Released Lock
+*///:~
+```
+
+FileChannel调用tryLock()或lock()，可以获得整个文件的FileLock。（SocketChannel, DatagramChannel和ServerSocketChannel不需要加锁）。tryLock()是非阻塞式的，如果不能获得锁将直接返回。lock()是阻塞式的，它将阻塞进程直到获得锁。
+
+也可以锁一部分：
+
+```java
+tryLock(long position, long size, boolean shared)
+或
+lock(long position, long size, boolean shared)
+
+加锁的区域由size - position决定。shared表示是否是共享锁
+```
+
+## 4. 压缩
+### 4.1 Zip压缩和解压缩
+
+```java
+public static class ZipCompress {
+	public static void main(String[] args) throws IOException {
+		FileOutputStream f = new FileOutputStream("test.zip");
+		CheckedOutputStream csum = new CheckedOutputStream(f, new Adler32());
+		ZipOutputStream zos = new ZipOutputStream(csum);
+		BufferedOutputStream out = new BufferedOutputStream(zos);
+		zos.setComment("A test of Java Zipping");
+		// No corresponding getComment(), though.
+		for (String arg : args) {
+			print("Writing file " + arg);
+			BufferedReader in = new BufferedReader(new FileReader(arg));
+			zos.putNextEntry(new ZipEntry(arg));
+			int c;
+			while ((c = in.read()) != -1)
+				out.write(c);
+			in.close();
+			out.flush();
+		}
+		out.close();
+		// Checksum valid only after the file has been closed!
+		print("Checksum: " + csum.getChecksum().getValue());
+		// Now extract the files:
+		print("Reading file");
+		FileInputStream fi = new FileInputStream("test.zip");
+		CheckedInputStream csumi = new CheckedInputStream(fi, new Adler32());
+		ZipInputStream in2 = new ZipInputStream(csumi);
+		BufferedInputStream bis = new BufferedInputStream(in2);
+		ZipEntry ze;
+		while ((ze = in2.getNextEntry()) != null) {
+			print("Reading file " + ze);
+			int x;
+			while ((x = bis.read()) != -1)
+				System.out.write(x);
+		}
+		if (args.length == 1)
+			print("Checksum: " + csumi.getChecksum().getValue());
+		bis.close();
+		// Alternative way to open and read Zip files:
+		ZipFile zf = new ZipFile("test.zip");
+		Enumeration e = zf.entries();
+		while (e.hasMoreElements()) {
+			ZipEntry ze2 = (ZipEntry) e.nextElement();
+			print("File: " + ze2);
+			// ... and extract the data as before
+		}
+		/* if(args.length == 1) */
+	}
+} /* (Execute to see output) */// :~
+```
+
+### 4.2 Java档案文件
+Jar文件也是zip格式，jar命令如下：
+> jar [options] destination [manifest] inputfile(s)
+
+options:
+* c 创建一个新的或空的压缩文档
+* t 列出目录表
+* x 解压所有文件 
+* x file 解压该文件 
+* f 意指“我打算指定一个文件名”
+* m 表示第一个参数将是用户自建的清单文件的名字
+* O 只储存文件，不压缩文件
+* M 不自动创建文件清单
+
+常用命令：
+>jar cf myJarFile.jar *.class 创建jar文件，包含当前目录中的所有类文件，以及自动产生的清单文件
+
+>jar cvf myApp.jar audio classes image 将三个子目录合并到myApp.jar中。
+
