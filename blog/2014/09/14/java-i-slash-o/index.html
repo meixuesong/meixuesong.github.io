@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="1. File类 1.1 目录列表器 下面的代码示例，通过正则表达式过滤并返回指定文件的下级列表： 1
+  <meta name="description" content="本文是《Java编程思想》第18章Java I/O系统的读书笔记。涉及Java I/O, NIO和压缩等内容。 1. File类 1.1 目录列表器 下面的代码示例，通过正则表达式过滤并返回指定文件的下级列表： 1
 2
 3
 4
@@ -24,8 +24,7 @@
 13
 14
 15
-16
-public static String[] dirList(String path, final String ptn &hellip;">
+16 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -109,7 +108,12 @@ public static String[] dirList(String path, final String ptn &hellip;">
   </header>
 
 
-<div class="entry-content"><h2>1. File类</h2>
+<div class="entry-content"><p>本文是《Java编程思想》第18章Java I/O系统的读书笔记。涉及Java I/O, NIO和压缩等内容。</p>
+
+<!--more-->
+
+
+<h2>1. File类</h2>
 
 <h3>1.1 目录列表器</h3>
 
@@ -879,6 +883,218 @@ public static String[] dirList(String path, final String ptn &hellip;">
 <li>hasRemaining() 若有介于position和limit之间的元素，则返回true。</li>
 </ul>
 
+
+<h3>3.6 内存映射文件</h3>
+
+<p>它帮助我们创建和修改那些因为太大而不能放入内存的文件。以了它，我们可以假定整个文件都放在内存中，而且可以完全把它当作非常大的数组来访问。映射文件访问往往可以显著地加快速度。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LargeMappedFiles</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">static</span> <span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="mh">0x8FFFFFF</span><span class="o">;</span> <span class="c1">// 128 MB</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">MappedByteBuffer</span> <span class="n">out</span> <span class="o">=</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nf">RandomAccessFile</span><span class="o">(</span><span class="s">&quot;test.dat&quot;</span><span class="o">,</span> <span class="s">&quot;rw&quot;</span><span class="o">).</span><span class="na">getChannel</span><span class="o">()</span>
+</span><span class='line'>      <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">FileChannel</span><span class="o">.</span><span class="na">MapMode</span><span class="o">.</span><span class="na">READ_WRITE</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">length</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span><span class='line'>      <span class="n">out</span><span class="o">.</span><span class="na">put</span><span class="o">((</span><span class="kt">byte</span><span class="o">)</span><span class="sc">&#39;x&#39;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">print</span><span class="o">(</span><span class="s">&quot;Finished writing&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">length</span><span class="o">/</span><span class="mi">2</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">length</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">6</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span><span class='line'>      <span class="n">printnb</span><span class="o">((</span><span class="kt">char</span><span class="o">)</span><span class="n">out</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">));</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3.7 文件加锁</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FileLocking</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">FileOutputStream</span> <span class="n">fos</span><span class="o">=</span> <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">&quot;file.txt&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">FileLock</span> <span class="n">fl</span> <span class="o">=</span> <span class="n">fos</span><span class="o">.</span><span class="na">getChannel</span><span class="o">().</span><span class="na">tryLock</span><span class="o">();</span> <span class="c1">//获得锁</span>
+</span><span class='line'>    <span class="k">if</span><span class="o">(</span><span class="n">fl</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Locked File&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">100</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">fl</span><span class="o">.</span><span class="na">release</span><span class="o">();</span>  <span class="c1">//释放锁</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Released Lock&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">fos</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span> <span class="cm">/* Output:</span>
+</span><span class='line'><span class="cm">Locked File</span>
+</span><span class='line'><span class="cm">Released Lock</span>
+</span><span class='line'><span class="cm">*/</span><span class="c1">//:~</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>FileChannel调用tryLock()或lock()，可以获得整个文件的FileLock。（SocketChannel, DatagramChannel和ServerSocketChannel不需要加锁）。tryLock()是非阻塞式的，如果不能获得锁将直接返回。lock()是阻塞式的，它将阻塞进程直到获得锁。</p>
+
+<p>也可以锁一部分：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">tryLock</span><span class="o">(</span><span class="kt">long</span> <span class="n">position</span><span class="o">,</span> <span class="kt">long</span> <span class="n">size</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">shared</span><span class="o">)</span>
+</span><span class='line'><span class="err">或</span>
+</span><span class='line'><span class="n">lock</span><span class="o">(</span><span class="kt">long</span> <span class="n">position</span><span class="o">,</span> <span class="kt">long</span> <span class="n">size</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">shared</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">加锁的区域由</span><span class="n">size</span> <span class="o">-</span> <span class="n">position</span><span class="err">决定。</span><span class="n">shared</span><span class="err">表示是否是共享锁</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>4. 压缩</h2>
+
+<h3>4.1 Zip压缩和解压缩</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">ZipCompress</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">FileOutputStream</span> <span class="n">f</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">&quot;test.zip&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">CheckedOutputStream</span> <span class="n">csum</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CheckedOutputStream</span><span class="o">(</span><span class="n">f</span><span class="o">,</span> <span class="k">new</span> <span class="n">Adler32</span><span class="o">());</span>
+</span><span class='line'>      <span class="n">ZipOutputStream</span> <span class="n">zos</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ZipOutputStream</span><span class="o">(</span><span class="n">csum</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">BufferedOutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedOutputStream</span><span class="o">(</span><span class="n">zos</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">zos</span><span class="o">.</span><span class="na">setComment</span><span class="o">(</span><span class="s">&quot;A test of Java Zipping&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="c1">// No corresponding getComment(), though.</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">arg</span> <span class="o">:</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">print</span><span class="o">(</span><span class="s">&quot;Writing file &quot;</span> <span class="o">+</span> <span class="n">arg</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">BufferedReader</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="n">arg</span><span class="o">));</span>
+</span><span class='line'>          <span class="n">zos</span><span class="o">.</span><span class="na">putNextEntry</span><span class="o">(</span><span class="k">new</span> <span class="n">ZipEntry</span><span class="o">(</span><span class="n">arg</span><span class="o">));</span>
+</span><span class='line'>          <span class="kt">int</span> <span class="n">c</span><span class="o">;</span>
+</span><span class='line'>          <span class="k">while</span> <span class="o">((</span><span class="n">c</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">())</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>              <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">in</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>          <span class="n">out</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="n">out</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>      <span class="c1">// Checksum valid only after the file has been closed!</span>
+</span><span class='line'>      <span class="n">print</span><span class="o">(</span><span class="s">&quot;Checksum: &quot;</span> <span class="o">+</span> <span class="n">csum</span><span class="o">.</span><span class="na">getChecksum</span><span class="o">().</span><span class="na">getValue</span><span class="o">());</span>
+</span><span class='line'>      <span class="c1">// Now extract the files:</span>
+</span><span class='line'>      <span class="n">print</span><span class="o">(</span><span class="s">&quot;Reading file&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">FileInputStream</span> <span class="n">fi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">&quot;test.zip&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">CheckedInputStream</span> <span class="n">csumi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CheckedInputStream</span><span class="o">(</span><span class="n">fi</span><span class="o">,</span> <span class="k">new</span> <span class="n">Adler32</span><span class="o">());</span>
+</span><span class='line'>      <span class="n">ZipInputStream</span> <span class="n">in2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ZipInputStream</span><span class="o">(</span><span class="n">csumi</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">BufferedInputStream</span> <span class="n">bis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedInputStream</span><span class="o">(</span><span class="n">in2</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">ZipEntry</span> <span class="n">ze</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">while</span> <span class="o">((</span><span class="n">ze</span> <span class="o">=</span> <span class="n">in2</span><span class="o">.</span><span class="na">getNextEntry</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">print</span><span class="o">(</span><span class="s">&quot;Reading file &quot;</span> <span class="o">+</span> <span class="n">ze</span><span class="o">);</span>
+</span><span class='line'>          <span class="kt">int</span> <span class="n">x</span><span class="o">;</span>
+</span><span class='line'>          <span class="k">while</span> <span class="o">((</span><span class="n">x</span> <span class="o">=</span> <span class="n">bis</span><span class="o">.</span><span class="na">read</span><span class="o">())</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>              <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">x</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">args</span><span class="o">.</span><span class="na">length</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">print</span><span class="o">(</span><span class="s">&quot;Checksum: &quot;</span> <span class="o">+</span> <span class="n">csumi</span><span class="o">.</span><span class="na">getChecksum</span><span class="o">().</span><span class="na">getValue</span><span class="o">());</span>
+</span><span class='line'>      <span class="n">bis</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>      <span class="c1">// Alternative way to open and read Zip files:</span>
+</span><span class='line'>      <span class="n">ZipFile</span> <span class="n">zf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ZipFile</span><span class="o">(</span><span class="s">&quot;test.zip&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">Enumeration</span> <span class="n">e</span> <span class="o">=</span> <span class="n">zf</span><span class="o">.</span><span class="na">entries</span><span class="o">();</span>
+</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">hasMoreElements</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">ZipEntry</span> <span class="n">ze2</span> <span class="o">=</span> <span class="o">(</span><span class="n">ZipEntry</span><span class="o">)</span> <span class="n">e</span><span class="o">.</span><span class="na">nextElement</span><span class="o">();</span>
+</span><span class='line'>          <span class="n">print</span><span class="o">(</span><span class="s">&quot;File: &quot;</span> <span class="o">+</span> <span class="n">ze2</span><span class="o">);</span>
+</span><span class='line'>          <span class="c1">// ... and extract the data as before</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="cm">/* if(args.length == 1) */</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span> <span class="cm">/* (Execute to see output) */</span><span class="c1">// :~</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4.2 Java档案文件</h3>
+
+<p>Jar文件也是zip格式，jar命令如下：</p>
+
+<blockquote><p>jar [options] destination [manifest] inputfile(s)</p></blockquote>
+
+<p>options:
+* c 创建一个新的或空的压缩文档
+* t 列出目录表
+* x 解压所有文件
+* x file 解压该文件
+* f 意指“我打算指定一个文件名”
+* m 表示第一个参数将是用户自建的清单文件的名字
+* O 只储存文件，不压缩文件
+* M 不自动创建文件清单</p>
+
+<p>常用命令：</p>
+
+<blockquote><p>jar cf myJarFile.jar *.class 创建jar文件，包含当前目录中的所有类文件，以及自动产生的清单文件</p>
+
+<p>jar cvf myApp.jar audio classes image 将三个子目录合并到myApp.jar中。</p></blockquote>
 </div>
 
 
