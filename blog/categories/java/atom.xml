@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-09-16T22:55:50+08:00</updated>
+  <updated>2014-09-22T21:48:26+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,1004 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[再读《重构》]]></title>
+    <link href="http://blog.ubone.com/blog/2014/09/19/zhong-gou/"/>
+    <updated>2014-09-19T20:04:48+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/09/19/zhong-gou</id>
+    <content type="html"><![CDATA[<p>数年前读过Martin Fowler的《重构——改善既有代码的设计》，被这本经典著作所折服。当时读的是英文电子版，今天拿到一本中文版，就想再读一遍，温故而知新。哪成想，读来已经不是当年的感觉了。现在觉得这本经典著作提到的重构方法很普通，都是日常使用的方法。而内容却已经太过时，毕竟作者写书时是Java1.2即将发布，而现在Java 9都快要出来了。像集合与之前比有了质的飞跃，而泛型的使用则更好地提高了代码质量和可读性。这些年设计模式的普及也对重构形成了更有力的理论支撑。所有这些都对重构方法产生了影响。</p>
+
+<p>不论如何，既然又读了一遍，那么就记录于此吧。</p>
+
+<!--more-->
+
+
+<h2>1. 代码的坏味道</h2>
+
+<p>代码有哪些坏的味道，相应地有哪些重构方法？下面列出了常见的坏味道代码以及相应的重构方法：</p>
+
+<p><strong>重复代码</strong></p>
+
+<blockquote><p>Extract Method, Pull Up Method, Form Template Method, Substitute Algorithm</p></blockquote>
+
+<p><strong>过长函数</strong></p>
+
+<blockquote><p>Extract Method, Replace Temp with Query, Introduce Parameter Object, Preserve Whole Object, Replace Method with Method Object, Decompose Conditional</p></blockquote>
+
+<p><strong>过大的类</strong></p>
+
+<blockquote><p>Extract Class/Subclass/Interface, Dulplicate Observed Data</p></blockquote>
+
+<p><strong>过长参数列</strong></p>
+
+<blockquote><p>Replace Parameter with Method, Preserve Whole Object, Introduce Parameter Object</p></blockquote>
+
+<p><strong>发散式变化</strong></p>
+
+<blockquote><p> Extract Class</p></blockquote>
+
+<p><strong>霰弹式修改</strong></p>
+
+<blockquote><p>Move Method/Field, Inline class</p></blockquote>
+
+<p><strong>依恋情绪</strong></p>
+
+<blockquote><p> Move Method, Extract Method</p></blockquote>
+
+<p><strong>数据泥团</strong></p>
+
+<blockquote><p>Extract Class, Introduce Parameter Object, Preserve Whole Object</p></blockquote>
+
+<p><strong>基本类型偏执</strong></p>
+
+<blockquote><p>Replace Data Value with Object, Replace Type Code with Class/Subclass, Replace Type Code with State/Strategy, Extract Class, Introduce Parameter Object, Replace Array with Object</p></blockquote>
+
+<p><strong>switch惊悚现身</strong></p>
+
+<blockquote><p>Extract Method, Move Method, Replace Type Code with Subclasses/State/Strategy, Replace Conditional with Polymorphism, Replace Parameter with Explicit Methods, Introduce Null Object</p></blockquote>
+
+<p><strong>平行继承体系</strong></p>
+
+<blockquote><p>Move Method, Move Field</p></blockquote>
+
+<p><strong>Lazy Class</strong></p>
+
+<blockquote><p>Collapse Hierarchy, Inline Class</p></blockquote>
+
+<p><strong>夸夸其谈未来性</strong></p>
+
+<blockquote><p>Collapse Hierarchy, Inline Class, Remove Parameter, Rename Method</p></blockquote>
+
+<p><strong>令人迷惑的暂时字段</strong></p>
+
+<blockquote><p>Extract Class, Introduce Null Object</p></blockquote>
+
+<p><strong>过度耦合的消息链</strong></p>
+
+<blockquote><p>Hide Delegate, Extract Method, Move Method</p></blockquote>
+
+<p><strong>中间人</strong></p>
+
+<blockquote><p>Remove Middle Man, Inline Method, Replace Delegation with Inheritance</p></blockquote>
+
+<p><strong>狎昵关系</strong></p>
+
+<blockquote><p>Move Method, Move Field, Change Bidirectional Association to Unidirectional, Extract Class, Hide Delegate, Replace Inheritance with Delegation</p></blockquote>
+
+<p><strong>异曲同工的类</strong></p>
+
+<blockquote><p>Rename Method, Move Method, Extract Superclass</p></blockquote>
+
+<p><strong>不完美的类库</strong></p>
+
+<blockquote><p>Introduce Foreign Method, Introduce Local Extension</p></blockquote>
+
+<p><strong>Data Class</strong></p>
+
+<blockquote><p>Encapsulate Field, Encapsulate Collection, Remove Setting Method, Move Method, Extract Method, Hide Method</p></blockquote>
+
+<p><strong>被拒绝的遗赠</strong></p>
+
+<blockquote><p>Replace Inheritance with Delegation</p></blockquote>
+
+<p><strong>过多的注释</strong></p>
+
+<blockquote><p>避免代码逻辑复杂而加注释。Extract Method, Rename Method, Introduce Assertion</p></blockquote>
+
+<h2>2. 构筑测试体系</h2>
+
+<p>了解了坏味道的代码，在重构之前要拥有一个可靠的测试环境。否则你如何验证重构后有没有问题？不仅如此，<strong>每当你收到bug报告，也请先写一个单元测试来重现bug。</strong></p>
+
+<p><strong>单元测试与功能测试的区别？</strong>功能测试是从客户的角度保障质量，一般是把整个系统当作一个黑箱。对拥有GUI的待测系统，它们通过GUI来操作该系统。对数据库，功能测试只观察特定输入所导致的数据变化。</p>
+
+<p>JUnit就是一个测试框架，其用途是单元测试。关于JUnit，必须知道的知识包括：</p>
+
+<p>```java
+//必须继承TestCase
+class FileReaderTest extends TestCase {</p>
+
+<pre><code>protected void setUp() {...} //用于在每次测试前准备相应环境
+protected void tearDown() {...} //用于测试完后大扫除，例如关闭文件。
+public void testXXX() {//注意必须是返回void, 方法名test开始
+    //...
+    assertEquals(...); //然后就可以assertXXX了
+}       
+</code></pre>
+
+<p>}
+```</p>
+
+<p>执行每一个test测试方法前，都会先运行setUp()。每一个test测试方法执行结束都会运行tearDown()。</p>
+
+<p>别忘了检查预期的异常是否如期出现，例如，如果尝试在关闭流后再读取它，就应该得到一个IOException，这也应该被测试出来：</p>
+
+<p>```java
+_input.close();
+try{</p>
+
+<pre><code>_input.read();
+fail("no exception for read past end");
+</code></pre>
+
+<p>} catch(IOException io) {</p>
+
+<pre><code>//...
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<p>当测试类越来越多，就用得上TestSuite了。TestSuite可以用于只执行某一些测试类，或者某一些测试方法。示例如下：</p>
+
+<p>```java
+public class TestAllSort {</p>
+
+<pre><code>public static Test suite() {
+    TestSuite suite = new TestSuite("测试分组名称");
+
+    //测试类SortTest的所有测试方法都会运行
+    suite.addTestSuite(SortTest.class);
+
+    //只运行测试类SortTest的指定测试方法testSelectSort
+    suite.addTest(new SortTest("testSelectSort"));
+
+    return suite;
+}
+</code></pre>
+
+<p>}</p>
+
+<p>public class SortTest extends TestCase {</p>
+
+<pre><code>//如果要执行指定的测试方法，那么这个构造方法是必须的。name对应测试方法名
+public SortTest(String name) {
+    super(name);
+}
+
+public void testSelectSort() {
+    //...
+}
+</code></pre>
+
+<p>} <br/>
+```</p>
+
+<p><strong>边界条件是最容易出错的地方，要把火力集中在那！</strong></p>
+
+<p><strong>重构的基本技巧是：小步前进、频繁测试！</strong></p>
+
+<p>下面开始重构方法的介绍。</p>
+
+<h2>3. 重新组织函数</h2>
+
+<p>几乎所有的问题都源于过长的函数，因此重新组织函数很有必要！</p>
+
+<h3>3.1 Extract Method</h3>
+
+<p>Extract Method是最常用的重构手法之一。</p>
+
+<ol>
+<li>如果每个函数的粒度都很小，那么函数被复用的机会就更大。</li>
+<li>使得高层的函数读起来就像一系列的注释。</li>
+<li>如果函数都是细粒度，覆写也会更容易。</li>
+</ol>
+
+
+<p>关键点：函数名和函数本体之间的语义要匹配。</p>
+
+<p>```java</p>
+
+<pre><code>//before
+void printOwing(double amount) {
+    printBanner();
+
+    //print details
+    System.out.println("name: " + _name);
+    System.out.print("amount: " + amount);
+}
+
+//after
+void printOwing(double amount) {
+    printBanner();
+
+    printDetails(amount);
+}
+
+void printDetails(double amount) {
+    System.out.println("name: " + _name);
+    System.out.print("amount: " + amount);
+}
+</code></pre>
+
+<p>```</p>
+
+<h3>3.2 Inline Method</h3>
+
+<p>如果函数内容和其名称同样清晰，就应该去掉这个函数。</p>
+
+<p>```java</p>
+
+<pre><code>//before
+int getRating() {
+    return (moreThanFiveLateDeliveries()) ? 2 : 1;
+}
+
+boolean moreThanFiveLateDeliveries() {
+    return numberOfLateDeliveries &gt; 5;
+}
+
+//after
+int getRating() {
+    return (numberOfLateDeliveries &gt; 5) ? 2 : 1;
+}
+</code></pre>
+
+<p>```</p>
+
+<h3>3.3 Inline Temp</h3>
+
+<p>适用于一个临时变量，只被一个简单表达式赋值一次，而它妨碍了其他重构手法。</p>
+
+<p>```java
+//before
+double basePrice = anOrder.basePrice();
+return (basePrice > 1000);</p>
+
+<p>//after
+return (anOrder.basePrice() > 1000);
+```</p>
+
+<h3>3.4 Replace Temp with Query</h3>
+
+<p>你的程序以一个临时变量保存某一表达式的运算结果。将这个表达式提炼到一个独立函数中。</p>
+
+<p>```java</p>
+
+<pre><code>//before
+double basePrice = quantity * itemPrice;
+if (basePrice &gt; 1000) 
+    return basePrice * 0.95;
+else
+    return basePrice * 0.98;
+
+//after
+if (basePrice() &gt; 1000) 
+    return basePrice() * 0.95;
+else
+    return basePrice() * 0.98;
+
+//...
+
+double basePrice() {
+    return quantity * itemPrice;
+}
+</code></pre>
+
+<p>```</p>
+
+<p>如果你担心性能问题，先不管它，因为十有八九根本不会造成任何影响。如果真有问题，在优化时解决它。</p>
+
+<h3>3.5 Introduce Explaining Variable</h3>
+
+<p>你有一个复杂的表达式，可以将该复杂表达式（或其中一部分）的结果放进一临时变量，以此变量名称来解释用途。</p>
+
+<p>```java
+//before
+if ((platform.toUpperCase().indexOf(&ldquo;MAC&rdquo;) > -1) &amp;&amp;</p>
+
+<pre><code>    (browser.toUpperCase().indexOf("IE") &gt; -1) &amp;&amp;
+    wasInitialized() &amp;&amp; resize &gt; 0) {
+//do something
+</code></pre>
+
+<p>}</p>
+
+<p>//after
+final boolean isMacOs = platform.toUpperCase().indexOf(&ldquo;MAC&rdquo;) > -1;
+final boolean isIEBrowser = browser.toUpperCase().indexOf(&ldquo;IE&rdquo;) > -1;
+final boolean wasResized = resize > 0;</p>
+
+<p>if (isMacOs &amp;&amp; isIEBrowser &amp;&amp; wasInitialized() &amp;&amp; wasResized) {</p>
+
+<pre><code>//do something
+</code></pre>
+
+<p>}
+```</p>
+
+<p>这种重构方法虽然很常见，但几乎总是可以用Extract Method来处理。因此常在Extract Method难以解决，或需要花费更大工作量时使用。</p>
+
+<h3>3.6 Split Temporary Variable</h3>
+
+<p>如果某个临时变量被赋值超过一次，即不是循环变量，也不是用于收集计算结果，那么可以针对每次赋值创建一个独立的临时变量。</p>
+
+<p>```java
+// before
+double temp = 2 * (height + width);
+System.out.println(temp);
+temp = height * widht;
+System.out.println(temp);</p>
+
+<p>// after
+final double perimeter = 2 * (height + width);
+System.out.println(perimeter);
+final double area = height * widht;
+System.out.println(area);
+```</p>
+
+<p>临时变量有各种不同的用途，如果同一临时变量被多次赋值，且意义不同，就会令代码难以阅读。</p>
+
+<h3>3.7 Remove Assignments to Parameters</h3>
+
+<p>不要对参数赋值。因为Java对于参数传递的处理方式是按值传递。对参数赋值同样容易让人犯糊涂。</p>
+
+<p>```java
+//before
+int discount(int inputVal, int quantity, int yearToDate) {</p>
+
+<pre><code>if (inputVal &gt; 50) inputVal -= 2;
+</code></pre>
+
+<p>}</p>
+
+<p>//after
+int discount(int inputVal, int quantity, int yearToDate) {</p>
+
+<pre><code>int result = inputVal;
+if (inputVal &gt; 50) result -= 2;
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>3.8 Replace Method with Method Object</h3>
+
+<p>对于一个大型函数，其中的局域变量使你无法采用Extract Method时，可以将这个函数放进一个单独对象中。</p>
+
+<p>```java
+class Order&hellip;</p>
+
+<pre><code>double price() {
+    double basePrice;
+    double secondPrice;
+    double otherPrice;
+    //复杂的运算
+}
+</code></pre>
+
+<p>```</p>
+
+<p>上面的代码可以这样重构：</p>
+
+<p><img src="/myresource/images/image_blog_20140920_235546.jpg" alt="image" /></p>
+
+<h3>3.9 Substitute Algorithm（替换算法）</h3>
+
+<p>如果发现一件事可以有更清晰的方式（更好的解决方案/算法），就应该以较清晰的方式取代复杂的方式。</p>
+
+<p>```java
+//before
+String foundPerson(String[] people) {</p>
+
+<pre><code>for (int i = 0; i &lt; people.length; i++) {
+    if (people[i].equals("Don")) {
+        return "Don";
+    }
+    if (people[i].equals("John")) {
+        return "John";
+    }
+    if (people[i].equals("Kent")) {
+        return "Kent";
+    }
+}
+
+return "";
+</code></pre>
+
+<p>}</p>
+
+<p>//after
+String foundPerson(String[] people) {</p>
+
+<pre><code>List candidates = Arrays.asList(new String[]{"Don", "John", "Kent"});
+for(String str : people) {
+    if (candidates.contains(str)) {
+        return str;
+    }
+}
+
+return "";
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>4. 在对象之间搬移特性</h2>
+
+<p>在对象的设计过程中，“决定把责任放在哪儿”是最重要的事情之一。</p>
+
+<h3>4.1 Move Method</h3>
+
+<p>如果某个函数与另一个类进行更多交流，调用它或者被它调用。那么可以在该函数最常引用的类中建立一个有着类似行为的新函数。将旧函数变成一个单纯的委托函数，或者将旧函数完全移除。</p>
+
+<h3>4.2 Move Field</h3>
+
+<p>如果某个字段被另一个类更多地用到，那么可以在目标类新建一个字段，修改源字段的所有用户，令它们改用新字段。</p>
+
+<h3>4.3 Extract Class</h3>
+
+<p>如果某个类做了应该由两个类做的事，那么可以新建一个类，将相关的字段和函数搬移到新类。</p>
+
+<p>例如订单包括地址的详细信息（城市、街道、邮编等等），可以考虑新建一个地址类。</p>
+
+<h3>4.4 Inline Class</h3>
+
+<p>与Extract Class正好相反，如果某个类不再承担责任，不再有单独存在的理由，可以考虑将这个类的所有特性搬移到另一个类中，然后移除原类。</p>
+
+<p><img src="/myresource/images/image_blog_20140921_171841.jpg" alt="image" /></p>
+
+<h3>4.5 Hide Delegate</h3>
+
+<p>当客户通过一个委托类来调用另一个对象，可以在服务类上建立客户所需的所有函数，用以隐藏委托关系。</p>
+
+<p><img src="/myresource/images/image_blog_20140921_180822.jpg" alt="image" /></p>
+
+<p>封装意味着每个对象都应该尽可能少了解系统的其它部分。这其实也是迪米特法则的不和陌生人说话。</p>
+
+<h3>4.6 Remove Middle Man</h3>
+
+<p>如果某个类做了过多的简单委托动作，可以让客户直接调用受托类。这与Hide Delegate正好相反：</p>
+
+<p><img src="/myresource/images/image_blog_20140921_180823.jpg" alt="image" /></p>
+
+<h3>4.7 Introduce Foreign Method</h3>
+
+<p>你需要为提供服务的类增加一个函数，但你无法修改这个类。此时，可以在客户类中建立一个函数，并以第一个参数形式传入一个服务类实例。</p>
+
+<p>```java
+//before
+Date newStart = new Date(previousEnd.getYear(), previousEnd.getMonth(), previousEnd.getDate() + 1);</p>
+
+<p>//after
+Date newStart = nextDay(previousEnd);</p>
+
+<p>private static Date nextDay(Date arg) {</p>
+
+<pre><code>return new Date(arg.getYear(), arg.getMonth(), arg.getDate() + 1);
+</code></pre>
+
+<p>}
+```</p>
+
+<p>你正在使用一个类，它工作得很好。但你又需要一项新服务，这个类无法提供。如果可以修改代码，你就可以自行添加一个函数。但如果不能，你就得在客户端编码，补足你要的那个函数。如果需要多次使用，就应该放到同一个函数中。</p>
+
+<p>如果发现自己为一个服务类建立了大量外加函数，或者发现有许多类都需要同样的外加函数，就不应该使用本项重构，而是应该使用下面这个重构方法：Introduce Local Extension。</p>
+
+<h3>4.8 Introduce Local Extension</h3>
+
+<p>你需要为服务类提供一些额外函数，但你无法修改这个类。此时你可以建立一个新类，使它包含这些额外函数。让这个扩展品成为源类的子类或包装类。</p>
+
+<p><img src="/myresource/images/image_blog_20140921_184031.jpg" alt="image" /></p>
+
+<p>其实就是通过聚合或者继承扩展一个类。</p>
+
+<h2>5. 重新组织数据</h2>
+
+<h3>5.1 Self Encapsulate Field</h3>
+
+<p>就是不要直接访问域，而是通过方法，如getter/setter访问。</p>
+
+<h3>5.2 Replace Data Value with Object</h3>
+
+<p>例如早期类Order有个String类型的属性customer表示客户姓名，随着开发的进行，customer可能需要变成一个类，用customer.name表示姓名。</p>
+
+<h3>5.3 Change Value to Reference</h3>
+
+<p>就是值对象改为引用对象。当组合变为聚合时，就需要将值对象改为引用。</p>
+
+<h3>5.4 Change Reference to Value</h3>
+
+<p>与前一方法正好相反。</p>
+
+<h3>5.5 Replace Array with Object</h3>
+
+<p>在Effective Java中，对数组也有较多描述。数组是不安全的类型，而泛型则安全得多。而此处所说的方法，则是说应该用面向对象的类去取代数组，以及依附于数组的操作。这样做具有更好的安全性和可读性。</p>
+
+<h3>5.6 Duplicate Observed Data</h3>
+
+<p>一个分层良好的系统，应该将处理用户界面和处理业务逻辑的代码分开。因为你可能需要使用不同的用户界面来表现相同的业务逻辑，与GUI隔离之后，领域对象的维护和演化都会更容易。尽管可以轻松地将“行为”划分到不同部分，“数据”却往往不能如此。将界面数据复制到一个领域对象中，建立一个Observer模式，用以同步领域对象和GUI对象内的重复数据。</p>
+
+<h3>5.7 Change Unidirectional Association to Bidirectional</h3>
+
+<p>将两个类之间的单向关联改为双向关联。</p>
+
+<h3>5.8 Change Bidirectional Association to Unidirectional</h3>
+
+<p>将两个类之间的双向关联改为单向关联。双向关联很有用，但你必须为它付出代价，那就是维护双向连接、确保对象被正确创建和删除而增加的复杂度。只在必要的时候才使用双向关联。</p>
+
+<h3>5.9 Replace Magic Number with Symbolic Constant</h3>
+
+<p>以字面常量取代魔法数。魔法数是指拥有特殊意义，却又不能明确表现出这种意义的数字。</p>
+
+<p>```java
+//before
+double potentialEnergy(double mass, double height) {</p>
+
+<pre><code>return mass * 9.81 * height;
+</code></pre>
+
+<p>}</p>
+
+<p>//after
+static final double GRAITATIONAL_CONSTANT = 9.81;</p>
+
+<p>double potentialEnergy(double mass, double height) {</p>
+
+<pre><code>return mass * GRAITATIONAL_CONSTANT * height;
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>5.10 Encapsulate Field</h3>
+
+<p>如果类中存在public的属性，将它声明为private，并提供相应的访问函数（如getter, setter方法）。</p>
+
+<h3>5.11 Encapsulate Collection</h3>
+
+<p>让函数只返回集合的只读副本(例如Collection.unmodifiableXXX())，并提供添加/删除元素的函数。</p>
+
+<p><img src="/myresource/images/image_blog_20140921_222518.jpg" alt="image" /></p>
+
+<h3>5.12 Replace Record with Data Class</h3>
+
+<p>将传统编程环境中的记录结构转换成数据类。</p>
+
+<h3>5.13 Replace Type Code with Class</h3>
+
+<p>这个重构方法有点过时了，更好的方式应该是使用枚举类型。</p>
+
+<h3>5.14 Replace Type Code with Subclasses</h3>
+
+<p>如果类型码会影响宿主类的行为，那么最好的办法就是借助多态来处理变化行为。即以类型码的宿主类为基类，针对每种类型建立相应的子类。例如针对员工类型建立子类（工程师，业务员）。</p>
+
+<p>但有两种情况你不能那么做：类型码值在对象创建之后发生了改变；由于某些原因，宿主类已经有了子类。这时候可能需要状态模式或者策略模式。</p>
+
+<h3>5.15 Replace Type Code with State/Strategy</h3>
+
+<p>参考<a href="/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/">状态模式</a>与<a href="/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/">策略模式</a>。</p>
+
+<h3>5.16 Replace Subclass with Fields</h3>
+
+<p>建立子类的目的是为了增加新我或改变其行为。有一种变化行为称为“常量函数”，就是返回一个硬编码的值。你可以让不同的子类返回不同的值。但如果子类只有常量函数，则没有足够的存在价值，完全可以在父类中用一个属性来代替。</p>
+
+<h2>6. 简化条件表达式</h2>
+
+<h3>6.1 Decompose Conditional(分解条件表达式)</h3>
+
+<p>从if, then, else三个段落中分别提炼出独立函数：</p>
+
+<p>```java
+//before
+if (date.before(SUMMER_START) || date.after(SUMMER_END))</p>
+
+<pre><code>charge = quantity * _winterRate + _winterServiceCharge;
+</code></pre>
+
+<p>else</p>
+
+<pre><code>charge = quantity * _summerRate;
+</code></pre>
+
+<p>//after
+if (notSummer(date))</p>
+
+<pre><code>charge = winterCharge(quantity);
+</code></pre>
+
+<p>else</p>
+
+<pre><code>charge = summerCharge(quantity);        
+</code></pre>
+
+<p>```</p>
+
+<p>和任何大块头的代码一样，你可以将它分解为多个独立函数。</p>
+
+<h3>6.2 Consolidate Conditional Expression（合并条件表达式）</h3>
+
+<p>如果有一系列条件测试，都得到相同的结果，你可以将它们合并为一个表达式，并提炼成一个函数。</p>
+
+<p>```java
+//before
+double disabilityAmount() {</p>
+
+<pre><code>if (_seniority &lt; 2) return 0;
+if (_monthsDisabled &gt; 12) return 0;
+if (_isPartTime) return 0;
+//...
+</code></pre>
+
+<p>}</p>
+
+<p>//after
+double disabilityAmount() {</p>
+
+<pre><code>if (isNotEligibleForDisability()) return 0;
+//...
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>6.3 Consolidate Duplicate Conditional Fragments</h3>
+
+<p>合并重复的条件片段。</p>
+
+<p>```java
+//before
+if (isSpecialDeal()) {</p>
+
+<pre><code>total = price * 0.95;
+send();
+</code></pre>
+
+<p>} else {</p>
+
+<pre><code>total = price * 0.98;
+send();
+</code></pre>
+
+<p>}</p>
+
+<p>//after
+if (isSpecialDeal()) {</p>
+
+<pre><code>total = price * 0.95;
+</code></pre>
+
+<p>} else {</p>
+
+<pre><code>total = price * 0.98;
+</code></pre>
+
+<p>}
+send();
+```</p>
+
+<h3>6.4 Remove Control Flag</h3>
+
+<p>类似下面的代码，应该以break或return语句取代控制标记。</p>
+
+<p>```
+set done to false
+while not down</p>
+
+<pre><code>if (condition)
+    do something
+    set done to true
+next step of loop
+</code></pre>
+
+<p>```</p>
+
+<h3>6.5 Replace Nested Conditional with Guard Clauses</h3>
+
+<p>```java
+//before
+double getPayAmount() {</p>
+
+<pre><code>double result;
+if (_isDead) 
+    result = deadAmount();
+else {
+    if (_isSeparated)
+        result = separatedAmount();
+    else {
+        if (_isRetired)
+            result = retiredAmount();
+        else
+            result = normalPayAmount;
+    }
+}
+
+return result;
+</code></pre>
+
+<p>}</p>
+
+<p>//after
+double getPayAmount() {</p>
+
+<pre><code>if (_isDead) return deadAmount();
+if (_isSeparated) return separatedAmount();
+if (_isRetired) return retiredAmount();
+return normalPayAmount();
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>6.6 Replace Conditional with Polymorphism</h3>
+
+<p>用多态取代条件表达式。例如下面的类</p>
+
+<p>```java
+//before
+double getSpeed() {</p>
+
+<pre><code>switch(type) {
+    case EUROPEAN:
+        return getBaseSpeed();
+    case AFRICAN:
+        return getBaseSpeed() - xxx;
+    case NORWEGIAN_BLUE:
+        return ...
+}
+</code></pre>
+
+<p>}</p>
+
+<p>//after, 以Bird为基类，European, African, Norwegian Blue为子类，实现多态方法getSpeed()。
+```</p>
+
+<h3>6.7 Introduce Null Object</h3>
+
+<p>如果你需要再三检查某个对象是否为null，可以将null值替换为null对象。</p>
+
+<p>```java
+if (customer == null)</p>
+
+<pre><code>plan = BillingPlan.basic();
+</code></pre>
+
+<p>else</p>
+
+<pre><code>plan = customer.getPlan();
+</code></pre>
+
+<p>```</p>
+
+<p>上面的代码可以重构为：</p>
+
+<p><img src="/myresource/images/image_blog_20140922_200250.jpg" alt="image" /></p>
+
+<p>其好处在于，你不必再向对象询问“你是什么类型”，你只管调用该行为就是了。空对象一定是常量，它们的任何成分都不会发生变化，因此可以用单例模式来实现。</p>
+
+<p><strong>只有当大多数客户代码都要求空对象做出相同响应时，这样的重构才有意义。</strong></p>
+
+<p>你可以针对不同的情况拥有几种不同的空对象。例如没有顾客、不知名顾客等。本质上这是一个比Null Object模式更大的模式：Special Case模式，即特例类，也就是某个类的特殊情况。</p>
+
+<h3>6.8 Introduce Assertion</h3>
+
+<p>断言是一个条件表达式，应该总是为真。如果它失败，表示程序员犯了错误。</p>
+
+<p>注意不要滥用断言。不要使用它来检查“你认为应该为真”的条件，应该只使用它来检查“一定必须为真”的条件。你该问自己：如果断言所指示的约束条件不能满足，代码是否仍能正常运行？如果可以，就把断言拿掉。</p>
+
+<h2>7. 简化函数调用</h2>
+
+<p>前三个太简单的重构方法：Rename Method, Add Parameter, Remove Parameter。</p>
+
+<h3>7.4 Separate Query from Modifier</h3>
+
+<p>将查询函数和修改函数分离。如果某个函数即返回对象状态值，又修改对象状态，可以考虑建立两个不同的函数，其中一个负责查询，另一个负责修改。</p>
+
+<p><strong>任何有返回值的函数，都不应该有看得到的副作用。</strong>请尽量遵守这条规则。</p>
+
+<h3>7.5 Parameterize Method</h3>
+
+<p>如果若干函数做了类似的工作，但函数体中却包含了不同的值，可以考虑建立一个单一函数，以参数形式表达那些不同的值。</p>
+
+<p><img src="/myresource/images/image_blog_20140922_204225.jpg" alt="image" /></p>
+
+<h3>7.6 Replace Parameter with Explicit Methods</h3>
+
+<p>如果一个函数，其行为取决于参数值，那么可以考虑针对该参数的每一个可能值，建立一个独立函数。</p>
+
+<p>```java
+//before
+void setValue(String name, int value) {</p>
+
+<pre><code>if (name.equals("height")) {
+    height = value;
+    return;
+}
+
+if (name.equals("width")) {
+    width = value;
+    return;
+}
+</code></pre>
+
+<p>}</p>
+
+<p>//after
+void setHeight(int value) {</p>
+
+<pre><code>height = value;
+</code></pre>
+
+<p>}</p>
+
+<p>void setWidth(int value) {</p>
+
+<pre><code>width = value;
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>7.7 Preserve Whole Object</h3>
+
+<p>如果你从某个对象中取出若干值，将它们作为某一次函数调用时的参数，可以考虑改为传递整个对象。</p>
+
+<p>```java
+//before
+int low = daysTempRange().getLow();
+int hight = daysTempRange().getHigh();
+withinPlan = plan.withinRange(low, high);</p>
+
+<p>//after
+withinPlan = plan.withinRange(daysTempRange());
+```</p>
+
+<h3>7.8 Replace Parameter with Methods</h3>
+
+<p>对象调用某个函数，并将所得结果作为参数，传递给另一个函数。而接受该参数的函数本身也能调用前一个函数。那么<strong>让参数接受者去除该项参数，并直接调用前一个函数。</strong></p>
+
+<p>```java
+//before
+int basePrice = quantity * itemPrice;
+discountLevel = getDiscountLevel();
+double finalPrice = discountedPrice(basePrice, discountLevel);</p>
+
+<p>//after
+int basePrice = quantity * itemPrice;
+double finalPrice = discountedPrice(basePrice);
+```</p>
+
+<p>如果函数本身可以通过其他途径获得参数值，那么它就不应该通过参数取得该值。应尽量缩短参数的数量。</p>
+
+<h3>7.9 Introduce Parameter Object</h3>
+
+<p>如果函数的参数数量太多，可以考虑用一个对象封装这些数据。</p>
+
+<h3>7.10 Remove Setting Method</h3>
+
+<p>类中的某个字段应该在对象创建时被设值，然后就不再改变，那么可以去掉该字段的所有setter方法。如果你提供了setter方法，就暗示这个字段值可以改变。去除setter方法，改为构造方法中传入就是一种好的重构方法。</p>
+
+<h3>7.11 Hide Method</h3>
+
+<p>如果一个函数，从来没有被其他任何类用到，可以考虑将其修改为private。</p>
+
+<p>理想情况下，可以使用工具检查所有函数，指出可被隐藏起来的函数。</p>
+
+<h3>7.12 Replace Constructor with Factory Method</h3>
+
+<p>如果你希望在创建对象时，不仅仅是做简单的构建动作，可以考虑将构造方法替换为工厂方法。</p>
+
+<h3>7.13 Encapsulate Downcast</h3>
+
+<p>封装向下转型。如果某个函数返回的对象，需要由函数调用者执行向下转型，可以将向下转型动作移到函数中。</p>
+
+<p>```java
+//before
+Object lastReading() {</p>
+
+<pre><code>return readings.lastElement();
+</code></pre>
+
+<p>}</p>
+
+<p>//after
+Reading lastReading() {</p>
+
+<pre><code>return (Reading) readings.lastElement();
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<p>向下转型也许是不可避免的，但仍然应该尽可能少做。通常在返回迭代器和集合的函数上会发生。</p>
+
+<p>其实对于Java5之后，已经有泛型了，这条重构方法完全可以被泛型所取代。</p>
+
+<h3>7.14 Replace Error Code with Exception</h3>
+
+<p>某个函数返回一个特定的代码，用以表示错误情况，这种情况可以改用异常。</p>
+
+<p>```java
+//before
+int withdraw(int amount) {</p>
+
+<pre><code>if (amount &gt; balance)
+    return -1;
+else {
+    balance -= amount;
+    return 0;
+}
+</code></pre>
+
+<p>}</p>
+
+<p>//after
+void withdraw(int amount) throws BalanceException {</p>
+
+<pre><code>if (amount &gt; balance) throw new BalanceException();
+balance -= amount; 
+</code></pre>
+
+<p>}
+```</p>
+
+<p>这种方式之所以更好，是因为它清楚地将普通程序和错误处理分开了，使程序更容易理解。</p>
+
+<h3>7.15 Replace Exception with Test</h3>
+
+<p>如果select()方法可能抛出异常，你可以将其变成两个方法：canSelect(), select()。如果你可以合理期望调用者在调用函数之前先检查某个条件，那么就应该提供一个测试方法。</p>
+
+<h2>8. 处理继承关系</h2>
+
+<p>几种常见的方法：</p>
+
+<ul>
+<li>将属性和方法上移：Pull Up Field, Pull Up Method, Pull Up Constructor Body</li>
+<li>将属性和方法下移：Pull Down Field, Pull Down Method</li>
+</ul>
+
+
+<h3>8.6 Extract Subclass</h3>
+
+<p>如果类中的某些属性只被某些（而非全部）实例用到，那么可以新建一个子类，将那些属性移到子类 中。</p>
+
+<h3>8.7 Extract Superclass</h3>
+
+<p>如果两个类有类似特性，就可以为它们建立一个父类，将相同特性移到父类。</p>
+
+<h3>8.8 Extract Interface</h3>
+
+<p>如果若干个客户使用类接口中的同一个子集，或者两个类的接口有部分相同，那么可以将相同的子集提炼到一个独立的接口中。</p>
+
+<h3>8.9 Collapse Hierarchy</h3>
+
+<p>如果超类和子类无太大区别，那么可以考虑将它们合并成一个类。</p>
+
+<h3>8.10 Form Template Method</h3>
+
+<p>说的就是模板方法模式。</p>
+
+<h3>8.11 Replace Inheritance with Delegation</h3>
+
+<p>说的就是组合/聚合模式。</p>
+
+<h3>8.12 Replace Delegation with Inheritance</h3>
+
+<p>与上一个正好相反。如果你发现自己需要使用受托类中的所有函数，并且费了很大力气编写所有极简的委托函数，那么你可以考虑回头使用继承。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Java I/O]]></title>
@@ -648,7 +1646,7 @@ public static class ZipCompress {</p>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Java并发编程(三)]]></title>
+    <title type="html"><![CDATA[Java并发编程（三）]]></title>
     <link href="http://blog.ubone.com/blog/2014/09/02/javabing-fa-bian-cheng-san/"/>
     <updated>2014-09-02T23:13:06+08:00</updated>
     <id>http://blog.ubone.com/blog/2014/09/02/javabing-fa-bian-cheng-san</id>
@@ -1852,174 +2850,6 @@ return result;
 <li>如果延迟初始化可以接受重复初始化的实例域，则可以省去第二次检查。</li>
 </ol>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Effective Java - 异常]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/28/effective-java-yi-chang/"/>
-    <updated>2014-08-28T23:15:18+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/28/effective-java-yi-chang</id>
-    <content type="html"><![CDATA[<p>Effective Java 通用程序设计，读书笔记：</p>
-
-<ol>
-<li>只对异常情况才使用异常</li>
-<li>对可恢复的情况使用受检异常，对编程错误使用运行时异常</li>
-<li>避免不必要地使用受检的异常</li>
-<li>优先使用标准的异常</li>
-<li>抛出与抽象相对应的异常</li>
-<li>每个方法抛出的异常都要有文档</li>
-<li>在细节消息中包含能捕获失败的消息</li>
-<li>努力使失败保持原子性</li>
-<li>不要忽略异常</li>
-</ol>
-
-
-<!--more-->
-
-
-<h2>57 只对异常情况才使用异常</h2>
-
-<p>永远不要将异常用于正常的控制流。下面的代码试图使用异常退出循环，这是有问题的：</p>
-
-<p>```java
-//有问题的代码
-try {</p>
-
-<pre><code> int i = 0;
- while(true)
-      range[i++].climb();
-</code></pre>
-
-<p>} catch (ArrayIndexOutOfBoundsException e) {
-}
-```</p>
-
-<p>设计良好的API不应该强迫客户端为了正常的控制流而使用异常。可以考虑提供“状态测试”方法，例如Iterator的next()方法有一个对应的“状态测试方法” hasNext()。</p>
-
-<h2>58 对可恢复的情况使用受检异常，对编程错误使用运行时异常</h2>
-
-<p>如果期望调用者能够适当地恢复，应该使用受检的异常。对于程序错误，则使用运行时异常。对于受检异常，可以提供一些辅助方法，通过这些方法调用者可以获得一些有助于恢复的信息。例如用户取款时余额不足，可以提供一个方法获取余额。</p>
-
-<h2>59 避免不必要地使用受检的异常</h2>
-
-<p>当以下两个条件都成立时，才使用受检异常：</p>
-
-<ol>
-<li>正确地使用API并不能阻止这种异常条件的产生（例如网络、文件）。</li>
-<li>一旦产生异常，使用API的程序员可以立即采取有用的动作，这种负担被认为是正当的。</li>
-</ol>
-
-
-<p>把受检异常变成运行时异常的一种方法是，把这个抛出异常的方法分成两个方法，其中一个返回boolean，表明是否应该抛出异常。例如前述的hasNext()。</p>
-
-<h2>60 优先使用标准的异常</h2>
-
-<p>使用标准的异常至少有以下好处：</p>
-
-<ol>
-<li>API更加易于学习和使用</li>
-<li>可读性更好</li>
-<li>异常类越少，内存印迹（footprint）就越少，装载这些类的时间开销也越少。</li>
-</ol>
-
-
-<p>常见的可重用异常包括：</p>
-
-<ol>
-<li>IllegalArgumentException 非Null的参数值不正确</li>
-<li>IllegalStateException 对于方法调用而言，对象状态不合适。</li>
-<li>NullPointException</li>
-<li>IndexOutOfBoundsException</li>
-<li>ConcurrentModificationException 禁止并修改时，检测到对象的并发修改</li>
-<li>UnsupportedOperationException</li>
-</ol>
-
-
-<h2>61 抛出与抽象相对应的异常</h2>
-
-<p>更高层的实现应该捕获低层的异常，同时抛出可以按照高层抽象进行解释的异常。这种做法也就是<strong>异常转译</strong>。</p>
-
-<p>如果低层的异常对于调试导致高层异常的问题非常有帮助，使用异常链就很合适。大多数标准异常都支持链的构造器，如果不支持，可以利用Throwable的initCause方法设置原因。下面代码展示了异常转译和异常链：</p>
-
-<p>```java
-try{
-&hellip;
-} catch(LowerLevelException cause) {</p>
-
-<pre><code> throw new HigherLevelException(cause);
-</code></pre>
-
-<p>}</p>
-
-<p>class HigherLevelException extends Exception {</p>
-
-<pre><code> HigherLevelException(Throwable cause) {
-      super(cause);
- }
-</code></pre>
-
-<p>}
-```</p>
-
-<h2>62 每个方法抛出的异常都要有文档</h2>
-
-<p>始终要单独地声明受检的异常，并利用Javadoc的<code>@throws</code>标记，准确地记录下抛出每个异常的条件 。如果一个方法可能抛出多个异常，不要使用“快捷方式”，声明它们的某个父类。永远不要声明一个方法“throws Exception”，因为它不仅没有提供任何有用的信息，而且掩盖了其它可能抛出的异常。</p>
-
-<p>对于接口中的方法，在文档中记录下它可能抛出的未受检异常也很重要。也就是用Javadoc的<code>@throws</code>标记进行说明，但在方法的声明中不使用throws关键字。</p>
-
-<h2>63 在细节消息中包含能捕获失败的消息</h2>
-
-<p>为了捕获失败，异常的细节信息应该包含所有“对该异常有贡献”的参数和域的值。例如IndexOutOfBoundsException就包括了三个信息：上界、下界以及不在界内的下标值。但是包含大量的描述信息也没有什么意义，因为堆栈轨迹的用途是与源文件结合起来使用的。</p>
-
-<p>异常的细节消息不应该与“用户层次的错误信息”混为一谈。</p>
-
-<p>为了确保异常的细节消息中包含足够的能捕获失败的消息，通常在异常的构造器中引入这些信息。如：</p>
-
-<p>```java
-public IndexOutOfBoundsException(int lowerBound, int upperBound, int index) {</p>
-
-<pre><code> ...
-</code></pre>
-
-<p>}
-```</p>
-
-<h2>64 努力使失败保持原子性</h2>
-
-<p>一般而言，失败的方法调用应该使对象保持在被调用之前的状态。具有这种属性的方法称为具有失败原子性。</p>
-
-<p>要实现失败原子性，最简单的办法是设计不可变对象。对于可变对象，可采取的办法包括：</p>
-
-<ol>
-<li>执行操作前，检查参数的有效性。</li>
-<li>调整计算处理的顺序，使任何可能会失败的计算部分在对象状态被修改之前发生。</li>
-<li>编写一段恢复代码。（这种办法主要用于永久性的数据结构，如磁盘）</li>
-<li>在对象的一份临时拷贝上执行操作，操作完成后再用临时拷贝中的结果替换对象的内容。</li>
-</ol>
-
-
-<h2>65 不要忽略异常</h2>
-
-<p>空的catch块会使异常达不到应有的目的。如果确实需要空catch块，至少也要包含一条说明，为什么可以忽略此异常。</p>
-
-<p>如果在finally中return，将会丢失异常：</p>
-
-<p>```java
-public class LostException {</p>
-
-<pre><code>public static void main(String[] args) {
-    try {
-        throw new RuntimeException("afsd");
-    } finally {
-        //将会隐藏前面抛出的异常
-        return;
-    }
-}
-</code></pre>
-
-<p>}
-```</p>
 ]]></content>
   </entry>
   
