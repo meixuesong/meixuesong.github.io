@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="访问者(Visitor)模式的目的是封装一些施加于某种数据结构元素之上的操作，一旦这些操作需要修改的话，接受这个操作的数据结构则可以保持不变。假如要对一个不同类型的聚集进行遍历，为了判断不同的类型对象，需要写很多的if else，而访问者模式可以解决此问题。示意类图如下： ">
+  <meta name="description" content="之所以将这两个模式放在一起，是因为它们很少用得到。 解释器(Interpreter)模式 给定一个语言之后，解释器模式可以定义出其文法的一种表示，并同时提供一个解释器。客户端可以使用这个解释器来解释这个语言中的句子。例如对于数学运算表达式（a + b + c），如果a, b和c的值已知， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,108 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/">设计模式:解释器模式与调停者模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-20T22:31:36+08:00" pubdate data-updated="true">2014-08-20</time>
+        
+           | <a href="/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>之所以将这两个模式放在一起，是因为它们很少用得到。</p>
+
+<h3>解释器(Interpreter)模式</h3>
+
+<p>给定一个语言之后，解释器模式可以定义出其文法的一种表示，并同时提供一个解释器。客户端可以使用这个解释器来解释这个语言中的句子。例如对于数学运算表达式（a + b + c），如果a, b和c的值已知，如何得到结果？一种办法是使用直接计算值的方法写一个算法，但是如果有很多个表达式呢？不可能为每一个表达式写一个算法。这时候解释器模式就能派上用场了。</p>
+
+<h3>调停者(Mediator)模式</h3>
+
+<p>当对象之间的关系成网状时，就会耦合得过于紧密。通过调停者模式转换成星状结构，调停者在中心，所有对象都只与调停者打交道，实现对象间的解耦。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/20/effective-java-fang-fa/">Effective Java-方法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-20T19:32:51+08:00" pubdate data-updated="true">2014-08-20</time>
+        
+           | <a href="/blog/2014/08/20/effective-java-fang-fa/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/20/effective-java-fang-fa/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>读书笔记：</p>
+
+<ol>
+<li>检查参数的有效性</li>
+<li>必要时进行保护性拷贝</li>
+<li>谨慎设计方法签名</li>
+<li>慎用重载</li>
+<li>慎用可变参数</li>
+<li>返回零长度的数组或者集合，而不是null
+44. 为所有导出的API元素编写文档注释</li>
+</ol>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/20/effective-java-fang-fa/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -434,100 +536,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/">设计模式:策略模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-09T22:55:42+08:00" pubdate data-updated="true">2014-08-09</time>
-        
-           | <a href="/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>策略模式把行为和环境分割开。环境类负责维持和查询行为类，各种算法则在具体策略类中提供。由于算法和环境独立开来，算法的增减、修改都不会影响环境和客户端。准备一组算法，并将每一个算法封装起来，使得它们可以互换。策略模式的类图如下：</p>
-
-<p><img src="/myresource/images/image_blog_20140809_230502.jpg" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/">设计模式:不变模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-09T18:08:28+08:00" pubdate data-updated="true">2014-08-09</time>
-        
-           | <a href="/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>从这个模式开始学习行为模式。行为模式是对在不同的对象之间划分责任和算法的抽象化。行为模式不仅仅是关于类和对象的，而且是关于它们之间的相互作用的。行为模式分为类的行为模式（使用继承在几个类之间分配行为）和对象的行为模式（使用对象的聚合来分配行为）。</p>
-
-<p>不变（Immutable）模式是指一个对象创建之后，它的状态将不再变化。不变模式不需要类图描述，它分为弱不变模式和强不变模式。</p>
-
-<p>不变与只读的区别：只读表示值不能直接修改，但可能随其它变量改变而发生改变。例如出生日期是不变的，但年龄是只读的，因为它会随着时间而改变。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -549,10 +557,18 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/25/gui-bing-pai-xu/">归并排序算法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/25/chu-ji-pai-xu-suan-fa/">初级排序算法</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/09/19/zhong-gou/">再读《重构》</a>
@@ -564,14 +580,6 @@
     
       <li class="post">
         <a href="/blog/2014/09/02/javabing-fa-bian-cheng-san/">Java并发编程（三）</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/02/javabing-fa-er/">Java并发编程（二）</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/30/javabing-fa-bian-cheng/">Java并发编程（一）</a>
       </li>
     
   </ul>

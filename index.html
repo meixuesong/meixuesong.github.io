@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="数年前读过Martin Fowler的《重构——改善既有代码的设计》，被这本经典著作所折服。当时读的是英文电子版，今天拿到一本中文版，就想再读一遍，温故而知新。哪成想，读来已经不是当年的感觉了。现在觉得这本经典著作提到的重构方法很普通，都是日常使用的方法。而内容却已经太过时， &hellip;">
+  <meta name="description" content="所谓归并排序，是先把待排序数组分成两半，分别排序，然后将结果归并起来。归并排序最吸引人的地方是它能够保证将任意长度为N的数组排序所需时间和NlogN成正比。但其缺点是所需的额外空间和N成正比。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,94 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/25/gui-bing-pai-xu/">归并排序算法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-25T21:07:58+08:00" pubdate data-updated="true">2014-09-25</time>
+        
+           | <a href="/blog/2014/09/25/gui-bing-pai-xu/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/09/25/gui-bing-pai-xu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>所谓归并排序，是先把待排序数组分成两半，分别排序，然后将结果归并起来。归并排序最吸引人的地方是它能够保证将任意长度为N的数组排序所需时间和NlogN成正比。但其缺点是所需的额外空间和N成正比。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/09/25/gui-bing-pai-xu/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/25/chu-ji-pai-xu-suan-fa/">初级排序算法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-25T20:25:11+08:00" pubdate data-updated="true">2014-09-25</time>
+        
+           | <a href="/blog/2014/09/25/chu-ji-pai-xu-suan-fa/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/09/25/chu-ji-pai-xu-suan-fa/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>即使只使用类库提供的排序函数，学习排序算法仍然具有实际意义。因为排序算法是解决其他问题的第一步，类似的技术能够有效解决其它类型的问题。本文学习一些初级的排序算法，包括选择排序、插入排序和希尔排序。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/09/25/chu-ji-pai-xu-suan-fa/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -451,108 +539,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/">设计模式:解释器模式与调停者模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-20T22:31:36+08:00" pubdate data-updated="true">2014-08-20</time>
-        
-           | <a href="/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>之所以将这两个模式放在一起，是因为它们很少用得到。</p>
-
-<h3>解释器(Interpreter)模式</h3>
-
-<p>给定一个语言之后，解释器模式可以定义出其文法的一种表示，并同时提供一个解释器。客户端可以使用这个解释器来解释这个语言中的句子。例如对于数学运算表达式（a + b + c），如果a, b和c的值已知，如何得到结果？一种办法是使用直接计算值的方法写一个算法，但是如果有很多个表达式呢？不可能为每一个表达式写一个算法。这时候解释器模式就能派上用场了。</p>
-
-<h3>调停者(Mediator)模式</h3>
-
-<p>当对象之间的关系成网状时，就会耦合得过于紧密。通过调停者模式转换成星状结构，调停者在中心，所有对象都只与调停者打交道，实现对象间的解耦。</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/20/effective-java-fang-fa/">Effective Java-方法</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-20T19:32:51+08:00" pubdate data-updated="true">2014-08-20</time>
-        
-           | <a href="/blog/2014/08/20/effective-java-fang-fa/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/20/effective-java-fang-fa/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>读书笔记：</p>
-
-<ol>
-<li>检查参数的有效性</li>
-<li>必要时进行保护性拷贝</li>
-<li>谨慎设计方法签名</li>
-<li>慎用重载</li>
-<li>慎用可变参数</li>
-<li>返回零长度的数组或者集合，而不是null
-44. 为所有导出的API元素编写文档注释</li>
-</ol>
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/08/20/effective-java-fang-fa/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -572,10 +558,18 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/25/gui-bing-pai-xu/">归并排序算法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/25/chu-ji-pai-xu-suan-fa/">初级排序算法</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/09/19/zhong-gou/">再读《重构》</a>
@@ -587,14 +581,6 @@
     
       <li class="post">
         <a href="/blog/2014/09/02/javabing-fa-bian-cheng-san/">Java并发编程（三）</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/02/javabing-fa-er/">Java并发编程（二）</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/30/javabing-fa-bian-cheng/">Java并发编程（一）</a>
       </li>
     
   </ul>

@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 算法 | 码出人生]]></title>
+  <link href="http://blog.ubone.com/blog/categories/suan-fa/atom.xml" rel="self"/>
+  <link href="http://blog.ubone.com/"/>
+  <updated>2014-09-25T23:13:53+08:00</updated>
+  <id>http://blog.ubone.com/</id>
+  <author>
+    <name><![CDATA[梅雪松]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[归并排序算法]]></title>
+    <link href="http://blog.ubone.com/blog/2014/09/25/gui-bing-pai-xu/"/>
+    <updated>2014-09-25T21:07:58+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/09/25/gui-bing-pai-xu</id>
+    <content type="html"><![CDATA[<p>所谓归并排序，是先把待排序数组分成两半，分别排序，然后将结果归并起来。归并排序最吸引人的地方是它能够保证将任意长度为N的数组排序所需时间和NlogN成正比。但其缺点是所需的额外空间和N成正比。</p>
+
+<!--more-->
+
+
+<h2>1. 原地归并的抽象方法</h2>
+
+<p>实现归并是将两个不同的有序数组归并到第三个数组中。当归并一个大数组时，需要进行很多次归并，因此如果每次都创建一个新数组会有性能问题。所以要实现原地归并。下面的代码借助一个辅助数组，先将所有元素复制到辅助数组中，然后再把归并结果放回原数组。</p>
+
+<p>```java
+public abstract class AbstractMerge extends AbstractSort {</p>
+
+<pre><code>//归并所需的辅助数组
+protected Comparable[] aux;
+/**
+ * 将a[lo..mid]和a[mid+1..hi]合并
+ * @param a
+ * @param lo
+ * @param mid
+ * @param hi
+ */
+public void merge(Comparable[] a, int lo, int mid, int hi) {
+    int i = lo, j = mid + 1;
+
+    //将a[lo..hi]复制到aux[lo..hi]
+    for(int k = lo; k&lt;= hi; k++) {
+        aux[k] = a[k];
+    }
+
+    //再从aux归并到a[lo..hi]
+    for(int k = lo; k &lt;= hi; k++) {
+        if (i &gt; mid) {
+            //左半边用尽，取右半边的元素
+            a[k] = aux[j];
+            j++;
+        } else if (j &gt; hi) {
+            //右半边用尽，取左半边的元素
+            a[k] = aux[i];
+            i++;
+        } else if (less(aux[j], aux[i])) {
+            //右半边元素小于左半边元素，取右半边
+            a[k] = aux[j];
+            j++;
+        } else {
+            //左半边元素小于右半边元素，取左半边
+            a[k] = aux[i];
+            i++;
+        }
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>有了这个归并方法，下面开始实现归并排序。</p>
+
+<h2>2. 自顶向下的归并排序</h2>
+
+<h3>2.1 算法实现</h3>
+
+<p>下面的代码采用分治思想，通过递归实现两个子数组排序，并通过归并两个子数组完成整个数组的排序。</p>
+
+<p>```java
+public class Merge extends AbstractMerge {</p>
+
+<pre><code>@Override
+public void sort(Comparable[] a) {
+    aux = new Comparable[a.length];
+    sort(a, 0, a.length - 1);
+}
+
+private void sort(Comparable[] a, int lo, int hi) {
+    if (hi &lt;= lo) return;
+
+    int mid = lo + (hi - lo) / 2;
+    //将左边排序
+    sort(a, lo, mid);
+    //将右边排序
+    sort(a, mid + 1, hi);
+    //归并结果
+    merge(a, lo, mid, hi);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>性能：对于长度为N的任意数组，自顶向下的归并排序需要(&frac12;)NlgN至NlogN次比较。最多需要访问数组6NlgN次。将初级排序算法中的测试数组改为100万个随机整数，Shell排序耗时1217ms，而自顶向下的归并排序算法耗时为611ms。</p>
+
+<h3>2.2 算法优化</h3>
+
+<p>上述的归并算法还有优化的空间。例如对于小规模的子数组（如长度小于15），改用插入排序，一般可以将运行时间缩短10%~15%。</p>
+
+<p>还可以添加一个判断条件，如果a[mid]小于等于a[mid+1]，就认为数组已经是有序的并跳过merge()方法。</p>
+
+<p>另一种优化是不将元素复制到辅助数组，节省元素复制到辅助所用的时间（但空间不行）。实现这一点要调用两种排序方法，一种将数据从输入数组排序到辅助数组，一种将数据从辅助数组排序到输入数组。在递归调用的每个层次交换输入数组和辅助数组的角色。</p>
+
+<p>实现上述三种优化的MergeX如下：</p>
+
+<p>```java
+public class MergeX {</p>
+
+<pre><code>private static final int CUTOFF = 7;  // cutoff to insertion sort
+
+private MergeX() { }
+
+private static void merge(Comparable[] src, Comparable[] dst, int lo, int mid, int hi) {
+    int i = lo, j = mid+1;
+    for (int k = lo; k &lt;= hi; k++) {
+        if      (i &gt; mid)              dst[k] = src[j++];
+        else if (j &gt; hi)               dst[k] = src[i++];
+        else if (less(src[j], src[i])) dst[k] = src[j++];   // to ensure stability
+        else                           dst[k] = src[i++];
+    }
+}
+
+private static void sort(Comparable[] src, Comparable[] dst, int lo, int hi) {
+    if (hi &lt;= lo + CUTOFF) { 
+        //优化1，改用插入排序算法
+        insertionSort(dst, lo, hi);
+        return;
+    }
+    int mid = lo + (hi - lo) / 2;
+    sort(dst, src, lo, mid);
+    sort(dst, src, mid+1, hi);
+
+    // if (!less(src[mid+1], src[mid])) {
+    //    for (int i = lo; i &lt;= hi; i++) dst[i] = src[i];
+    //    return;
+    // }
+
+    // using System.arraycopy() is a bit faster than the above loop
+    if (!less(src[mid+1], src[mid])) {
+        //优化2，跳过merge
+        System.arraycopy(src, lo, dst, lo, hi - lo + 1);
+        return;
+    }
+
+    merge(src, dst, lo, mid, hi);
+}
+
+public static void sort(Comparable[] a) {
+    Comparable[] aux = a.clone();
+    sort(aux, a, 0, a.length-1);  
+}
+
+private static void insertionSort(Comparable[] a, int lo, int hi) {
+    for (int i = lo; i &lt;= hi; i++)
+        for (int j = i; j &gt; lo &amp;&amp; less(a[j], a[j-1]); j--)
+            exch(a, j, j-1);
+}
+
+private static void exch(Comparable[] a, int i, int j) {
+    Comparable swap = a[i];
+    a[i] = a[j];
+    a[j] = swap;
+}
+
+private static boolean less(Comparable a, Comparable b) {
+    return (a.compareTo(b) &lt; 0);
+}
+
+private static boolean isSorted(Comparable[] a) {
+    return isSorted(a, 0, a.length - 1);
+}
+
+private static boolean isSorted(Comparable[] a, int lo, int hi) {
+    for (int i = lo + 1; i &lt;= hi; i++)
+        if (less(a[i], a[i-1])) return false;
+    return true;
+}
+
+public static void main(String[] args) {
+    //测试100万个随机整数的排序
+    int len = 1000000;
+    Integer[] array = new Integer[len];
+    Random random = new java.util.Random();
+    for(int i = 0; i &lt; len; i++) {
+        array[i] =  random.nextInt(1000000);
+    }
+
+    long from = System.nanoTime();
+    MergeX.sort(array);
+    System.out.format("Merge sort, totoalTime: %dms \n", (System.nanoTime() - from) / 1000000);
+    MergeX.isSorted(array);
+}
+</code></pre>
+
+<p>}</p>
+
+<p>//output: MergeX sort, totoalTime: 361ms，比Merge的611ms又进步不少。
+```</p>
+
+<h3>3. 自底向上的归并排序</h3>
+
+<p>自顶向下的归并排序，在排序过程中，会先递归排序完左边，然后再递归排序右边，最后再归并到一起。而自底向上的归并排序，则是另一种思路。</p>
+
+<p>它的思路是先归并微型数组，然后再归并得到的子数组，如此这般，直到将整个数组归并在一起。具体来说，就是两两归并（每个元素是大小为1的数组），然后四四归并（两个大小为2的数组）、八八归并。。。代码实现如下：</p>
+
+<p>```java
+public class MergeBU extends AbstractMerge {</p>
+
+<pre><code>@Override
+public void sort(Comparable[] a) {
+    int N = a.length;
+    aux = new Comparable[N];
+    for(int sz = 1; sz &lt; N; sz = sz + sz) {
+        for(int lo = 0; lo &lt; N - sz; lo += sz + sz) {
+            merge(a, lo, lo + sz - 1, Math.min(lo + sz + sz - 1, N - 1));
+        }
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>性能：自底向上和自顶向上的归并排序所用的比较次数、数组访问次数正好相同，只是顺序不同。测试耗时：536ms</p>
+
+<p>自底向上的归并排序比较适合用链表组织的数据。想象一下将链表先按大小为1的子链表进行排序，然后是大小为2的子链表。。。这种方法只需要重新组织链表链接，就能将链表原地排序。</p>
+
+<p>在最坏的情况下，没有任何基于比较的排序算法能够将比较次数做到小于NlgN。也就是说，在最坏的情况下，归并排序算法的比较次数是最小的算法之一。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[初级排序算法]]></title>
+    <link href="http://blog.ubone.com/blog/2014/09/25/chu-ji-pai-xu-suan-fa/"/>
+    <updated>2014-09-25T20:25:11+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/09/25/chu-ji-pai-xu-suan-fa</id>
+    <content type="html"><![CDATA[<p>即使只使用类库提供的排序函数，学习排序算法仍然具有实际意义。因为排序算法是解决其他问题的第一步，类似的技术能够有效解决其它类型的问题。本文学习一些初级的排序算法，包括选择排序、插入排序和希尔排序。</p>
+
+<!--more-->
+
+
+<h2>1. 排序模板</h2>
+
+<p>不同的排序程序只是在排序算法上不同，但排序的框架是相同的。因此先建立一个排序模板，在此基础上实现各种算法。</p>
+
+<p>```java
+public abstract class AbstractSort {</p>
+
+<pre><code>protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+//待实现的算法
+public abstract void sort(Comparable[] a);
+
+//进行比较
+protected static boolean less(Comparable v, Comparable w) {
+    return v.compareTo(w) &lt; 0;
+}
+
+//交换位置
+protected static void exchange(Comparable[] a, int i, int j) {
+    Comparable t = a[i];
+    a[i] = a[j];
+    a[j] = t;
+}
+
+//打印数组
+protected static void show(Comparable[] a) {
+    for (int i = 0; i &lt; a.length; i++) {
+        System.out.print(a[i] + " ");
+    }
+    System.out.println();
+}
+
+//验证是否为有序状态
+public static boolean isSorted(Comparable[] a) {
+    for (int i = 1; i &lt; a.length; i++) {
+        if (less(a[i], a[i-1]))
+            return false;
+    }
+
+    return true;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>为了粗略验证各种算法的效率，以10万的随机整数数组为对象进行排序，测试代码如下：</p>
+
+<p>```java
+public class SortTest extends TestCase {</p>
+
+<pre><code>Integer[] array;
+
+@Override
+public void setUp() {
+    int len = 1000000;
+    array = new Integer[len];
+    Random random = new java.util.Random();
+    for(int i = 0; i &lt; len; i++) {
+        array[i] =  random.nextInt(100000000);
+    }
+}
+
+public void testSort() {
+    long from = System.nanoTime();
+    AbstractSort sorter = new Selection();//或其它算法
+    sorter.sort(array);
+    System.out.format("totoalTime: %dms \n", (System.nanoTime() - from) / 1000000);     
+    Assert.assertTrue(AbstractSort.isSorted(array));
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>2. 选择排序(Selection)</h2>
+
+<p>选择排序是最简单的排序算法，即<strong>不断地选择剩余元素中的最小者</strong>：先找到数组中最小的元素，然后跟第一个元素交换。接下来在剩下的元素中找最小的元素，跟第二个元素交换。如此往复，直到整个数组遍历结束。代码实现如下：</p>
+
+<p>```java
+public class Selection extends AbstractSort{</p>
+
+<pre><code>@Override
+public void sort(Comparable[] a) {
+    int len = a.length;
+    for(int i = 0; i &lt; len; i ++) {
+        int min = i;
+        for (int j = i + 1; j &lt; len; j++) {
+            if (less(a[j], a[min])) {
+                min = j;
+            }
+        }
+
+        exchange(a, i, min);
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>性能：对于长度为N的数组，需要进行大约N<sup>2</sup>/2次比较和N次交换。运行上面的测试代码，耗时：11424ms</p>
+
+<h2>3. 插入排序(Insertion)</h2>
+
+<p>与选择排序一样，当前索引左边的所有元素都是有序的，但它们的最终位置还不确定，后续元素将会跟前面的元素比较，并插入适当的位置。当索引到达数组的最右端时，排序完成。代码实现如下：</p>
+
+<p>```java
+public class Insertion extends AbstractSort {</p>
+
+<pre><code>@Override
+public void sort(Comparable[] a) {
+    int len = a.length;
+    for(int i = 1; i &lt; len; i++) {
+        for(int j = i; j &gt; 0 &amp;&amp; less(a[j], a[j-1]); j--) {
+            exchange(a, j, j-1);
+        }
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>性能：插入排序的性能取决于数组的初始顺序。对于一个很大且其中的元素已经有序或接近有序的数组进行排序效率很高。插入排序平均需要大约N<sup>2</sup>/4次比较和N<sup>2</sup>/4次交换。最坏的情况下则需要N<sup>2</sup>次比较和N<sup>2</sup>/2次交换。也就是说最坏的情况下（如初始排序是倒序的），插入排序比选择排序还要慢。运行上面的测试代码，耗时：15208ms，由于是随机数组，因此比选择排序还要慢。</p>
+
+<h2>4. 希尔排序(Shell)</h2>
+
+<p>希尔排序其实是基于插入排序。既然插入排序对有序数组效率很高，但对于乱序数组，元素只能一点一点地从一端移动到另一端。那么希尔排序就改进这一点，交换不相邻的元素，最终用插入排序将局部有序的数组排序。</p>
+
+<p>其思想是使任意间隔为h的元素有序，称为h有序数组。排序时，如果h很大，我们就能将元素移动到很远的地方，为实现更小的h有序创造方便。代码实现如下：</p>
+
+<p>```java
+public class Shell extends AbstractSort {</p>
+
+<pre><code>@Override
+public void sort(Comparable[] a) {
+    int n = a.length;
+    int h = 1;
+    while (h &lt; n/3) {
+        h = 3 * h + 1;
+    }
+    //h:1, 4, 13, 40, 121, 364, 1093, ...
+
+    while (h &gt;= 1) {
+        //这部分就是插入排序，但将位移由1变为了h
+        for (int i = h; i &lt; n; i++) {
+            for (int j = i; j &gt;= h &amp;&amp; less(a[j], a[j-h]); j -= h) {
+                exchange(a, j, j-h);
+            }
+        }
+
+        h = h / 3;
+    }
+
+    draw();
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>性能：此算法的性能不仅取决于h，还取决于h之间的数学性质，比如它们的公因子。有很多论文研究不同的递增序列，但上面的代码似乎已经相当好，更优的递增序列有待发现。希尔排序对任意排序的数组表现也很好。运行上面的测试代码，耗时：160ms</p>
+
+<p>希尔排序对于中等大小的数组运行时间是可以接受的。它的代码量很小，不需要额外的内存空间。其它更高效的算法除了对于很大的N，它们可能只会比希尔排序快最多两倍，而且更复杂。</p>
+]]></content>
+  </entry>
+  
+</feed>
