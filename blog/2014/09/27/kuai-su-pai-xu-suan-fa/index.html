@@ -1,0 +1,468 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>快速排序算法 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="快速排序可能是应用最广泛的算法，原因是它实现简单、速度快。它完美地实现了原地排序（只需要一个很小的辅助栈），并且时间与NlgN成正比。它的内循环比大多数排序算法都要短小，因此理论上要更快。但它的主要缺点是非常脆弱，实现时要非常小心才能避免低劣的性能。 1. 算法理论 快速算法也是一种分治的排序算法 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/09/27/kuai-su-pai-xu-suan-fa">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">快速排序算法</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-27T10:38:32+08:00" pubdate data-updated="true">2014-09-27</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>快速排序可能是应用最广泛的算法，原因是它实现简单、速度快。它完美地实现了原地排序（只需要一个很小的辅助栈），并且时间与NlgN成正比。它的内循环比大多数排序算法都要短小，因此理论上要更快。但它的主要缺点是非常脆弱，实现时要非常小心才能避免低劣的性能。</p>
+
+<!--more-->
+
+
+<h2>1. 算法理论</h2>
+
+<p>快速算法也是一种分治的排序算法，它将一个数组分成两个子数组，将两部份独立地排序。但与归并排序将两个子数组分别排序再归并到整个数组排序不同，快速排序时，当两个子数组都有序时整个数组也就自然有序了。</p>
+
+<p>快速排序算法的关键是切分，通过切分使数组满足下面三个条件：</p>
+
+<ol>
+<li>对于某个j, a[j]已经排定;</li>
+<li>a[lo]到a[j-1]中的所有元素都不大于a[j];</li>
+<li>a[j+1]到a[hi]中的所有元素都不小于a[j];</li>
+</ol>
+
+
+<p>因为切分过程总能排定一个元素，因此递归调用切分过程就能够正确地将数组排序。切分实现方法如下：先随意取a[lo]作为切分元素，然后从数组的左端开始向右扫描直到找到一个大于等于它的元素，再从数组右端向左扫描直到找到一个小于等于它的元素，交换它俩的位置。如此继续，当两个指针相遇时，只需要将切分元素和左子数组最右侧的元素a[j]交换然后返回j即可。j即满足上述三个条件。</p>
+
+<h2>2. 算法实现</h2>
+
+<p>下面是排序算法的实现。需要注意的是还有几个细节需要完善，它们可能导致错误或影响性能。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Quick</span> <span class="kd">extends</span> <span class="n">AbstractSort</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">StdRandom</span><span class="o">.</span><span class="na">shuffle</span><span class="o">(</span><span class="n">a</span><span class="o">);</span> <span class="c1">//打乱数组，消除对输入的依赖</span>
+</span><span class='line'>      <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">lo</span><span class="o">,</span> <span class="kt">int</span> <span class="n">hi</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">hi</span> <span class="o">&lt;=</span> <span class="n">lo</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">partition</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">lo</span><span class="o">,</span> <span class="n">hi</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">lo</span><span class="o">,</span> <span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="n">hi</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">partition</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">lo</span><span class="o">,</span> <span class="kt">int</span> <span class="n">hi</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">//i, j分别代表左右扫描指针</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">lo</span><span class="o">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">hi</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">Comparable</span> <span class="n">v</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">lo</span><span class="o">];</span> <span class="c1">//选择切分元素</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="c1">//从左往右扫描</span>
+</span><span class='line'>          <span class="k">while</span> <span class="o">(</span><span class="n">less</span><span class="o">(</span><span class="n">a</span><span class="o">[++</span><span class="n">i</span><span class="o">],</span> <span class="n">v</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>              <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">hi</span><span class="o">)</span> <span class="k">break</span><span class="o">;</span> <span class="c1">//冗余，可以去除。</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="c1">//从右往左扫描</span>
+</span><span class='line'>          <span class="k">while</span> <span class="o">(</span><span class="n">less</span><span class="o">(</span><span class="n">v</span><span class="o">,</span> <span class="n">a</span><span class="o">[--</span><span class="n">j</span><span class="o">]))</span> <span class="o">{</span>
+</span><span class='line'>              <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">==</span> <span class="n">lo</span><span class="o">)</span> <span class="k">break</span><span class="o">;</span> <span class="c1">//冗余，可以去除。</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="c1">//检查两指针是否相遇</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">j</span><span class="o">)</span> <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="n">exchange</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="c1">//与切分元素交换</span>
+</span><span class='line'>      <span class="n">exchange</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">lo</span><span class="o">,</span> <span class="n">j</span><span class="o">);</span>
+</span><span class='line'>  
+</span><span class='line'>      <span class="c1">//现在满足：a[lo .. j-1] &lt;= a[j] &lt;= a[j+1 .. hi]</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">j</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="c1">//对一百万个随机整数排序，时间大致在350ms，但加上shuffle后，时间在600多ms.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>3. 性能特点</h2>
+
+<p>快速排序算法的内循环用一个递增的索引将数组元素和一个定值比较，因此内循环非常短。归并和希尔排序需要在内循环中移动数据，所以它们通常比快速排序要慢一些。</p>
+
+<p>快速排序算法的另一个优势是比较的次数很少。其效率最终还是依赖切分数组的效果。最好的情况下，每次都正好能将数组对半分。尽管事情并不总会这么顺利，但平均而言切分元素都能落在数组的中间。如果将切分位置的概率考虑到算法中，将使递归更复杂，而结果还是类似的。</p>
+
+<p>它有一个潜在的缺点，切分不平衡时效率会相当低效。例如第一次从最小的元素切分，第二次从第二小的元素切分。。。这样每次调用只会移除一个元素。这也是快速排序前先随机排序(shuffle)的主要原因。</p>
+
+<h2>4. 算法改进</h2>
+
+<p>如果排序代码会执行很多次或者将用在大型数组上，那么就需要进行一些改进。</p>
+
+<h3>4.1 切换到插入排序</h3>
+
+<p>由于小数组的快速排序比插入排序慢，并且小数组时的递归调用也会消耗资源，因此在排序小数组时应该切换到插入排序。</p>
+
+<p>可以在sort方法中，将<code>if (hi &lt;= lo) return;</code>替换为：<code>if (hi &lt;= lo + M) {Insertion.sort(a, lo, hi); return;}</code>。M的最佳值和系统相关，但一般在5~15之间在大多数情况下都能令人满意。</p>
+
+<h3>4.2 三取样切分</h3>
+
+<p>第二个改进的方法是使用子数组的一小部分元素的中位数来切分数组。人们发现将取样大小设为3并用大小居中的元素切分效果最好。</p>
+
+<h3>4.3 熵最优的排序</h3>
+
+<p>对于有大量重复元素的数组，快速排序算法仍然会递归调用，而三向切分的快速排序算法可以更好地处理这种情况。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Quick3way</span> <span class="kd">extends</span> <span class="n">AbstractSort</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">StdRandom</span><span class="o">.</span><span class="na">shuffle</span><span class="o">(</span><span class="n">a</span><span class="o">);</span> <span class="c1">//打乱数组，消除对输入的依赖</span>
+</span><span class='line'>      <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">lo</span><span class="o">,</span> <span class="kt">int</span> <span class="n">hi</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">hi</span> <span class="o">&lt;=</span> <span class="n">lo</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="kt">int</span> <span class="n">lt</span> <span class="o">=</span> <span class="n">lo</span><span class="o">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">lo</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="n">gt</span> <span class="o">=</span> <span class="n">hi</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">Comparable</span> <span class="n">v</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">lo</span><span class="o">];</span>
+</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="n">gt</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="kt">int</span> <span class="n">cmp</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">compareTo</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">cmp</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">exchange</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">lt</span><span class="o">++,</span> <span class="n">i</span><span class="o">++);</span>
+</span><span class='line'>          <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">cmp</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">exchange</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">gt</span><span class="o">--);</span>
+</span><span class='line'>          <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">i</span><span class="o">++;</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span><span class="c1">//现在a[lo..lt-1] &lt; v = a[lt..gt] &lt; a[gt+1..hi]</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">lo</span><span class="o">,</span> <span class="n">lt</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">gt</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="n">hi</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//（不含shuffle的时间）对于一百万随机整数，排序时间也在350ms左右。但如果存在大量重复时，时间将降到250ms左右。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>对有大量重复元素的数组排序时，三向切分算法具有更高的效率。而在最差的情况下，也就是没有重复元素时，它的效率与标准快速排序算法相当。因此，三向切分的快速排序成为排序函数的最佳算法选择。</p>
+
+<p>在基于比较的排序算法中，经过精心调优的快速排序算法性能最好。但它不是终点，还有完全不需要比较的排序算法！</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-27T10:38:32+08:00" pubdate data-updated="true">2014-09-27</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/suan-fa/'>算法</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/09/25/gui-bing-pai-xu/" title="Previous Post: 归并排序算法">&laquo; 归并排序算法</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (3)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">快速排序算法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/25/gui-bing-pai-xu/">归并排序算法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/25/chu-ji-pai-xu-suan-fa/">初级排序算法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/19/zhong-gou/">再读《重构》</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/14/java-i-slash-o/">Java I/O</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fb4e47bf6950f9d2496daf84fe62cec59' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/09/27/kuai-su-pai-xu-suan-fa/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/09/27/kuai-su-pai-xu-suan-fa/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

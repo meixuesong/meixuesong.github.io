@@ -9,7 +9,8 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="策略模式把行为和环境分割开。环境类负责维持和查询行为类，各种算法则在具体策略类中提供。由于算法和环境独立开来，算法的增减、修改都不会影响环境和客户端。准备一组算法，并将每一个算法封装起来，使得它们可以互换。策略模式的类图如下： ">
+  <meta name="description" content="模板方法（Template Method）模式是最常见的模式，几乎每个人都用过。它将部分逻辑以具体方法以及具体构造子的形式实现。抽象类定义顶级逻辑，具体类实现具体方法。类图如下： 抽象模板角色：定义一个或多个抽象操作，以便让子类实现。定义并实现一个模板方法，给出顶级逻辑的骨架。
+具体模板角色： &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +68,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/10/she-ji-mo-shi-mo-ban-fang-fa-mo-shi/">设计模式:模板方法模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-10T09:52:25+08:00" pubdate data-updated="true">2014-08-10</time>
+        
+           | <a href="/blog/2014/08/10/she-ji-mo-shi-mo-ban-fang-fa-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/10/she-ji-mo-shi-mo-ban-fang-fa-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>模板方法（Template Method）模式是最常见的模式，几乎每个人都用过。它将部分逻辑以具体方法以及具体构造子的形式实现。抽象类定义顶级逻辑，具体类实现具体方法。类图如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140810_095857.jpg" alt="image" /></p>
+
+<ol>
+<li>抽象模板角色：定义一个或多个抽象操作，以便让子类实现。定义并实现一个模板方法，给出顶级逻辑的骨架。</li>
+<li>具体模板角色：实现父类的抽象方法。</li>
+</ol>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -483,56 +531,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/31/she-ji-mo-shi-que-sheng-gua-pei-mo-shi/">设计模式:缺省适配模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-31T20:31:57+08:00" pubdate data-updated="true">2014-07-31</time>
-        
-           | <a href="/blog/2014/07/31/she-ji-mo-shi-que-sheng-gua-pei-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-que-sheng-gua-pei-mo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>缺省适配模式其实很简单，就是一个接口有很多方法，通过一个抽象类为这些方法提供默认实现，而具体的类继承这个抽象类，实现自己关心的方法即可。其结构如下：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-31_20.37.12.jpg" alt="image" /></p>
-
-<p>什么情况下用缺省适配模式？如果不准备实现一个接口的所有方法时，可以通过一个抽象类，给出所有方法的实现。有用的方法要有实现，没用的方法也要有空的、平庸的实现。这样子类就不必实现所有方法了。对应适配器模式的三个角色：</p>
-
-<ul>
-<li>Adapter：子类</li>
-<li>Adaptee：抽象类</li>
-<li>Target：接口</li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -554,10 +552,14 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (2)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (3)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">快速排序算法</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/09/25/gui-bing-pai-xu/">归并排序算法</a>
@@ -573,10 +575,6 @@
     
       <li class="post">
         <a href="/blog/2014/09/14/java-i-slash-o/">Java I/O</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/02/javabing-fa-bian-cheng-san/">Java并发编程（三）</a>
       </li>
     
   </ul>
