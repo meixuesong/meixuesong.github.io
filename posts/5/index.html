@@ -9,13 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="关于设计，有一些原则。本文总结一些常见的原则。包括： (S)单一职责原则
-(O)开闭原则
-(L)里氏替换原则
-(I)接口隔离原则
-(D)依赖反转原则
-迪米特法则
-组合/聚合复用原则 ">
+  <meta name="description" content="简单工厂模式其实就是静态工厂方法模式，即通过静态工厂方法来创建对象。其结构可表示为： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +67,52 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/">设计模式:简单工厂模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-27T09:44:35+08:00" pubdate data-updated="true">2014-07-27</time>
+        
+           | <a href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>简单工厂模式其实就是静态工厂方法模式，即通过静态工厂方法来创建对象。其结构可表示为：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-27_1.png" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -485,50 +525,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/30/xu-qiu-yu-yong-li/">采用界面原型和系统用例描述需求</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-30T20:26:24+08:00" pubdate data-updated="true">2014-06-30</time>
-        
-           | <a href="/blog/2014/06/30/xu-qiu-yu-yong-li/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/06/30/xu-qiu-yu-yong-li/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>需求、文档是软件开发过程中两个最头疼的问题。什么是需求？软件没开发出来时，看不见摸不着。文档化是一种办法，但各种各样的文档、标准和格式。还没开始写就已经让人望而却步了。文档并不是越少越好，也不是越多越好，应该根据项目的的特点决定采用何种方式去描述需求。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/06/30/xu-qiu-yu-yong-li/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/6">&larr; Older</a>
@@ -550,10 +546,14 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (4)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (6)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/">符号表</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/09/27/you-xian-dui-lie/">优先队列</a>
@@ -569,10 +569,6 @@
     
       <li class="post">
         <a href="/blog/2014/09/25/chu-ji-pai-xu-suan-fa/">初级排序算法</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/19/zhong-gou/">再读《重构》</a>
       </li>
     
   </ul>
