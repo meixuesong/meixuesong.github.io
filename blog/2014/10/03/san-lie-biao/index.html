@@ -1,0 +1,356 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>散列表(HashTable) - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="散列表也是一种符号表，它通过算法将键转化为数组的索引来访问数组中的键值对。散列表查找的第一步是用散列函数将被查找的键转化为一数组索引，第二步是处理碰撞冲突。解决碰撞冲突的方法有拉链法和线性探测法。 1. 散列函数 散列函数用于将键转化为数组的索引，它应该易于计算并且能够均匀分布所有的键。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/10/03/san-lie-biao">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">散列表(HashTable)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-03T10:03:40+08:00" pubdate data-updated="true">2014-10-03</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>散列表也是一种符号表，它通过算法将键转化为数组的索引来访问数组中的键值对。散列表查找的第一步是用散列函数将被查找的键转化为一数组索引，第二步是处理碰撞冲突。解决碰撞冲突的方法有拉链法和线性探测法。</p>
+
+<!--more-->
+
+
+<h2>1. 散列函数</h2>
+
+<p>散列函数用于将键转化为数组的索引，它应该易于计算并且能够均匀分布所有的键。散列函数和键的类型有关，对于每种类型的键都需要一个与之对应的散列函数。</p>
+
+<p>Java对正整数采用除留余数法计算散列值。选择大小为素数M的数组，对于任意正整数k，计算余数：<code>k%M</code>，能够有效地将键散布在0到M-1的范围内。素数又称为质数，是一个大于1的自然数，除了1和它本身外，不能被其他自然数整除（除0以外）的数。Java对浮点数会将键表示为二进制数然后再使用除留余数法。对字符串采用类似Homer方法，用N次乘法、加法和取余来计算散列值。</p>
+
+<p>对Java程序，<code>hashCode()</code>和<code>equals()</code>方法必须一致。如果<code>equals()</code>返回<code>true</code>那么<code>hashCode()</code>返回值必须一致，反过来则可以不同。</p>
+
+<h2>2. 基于拉链法的散列表</h2>
+
+<p>当<code>hashCode()</code>返回值相同，但<code>equals()</code>为false时，就发生了碰撞。解决碰撞的一种方法是拉链法。拉链法是指数组中的每个元素都指向一个链表，链表中的每个结点都存储了散列值为该元素的索引的键值对。因此这样的散列表由数组+链表构成。查找时先根据散列值找到对应的链表，然后沿着链表顺序查找相应的键。</p>
+
+<p><img src="/myresource/images/image_blog_2014-10-03_separate-chaining.png" alt="image" /></p>
+
+<p>可以看出，散列表的查找性能与散列表的大小有很大关系，对N个元素来说，当散列表的大小M过小时，碰撞机率就会增加，链表的长度必然增加，从而降低了查找效率。因此在内存不紧张时，可以选择一个足够大的M，内存紧张时，选择尽量大的M。另一种方法是动态调整数据的大小以保持短小的链表。</p>
+
+<p>执行删除操作时，先用散列值找到索引及对应的链表，然后调用链表的删除方法即可。</p>
+
+<p>对于有序性相关的符号表操作，散列表都不是合适的选择，因为这些操作的运行时间都是线性的。</p>
+
+<h2>3. 基于线性探测法的散列表</h2>
+
+<p>实现散列表的另一种方式是用大小为M的数组保存N个键值对，其中M>N。依靠数据中的空位解决碰撞冲突。基于这种策略的所有方法都统称为开放地址散列表。其中最简单的方法叫做线性探测法：当碰撞发生时，直接检查散列表的下一个位置（索引加1），可能产生三种结果：</p>
+
+<ul>
+<li>命中，该位置的键和被查找的键相同；</li>
+<li>未命中，键为空（该位置没有键）；</li>
+<li>继续查找，该位置的键和被查找的键不同。</li>
+</ul>
+
+
+<p>其核心思想是与其将内存用作链表，不如将它们作为散列表的空元素。即用散列函数找到索引，检查其中的键和被查找的键是否相同。如果不同则继续查找（增加索引，到达数组结尾后再折回数组开头），直到找到该键或者遇到一个空元素。过程如下图所示：</p>
+
+<p><img src="/myresource/images/image_blog_2014-10-03_linear-probing.png" alt="image" /></p>
+
+<p>在基于线性探测法的散列表中执行删除操作比较复杂，如果将该键所在位置为为null是不行的。需要将簇中被删除键的右侧的所有键重新插入散列表。</p>
+
+<p>这种散列表的性能也依赖于N/M，但在这里表示散列表的利用率。如果利用率达到1，即散列表满了，会造成未命中的查找无限循环。为了保证性能，要动态调整数组的大小来保证利用率在1/8到1/2之间。</p>
+
+<h2>4. 数组的大小和内存使用</h2>
+
+<p>对于线性探测法，调整数组的大小是必需的。对于拉链法，如果你能准确估计所需的散列表大小N，调整数据的工作不是必需的，只需要根据查找耗时和<code>(1+N/M)</code>成正比来选取一个适当的M即可。</p>
+
+<p>符号表的内存使用：</p>
+
+<table>
+<thead>
+<tr>
+<th>方法 </th>
+<th> N个元素所需的内存（引用类型）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基于拉链法的散列表 </td>
+<td> ~48N + 32M</td>
+</tr>
+<tr>
+<td>基于线性探测的散列表 </td>
+<td> 在~32N和~128N之间</td>
+</tr>
+<tr>
+<td>各种二叉查找树 </td>
+<td> ~56N</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>Q&amp;A</h2>
+
+<p>Q: Java的Integer, Double和Long类型的hashCode()是如何实现的？</p>
+
+<blockquote><p>Integer类型直接返回该整数的32位值。对Double和Long返回机器表示的前32位和后32位异或的结果。</p></blockquote>
+
+<p>Q: 为什么不将<code>hash(x)</code>实现为<code>x.hashCode() % M</code>?</p>
+
+<blockquote><p>Java中，取余的结果可能是负数。</p></blockquote>
+
+<p>Q: 为什么不将<code>hash(x)</code>实现为<code>Math.abs(x.hashCode()) % M</code>?</p>
+
+<blockquote><p>对于最大的整数<code>Math.abs()</code>会返回一个负值，这种溢出可能使程序崩溃。</p></blockquote>
+
+<p>Q: 在拉链法中，链表是否可以使用二叉查找树或者红黑树？</p>
+
+<blockquote><p>一般来说，散列表碰撞机率越少越好，因此链表越短越好。所以链表的初级实现的性能一般会更好，特殊情况下最好由专家进行这种调优。</p></blockquote>
+
+<p>Q: 散列表的查找比红黑树更快吗？</p>
+
+<blockquote><p>取决于键的类型，也就是hashCode()的计算成本是否大于compareTo()的比较成本。但通常散列表会比红黑树快得多。但散列表无法高效支持有序性相关的操作。</p></blockquote>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-03T10:03:40+08:00" pubdate data-updated="true">2014-10-03</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/suan-fa/'>算法</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/" title="Previous Post: 符号表">&laquo; 符号表</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (7)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/10/03/san-lie-biao/">散列表(HashTable)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/">符号表</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/27/you-xian-dui-lie/">优先队列</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">快速排序算法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/25/gui-bing-pai-xu/">归并排序算法</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fb4e47bf6950f9d2496daf84fe62cec59' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/10/03/san-lie-biao/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/10/03/san-lie-biao/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
