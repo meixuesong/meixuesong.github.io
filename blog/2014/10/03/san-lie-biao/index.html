@@ -121,6 +121,8 @@
 
 <p>对于有序性相关的符号表操作，散列表都不是合适的选择，因为这些操作的运行时间都是线性的。</p>
 
+<p>Java的TreeMap和HashMap分别是基于红黑树和拉链法的散列表的符号表实现。</p>
+
 <h2>3. 基于线性探测法的散列表</h2>
 
 <p>实现散列表的另一种方式是用大小为M的数组保存N个键值对，其中M>N。依靠数据中的空位解决碰撞冲突。基于这种策略的所有方法都统称为开放地址散列表。其中最简单的方法叫做线性探测法：当碰撞发生时，直接检查散列表的下一个位置（索引加1），可能产生三种结果：</p>
@@ -252,6 +254,8 @@
         <a class="basic-alignment left" href="/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/" title="Previous Post: 符号表">&laquo; 符号表</a>
       
       
+        <a class="basic-alignment right" href="/blog/2014/10/03/wu-xiang-tu/" title="Next Post: 无向图">无向图 &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -275,10 +279,14 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (7)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (8)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/10/03/wu-xiang-tu/">无向图</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/10/03/san-lie-biao/">散列表(HashTable)</a>
@@ -294,10 +302,6 @@
     
       <li class="post">
         <a href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">快速排序算法</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/25/gui-bing-pai-xu/">归并排序算法</a>
       </li>
     
   </ul>

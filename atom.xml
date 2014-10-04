@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-10-03T13:12:50+08:00</updated>
+  <updated>2014-10-04T12:17:39+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,454 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[无向图]]></title>
+    <link href="http://blog.ubone.com/blog/2014/10/03/wu-xiang-tu/"/>
+    <updated>2014-10-03T18:18:44+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/10/03/wu-xiang-tu</id>
+    <content type="html"><![CDATA[<p>无向图由一组顶点(Vertex)和一组能够将两个顶点相连的边(Edge)组成。本章学习无向图的邻接表实现，以及相关的搜索和应用，例如深度优先和广度优先搜索，路径查找和最短路径计算，连通分量和符号图。</p>
+
+<!--more-->
+
+
+<h2>1. 术语</h2>
+
+<p>v-w表示连接v和w的边。自环和平行边是两种特殊的图。<strong>自环</strong>即一条连接一个顶点和其自身的边；<strong>平行边</strong>是连接同一对顶点的两条边。含有平行边的图称为多重图，没有平行边和自环的图称为<strong>简单图</strong>。</p>
+
+<p>当两个顶点通过一条边相连时，这两个顶点是<strong>相邻的</strong>。某个顶点的<strong>度数(Degree)</strong>即为依附于它的边的总数。<strong>子图</strong>是由一幅图的所有边的一个子集（以及它们所依附的所有顶点）组成的图。</p>
+
+<p>在图中，<strong>路径</strong>是由边顺序连接的一系列顶点。<strong>简单路径</strong>是一条没有重复顶点的路径。<strong>环</strong>是一条至少含有一条边，并且起点和终点相同的路径。<strong>简单环</strong>是一条（除了起点和终点必须相同之外）不含有重复顶点和边的环。路径或环的<strong>长度</strong>为其中所包含的边数。</p>
+
+<p>如果从任意一个顶点都存在一条路径到达另一个任意顶点，这幅图就是<strong>连通图</strong>。一幅非连通的图由若干连通的部分组成，它们都是其极大连通子图。</p>
+
+<p>树是一幅无环(Acyclic)连通图。互不相连的树组成的集合称为<strong>森林</strong>。连通图的<strong>生成树</strong>是它的一幅子图，它含有图中的所有顶点且是一棵树。图的<strong>生成树森林</strong>是它的所有连通子图的生成树的集合。</p>
+
+<p>当且仅当一幅含有V个顶点的图G满足下列5个条件之一时，它就是一棵树：</p>
+
+<ul>
+<li>G有V-1条边且不含有环；</li>
+<li>G有V-1条边且是连通的；</li>
+<li>G是连通的，但删除任意一条边都会使它不再连通；</li>
+<li>G是无环图，但添加任意一条边都会产生一条环；</li>
+<li>G中的任意一对顶点之间仅存在一条简单路径。</li>
+</ul>
+
+
+<h2>2. API</h2>
+
+<p>先看一份定义了无向图的基本操作的API：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-04_graph-api.png" alt="image" /></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//////////////////常用的图处理代码//////////////////</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//计算v的度数</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">degree</span><span class="o">(</span><span class="n">Graph</span> <span class="n">G</span><span class="o">,</span> <span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">degree</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="nl">w:</span> <span class="n">G</span><span class="o">.</span><span class="na">adj</span><span class="o">(</span><span class="n">v</span><span class="o">))</span> <span class="n">degree</span><span class="o">++;</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">degree</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//计算所有顶点的最大度数</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">maxDegree</span><span class="o">(</span><span class="n">Graph</span> <span class="n">G</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">max</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">();</span> <span class="n">v</span><span class="o">++)</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">degree</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">v</span><span class="o">)</span> <span class="o">&gt;</span> <span class="n">max</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">max</span> <span class="o">=</span> <span class="n">degree</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">v</span><span class="o">);</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">max</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//计算所有顶点的平均度数</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">double</span> <span class="nf">avgDegree</span><span class="o">(</span><span class="n">Graph</span> <span class="n">G</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">G</span><span class="o">.</span><span class="na">E</span><span class="o">()</span> <span class="o">/</span> <span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//计算自环的个数</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">numberOfSelfLoops</span><span class="o">(</span><span class="n">Graph</span> <span class="n">G</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">();</span> <span class="n">v</span><span class="o">++)</span>
+</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">w</span> <span class="o">:</span> <span class="n">G</span><span class="o">.</span><span class="na">adj</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">v</span> <span class="o">==</span> <span class="n">w</span><span class="o">)</span> <span class="n">count</span><span class="o">++;</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">count</span> <span class="o">/</span> <span class="mi">2</span><span class="o">;</span> <span class="c1">//每条边都被记过2次</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2.1 邻接表</h3>
+
+<p>图有多种表示方法，包括邻接矩阵（V乘V的布尔矩阵，占用空间过大），边的数组（边类含有两个int实例变量，实现adj方法需要检查图中的所有边）和邻接表数组。</p>
+
+<p>邻接表数组是以顶点为索引的列表数组，例如第0个顶点的列表中每个元素都是和顶点0相邻的顶点。示意图如下：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-03_adjacency-lists.png" alt="image" /></p>
+
+<p>它具有以下特点：</p>
+
+<ul>
+<li>使用的空间和V+E成正比；</li>
+<li>添加一条边所需的时间为常数；</li>
+<li>遍历顶点v的所有相邻顶点所需的时间和v的度数成正比。</li>
+</ul>
+
+
+<p>代码实现示意如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Graph</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">V</span><span class="o">;</span>        <span class="c1">//顶点数目</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">E</span><span class="o">;</span>              <span class="c1">//边的数目</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Bag</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;[]</span> <span class="n">adj</span><span class="o">;</span> <span class="c1">//邻接表</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addEdge</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">,</span> <span class="kt">int</span> <span class="n">w</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">adj</span><span class="o">[</span><span class="n">v</span><span class="o">].</span><span class="na">add</span><span class="o">(</span><span class="n">w</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">adj</span><span class="o">[</span><span class="n">w</span><span class="o">].</span><span class="na">add</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">E</span><span class="o">++;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="nf">adj</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">adj</span><span class="o">[</span><span class="n">v</span><span class="o">];</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2.2 图的处理算法API</h3>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-04_search-api.png" alt="image" /></p>
+
+<h2>3. 深度优先搜索(DFS)</h2>
+
+<p>深度优先搜索一幅图，只需要一个递归方法来遍历所有顶点。在访问其中一个顶点时：</p>
+
+<ul>
+<li>将它标记为已访问；</li>
+<li>递归地访问它的所有没有被标记过的邻居顶点。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//深度优先搜索</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DepthFirstSearch</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">boolean</span><span class="o">[]</span> <span class="n">marked</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">count</span><span class="o">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">DepthFirstSearch</span><span class="o">(</span><span class="n">Graph</span> <span class="n">G</span><span class="o">,</span> <span class="kt">int</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">marked</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
+</span><span class='line'>      <span class="n">dfs</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">s</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">dfs</span><span class="o">(</span><span class="n">Graph</span> <span class="n">G</span><span class="o">,</span> <span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">marked</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">count</span><span class="o">++;</span>
+</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">w</span> <span class="o">:</span> <span class="n">G</span><span class="o">.</span><span class="na">adj</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(!</span><span class="n">marked</span><span class="o">[</span><span class="n">w</span><span class="o">])</span> <span class="n">dfs</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">w</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">marked</span><span class="o">(</span><span class="kt">int</span> <span class="n">w</span><span class="o">)</span> <span class="o">{</span><span class="k">return</span> <span class="n">marked</span><span class="o">[</span><span class="n">w</span><span class="o">];}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">count</span><span class="o">()</span> <span class="o">{</span><span class="k">return</span> <span class="n">count</span><span class="o">;}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>利用深度优先搜索很容易找到一些问题的答案。例如“两个给定的顶点是否连通？有多少个连通子图？从s到给定目的顶点v是否存在一条路径？如果有，找到这条路径。”</p>
+
+<h2>4. 寻找路径</h2>
+
+<p>路径的API:</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-04_paths-api.png" alt="image" /></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//使用深度优先搜索查找图的路径</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DepthFirstPaths</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">boolean</span><span class="o">[]</span> <span class="n">marked</span><span class="o">;</span>   <span class="c1">//这个顶点上调用过dfs()吗？</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">edgeTo</span><span class="o">;</span>       <span class="c1">//从起点到一个顶点的已知路径上的最后一个顶点</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">s</span><span class="o">;</span>        <span class="c1">//起点</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">DepthFirstPaths</span><span class="o">(</span><span class="n">Graph</span> <span class="n">G</span><span class="o">,</span> <span class="kt">int</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">marked</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
+</span><span class='line'>      <span class="n">edgeTo</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">dfs</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">s</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">dfs</span><span class="o">(</span><span class="n">Graph</span> <span class="n">G</span><span class="o">,</span> <span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">marked</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">w</span> <span class="o">:</span> <span class="n">G</span><span class="o">.</span><span class="na">adj</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(!</span><span class="n">marked</span><span class="o">[</span><span class="n">w</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">edgeTo</span><span class="o">[</span><span class="n">w</span><span class="o">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">;</span>
+</span><span class='line'>              <span class="n">dfs</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">w</span><span class="o">);</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">hasPathTo</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span><span class="k">return</span> <span class="n">marked</span><span class="o">[</span><span class="n">v</span><span class="o">];}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="nf">pathTo</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(!</span><span class="n">hasPathTo</span><span class="o">(</span><span class="n">v</span><span class="o">))</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">Stack</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">path</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Stack</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
+</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">v</span><span class="o">;</span> <span class="n">x</span> <span class="o">!=</span> <span class="n">s</span><span class="o">;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">edgeTo</span><span class="o">[</span><span class="n">x</span><span class="o">])</span>
+</span><span class='line'>          <span class="n">path</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="n">x</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">path</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="n">s</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">path</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>5. 广度优先搜索(BFS)</h2>
+
+<p>广度优先搜索可以解决单点最短路径的问题，即“从s到给定目的顶点v是否存在一条路径？如果有，找出其中最短的那条。”要找到从s到v的最短路径，从s开始，在所有由一条边就可以到达的顶点中寻找v，如果找不到就继续在与s距离两条边的所有顶点中找v，如此一直进行。实现广度优先搜索时，可以使用先进先出（FIFO）队列。代码示意如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BreadthFirstPaths</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">boolean</span><span class="o">[]</span> <span class="n">marked</span><span class="o">;</span>  <span class="c1">//到达该顶点的最短路径已知吗？</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">edgeTo</span><span class="o">;</span>      <span class="c1">//到达该顶点的已知路径上的最后一个顶点</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">s</span><span class="o">;</span>       <span class="c1">//起点</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">BreadthFirstPaths</span><span class="o">(</span><span class="n">Graph</span> <span class="n">G</span><span class="o">,</span> <span class="kt">int</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">marked</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
+</span><span class='line'>      <span class="n">edgeTo</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">v</span><span class="o">()];</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">bfs</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">s</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">bfs</span><span class="o">(</span><span class="n">Grapth</span> <span class="n">G</span><span class="o">,</span> <span class="kt">int</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">Queue</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">queue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
+</span><span class='line'>      <span class="n">marked</span><span class="o">[</span><span class="n">s</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>  <span class="c1">//标记起点</span>
+</span><span class='line'>      <span class="n">queue</span><span class="o">.</span><span class="na">enqueue</span><span class="o">(</span><span class="n">s</span><span class="o">);</span>  <span class="c1">//入列</span>
+</span><span class='line'>      <span class="k">while</span> <span class="o">(!</span><span class="n">queue</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>          <span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="na">dequeue</span><span class="o">();</span>
+</span><span class='line'>          <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">w</span> <span class="o">:</span> <span class="n">G</span><span class="o">.</span><span class="na">adj</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
+</span><span class='line'>              <span class="k">if</span> <span class="o">(!</span><span class="n">marked</span><span class="o">[</span><span class="n">w</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>                  <span class="n">edgeTo</span><span class="o">[</span><span class="n">w</span><span class="o">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">;</span>
+</span><span class='line'>                  <span class="n">marked</span><span class="o">[</span><span class="n">w</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>                  <span class="n">queue</span><span class="o">.</span><span class="na">enqueue</span><span class="o">(</span><span class="n">w</span><span class="o">);</span>
+</span><span class='line'>              <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">hasPathTo</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span><span class="k">return</span> <span class="n">marked</span><span class="o">[</span><span class="n">v</span><span class="o">];}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="nf">pathTo</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span><span class="c1">//与深度优先实现相同}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>6. 连通分量</h2>
+
+<p>所谓连通分量就是连通子图，深度优先搜索可用于找出一幅图的所有连通分量。其API定义如下：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-04_cc-api.png" alt="image" /></p>
+
+<p>递归的深度优先搜索第一次调用的参数是顶点0，它会标记所有与0连通的顶点。然后构造函数中的for循环会查找每个没有被标记的顶点并递归调用dfs()来标记和它相邻的所有顶点。代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CC</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">boolean</span><span class="o">[]</span> <span class="n">marked</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">CC</span><span class="o">(</span><span class="n">Graph</span> <span class="n">G</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">marked</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
+</span><span class='line'>      <span class="n">id</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
+</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">s</span> <span class="o">&lt;</span> <span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">();</span> <span class="n">s</span><span class="o">++)</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(!</span><span class="n">marked</span><span class="o">[</span><span class="n">s</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">dfs</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">s</span><span class="o">);</span>
+</span><span class='line'>              <span class="n">count</span><span class="o">++;</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">dfs</span><span class="o">(</span><span class="n">Graph</span> <span class="n">G</span><span class="o">,</span> <span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">marked</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">id</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">=</span> <span class="n">count</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">w</span> <span class="o">:</span> <span class="n">G</span><span class="o">.</span><span class="na">adj</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(!</span><span class="n">marked</span><span class="o">[</span><span class="n">w</span><span class="o">])</span>
+</span><span class='line'>              <span class="n">dfs</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">w</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">connected</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">,</span> <span class="kt">int</span> <span class="n">w</span><span class="o">)</span> <span class="o">{</span> <span class="k">return</span> <span class="n">id</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">==</span> <span class="n">id</span><span class="o">[</span><span class="n">w</span><span class="o">];</span> <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">id</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span><span class="k">return</span> <span class="n">id</span><span class="o">[</span><span class="n">v</span><span class="o">];</span> <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">count</span><span class="o">()</span> <span class="o">{</span><span class="k">return</span> <span class="n">count</span><span class="o">;}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>深度优先搜索还可用于解决两个问题：1. 给定的图是无环图吗（假定不存在自环和平行边）？<a href="http://algs4.cs.princeton.edu/41undirected/Cycle.java.html">代码实现</a> 2. 这是一幅二分图吗？也就是说能够用两种颜色将图的所有顶点着色，使得任意一条边的两个端点的颜色都不相同。<a href="http://baike.baidu.com/view/501081.htm">二分图</a>，<a href="http://algs4.cs.princeton.edu/41undirected/Bipartite.java.html">代码实现</a></p>
+
+<h2>7. 符号图</h2>
+
+<p>在典型应用中，通常使用字符串而非整数来表示和指代顶点。为了适应这样的应用，需要符号图。符号图使用字符串代替整数索引。其API定义如下：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-04_symbol-graph-api.png" alt="image" /></p>
+
+<p>符号图的实现可以在无向图的基础上增加一个符号表和反向索引。符号表完成符号到邻接表索引的映射，键为String(顶点名)，值的类型为int(邻接表的索引)。反向索引是一个数组keys[]，保存每个顶点索引所对应的顶点名。结构如下图：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-04_symbol-graph.png" alt="image" /></p>
+
+<p>其实现较为简单，<a href="http://algs4.cs.princeton.edu/41undirected/SymbolGraph.java.html">查看代码</a>。</p>
+
+<p>利用符号图可以处理一个经典问题，找到一个社交网络中两个人间隔的度数。这其实就是用符号图+广度优先求最短路径的用例。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[散列表(HashTable)]]></title>
@@ -42,6 +490,8 @@
 <p>执行删除操作时，先用散列值找到索引及对应的链表，然后调用链表的删除方法即可。</p>
 
 <p>对于有序性相关的符号表操作，散列表都不是合适的选择，因为这些操作的运行时间都是线性的。</p>
+
+<p>Java的TreeMap和HashMap分别是基于红黑树和拉链法的散列表的符号表实现。</p>
 
 <h2>3. 基于线性探测法的散列表</h2>
 
@@ -6646,60 +7096,6 @@
 
 
 <p>——《Java与模式》读书笔记。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:命令模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/11/she-ji-mo-shi-ming-ling-mo-shi/"/>
-    <updated>2014-08-11T22:58:11+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/11/she-ji-mo-shi-ming-ling-mo-shi</id>
-    <content type="html"><![CDATA[<p>命令模式将发出命令和执行命令的责任分割开，委派给不同的对象。类图如下：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_20140811_233515.jpg" alt="image" /></p>
-
-<!--more-->
-
-
-<ol>
-<li>Client角色：创建具体命令对象，并确定接收者。</li>
-<li>Command角色：声明抽象接口，通常是接口或抽象类。</li>
-<li>ConcreteCommand角色：定义一个接收者和行为之间的弱耦合；负责调用接收者的相应操作。</li>
-<li>Invoker角色：负责调用命令对象执行请求。</li>
-<li>Reciever角色：负责具体实施和执行一个请求。任何一个类都可以成为接收者。</li>
-</ol>
-
-
-<p>Client的示例代码：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">Receiver</span> <span class="n">receiver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Receiver</span><span class="o">();</span>
-</span><span class='line'>  <span class="n">Command</span> <span class="n">command</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcreteCommand</span><span class="o">(</span><span class="n">receiver</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">Invoker</span> <span class="n">invoker</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Invoker</span><span class="o">(</span><span class="n">command</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">invoker</span><span class="o">.</span><span class="na">action</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的代码中，invoker.action调用command.execute，execute方法调用receiver.action，receiver.action是真正实施命令的方法。</p>
-
-<p>模式实现时，可以考虑命令是“重”还是“轻”。如果轻，则命令只是提供请求者与接收者之间的耦合。如果是重，则命令执行也可放在命令中，接收者可以省略。更常见的是中间情况，由命令类动态决定调用哪一个接收者类。如果要支持undo, redo，则命令类要存储状态信息。</p>
-
-<p>可以把命令对象集合在一起，实现宏命令。命令模式的缺点是命令可能会非常多。命令模式可用于：</p>
-
-<ol>
-<li>需要在不同的时间指定请求，将请求排队。命令对象可以在序列化之后发送到另一台机器上。</li>
-<li>支持undo, redo操作。</li>
-<li>从日志中读回所有命令，重新执行execute方法，恢复系统数据。</li>
-<li>需要支持交易的系统，一个交易结构封装了一组数据更新命令。命令模式可以使系统增加新的交易类型。</li>
-</ol>
-
 ]]></content>
   </entry>
   
