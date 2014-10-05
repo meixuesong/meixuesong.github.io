@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="享元模式以共享的方式支持大量的细粒度对象。Java的String类型其实就使用了享元模式。享元对象具有内部状态(Internal State)和外部状态(External State)。内部状态是享元对象内部的，一旦创建就不会再改变，因此具有内部状态的享元对象可以进行共享。 &hellip;">
+  <meta name="description" content="门面(Facade)模式的作用是屏蔽众多子系统的复杂性，为客户端提供一个统一的门面(Facade)对象，方便客户端调用。门面模式没有统一的结构。一般是一个子系统提供一个门面。要注意的是门面只负责协调子系统去服务客户端的请求，不能在门面类中增加功能和职责。 什么情况下使用门面模式？ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,49 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi/">设计模式:门面模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-03T21:59:42+08:00" pubdate data-updated="true">2014-08-03</time>
+        
+           | <a href="/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>门面(Facade)模式的作用是屏蔽众多子系统的复杂性，为客户端提供一个统一的门面(Facade)对象，方便客户端调用。门面模式没有统一的结构。一般是一个子系统提供一个门面。要注意的是门面只负责协调子系统去服务客户端的请求，不能在门面类中增加功能和职责。</p>
+
+<p>什么情况下使用门面模式？如果子系统演化得越来越复杂，客户端的调用变得很复杂，产生很大的依赖性，则可以引入门面模式将一个子系统与它的客户端以及其他子系统分离。</p>
+
+<p>这与迪米特法则也是相符的，该法则要求不要与陌生人说话，只与你直接朋友通信。采用门面模式，客户端只要与门面打交道，不需要去协调多个子系统。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -492,52 +535,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/">设计模式:抽象工厂方法模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-28T19:45:29+08:00" pubdate data-updated="true">2014-07-28</time>
-        
-           | <a href="/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>简单工厂方法模式采用静态方法创建产品，工厂方式模式通过多层级的工厂方法创建一种产品等级结构。而抽象工厂方法模式则可以用于创建多个产品等级结构。因此，其类图示意如下：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-28_20.03.46.png" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/5">&larr; Older</a>
@@ -559,10 +556,14 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (8)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (2)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (8)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/10/05/ji-yu-jekyll-sheng-cheng-dian-zi-shu/">基于Jekyll(Octopress)将博客生成EPUB和Mobi电子书</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/10/03/wu-xiang-tu/">无向图</a>
@@ -578,10 +579,6 @@
     
       <li class="post">
         <a href="/blog/2014/09/27/you-xian-dui-lie/">优先队列</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">快速排序算法</a>
       </li>
     
   </ul>

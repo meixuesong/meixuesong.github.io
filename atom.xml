@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-10-04T12:17:39+08:00</updated>
+  <updated>2014-10-05T22:09:49+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,170 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[基于Jekyll(Octopress)将博客生成EPUB和Mobi电子书]]></title>
+    <link href="http://blog.ubone.com/blog/2014/10/05/ji-yu-jekyll-sheng-cheng-dian-zi-shu/"/>
+    <updated>2014-10-05T21:03:50+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/10/05/ji-yu-jekyll-sheng-cheng-dian-zi-shu</id>
+    <content type="html"><![CDATA[<p>采用Octopress，基于Jekyll，<a href="http://blog.ubone.com/blog/2014/06/25/zai-githubshang-xie-bo-ke/">在GitHub上写博客</a>已经快一年了。随着博客的增多，有了一个想法，如果能将这些博客整理成册，变成电子书放入Kindle，有空时温习一下，那该多好。今天进行了尝试，效果还不错。</p>
+
+<!--more-->
+
+
+<p>Kindle默认支持的电子书格式是Mobi，但开源软件很少支持这种格式。电子书格式最普及的还是EPUB，而Amazon提供了从EPUB转为Mobi的支持。因此我们的第一步是将博客转换成EPUB格式的电子书。</p>
+
+<h2>1. 准备工作</h2>
+
+<p>在Github上找到了一个项目<a href="https://github.com/lmullen/jekyll-ebook">Jekyll E-book</a>，支持将Jekyll博客转换成EPUB电子书。按照其说明，以管理员身份安装：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>gem install jekyll-ebook
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后安装Pandoc，打开<a href="https://github.com/jgm/pandoc/releases">下载页面</a>，下载相应系统的安装包，安装完成后，确保命令能够识别：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pandoc --version
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在就可以开始准备生成EPUB电子书了。需要先定义这本书的标题等信息，以及书中包括哪些博客。这些信息都保存在manifest.yml中，这是一个YAML格式的文件。分两部分说明这个文件的内容，我们先看第一部分：文件的定义。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">title</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">meixuesong blog</span>
+</span><span class='line'><span class="l-Scalar-Plain">author</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Jason Mei</span>
+</span><span class='line'><span class="l-Scalar-Plain">date</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">October 2014</span>
+</span><span class='line'><span class="l-Scalar-Plain">epub-filename</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">/Users/mxs/Documents/jasonblog.epub</span>
+</span><span class='line'><span class="l-Scalar-Plain">epub-cover-image</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myresource/epub/cover.jpg</span>
+</span><span class='line'><span class="l-Scalar-Plain">epub-stylesheet</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myresource/epub/stylesheet.css</span>
+</span><span class='line'><span class="l-Scalar-Plain">epub-metadata</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myresource/epub/metadata.xml</span>
+</span><span class='line'><span class="l-Scalar-Plain">epub-dir</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">/Users/mxs/Documents/blog/</span>
+</span><span class='line'><span class="l-Scalar-Plain">header-items</span><span class="p-Indicator">:</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">title</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">meixuesong blog</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">author</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">meixuesong</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">author-note</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">na</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">citation</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">na</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中要注意的是路径，<code>epub-dir</code>是博客资源的根路径，其中文件夹如<code>epub-cover-image</code>, <code>epub-stylesheet</code>和<code>epub-metadata</code>都是相对根路径的相对路径。<code>metadata.xml</code>是EPUB文件所需的文件，可以是个空文件。为了美观，我们稍微修改了stylesheet.css：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="c">/*stylesheet.css*/</span>
+</span><span class='line'><span class="nt">body</span> <span class="p">{</span> <span class="k">margin</span><span class="o">:</span> <span class="m">5</span><span class="o">%</span><span class="p">;</span> <span class="k">text-align</span><span class="o">:</span> <span class="k">justify</span><span class="p">;</span> <span class="k">font-size</span><span class="o">:</span> <span class="k">medium</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="nt">code</span> <span class="p">{</span> <span class="k">font-family</span><span class="o">:</span> <span class="k">monospace</span><span class="p">;</span> <span class="k">font-size</span><span class="o">:</span><span class="m">0.75em</span><span class="p">;}</span>
+</span><span class='line'><span class="nt">h1</span> <span class="p">{</span> <span class="k">text-align</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span> <span class="k">margin</span><span class="o">:</span><span class="m">0px</span><span class="p">;</span> <span class="k">padding</span><span class="o">:</span><span class="m">0px</span><span class="p">;</span><span class="k">font-size</span><span class="o">:</span><span class="m">1.5em</span><span class="p">;</span> <span class="k">border-bottom</span><span class="o">:</span> <span class="nb">black</span> <span class="k">solid</span> <span class="m">1px</span><span class="p">;}</span>
+</span><span class='line'><span class="nt">h2</span> <span class="p">{</span> <span class="k">text-align</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span> <span class="k">margin</span><span class="o">:</span><span class="m">0px</span><span class="p">;</span> <span class="k">padding</span><span class="o">:</span><span class="m">0px</span><span class="p">;</span><span class="k">font-size</span><span class="o">:</span><span class="m">1.2em</span><span class="p">;}</span>
+</span><span class='line'><span class="nt">h3</span> <span class="p">{</span> <span class="k">text-align</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span> <span class="k">margin</span><span class="o">:</span><span class="m">0px</span><span class="p">;</span> <span class="k">padding</span><span class="o">:</span><span class="m">0px</span><span class="p">;</span><span class="k">font-size</span><span class="o">:</span><span class="m">1.1em</span><span class="p">;}</span>
+</span><span class='line'><span class="nt">h4</span> <span class="p">{</span> <span class="k">text-align</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span> <span class="k">margin</span><span class="o">:</span><span class="m">0px</span><span class="p">;</span> <span class="k">padding</span><span class="o">:</span><span class="m">0px</span><span class="p">;</span> <span class="k">font-size</span><span class="o">:</span><span class="m">1em</span><span class="p">;}</span>
+</span><span class='line'><span class="nt">h5</span> <span class="p">{</span> <span class="k">text-align</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="nt">h6</span> <span class="p">{</span> <span class="k">text-align</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="nt">h1</span><span class="nc">.title</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class='line'><span class="nt">h2</span><span class="nc">.author</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class='line'><span class="nt">h3</span><span class="nc">.date</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class='line'><span class="nt">ol</span><span class="nc">.toc</span> <span class="p">{</span> <span class="k">padding</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span> <span class="k">margin-left</span><span class="o">:</span> <span class="m">1em</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="nt">ol</span><span class="nc">.toc</span> <span class="nt">li</span> <span class="p">{</span> <span class="k">list-style-type</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span> <span class="k">margin</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span> <span class="k">padding</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>开始定义第二部分，章节定义。这部分比较简单，就是定义书中包含哪几章，名字是什么，每章包括哪些博客。示例如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nt">content-dir</span><span class="o">:</span> <span class="nt">_posts</span><span class="o">/</span>   <span class="err">#博客所在的相对路径</span>
+</span><span class='line'><span class="nt">contents</span><span class="o">:</span>
+</span><span class='line'>  <span class="nt">-</span> <span class="nt">section-title</span><span class="o">:</span> <span class="nt">Articles</span>   <span class="err">#章节名称</span>
+</span><span class='line'>    <span class="nt">files</span><span class="o">:</span>                    <span class="err">#该章以下包括哪些内容</span>
+</span><span class='line'>    <span class="nt">-</span> <span class="nt">article1</span><span class="nc">.markdown</span>
+</span><span class='line'>    <span class="nt">-</span> <span class="nt">article2</span><span class="nc">.markdown</span>
+</span><span class='line'>  <span class="nt">-</span> <span class="nt">section-title</span><span class="o">:</span> <span class="nt">Reviews</span>
+</span><span class='line'>    <span class="nt">files</span><span class="o">:</span>
+</span><span class='line'>    <span class="nt">-</span> <span class="nt">review</span><span class="nc">.markdown</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>2. 生成EPUB电子书</h2>
+
+<p>完成<code>manifest.yml</code>的定义之后，就可以开始生成电子书了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>jekyll-ebook manifest.yml
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>EPUB电子书就这样生成了，字体完美，甚至还有代码高亮显示功能，电子书的目录默认显示到第三级，在Kindle上看显得多了，需要改为只显示第1级，即目录只显示文章标题，而不用详细到每章的<code>h3</code>级内容。另外图片显示不正常，应该是路径不正确。</p>
+
+<p>先来解决第一个问题，将目录级别改为只显示第1级标题。可以修改文件<code>ebook.rb</code>，在Mac OSX下，这个文件位于：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#文件路径：</span>
+</span><span class='line'><span class="sr">/Library/</span><span class="no">Ruby</span><span class="o">/</span><span class="no">Gems</span><span class="o">/</span><span class="mi">2</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">/</span><span class="n">gems</span><span class="o">/</span><span class="n">jekyll</span><span class="o">-</span><span class="n">ebook</span><span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">2</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jekyll</span><span class="o">-</span><span class="n">ebook</span><span class="o">/</span><span class="n">ebook</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 修改代码，加上：&#39;toc-depth&#39; =&gt; 1,</span>
+</span><span class='line'><span class="no">PandocRuby</span><span class="o">.</span><span class="n">new</span><span class="p">(</span> <span class="nb">self</span><span class="o">.</span><span class="n">generate_content</span> <span class="p">,</span>
+</span><span class='line'>                   <span class="p">{</span><span class="ss">:f</span> <span class="o">=&gt;</span> <span class="ss">:markdown</span><span class="p">,</span> <span class="ss">:to</span> <span class="o">=&gt;</span> <span class="ss">:epub</span><span class="p">},</span>
+</span><span class='line'>                   <span class="s1">&#39;smart&#39;</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span> <span class="o">=&gt;</span> <span class="nb">self</span><span class="o">.</span><span class="n">manifest</span><span class="o">[</span><span class="s1">&#39;epub-filename&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>                   <span class="s1">&#39;toc-depth&#39;</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>再来解决图片不显示的问题。该问题主要是因为写博客时，图片的地址为<code>/myresource/images/</code>，因此在生成电子书无法找到这个绝对路径。解决办法使用<code>ln</code>命令在根文件夹下建立一个符号连接myresource，Windows下好像是<code>mklink</code>命令。重新生成电子书，问题解决。</p>
+
+<p>现在，我们的EPUB电子书通过Kindle多看系统阅读已经非常完美了。接下来我们尝试一下Mobi格式的电子书。</p>
+
+<h2>3. 生成Mobi电子书</h2>
+
+<p>Amazon提供了一个工具包<a href="http://www.amazon.com/gp/feature.html?docId=1000765211">KindleGen</a>。该工具可以将html、EPUB等转换成Mobi格式。下载解压缩后，就可以执行命令转换了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./kindlegen -locale zh aaa.epub
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>分别在原生Kindle和多看系统下查看这个mobi电子书，整体效果还是不错的，但是相比EPUB来说，还是差了那么一点点。例如h1到h3的标题下方空白的内容太多，也就是CSS中的margin-bottom值太大，但不论怎么修改，Mobi格式的显示效果好像都没有变化。最后还是选择继续使用多看系统，阅读EPUB格式的电子书。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[无向图]]></title>
@@ -6994,108 +7158,6 @@
 <p>状态模式与策略模式很相似，类图也很相似。但是策略模式的特点是，一旦环境类选择了一个具体策略，那么在其生命周期内就不会改变这个具体策略类。而状态模式在环境类的生命周期中会有多个不同的状态对象被使用。</p>
 
 <p>——《Java与模式》读书笔记</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:备忘录模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/13/she-ji-mo-shi-bei-wang-lu-mo-shi/"/>
-    <updated>2014-08-13T23:00:58+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/13/she-ji-mo-shi-bei-wang-lu-mo-shi</id>
-    <content type="html"><![CDATA[<p>备忘录(Memento)模式又叫做快照模式。备忘录对象是一个用来存储另外一个对象内部状态快照的对象。备忘录模式的用意是在不破坏封装的条件下，将一个对象的状态存储在外部，从而在合适的时候把这个对象还原到原来的状态。通常系统不止存储一个状态，而是存储多个状态（快照）。每一个快照所处的位置就是Check Point。其结构如下图：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_20140813_231854.jpg" alt="image" /></p>
-
-<!--more-->
-
-
-<ol>
-<li>备忘录(Memento)角色：一是将发起人(Originator)对象的内部状态存储起来；二是保护其内容不被发起人以外的任何对象所读取，即图中宽接口和窄接口的作用。</li>
-<li>发起人(Originator)角色：创建备忘录对象，并使用该对象存储其内部状态。</li>
-<li>负责人(Caretaker)角色：负责保存备忘录对象，不管备忘录对象的内容。</li>
-</ol>
-
-
-<h3>白箱实现</h3>
-
-<p>在Java中实现宽、窄两个接口并不容易，白箱实现就是只提供宽接口。类图示意如下：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_20140813_235928.jpg" alt="image" /></p>
-
-<p>上面的发起人只有一个状态“state”，发起人创建备忘录对象，并传入state，而负责人可以保存和获得备忘录对象。上图中备忘录对负责人也是宽接口，因此负责人可以访问到state值。<strong>所以，白箱实现的缺点是破坏了对发起人状态的封闭。</strong>下面的Client的示意代码：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Originator</span> <span class="n">o</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Originator</span><span class="o">();</span>
-</span><span class='line'><span class="n">Caretaker</span> <span class="n">c</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Caretaker</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">o</span><span class="o">.</span><span class="na">setState</span><span class="o">(</span><span class="s">&quot;On&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">Memento</span> <span class="n">m</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="na">createMemento</span><span class="o">();</span>
-</span><span class='line'><span class="n">c</span><span class="o">.</span><span class="na">saveMemento</span><span class="o">(</span><span class="n">m</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">o</span><span class="o">.</span><span class="na">setState</span><span class="o">(</span><span class="s">&quot;Off&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">o</span><span class="o">.</span><span class="na">restoreMemento</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">retrieveMemento</span><span class="o">());</span>
-</span><span class='line'><span class="c1">//此时o.state = &quot;On&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>双重接口实现（黑盒实现）</h3>
-
-<p>如何用Java实现宽、窄两个接口呢？也就是对发起人是宽接口，对其它任何对象都是窄接口。可以将备忘录对象作为发起人的内部类，因此发起人可以访问备忘录的所有属性和方法。而窄接口，是备忘录对象实现一个标识接口(MementoIF，没有任何方法的接口)，同时备忘录对象的方法为私有方法，所有其它对象都通过标识接口获得备忘录对象的引用，却无法访问备忘录对象的状态和方法。这就是双重接口的实现。如下图所示：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_20140814_220438.jpg" alt="image" /></p>
-
-<p>客户端的代码与白盒实现完全相同，但是Caretaker再也无法访问备忘录对象的状态了。</p>
-
-<p>上面的两种实现，都由客户端持有发起人和负责人的引用。实际上也可以由负责人完成备忘录对象的创建和必要时恢复发起人状态。</p>
-
-<h3>多重检查点</h3>
-
-<p>前面的例子都只存储一个状态，在实际业务中，常需要存储多个状态，也就是多个检查点。实现方式可以在备忘录对象中建立<code>List&lt;String&gt; states</code>存储多个检查点。</p>
-
-<h3>“自述历史”模式</h3>
-
-<p>自述历史模式其实是指发起人角色兼任负责人角色时的备忘录模式。类图如下：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_20140815_221228.jpg" alt="image" /></p>
-
-<p>Memento类是发起人的内部类。</p>
-
-<h3>“假如”协议模式</h3>
-
-<p>备忘录的操作过程是，先创建备忘录对象保存发起人状态，然后修改发起人状态，如果需要的话，可以撤消这一步。也就是通过备忘录对象恢复发起人的状态。简单地说，就是先保存状态，然后执行修改，如果需要则恢复原状态。</p>
-
-<p>而“假如”协议则是将发起人对象做一个拷贝，然后再拷贝上执行备忘录操作，如果成功并且状态有效，则在原对象上执行这个操作。如果失败或者状态无效，则扔掉拷贝并触发异常处理。</p>
-
-<p>“假如”协议的优点是安全，相当于先试验没总是后才在原始对象上执行。缺点是同一个操作要执行两遍。因此“假如”协议适合于成功率较低的场景。</p>
-
-<h3>备忘录模式的优点</h3>
-
-<ol>
-<li>有时一些发起人对象的内部信息必须保存在发起人对象以外的地方，但是必须要由发起人对象自己读取，这时，使用备忘录模式可以把复杂的发起人内部信息对其他的对象屏蔽起来，从而可以恰当地保持封装的边界。</li>
-<li>本模式简化了发起人。发起人不再需要管理和保存其内部状态的一个个版本，客户端可以自行管理他们所需要的这些状态的版本。</li>
-<li>当发起人角色的状态改变的时候，有可能这个状态无效，这时候就可以使用暂时存储起来的备忘录将状态复原。</li>
-</ol>
-
-
-<h3>备忘录模式的缺点：</h3>
-
-<ol>
-<li>如果发起人角色的状态需要完整地存储到备忘录对象中，那么在资源消耗上面备忘录对象会很昂贵。</li>
-<li>当负责人角色将一个备忘录存储起来的时候，负责人可能并不知道这个状态会占用多大的存储空间，从而无法提醒用户一个操作是否很昂贵。</li>
-<li>当发起人角色的状态改变的时候，有可能这个协议无效。如果状态改变的成功率不高的话，不如采取“假如”协议模式。</li>
-</ol>
-
-
-<p>——《Java与模式》读书笔记。</p>
 ]]></content>
   </entry>
   

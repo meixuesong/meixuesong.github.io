@@ -1,0 +1,35 @@
+title: meixuesong blog
+author: Jason Mei
+date: October 2014
+epub-filename: /Users/mxs/Documents/blog/source/myresource/epub/jasonblog.epub
+epub-cover-image: myresource/epub/cover.jpg
+epub-stylesheet: myresource/epub/stylesheet.css
+epub-metadata: myresource/epub/metadata.xml
+epub-dir: /Users/mxs/Documents/blog/source/
+header-items:
+- title: meixuesong blog
+- author: meixuesong
+- author-note: na
+- citation: na
+
+content-dir: _posts/
+contents: 
+  - section-title: Java
+    files:
+    - 2014-09-19-zhong-gou.markdown
+    - 2014-09-14-java-i-slash-o.markdown
+    - 2014-08-30-javabing-fa-bian-cheng.markdown
+  - section-title: 设计模式
+    files:
+    - 2014-07-23-yi-zhang-tu-kan-dong.markdown
+    - 2014-07-25-yi-xie-she-ji-yuan-ze.markdown
+  - section-title: 算法
+    files:
+    - 2014-09-27-kuai-su-pai-xu-suan-fa.markdown
+    - 2014-09-27-you-xian-dui-lie.markdown
+    - 2014-10-02-cha-zhao-suan-fa-fu-hao-biao.markdown
+  - section-title: 生活
+    files:
+    - 2014-08-09-ha-er-bin-yin-xiang.markdown
+    - 2014-07-21-xin-mai-zi-ji-de-sheng-ri-li-wu.markdown
+    - 2014-08-09-archsummit-2014shen-zhen.markdown
