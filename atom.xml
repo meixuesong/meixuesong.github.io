@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-10-15T21:55:36+08:00</updated>
+  <updated>2014-10-18T22:46:37+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,21 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[终于完成RSS2EPUB的项目]]></title>
+    <link href="http://blog.ubone.com/blog/2014/10/18/zhong-yu-wan-cheng-rss2epubde-xiang-mu/"/>
+    <updated>2014-10-18T22:37:33+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/10/18/zhong-yu-wan-cheng-rss2epubde-xiang-mu</id>
+    <content type="html"><![CDATA[<p>国庆期间，自从10月5日完成博客转EPUB电子书后，脑子突然短路，是不是可以把RSS订阅的内容也自动转成EPUB电子书呢？然后就没停下来，利用业余时间终于完成了，各项功能基本完善！</p>
+
+<p>这个项目运行于GAE平台，接受用户订阅，然后每天把最新内容生成电子书发邮件给用户。</p>
+
+<p>运行于GAE平台的好处是直接使用Google的云服务，特别是邮件服务和图片服务非常棒！但坏处是Google被墙，国内无法直接访问。所以又开发了邮件订阅的方法。总体来说效果不错！</p>
+
+<p>详细介绍见<a href="https://github.com/meixuesong/rss2epub">RSS</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[基于Jekyll(Octopress)将博客生成EPUB和Mobi电子书]]></title>
@@ -7111,51 +7126,6 @@
 <p>访问者模式的缺点：增加新的节点类变得很困难。每增加一个新的节点都要在抽象访问者角色中增加一个新的抽象操作，并在每个具体访问者类中增加相应的具体操作。</p>
 
 <p>访问者模式是一个存争议的设计模式。</p>
-
-<p>——《Java与模式》读书笔记</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:状态模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/"/>
-    <updated>2014-08-18T20:22:06+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi</id>
-    <content type="html"><![CDATA[<p>状态模式把对象的行为包装在不同的状态对象里，所有状态对象都属于抽象状态类的子类。状态模式的意图是让一个对象在其内部状态改变的时候，其行为也随之改变。类图示意如下：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_20140818_224041.jpg" alt="image" /></p>
-
-<!--more-->
-
-
-<ol>
-<li>State角色：定义接口，用于封装Context对象的一个特定的状态所对应的行为。</li>
-<li>ConcreteState角色：每个具体状态类实现Context的一个状态所对应的行为。</li>
-<li>Context角色：定义客户端所感兴趣的接口，并且保留一个具体状态类的实例，即当前的状态。上图中Context.someOperation的行为是委派给具体State类来执行的。当Context.state变化时，动态地将具体类指向另一个具体状态类，从而改变改变其行为。</li>
-</ol>
-
-
-<h3>什么情况下使用状态模式</h3>
-
-<ol>
-<li>对象的行为依赖于它所处的状态，对象的行为必须随着其状态的改变而改变。</li>
-<li>对象在某个方法里依赖于一重或多重的条件转移语句，其中有大量的代码。状态模式可以把条件转移语句的每一个分支包装到一个状态类中。</li>
-</ol>
-
-
-<p>TcpConnection就是一个状态模式的经典例子，TCP连接的三个状态（Established, Listening, Closed）分别对应三个状态类（TcpEstablished, TcpListen, TcpClosed）。</p>
-
-<p>在绘图软件中，状态模式广泛用于建立编辑器框架。使客户端能够轻易地挂接新工具。</p>
-
-<h3>模式实现</h3>
-
-<p>状态的变化由谁来定义？状态模式并没有对此进行规定。可以由外部事件、Context控制或者具体State自行决定。</p>
-
-<p>状态对象的创建和销毁，可以按需创建或者预先创建。</p>
-
-<h3>与其它模式的关系</h3>
-
-<p>状态模式与策略模式很相似，类图也很相似。但是策略模式的特点是，一旦环境类选择了一个具体策略，那么在其生命周期内就不会改变这个具体策略类。而状态模式在环境类的生命周期中会有多个不同的状态对象被使用。</p>
 
 <p>——《Java与模式》读书笔记</p>
 ]]></content>

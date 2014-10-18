@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Others | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/others/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-10-15T21:55:36+08:00</updated>
+  <updated>2014-10-18T22:46:37+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,21 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[终于完成RSS2EPUB的项目]]></title>
+    <link href="http://blog.ubone.com/blog/2014/10/18/zhong-yu-wan-cheng-rss2epubde-xiang-mu/"/>
+    <updated>2014-10-18T22:37:33+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/10/18/zhong-yu-wan-cheng-rss2epubde-xiang-mu</id>
+    <content type="html"><![CDATA[<p>国庆期间，自从10月5日完成博客转EPUB电子书后，脑子突然短路，是不是可以把RSS订阅的内容也自动转成EPUB电子书呢？然后就没停下来，利用业余时间终于完成了，各项功能基本完善！</p>
+
+<p>这个项目运行于GAE平台，接受用户订阅，然后每天把最新内容生成电子书发邮件给用户。</p>
+
+<p>运行于GAE平台的好处是直接使用Google的云服务，特别是邮件服务和图片服务非常棒！但坏处是Google被墙，国内无法直接访问。所以又开发了邮件订阅的方法。总体来说效果不错！</p>
+
+<p>详细介绍见<a href="https://github.com/meixuesong/rss2epub">RSS</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[基于Jekyll(Octopress)将博客生成EPUB和Mobi电子书]]></title>
