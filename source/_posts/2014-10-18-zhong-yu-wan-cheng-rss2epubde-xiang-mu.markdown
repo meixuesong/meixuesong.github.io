@@ -12,4 +12,6 @@ categories:
 
 运行于GAE平台的好处是直接使用Google的云服务，特别是邮件服务和图片服务非常棒！但坏处是Google被墙，国内无法直接访问。所以又开发了邮件订阅的方法。总体来说效果不错！
 
-详细介绍见[RSS](https://github.com/meixuesong/rss2epub)
+项目地址：[http://rss2epub.appspot.com](http://rss2epub.appspot.com/)
+
+使用方法参考：[RSS2EPUB](https://github.com/meixuesong/rss2epub)
