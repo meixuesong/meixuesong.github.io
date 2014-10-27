@@ -8,6 +8,8 @@ categories:
 ---
 今天正式公开我的两款GAE(Google App Engine)应用：RSS2EPUB和背单词应用。供有需要的朋友使用。
 
+<!--more-->
+
 ## RSS2EPUB/MOBI
 RSS2EPUB用于将RSS订阅全文转换成Epub或者MOBI格式，每天推送至邮箱或Kindle等阅读器。开发这款应用的目的主要是想专注于阅读，少一些网络的干扰。使用说明见：[https://github.com/meixuesong/rss2epub](https://github.com/meixuesong/rss2epub)
 
