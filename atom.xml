@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-10-27T23:28:47+08:00</updated>
+  <updated>2014-10-27T23:30:32+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -19,6 +19,9 @@
     <updated>2014-10-27T22:58:19+08:00</updated>
     <id>http://blog.ubone.com/blog/2014/10/27/fa-bu-liang-kuan-zi-yong-de-gaeying-yong</id>
     <content type="html"><![CDATA[<p>今天正式公开我的两款GAE(Google App Engine)应用：RSS2EPUB和背单词应用。供有需要的朋友使用。</p>
+
+<!--more-->
+
 
 <h2>RSS2EPUB/MOBI</h2>
 
