@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-10-18T22:50:12+08:00</updated>
+  <updated>2014-10-27T23:28:47+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,33 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[发布两款自用的GAE应用]]></title>
+    <link href="http://blog.ubone.com/blog/2014/10/27/fa-bu-liang-kuan-zi-yong-de-gaeying-yong/"/>
+    <updated>2014-10-27T22:58:19+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/10/27/fa-bu-liang-kuan-zi-yong-de-gaeying-yong</id>
+    <content type="html"><![CDATA[<p>今天正式公开我的两款GAE(Google App Engine)应用：RSS2EPUB和背单词应用。供有需要的朋友使用。</p>
+
+<h2>RSS2EPUB/MOBI</h2>
+
+<p>RSS2EPUB用于将RSS订阅全文转换成Epub或者MOBI格式，每天推送至邮箱或Kindle等阅读器。开发这款应用的目的主要是想专注于阅读，少一些网络的干扰。使用说明见：<a href="https://github.com/meixuesong/rss2epub">https://github.com/meixuesong/rss2epub</a></p>
+
+<p>网址：<a href="rss2epub.appspot.com">http://rss2epub.appspot.com</a></p>
+
+<h2>背单词</h2>
+
+<p>背单词应用是我数年前开发的一款应用，也是第一次使用GAE。之后对页面升级改造过一次。这个应用提供了“词典”和“我的生词本”功能。词典内容来源于Collins英语学习词典和Collins英汉双解词典，并按四、六级和专四、专八进行了分类。系统按照记忆曲线列出您每天应该复习的单词。另外例句默写是非常有效的强化记忆功能，系统自动列出单词的所有例句，将单词空出来，默写完后可以检查答案。</p>
+
+<p>网址：<a href="http://enubone.appspot.com">http://enubone.appspot.com</a></p>
+
+<h2>注</h2>
+
+<p>这两个应用都部署在Google的云上，所以需要翻墙才能使用。翻墙是我等这么多年练出的拿手绝活，应该不在话下。</p>
+
+<p>GAE与几年前相比，不论是功能还是文档都有了长足进步，现在上手已经很简单了，最关键是免费，并且从GAE访问国外资源不会被墙。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[终于完成RSS2EPUB的项目]]></title>
@@ -638,7 +665,28 @@
 
 <p>其实现较为简单，<a href="http://algs4.cs.princeton.edu/41undirected/SymbolGraph.java.html">查看代码</a>。</p>
 
-<p>利用符号图可以处理一个经典问题，找到一个社交网络中两个人间隔的度数。这其实就是用符号图+广度优先求最短路径的用例。</p>
+<p><strong>利用符号图可以处理一个经典问题，找到一个社交网络中两个人间隔的度数。这其实就是用符号图+广度优先求最短路径的用例。</strong></p>
+
+<h2>总结</h2>
+
+<p>本文主要学习无向图的邻接表实现，以及深度、广度优先算法及其应用：</p>
+
+<p>深度优先：</p>
+
+<ol>
+<li>两个顶点是否连通？如果有，给出路径。</li>
+<li>有多少个连通子图？找出所有连通分量。</li>
+<li>给定的图是无环图吗？</li>
+<li>是一幅二分图吗？</li>
+</ol>
+
+
+<p>广度优先：</p>
+
+<ol>
+<li>找出两个顶点间的最短路径。</li>
+</ol>
+
 ]]></content>
   </entry>
   
@@ -7022,114 +7070,6 @@
 <h2>44 为所有导出的API元素编写文档注释</h2>
 
 <p>其中要注意的是，文档注释也应该描述类或者方法的线程安全性。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:访问者模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/19/she-ji-mo-shi-fang-wen-zhe-mo-shi/"/>
-    <updated>2014-08-19T22:17:28+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/19/she-ji-mo-shi-fang-wen-zhe-mo-shi</id>
-    <content type="html"><![CDATA[<p>访问者(Visitor)模式的目的是封装一些施加于某种数据结构元素之上的操作，一旦这些操作需要修改的话，接受这个操作的数据结构则可以保持不变。假如要对一个不同类型的聚集进行遍历，为了判断不同的类型对象，需要写很多的if else，而访问者模式可以解决此问题。示意类图如下：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_20140819_232009.jpg" alt="image" /></p>
-
-<!--more-->
-
-
-<ol>
-<li>Visitor角色：声明一个或多个访问操作。</li>
-<li>ConcreteVisitor角色：实现接口方法。</li>
-<li>Node角色：声明一个接受操作，接受一个访问者对象作为一个参数。</li>
-<li>Concrete Node角色：实现接受操作。</li>
-<li>ObjectStructure角色：遍历结构中的所有元素，如果需要，提供高层次的接口让访问者对象可以访问每一个元素；如果需要，可以设计成一个复合对象或者一个聚集，如List或Set。</li>
-</ol>
-
-
-<h3>单分派和多分派</h3>
-
-<p>方法的接收者（即方法所属的对象）和方法的参量统称为方法的宗量。单分派语言根据一个宗量的类型进行方法的选择，多分派语言根据多于一个的宗量的类型对方法进行选择。</p>
-
-<p>Java语言支持静态的多分派和动态的单分派。对于Java方法重载（Overload），在编译期会根据方法的接收者类型和方法的所有参量类型进行分派，因此是静态多分派。而方法覆盖（Override），是在运行时仅仅根据方法的接收者类型进行分派。</p>
-
-<p>在访问者模式中，数据结构的每一个节点都可以接受一个访问者的调用，此节点向访问者对象传入节点对象，而访问者对象则反过来执行节点对象的操作。这样的过程就叫做“双重分派”。</p>
-
-<h3>示例代码</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//class ConcreteVisitor</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">visitA</span><span class="o">(</span><span class="n">NodeA</span> <span class="n">node</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">node</span><span class="o">.</span><span class="na">operationA</span><span class="o">());</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//class NodeA</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">accept</span><span class="o">(</span><span class="n">Visitor</span> <span class="n">visitor</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">visitor</span><span class="o">.</span><span class="na">visitA</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//class ObjectStructure</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">action</span><span class="o">(</span><span class="n">Visitor</span> <span class="n">visitor</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">Enumeration</span> <span class="n">e</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="na">elements</span><span class="o">();</span> <span class="n">e</span><span class="o">.</span><span class="na">hasMoreElements</span><span class="o">();)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">node</span> <span class="o">=</span> <span class="o">(</span><span class="n">Node</span><span class="o">)</span><span class="n">e</span><span class="o">.</span><span class="na">nextElement</span><span class="o">();</span>
-</span><span class='line'>      <span class="n">node</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">visitor</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//class Client</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">ObjectStructure</span> <span class="n">aObjects</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectStructure</span><span class="o">();</span>
-</span><span class='line'>  <span class="n">aObjects</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">NodeA</span><span class="o">());</span>
-</span><span class='line'>  <span class="n">aObjects</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">NodeB</span><span class="o">());</span>
-</span><span class='line'>  <span class="n">Visitor</span> <span class="n">visitor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcreteVisitor</span><span class="o">();</span>
-</span><span class='line'>  <span class="n">aObjects</span><span class="o">.</span><span class="na">action</span><span class="o">(</span><span class="n">visitor</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>访问者模式的优缺点</h3>
-
-<p>访问者模式仅应当用在被访问的类结构非常稳定的情况。如果出现需要加入新的Node的情况，则必须在每一个访问对象中加入一个对应于这个新节点的访问操作，这将是一个大规模修改，违背“开-闭”原则。</p>
-
-<p>如果系统有比较稳定的数据结构，又有易于变化的算法，使用访问者模式就比较合适。</p>
-
-<p>访问者模式的优点包括：</p>
-
-<ol>
-<li>增加新的操作变得非常容易，只需要增加一个新的访问者。</li>
-<li>此模式将行为集中到一个访问者对象中，而不是分散到节点类中。因此可以在访问的过程中将执行操作的状态积累在自己内部（例如计算合计值）。</li>
-</ol>
-
-
-<p>访问者模式的缺点：增加新的节点类变得很困难。每增加一个新的节点都要在抽象访问者角色中增加一个新的抽象操作，并在每个具体访问者类中增加相应的具体操作。</p>
-
-<p>访问者模式是一个存争议的设计模式。</p>
-
-<p>——《Java与模式》读书笔记</p>
 ]]></content>
   </entry>
   

@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>设计模式:策略模式 - 码出人生</title>
+  <title>发布两款自用的GAE应用 - 码出人生</title>
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="策略模式把行为和环境分割开。环境类负责维持和查询行为类，各种算法则在具体策略类中提供。由于算法和环境独立开来，算法的增减、修改都不会影响环境和客户端。准备一组算法，并将每一个算法封装起来，使得它们可以互换。策略模式的类图如下： 各角色如下： 环境角色：持有一个Strategy类的引用。 &hellip;">
+  <meta name="description" content="今天正式公开我的两款GAE(Google App Engine)应用：RSS2EPUB和背单词应用。供有需要的朋友使用。 RSS2EPUB/MOBI RSS2EPUB用于将RSS订阅全文转换成Epub或者MOBI格式，每天推送至邮箱或Kindle等阅读器。开发这款应用的目的主要是想专注于阅读， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi">
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/10/27/fa-bu-liang-kuan-zi-yong-de-gaeying-yong">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
@@ -70,7 +70,7 @@
   
   <header>
     
-      <h1 class="entry-title">设计模式:策略模式</h1>
+      <h1 class="entry-title">发布两款自用的GAE应用</h1>
     
     
       <p class="meta">
@@ -86,7 +86,7 @@
   
 
 
-<time datetime="2014-08-09T22:55:42+08:00" pubdate data-updated="true">2014-08-09</time>
+<time datetime="2014-10-27T22:58:19+08:00" pubdate data-updated="true">2014-10-27</time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://blog.ubone.com">Comments</a>
@@ -96,35 +96,25 @@
   </header>
 
 
-<div class="entry-content"><p>策略模式把行为和环境分割开。环境类负责维持和查询行为类，各种算法则在具体策略类中提供。由于算法和环境独立开来，算法的增减、修改都不会影响环境和客户端。准备一组算法，并将每一个算法封装起来，使得它们可以互换。策略模式的类图如下：</p>
+<div class="entry-content"><p>今天正式公开我的两款GAE(Google App Engine)应用：RSS2EPUB和背单词应用。供有需要的朋友使用。</p>
 
-<p><img src="/myresource/images/image_blog_20140809_230502.jpg" alt="image" /></p>
+<h2>RSS2EPUB/MOBI</h2>
 
-<!--more-->
+<p>RSS2EPUB用于将RSS订阅全文转换成Epub或者MOBI格式，每天推送至邮箱或Kindle等阅读器。开发这款应用的目的主要是想专注于阅读，少一些网络的干扰。使用说明见：<a href="https://github.com/meixuesong/rss2epub">https://github.com/meixuesong/rss2epub</a></p>
 
+<p>网址：<a href="rss2epub.appspot.com">http://rss2epub.appspot.com</a></p>
 
-<p>各角色如下：</p>
+<h2>背单词</h2>
 
-<ol>
-<li>环境角色：持有一个Strategy类的引用。</li>
-<li>抽象策略角色：抽象角色，通常是接口或者抽象类，给出接口。</li>
-<li>具体策略角色：包装相关的算法或行为。通常具体策略角色会有多个。</li>
-</ol>
+<p>背单词应用是我数年前开发的一款应用，也是第一次使用GAE。之后对页面升级改造过一次。这个应用提供了“词典”和“我的生词本”功能。词典内容来源于Collins英语学习词典和Collins英汉双解词典，并按四、六级和专四、专八进行了分类。系统按照记忆曲线列出您每天应该复习的单词。另外例句默写是非常有效的强化记忆功能，系统自动列出单词的所有例句，将单词空出来，默写完后可以检查答案。</p>
 
+<p>网址：<a href="http://enubone.appspot.com">http://enubone.appspot.com</a></p>
 
-<p>从策略模式中是看不出具体策略适用于哪一种情况的，应当由客户端自己决定在什么情况下使用什么具体策略角色。策略模式仅仅封装算法，提供新算法插入到已有系统中，以及老算法从系统中退出。</p>
+<h2>注</h2>
 
-<p>策略模式适合于在多个算法中选择一种的情形，不适用于需要多个算法或者嵌套多于一个算法的情形。</p>
+<p>这两个应用都部署在Google的云上，所以需要翻墙才能使用。翻墙是我等这么多年练出的拿手绝活，应该不在话下。</p>
 
-<p>什么情况下使用策略模式？</p>
-
-<ol>
-<li>如果系统有很多类，它们之间的区别仅在于它们的行为，策略模式可动态地让一个对象在许多行为中选择一种行为。</li>
-<li>系统需要动态地在几种算法中选择一种。</li>
-</ol>
-
-
-<p>策略模式的缺点：客户端必须知道所有的策略类，并自行决定使用哪一个策略类。</p>
+<p>GAE与几年前相比，不论是功能还是文档都有了长足进步，现在上手已经很简单了，最关键是免费，并且从GAE访问国外资源不会被墙。</p>
 </div>
 
 
@@ -147,12 +137,12 @@
   
 
 
-<time datetime="2014-08-09T22:55:42+08:00" pubdate data-updated="true">2014-08-09</time>
+<time datetime="2014-10-27T22:58:19+08:00" pubdate data-updated="true">2014-10-27</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/she-ji-mo-shi/'>设计模式</a>
+    <a class='category' href='/blog/categories/others/'>others</a>
   
 </span>
 
@@ -183,10 +173,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/" title="Previous Post: 设计模式:不变模式">&laquo; 设计模式:不变模式</a>
+        <a class="basic-alignment left" href="/blog/2014/10/18/zhong-yu-wan-cheng-rss2epubde-xiang-mu/" title="Previous Post: 终于完成RSS2EPUB的项目">&laquo; 终于完成RSS2EPUB的项目</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/08/10/she-ji-mo-shi-mo-ban-fang-fa-mo-shi/" title="Next Post: 设计模式:模板方法模式">设计模式:模板方法模式 &raquo;</a>
       
     </p>
   </footer>
@@ -267,8 +255,8 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/';
-        var disqus_url = 'http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-ce-lue-mo-shi/';
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/10/27/fa-bu-liang-kuan-zi-yong-de-gaeying-yong/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/10/27/fa-bu-liang-kuan-zi-yong-de-gaeying-yong/';
         var disqus_script = 'embed.js';
       
     (function () {
