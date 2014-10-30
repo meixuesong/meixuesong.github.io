@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 算法 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/suan-fa/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-10-27T23:30:32+08:00</updated>
+  <updated>2014-10-30T23:05:32+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -14,11 +14,408 @@
 
   
   <entry>
+    <title type="html"><![CDATA[有向图]]></title>
+    <link href="http://blog.ubone.com/blog/2014/10/30/you-xiang-tu/"/>
+    <updated>2014-10-30T20:10:54+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/10/30/you-xiang-tu</id>
+    <content type="html"><![CDATA[<p>有向图也就是有方向性的图，是由一组顶点和一组有方向的边组成，每条有方向的边都连接着有序的一对顶点。本文要解决的有向图问题：</p>
+
+<ol>
+<li>单点和多点的可达性</li>
+<li>单点有向路径</li>
+<li>单点最短有向路径</li>
+<li>有向环检测</li>
+<li>深度优先的顶点排序</li>
+<li>优先级限制下的调度问题</li>
+<li>拓扑排序</li>
+<li>强连通性</li>
+<li>顶点对的可达性</li>
+</ol>
+
+
+<!--more-->
+
+
+<h2>1. 术语</h2>
+
+<ul>
+<li>出度：一个顶点指出的边的总数；</li>
+<li>入度：指向该顶点的边的总数；</li>
+<li>一条有向边的第一个顶点称为头，第二个顶点称为尾。</li>
+<li>在一幅有向图中，有向路径由一系列顶点组成，对于其中的每个顶点都存在一条有向边从它指向序列中的下一个顶点。</li>
+</ul>
+
+
+<h2>2. 有向图的数据类型</h2>
+
+<p>有向图的API与无向图本质相同，只是多了一个取反操作。如下图：</p>
+
+<p><img src="/myresource/images/image_blog_2014-10-20-digraph-api.png" alt="image" /></p>
+
+<p>其中，reverse()方向返回有向图的一个副本，但是将其中的方向反转。adj()返回的是每个顶点指出的边所连接的所有顶点。</p>
+
+<p>Diagraph的实现与无向图Graph非常类似，也是采用邻接表实现，但由于边是有向的，所以假设7&mdash;>8的一条边，则在顶点7的邻接表中有8，而顶点8的邻接表却没有7. <a href="http://algs4.cs.princeton.edu/42directed/Digraph.java.html">实现代码</a>不再重复。</p>
+
+<h2>3. 有向图中的可达性</h2>
+
+<ul>
+<li>单点可达性：是否存在一条从s到达给定顶点v的有向路径？</li>
+<li>多点可达性：是否存在一条从集合中的任意顶点到达给定顶点v的有向路径？</li>
+</ul>
+
+
+<p>API定义和实现如下：</p>
+
+<p>```
+public class DirectedDFS {</p>
+
+<pre><code>private boolean[] marked;
+
+//在G中找到从s可达的所有顶点
+public DirectedDFS(Digraph G, int s) {
+    marked = new boolean[G.V()];
+    dfs(G, s);
+}
+
+//在G中找到从sources中的所有顶点可达的所有顶点
+public DirectedDFS(Digraph G, Iterable&lt;Integer&gt; sources) {
+    marked = new boolean[G.V()];
+    for(int s : sources) {
+        if (! marked[s]) dfs(G, s);
+    }
+}
+
+private void dfs(Digraph G, int v) {
+    marked[v] = true;
+    for(int w : G.adj(v)){
+        if (!marked[w]) dfs(G, w);
+    }
+}
+
+//v是可达的吗？
+public boolean marked(int v) {
+    return marked[v];
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p><strong>标记-清除：</strong>多点可达性的一个重要典型应用就是内存管理，包括许多Java的实现。一个顶点表示一个对象，一条边表示一个对象对另一个对象的引用。在程序执行任何时候，都有某些对象是可以被直接访问的，而不能通过这些对象访问到的所有对象都应该被回收。标记-清除的垃圾回收策略会为每个对象保留一个位做垃圾收集之用。</p>
+
+<p><strong>有向图的寻路：</strong></p>
+
+<ul>
+<li>单点有向路径：从s到给定的顶点v是否存在一条有向路径？如果有，找出这条路径。</li>
+<li>单点最短有向路径：从s到给定的顶点v是否存在一条有向路径？如果有，找出最短的那边。</li>
+</ul>
+
+
+<p>这两个问题都可以通过深度优先和广度优先解决，它们仍是有向图的重要算法。API和代码也基本相同。</p>
+
+<h2>4. 环和有向无环图</h2>
+
+<h3>4.1 有向图中的环</h3>
+
+<p>任务调度是一个典型的有向图用例，其限制条件包括任务的起始时间、时耗、优先级限制（某个任务是另一个任务的前置条件）等。如何进行正确的任务调度？这需要<strong>拓扑排序</strong>：给定一幅有向图，将所有的顶点排序，使得所有的有向边均从排在前面的元素指向排在后面的元素。拓扑排序的例子还包括课程安排（先导课程限制）、继承（Java extends）、电子表格公式等等。</p>
+
+<p>如果一个有优先级限制的问题中存在有向环，例如任务x必须在任务y之前完成，而y必须在z之前完成，但z又必须在x之前完成，那么这个问题就无解了！所以首先要解决<strong>有向环的检测</strong>：给定的有向图中包含有向环吗？</p>
+
+<p><strong>有向无环图（DAG）是一幅不含有向环的有向图。</strong></p>
+
+<p>有向环的检测可以通过深度优先搜索来解决。用一个栈表示正在遍历的有向路径，一旦找到一条有向边v->w且w已经在堆栈中，就找到了一个环。</p>
+
+<p>```java
+public class DirectedCycle {</p>
+
+<pre><code>private boolean[] marked;        // marked[v] = 顶点v是否已经访问过?
+private int[] edgeTo;            // edgeTo[v] = 指向v的前一个顶点
+private boolean[] onStack;       // onStack[v] = 顶点v在递归调用的堆栈上吗？
+private Stack&lt;Integer&gt; cycle;    // 有向环 (null表示不存在有向环)
+
+public DirectedCycle(Digraph G) {
+    marked  = new boolean[G.V()];
+    onStack = new boolean[G.V()];
+    edgeTo  = new int[G.V()];
+    for (int v = 0; v &lt; G.V(); v++)
+        if (!marked[v]) dfs(G, v);
+}
+
+private void dfs(Digraph G, int v) {
+    onStack[v] = true;
+    marked[v] = true;
+    for (int w : G.adj(v)) {
+        // 如果环已找到，退出
+        if (cycle != null) {
+               return;
+        }
+        //找到新顶点，继续
+        else if (!marked[w]) {
+            edgeTo[w] = v;
+            dfs(G, w);
+        }
+        // 找到有向环，记录下路径
+        else if (onStack[w]) {
+            cycle = new Stack&lt;Integer&gt;();
+            for (int x = v; x != w; x = edgeTo[x]) {
+                cycle.push(x);
+            }
+            cycle.push(w);
+            cycle.push(v);
+        }
+    }
+
+    onStack[v] = false;
+}
+
+//是否含有有向环
+public boolean hasCycle() {
+    return cycle != null;
+}
+
+//有向环中的所有顶点（如果存在有向环的话）
+public Iterable&lt;Integer&gt; cycle() {
+    return cycle;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>4.2 顶点的深度优先次序与拓扑排序</h3>
+
+<p>优先级限制下的调度问题等价于计算有向无环图中的所有顶点的拓扑排序。只需要在标准深度优先搜索中，将<code>dfs()</code>的顶点参数保存在一个数据结构中，遍历这个数据结构就能访问所有的顶点。遍历的顺序取决于这个数据结构的性质以及是在递归调用之前还是之后进行保存。主要有3种排序顺序：</p>
+
+<ol>
+<li>前序(pre)：在递归调用之前将顶点加入队列。</li>
+<li>后序(post)：在递归调用之后将顶点加入队列。</li>
+<li>逆后序(reversePost)：在递归调用之后将顶点压入堆栈。</li>
+</ol>
+
+
+<p>对于这样一张有向图，三种顺序遍历过程如下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-10-29-dag.png" alt="image" /></p>
+
+<p><img src="/myresource/images/image_blog_2014-10-29-depth-first-orders.png" alt="image" /></p>
+
+<p>下面实现的DepthFirstOrder实现了这三种排序：</p>
+
+<p>```java
+public class DepthFirstOrder {</p>
+
+<pre><code>private boolean[] marked;          // marked[v] = has v been marked in dfs?
+private Queue&lt;Integer&gt; pre;                 // pre[v]    = preorder  number of v
+private Queue&lt;Integer&gt; post;                // post[v]   = postorder number of v
+private Stack&lt;Integer&gt; reversePost;
+
+public DepthFirstOrder(Digraph G) {
+    pre    = new Queue&lt;Integer&gt;();
+    post   = new Queue&lt;Integer&gt;();
+    reversePost = new Stack&lt;Integer&gt;();
+    marked    = new boolean[G.V()];
+
+    for (int v = 0; v &lt; G.V(); v++)
+        if (!marked[v]) dfs(G, v);
+}
+
+private void dfs(Digraph G, int v) {
+    pre.enqueue(v);
+
+    marked[v] = true;
+
+    for (int w : G.adj(v)) {
+        if (!marked[w]) {
+            dfs(G, w);
+        }
+    }
+
+    post.enqueue(v);
+    reversePost.push(v);
+}
+
+public Iterable&lt;Integer&gt; pre() {
+    return pre;
+}
+public Iterable&lt;Integer&gt; post() {
+    return post;
+}   
+public Iterable&lt;Integer&gt; reversePost() {
+    return reversePost;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>DepthFirstOrder提供了三种排序的顶点列表：pre, post, reversePost，因此拓扑排序就非常简单了：</p>
+
+<p>```java
+public class Topological {</p>
+
+<pre><code>private Iterable&lt;Integer&gt; order;    // topological order
+
+public Topological(Digraph G) {
+    DirectedCycle finder = new DirectedCycle(G);
+    if (!finder.hasCycle()) {
+        DepthFirstOrder dfs = new DepthFirstOrder(G);
+        order = dfs.reversePost();
+    }
+}
+
+//拓扑有序的所有顶点
+public Iterable&lt;Integer&gt; order() {
+    return order;
+}
+
+//G是有向无环图吗？
+public boolean isDAG() {
+    return order != null;
+}
+</code></pre>
+
+<p>}  <br/>
+```</p>
+
+<p><strong>一幅有向无环图的拓扑顺序就是所有顶点的逆后序排列。</strong>这是一个重要结论！证明如下：对于任意边v->w, 在调用dfs(v)时，必有以下三种情况之一：</p>
+
+<ol>
+<li>dfs(w)已经被调用过且已经返回（w已经被标记）。</li>
+<li>dfs(w)还没有被调用，因此v->会直接或间接调用并返回dfs(w)，且dfs(w)会在dfs(v)返回前返回。</li>
+<li>dfs(w)已经被调用但未返回。</li>
+</ol>
+
+
+<p>第3种情况表示存在环，所以在有向无环图中是不可能出现的。第1、2种情况都证明了dfs(w)会先于dfs(v)完成。后序排列时w在v之前，只有逆后序时，w排在v之后。因此逆后序是有向无环图的拓扑顺序。</p>
+
+<p>再次说明，拓扑排序和有向环的检测总是一起出现的，因为有向环的检测是排序的前提。</p>
+
+<h2>5. 有向图的强连通性</h2>
+
+<p>如果两个顶点v和w是互相可达的，也就是存在一条从v到w的有向路径，同时还存在一条从w到v的有向路径，那么v和w是<strong>强连通</strong>的。</p>
+
+<p>强连通性将所有顶点分为一些等价类，每个等价类都由相互均为强连通的顶点的最大子集组成，这些子集称为<strong>强连通分量</strong>。强连通分量的典型应用包括：网络（网页和超链接）、软件（模块和调用）、食物链（物种和捕食关系）等。强连通分量的API:</p>
+
+<p><img src="/myresource/images/image_blog_2014-10-30-scc-api.png" alt="image" /></p>
+
+<h3>5.1 Kosaraju算法</h3>
+
+<p>Kosaraju算法实现了SCC API：</p>
+
+<ul>
+<li>在给定的一幅有向图G中，使用DepthFirstOrder来计算它的反向图G<sup>R</sup>的逆后序排列。</li>
+<li>在G中进行标准的深度优先搜索，但是要按照刚才计算得到的顺序而非标准的顺序来访问所有未被标记的顶点。</li>
+<li>在构造函数中，所有在同一个递归dfs()调用中被访问到的顶点都在同一个强连通分量中，将它们按照和CC相同的方式识别出来。</li>
+</ul>
+
+
+<p>要证明Kosaraju算法的正确性，首先证明：“每个和s强连通的顶点v都会在构造函数调用的dfs(G,s)中被访问到。”这个毫无疑问。然后再证明：“构造函数调用的dfs(G,s)所到达的任意顶点v都必然是和s强连通的。”设v为dfs(G,s)到达的某个顶点。那么G中必然存在一条从s到v的路径，因此只需证明G中还存在一条从v到s的路径即可。也就等价于证明G<sup>R</sup>中存在一条从s到v的路径：</p>
+
+<blockquote><p>按照逆后序进行的深度优先搜索意味着，在G<sup>R</sup>中进行的深度优先搜索中，dfs(G,v)必然在dfs(G,s)之前就已经结束了，这样dfs(G,v)的调用就只会出现两种情况：</p>
+
+<ol>
+<li>调用在dfs(G,s)的调用之前（并且也在dfs(G,s)的调用之前结束）</li>
+<li>调用在dfs(G,s)的调用之后（并且也在dfs(G,s)的调用之前结束）</li>
+</ol>
+
+
+<p>第一种情况不可能出现，因为在G<sup>R</sup>中存在一条从v到s的路径；而第二种情况说明G<sup>R</sup>中存在一条从s到v的路径。证毕。</p></blockquote>
+
+<p>```java
+public class KosarajuSharirSCC {</p>
+
+<pre><code>private boolean[] marked;     //已访问过的顶点
+private int[] id;             //强连通分量的标识符
+private int count;            //强连通分量的数量
+
+public KosarajuSharirSCC(Digraph G) {
+
+    // compute reverse postorder of reverse graph
+    DepthFirstOrder dfs = new DepthFirstOrder(G.reverse());
+
+    // run DFS on G, using reverse postorder to guide calculation
+    marked = new boolean[G.V()];
+    id = new int[G.V()];
+    for (int v : dfs.reversePost()) {
+        if (!marked[v]) {
+            dfs(G, v);
+            count++;
+        }
+    }
+}
+
+private void dfs(Digraph G, int v) { 
+    marked[v] = true;
+    id[v] = count;
+    for (int w : G.adj(v)) {
+        if (!marked[w]) dfs(G, w);
+    }
+}
+
+//图中的强连通分量的总数
+public int count() {
+    return count;
+}
+
+//v和w是强连通的吗
+public boolean stronglyConnected(int v, int w) {
+    return id[v] == id[w];
+}
+
+//v所在的强连通分量的标识符（在0至count()-1之间）
+public int id(int v) {
+    return id[v];
+}
+</code></pre>
+
+<p>}  <br/>
+```</p>
+
+<h3>5.2 顶点对的可达性</h3>
+
+<p>给定一幅有向图，回答“是否存在一条从一个给定的顶点v到达另一个给定的顶点w的路径？”对于无向图，这个问题等价于连通性问题。而对有向图，有很大区别。看似简单的问题困难了专家数十年。如何大幅减少预处理所需的时间和空间，又保证常数的查询时间。这仍然是一个有待解决的问题。而且这个问题有重要的实际意义：处理互联网这样的巨型有向图。</p>
+
+<p>下面的算法只是简单地实现了可达性，但不适用于处理大型有向图，因为它所需的空间与V<sup>2</sup>成正比，所需时间和V(V+E)成正比。但如果图小的话，仍然是一个理想的解决办法。</p>
+
+<p>```
+public class TransitiveClosure {</p>
+
+<pre><code>private DirectedDFS[] tc;  // tc[v] = reachable from v
+
+//预处理的构造方法
+public TransitiveClosure(Digraph G) {
+    tc = new DirectedDFS[G.V()];
+    for (int v = 0; v &lt; G.V(); v++)
+        tc[v] = new DirectedDFS(G, v);
+}
+
+//w是从v可达的吗？
+public boolean reachable(int v, int w) {
+    return tc[v].marked(w);
+}
+</code></pre>
+
+<p>}
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[无向图]]></title>
     <link href="http://blog.ubone.com/blog/2014/10/03/wu-xiang-tu/"/>
     <updated>2014-10-03T18:18:44+08:00</updated>
     <id>http://blog.ubone.com/blog/2014/10/03/wu-xiang-tu</id>
-    <content type="html"><![CDATA[<p>无向图由一组顶点(Vertex)和一组能够将两个顶点相连的边(Edge)组成。本章学习无向图的邻接表实现，以及相关的搜索和应用，例如深度优先和广度优先搜索，路径查找和最短路径计算，连通分量和符号图。</p>
+    <content type="html"><![CDATA[<p>无向图由一组顶点(Vertex)和一组能够将两个顶点相连的边(Edge)组成。本章学习无向图的邻接表实现，以及相关的搜索和应用，例如深度优先和广度优先搜索，路径查找和最短路径计算，连通分量和符号图。本文要解决的无向图问题包括：</p>
+
+<ol>
+<li>单点连通性</li>
+<li>单点路径</li>
+<li>单点最短路径</li>
+<li>连通性</li>
+<li>检测环</li>
+<li>双色问题（图的二分性）</li>
+</ol>
+
 
 <!--more-->
 
@@ -1035,153 +1432,6 @@ private static void exchange(Comparable[] a, int i, int j) {
 <p>快速排序是最快的通用排序算法。</p>
 
 <p>Java中，java.util.Arrays.sort()方法会根据不同的参数类型选择排序方法。对于原始数据类型使用（三向切分）快速排序，对引用类型使用归并排序。这种选择实际上暗示着用速度和空间（对于原始数据类型）来换取稳定性（对于引用类型）。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[快速排序算法]]></title>
-    <link href="http://blog.ubone.com/blog/2014/09/27/kuai-su-pai-xu-suan-fa/"/>
-    <updated>2014-09-27T10:38:32+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/09/27/kuai-su-pai-xu-suan-fa</id>
-    <content type="html"><![CDATA[<p>快速排序可能是应用最广泛的算法，原因是它实现简单、速度快。它完美地实现了原地排序（只需要一个很小的辅助栈），并且时间与NlgN成正比。它的内循环比大多数排序算法都要短小，因此理论上要更快。但它的主要缺点是非常脆弱，实现时要非常小心才能避免低劣的性能。</p>
-
-<!--more-->
-
-
-<h2>1. 算法理论</h2>
-
-<p>快速算法也是一种分治的排序算法，它将一个数组分成两个子数组，将两部份独立地排序。但与归并排序将两个子数组分别排序再归并到整个数组排序不同，快速排序时，当两个子数组都有序时整个数组也就自然有序了。</p>
-
-<p>快速排序算法的关键是切分，通过切分使数组满足下面三个条件：</p>
-
-<ol>
-<li>对于某个j, a[j]已经排定;</li>
-<li>a[lo]到a[j-1]中的所有元素都不大于a[j];</li>
-<li>a[j+1]到a[hi]中的所有元素都不小于a[j];</li>
-</ol>
-
-
-<p>因为切分过程总能排定一个元素，因此递归调用切分过程就能够正确地将数组排序。切分实现方法如下：先随意取a[lo]作为切分元素，然后从数组的左端开始向右扫描直到找到一个大于等于它的元素，再从数组右端向左扫描直到找到一个小于等于它的元素，交换它俩的位置。如此继续，当两个指针相遇时，只需要将切分元素和左子数组最右侧的元素a[j]交换然后返回j即可。j即满足上述三个条件。</p>
-
-<h2>2. 算法实现</h2>
-
-<p>下面是排序算法的实现。需要注意的是还有几个细节需要完善，它们可能导致错误或影响性能。</p>
-
-<p>```java
-public class Quick extends AbstractSort {</p>
-
-<pre><code>@Override
-public void sort(Comparable[] a) {
-    StdRandom.shuffle(a); //打乱数组，消除对输入的依赖
-    sort(a, 0, a.length - 1);
-}
-
-private static void sort(Comparable[] a, int lo, int hi) {
-    if (hi &lt;= lo) return;
-
-    int j = partition(a, lo, hi);
-    sort(a, lo, j - 1);
-    sort(a, j + 1, hi);
-}
-
-private static int partition(Comparable[] a, int lo, int hi) {
-    //i, j分别代表左右扫描指针
-    int i = lo, j = hi + 1;
-    Comparable v = a[lo]; //选择切分元素
-
-    while(true) {
-        //从左往右扫描
-        while (less(a[++i], v)) {
-            if (i == hi) break; //冗余，可以去除。
-        }
-
-        //从右往左扫描
-        while (less(v, a[--j])) {
-            if (j == lo) break; //冗余，可以去除。
-        }
-
-        //检查两指针是否相遇
-        if (i &gt;= j) break; 
-
-        exchange(a, i, j);
-    }
-
-    //与切分元素交换
-    exchange(a, lo, j);
-
-    //现在满足：a[lo .. j-1] &lt;= a[j] &lt;= a[j+1 .. hi]
-    return j;
-}
-</code></pre>
-
-<p>}
-//对一百万个随机整数排序，时间大致在350ms，但加上shuffle后，时间在600多ms.
-```</p>
-
-<h2>3. 性能特点</h2>
-
-<p>快速排序算法的内循环用一个递增的索引将数组元素和一个定值比较，因此内循环非常短。归并和希尔排序需要在内循环中移动数据，所以它们通常比快速排序要慢一些。</p>
-
-<p>快速排序算法的另一个优势是比较的次数很少。其效率最终还是依赖切分数组的效果。最好的情况下，每次都正好能将数组对半分。尽管事情并不总会这么顺利，但平均而言切分元素都能落在数组的中间。如果将切分位置的概率考虑到算法中，将使递归更复杂，而结果还是类似的。</p>
-
-<p>它有一个潜在的缺点，切分不平衡时效率会相当低效。例如第一次从最小的元素切分，第二次从第二小的元素切分。。。这样每次调用只会移除一个元素。这也是快速排序前先随机排序(shuffle)的主要原因。</p>
-
-<h2>4. 算法改进</h2>
-
-<p>如果排序代码会执行很多次或者将用在大型数组上，那么就需要进行一些改进。</p>
-
-<h3>4.1 切换到插入排序</h3>
-
-<p>由于小数组的快速排序比插入排序慢，并且小数组时的递归调用也会消耗资源，因此在排序小数组时应该切换到插入排序。</p>
-
-<p>可以在sort方法中，将<code>if (hi &lt;= lo) return;</code>替换为：<code>if (hi &lt;= lo + M) {Insertion.sort(a, lo, hi); return;}</code>。M的最佳值和系统相关，但一般在5~15之间在大多数情况下都能令人满意。</p>
-
-<h3>4.2 三取样切分</h3>
-
-<p>第二个改进的方法是使用子数组的一小部分元素的中位数来切分数组。人们发现将取样大小设为3并用大小居中的元素切分效果最好。</p>
-
-<h3>4.3 熵最优的排序</h3>
-
-<p>对于有大量重复元素的数组，快速排序算法仍然会递归调用，而三向切分的快速排序算法可以更好地处理这种情况。</p>
-
-<p>```
-public class Quick3way extends AbstractSort {</p>
-
-<pre><code>@Override
-public void sort(Comparable[] a) {
-    StdRandom.shuffle(a); //打乱数组，消除对输入的依赖
-    sort(a, 0, a.length - 1);
-}
-
-private static void sort(Comparable[] a, int lo, int hi) {
-    if (hi &lt;= lo) return;
-
-    int lt = lo, i = lo + 1, gt = hi;
-    Comparable v = a[lo];
-    while (i &lt;= gt) {
-        int cmp = a[i].compareTo(v);
-        if (cmp &lt; 0) {
-            exchange(a, lt++, i++);
-        } else if (cmp &gt; 0) {
-            exchange(a, i, gt--);
-        } else {
-            i++;
-        }
-    }//现在a[lo..lt-1] &lt; v = a[lt..gt] &lt; a[gt+1..hi]
-
-    sort(a, lo, lt - 1);
-    sort(a, gt + 1, hi);
-}
-</code></pre>
-
-<p>}</p>
-
-<p>//（不含shuffle的时间）对于一百万随机整数，排序时间也在350ms左右。但如果存在大量重复时，时间将降到250ms左右。
-```</p>
-
-<p>对有大量重复元素的数组排序时，三向切分算法具有更高的效率。而在最差的情况下，也就是没有重复元素时，它的效率与标准快速排序算法相当。因此，三向切分的快速排序成为排序函数的最佳算法选择。</p>
-
-<p>在基于比较的排序算法中，经过精心调优的快速排序算法性能最好。但它不是终点，还有完全不需要比较的排序算法！</p>
 ]]></content>
   </entry>
   
