@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 算法 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/suan-fa/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-10-30T23:05:32+08:00</updated>
+  <updated>2014-11-02T23:15:29+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,459 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[最小生成树]]></title>
+    <link href="http://blog.ubone.com/blog/2014/10/31/zui-xiao-sheng-cheng-shu/"/>
+    <updated>2014-10-31T22:38:49+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/10/31/zui-xiao-sheng-cheng-shu</id>
+    <content type="html"><![CDATA[<p>加权图是一种为每条边关联一个权值或成本的图模型。这种图最令人感兴趣的是将成本最小化。本节学习加权无向图模型并找到它的一棵最小生成树。</p>
+
+<p>图的生成树是它的一棵含有其所有顶点的无环连通子图。一幅加权图的最小生成树（MST）是它的一棵权值（树中所有边的权值之和）最小的生成树。</p>
+
+<!--more-->
+
+
+<h2>1. 一些约定</h2>
+
+<p>为了方便说明，有以下这些约定：</p>
+
+<ul>
+<li>只考虑连通图。如果图是非连通的，只能计算它的所有连通分量的最小生成树，合并起来称为最小生成森林。</li>
+<li>边的权重不一定表示距离。但为了看起来方便，示意图会用距离来表示权重。</li>
+<li>边的权重可能是0或者负数。</li>
+<li>所有边的权重都各不相同。如果权重可以相同，最小生成树就不一定唯一，算法证明会更复杂。但实际上算法也适用于存在权重相等的情况。</li>
+</ul>
+
+
+<h2>2. 原理</h2>
+
+<p>图的一种<strong>切分</strong>是将图的所有顶点分为两个非空且不重叠的两个集合。<strong>横切边</strong>是一条连接两个属于不同集合的顶点的边。</p>
+
+<blockquote><p>切分定理：在一幅加权图中，给定任意的切分，它的横切边中的权重最小者必然属于图的最小生成树。</p></blockquote>
+
+<p>切分定理会把加权图中的所有顶点分为两个集合，检查横跨两个集合的所有边并识别哪边边应属于图的最小生成树。</p>
+
+<h2>3. 加权无向图的数据结构</h2>
+
+<p>通过扩展无向图的邻接矩阵来表示加权无向图。在无向图的邻接表表示中，第v个顶点的列表中每个元素都是和顶点v相邻的顶点。在加权无向图中，我们将其替换为一个加权边Edge：</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-02-edge-api.png" alt="image" /></p>
+
+<p>上图中，eaither()表示边的两个顶点中的某一个，而other()则返回另一个顶点。有了加权边Edge，加权无向图的API就与无向图非常接近，在实现上，只是在邻接表中用Edge对象替代了无向图Graph中的整数作为链表的结点：</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-02-edge-weighted-graph-api.png" alt="image" /></p>
+
+<p>加权无向图的表示如下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-02-edge-weighted-graph-representation.png" alt="image" /></p>
+
+<p>代码实现如下：</p>
+
+<p>```java
+public class Edge implements Comparable<Edge> {</p>
+
+<pre><code>private final int v;
+private final int w;
+private final double weight;
+
+public Edge(int v, int w, double weight) {
+    if (v &lt; 0) throw new IndexOutOfBoundsException("Vertex name must be a nonnegative integer");
+    if (w &lt; 0) throw new IndexOutOfBoundsException("Vertex name must be a nonnegative integer");
+    if (Double.isNaN(weight)) throw new IllegalArgumentException("Weight is NaN");
+    this.v = v;
+    this.w = w;
+    this.weight = weight;
+}
+
+public double weight() {
+    return weight;
+}
+
+public int either() {
+    return v;
+}
+
+public int other(int vertex) {
+    if      (vertex == v) return w;
+    else if (vertex == w) return v;
+    else throw new IllegalArgumentException("Illegal endpoint");
+}
+
+public int compareTo(Edge that) {
+    if      (this.weight() &lt; that.weight()) return -1;
+    else if (this.weight() &gt; that.weight()) return +1;
+    else                                    return  0;
+}
+
+public String toString() {
+    return String.format("%d-%d %.5f", v, w, weight);
+}
+</code></pre>
+
+<p>}  <br/>
+```</p>
+
+<p>```java
+public class EdgeWeightedGraph {</p>
+
+<pre><code>private final int V;
+private int E;
+private Bag&lt;Edge&gt;[] adj;
+
+/**
+ * Initializes an empty edge-weighted graph with &lt;tt&gt;V&lt;/tt&gt; vertices and 0 edges.
+ * param V the number of vertices
+ * @throws java.lang.IllegalArgumentException if &lt;tt&gt;V&lt;/tt&gt; &lt; 0
+ */
+public EdgeWeightedGraph(int V) {
+    if (V &lt; 0) throw new IllegalArgumentException("Number of vertices must be nonnegative");
+    this.V = V;
+    this.E = 0;
+    adj = (Bag&lt;Edge&gt;[]) new Bag[V];
+    for (int v = 0; v &lt; V; v++) {
+        adj[v] = new Bag&lt;Edge&gt;();
+    }
+}
+
+/**
+ * Initializes a random edge-weighted graph with &lt;tt&gt;V&lt;/tt&gt; vertices and &lt;em&gt;E&lt;/em&gt; edges.
+ * param V the number of vertices
+ * param E the number of edges
+ * @throws java.lang.IllegalArgumentException if &lt;tt&gt;V&lt;/tt&gt; &lt; 0
+ * @throws java.lang.IllegalArgumentException if &lt;tt&gt;E&lt;/tt&gt; &lt; 0
+ */
+public EdgeWeightedGraph(int V, int E) {
+    this(V);
+    if (E &lt; 0) throw new IllegalArgumentException("Number of edges must be nonnegative");
+    for (int i = 0; i &lt; E; i++) {
+        int v = (int) (Math.random() * V);
+        int w = (int) (Math.random() * V);
+        double weight = Math.round(100 * Math.random()) / 100.0;
+        Edge e = new Edge(v, w, weight);
+        addEdge(e);
+    }
+}
+
+/**  
+ * Initializes an edge-weighted graph from an input stream.
+ * The format is the number of vertices &lt;em&gt;V&lt;/em&gt;,
+ * followed by the number of edges &lt;em&gt;E&lt;/em&gt;,
+ * followed by &lt;em&gt;E&lt;/em&gt; pairs of vertices and edge weights,
+ * with each entry separated by whitespace.
+ * @param in the input stream
+ * @throws java.lang.IndexOutOfBoundsException if the endpoints of any edge are not in prescribed range
+ * @throws java.lang.IllegalArgumentException if the number of vertices or edges is negative
+ */
+public EdgeWeightedGraph(In in) {
+    this(in.readInt());
+    int E = in.readInt();
+    if (E &lt; 0) throw new IllegalArgumentException("Number of edges must be nonnegative");
+    for (int i = 0; i &lt; E; i++) {
+        int v = in.readInt();
+        int w = in.readInt();
+        double weight = in.readDouble();
+        Edge e = new Edge(v, w, weight);
+        addEdge(e);
+    }
+}
+
+/**
+ * Initializes a new edge-weighted graph that is a deep copy of &lt;tt&gt;G&lt;/tt&gt;.
+ * @param G the edge-weighted graph to copy
+ */
+public EdgeWeightedGraph(EdgeWeightedGraph G) {
+    this(G.V());
+    this.E = G.E();
+    for (int v = 0; v &lt; G.V(); v++) {
+        // reverse so that adjacency list is in same order as original
+        Stack&lt;Edge&gt; reverse = new Stack&lt;Edge&gt;();
+        for (Edge e : G.adj[v]) {
+            reverse.push(e);
+        }
+        for (Edge e : reverse) {
+            adj[v].add(e);
+        }
+    }
+}
+
+//图的顶点数
+public int V() {
+    return V;
+}
+
+//图的边数
+public int E() {
+    return E;
+}
+
+//向图中添加一条边e
+public void addEdge(Edge e) {
+    int v = e.either();
+    int w = e.other(v);
+    if (v &lt; 0 || v &gt;= V) throw new IndexOutOfBoundsException("vertex " + v + " is not between 0 and " + (V-1));
+    if (w &lt; 0 || w &gt;= V) throw new IndexOutOfBoundsException("vertex " + w + " is not between 0 and " + (V-1));
+    adj[v].add(e);
+    adj[w].add(e);
+    E++;
+}
+
+//与v相关联的所有边
+public Iterable&lt;Edge&gt; adj(int v) {
+    if (v &lt; 0 || v &gt;= V) throw new IndexOutOfBoundsException("vertex " + v + " is not between 0 and " + (V-1));
+    return adj[v];
+}
+
+//图中的所有边
+public Iterable&lt;Edge&gt; edges() {
+    Bag&lt;Edge&gt; list = new Bag&lt;Edge&gt;();
+    for (int v = 0; v &lt; V; v++) {
+        int selfLoops = 0;
+        for (Edge e : adj(v)) {
+            if (e.other(v) &gt; v) {
+                list.add(e);
+            }
+            // only add one copy of each self loop (self loops will be consecutive)
+            else if (e.other(v) == v) {
+                if (selfLoops % 2 == 0) list.add(e);
+                selfLoops++;
+            }
+        }
+    }
+    return list;
+}
+
+public String toString() {
+    String NEWLINE = System.getProperty("line.separator");
+    StringBuilder s = new StringBuilder();
+    s.append(V + " " + E + NEWLINE);
+    for (int v = 0; v &lt; V; v++) {
+        s.append(v + ": ");
+        for (Edge e : adj[v]) {
+            s.append(e + "  ");
+        }
+        s.append(NEWLINE);
+    }
+    return s.toString();
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>4. 最小生成树的API及实现</h2>
+
+<p>下面API定义的构造函数接受加权无向图作为参数，并返回最小生成树和其权重。</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-02-mst-api.png" alt="image" /></p>
+
+<p>Prim算法和Kruskal算法都可以实现最小生成树，它们都基于贪心算法，区别在于保存切分和判定权重最小的横切边的方式。</p>
+
+<blockquote><p>贪心算法：初始状态下所有边均为灰色，找到一种切分，它产生的横切边均不为黑色。将权重最小的横切边标记为黑色。反复这个步骤直到标记了V-1条黑色边为止。</p></blockquote>
+
+<h3>4.1 Prim算法</h3>
+
+<p>Prim算法每一步都会为一棵生长中的树添加一条边。一开始这棵树只有一个顶点，然后会向它添加V-1条边，每次总是找到这样一条边并将其加入树中：这条边的一端在树中，另一端不在树中，并且权值最小。</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-02-prim-eager.png" alt="image" /></p>
+
+<p>每当向树中添加一条边后，也向树中添加了一个顶点。要维护一个包含所有横切边的集合，可以将连接这个顶点和其他所有不在树中的顶点的边加入优先队列。这样就可以得到符合条件的权值最小的边。当一个顶点加入树中后，连接这个顶点与树中其它顶点的所有边就失效了，因为这些边的两个顶点都已经在树中，这些边不再是横切边。那么何时删除这些边就形成了Prim算法的两种实现：</p>
+
+<ul>
+<li>延时(Lazy)实现会先把它们留在队列中，等要删除时再检查边的有效性；</li>
+<li>即时实现可以将它们从优先队列中删除。</li>
+</ul>
+
+
+<p>这两种实现所需的时间都与ElogE成正比（最坏情况下），延时实现所需的空间与E成正比，瓶颈在于优先队列的insert()和delMin()中比较边的权重次数。而即时实现所需空间的上限与V成正比，比延时实现有优势。两种实现代码如下：</p>
+
+<p>```java
+public class LazyPrimMST {</p>
+
+<pre><code>private double weight;       // total weight of MST
+private Queue&lt;Edge&gt; mst;     // edges in the MST
+private boolean[] marked;    // marked[v] = true if v on tree
+private MinPQ&lt;Edge&gt; pq;      // edges with one endpoint in tree
+
+/**
+ * Compute a minimum spanning tree (or forest) of an edge-weighted graph.
+ * @param G the edge-weighted graph
+ */
+public LazyPrimMST(EdgeWeightedGraph G) {
+    mst = new Queue&lt;Edge&gt;();
+    pq = new MinPQ&lt;Edge&gt;();
+    marked = new boolean[G.V()];
+    for (int v = 0; v &lt; G.V(); v++)     // run Prim from all vertices to
+        if (!marked[v]) prim(G, v);     // get a minimum spanning forest
+}
+
+// run Prim's algorithm
+private void prim(EdgeWeightedGraph G, int s) {
+    scan(G, s);
+    while (!pq.isEmpty()) {                        // better to stop when mst has V-1 edges
+        Edge e = pq.delMin();                      // smallest edge on pq
+        int v = e.either(), w = e.other(v);        // two endpoints
+        assert marked[v] || marked[w];
+        if (marked[v] &amp;&amp; marked[w]) continue;      // lazy, both v and w already scanned
+        mst.enqueue(e);                            // add e to MST
+        weight += e.weight();
+        if (!marked[v]) scan(G, v);               // v becomes part of tree
+        if (!marked[w]) scan(G, w);               // w becomes part of tree
+    }
+}
+
+//标记顶点v并将所有连接v和未被标记顶点的边加入pq
+private void scan(EdgeWeightedGraph G, int v) {
+    assert !marked[v];
+    marked[v] = true;
+    for (Edge e : G.adj(v))
+        if (!marked[e.other(v)]) pq.insert(e);
+}
+
+//树的所有边
+public Iterable&lt;Edge&gt; edges() {
+    return mst;
+}
+
+//树的权重
+public double weight() {
+    return weight;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>```java
+public class PrimMST {</p>
+
+<pre><code>private Edge[] edgeTo;        // 距离树最近的边，edgeTo[v] = shortest edge from tree vertex to non-tree vertex
+private double[] distTo;      // distTo[v] = weight of shortest such edge
+private boolean[] marked;     // marked[v] = true if v on tree, false otherwise
+private IndexMinPQ&lt;Double&gt; pq;  //有效的横切边
+
+/**
+ * Compute a minimum spanning tree (or forest) of an edge-weighted graph.
+ * @param G the edge-weighted graph
+ */
+public PrimMST(EdgeWeightedGraph G) {
+    edgeTo = new Edge[G.V()];
+    distTo = new double[G.V()];
+    marked = new boolean[G.V()];
+    pq = new IndexMinPQ&lt;Double&gt;(G.V());
+    for (int v = 0; v &lt; G.V(); v++) distTo[v] = Double.POSITIVE_INFINITY;
+
+    for (int v = 0; v &lt; G.V(); v++)      // run from each vertex to find
+        if (!marked[v]) prim(G, v);      // minimum spanning forest
+}
+
+// run Prim's algorithm in graph G, starting from vertex s
+private void prim(EdgeWeightedGraph G, int s) {
+    distTo[s] = 0.0;
+    pq.insert(s, distTo[s]); //用顶点0和权重0初始化pq
+    while (!pq.isEmpty()) {
+        int v = pq.delMin();  
+        scan(G, v);          //将最近的顶点添加到树中
+    }
+}
+
+// scan vertex v
+private void scan(EdgeWeightedGraph G, int v) {
+        //将顶点v添加到树中，更新数据
+    marked[v] = true;
+    for (Edge e : G.adj(v)) {
+        int w = e.other(v);
+        if (marked[w]) continue;         // v-w 已经失效
+        if (e.weight() &lt; distTo[w]) {
+                //连接w和树的最佳边Edge变为e
+            distTo[w] = e.weight();
+            edgeTo[w] = e;
+            if (pq.contains(w)) pq.decreaseKey(w, distTo[w]);
+            else                pq.insert(w, distTo[w]);
+        }
+    }
+}
+
+//所有边
+public Iterable&lt;Edge&gt; edges() {
+    Queue&lt;Edge&gt; mst = new Queue&lt;Edge&gt;();
+    for (int v = 0; v &lt; edgeTo.length; v++) {
+        Edge e = edgeTo[v];
+        if (e != null) {
+            mst.enqueue(e);
+        }
+    }
+    return mst;
+}
+
+//权重
+public double weight() {
+    double weight = 0.0;
+    for (Edge e : edges())
+        weight += e.weight();
+    return weight;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>4.2 Kruskal算法</h3>
+
+<p>Kruskal算法构造最小生成树时也是一条边一条边地构造，但它寻找的边会连接一片森林中的两棵树。我们从一片由V棵单顶点的树构成的森林开始并不断将两棵树合并（用可以找到的最短边）直到只剩下一棵树。其主要思想是按边的权重顺序处理它们，将边加入最小生成树中，加入的边不会与已经加入的边构成环，直到树中含有V-1条边为止。</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-02-kruskal.png" alt="image" /></p>
+
+<p>实现时，采用优先队列将边按照权重排序，用一个union-find数据结构识别会形成环的边，以及一个队列来保存最小生成树的所有边。代码实现如下：</p>
+
+<p>```
+public class KruskalMST {</p>
+
+<pre><code>private double weight;  // weight of MST
+private Queue&lt;Edge&gt; mst = new Queue&lt;Edge&gt;();  // edges in MST
+
+public KruskalMST(EdgeWeightedGraph G) {
+    // more efficient to build heap by passing array of edges
+    MinPQ&lt;Edge&gt; pq = new MinPQ&lt;Edge&gt;();
+    for (Edge e : G.edges()) {
+        pq.insert(e);
+    }
+
+    // run greedy algorithm
+    UF uf = new UF(G.V());
+    while (!pq.isEmpty() &amp;&amp; mst.size() &lt; G.V() - 1) {
+        Edge e = pq.delMin();  //从pq得到权重最小的边和它的顶点
+        int v = e.either();
+        int w = e.other(v);
+        if (!uf.connected(v, w)) { // v-w does not create a cycle
+            uf.union(v, w);  // merge v and w components
+            mst.enqueue(e);  // add edge e to mst
+            weight += e.weight();
+        }
+    }
+}
+
+//树的所有边
+public Iterable&lt;Edge&gt; edges() {
+    return mst;
+}
+
+//树的权重
+public double weight() {
+    return weight;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Kruskal算法所需的空间与E成正比，所需时间与ElogE成正比（最坏情况下）。</p>
+
+<p>Prim和Kruskal算法不能处理有向图。</p>
+
+<p>参考：<a href="http://algs4.cs.princeton.edu/43mst/">http://algs4.cs.princeton.edu/43mst</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[有向图]]></title>
@@ -397,6 +850,8 @@ public boolean reachable(int v, int w) {
 
 <p>}
 ```</p>
+
+<p>参考：<a href="http://algs4.cs.princeton.edu/42directed/">http://algs4.cs.princeton.edu/42directed/</a></p>
 ]]></content>
   </entry>
   
@@ -743,6 +1198,8 @@ public int count() {return count;}
 <li>找出两个顶点间的最短路径。</li>
 </ol>
 
+
+<p>参考：<a href="http://algs4.cs.princeton.edu/41undirected/">http://algs4.cs.princeton.edu/41undirected/</a></p>
 ]]></content>
   </entry>
   
@@ -1207,231 +1664,6 @@ private Node put(Node h, Key key, Value val) {
 <p><img src="/myresource/images/IMG_20141002_233353.jpg" alt="image" /></p>
 
 <p>在信息世界的汪洋大海中，表的大小可能是上千亿，但我们仍然能够确保在几十次比较之内就完成这些操作！</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[优先队列]]></title>
-    <link href="http://blog.ubone.com/blog/2014/09/27/you-xian-dui-lie/"/>
-    <updated>2014-09-27T23:08:56+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/09/27/you-xian-dui-lie</id>
-    <content type="html"><![CDATA[<p>优先队列是广泛使用的一种抽象数据类型。例如如果你需要从10亿个元素中选出最大的十个，你不可能对10亿规模的数组排序。对于这些类似的场景，我们不一定要求它们全部有序，或者不一定要一次就将它们排序。我们会收集一些元素，处理当前键值最大的元素，然后再收集更多的元素，再处理当前键值最大的元素。例如应用程序的事件优先级，模拟系统，任务调度等。在这种情况下，优先队列应该支持两种操作：<strong>删除最大元素和插入元素。</strong></p>
-
-<!--more-->
-
-
-<h2>1. API</h2>
-
-<p>先定义优先队列的API框架：</p>
-
-<p>```java
-public interface IMaxPQ<T extends Comparable<T>> {</p>
-
-<pre><code>public void insert(T v);
-public T max();
-public T delMax();
-public boolean isEmpty();
-public int size();
-</code></pre>
-
-<p>}
-```</p>
-
-<h2>2. 实现方法</h2>
-
-<p>优先队列可以使用有序或无序的数组或链表来实现。其思路非常简单，插入时，向数组或链表增加元素。如果数组或链表是有序的，新元素就应该在适当的位置。而删除时，找出最大的元素进行删除。</p>
-
-<p>上面的实现方法性能非常差，在最坏的情况下，需要线性时间来完成。而基于堆的实现则能够保证更好的性能。</p>
-
-<h3>2.1 堆的定义</h3>
-
-<p>在二叉堆的数组中，每个元素都要保证大于等于另外两个特定位置的元素。如果把所有元素画成一棵二叉树，就是父结点要大于等于子结点，此时表示<strong>堆有序</strong>。</p>
-
-<p>完全二叉树只用数组就可以表示。根结点在位置1，其子结点在位置2和3。位置k的结点的父结点的位置为k/2, 它的两个子结点的位置分别为2k和2k+1。</p>
-
-<h3>2.2 堆的算法</h3>
-
-<p>堆的有序化过程涉及上浮和下沉。当某个结点的优先级上升时，我们需要由下至上恢复堆的顺序（上浮）。当某个结点的优先级下降时，我们需要由上至下恢复堆的顺序（下沉）。</p>
-
-<h4>2.2.1 上浮</h4>
-
-<p>如果某个结点的优先级上升，比它的父结点更大，那么就需要交换它和它的父结点。交换后，还要继续判断是否比现在的父结点更大，一直到遇到更大的父结点。</p>
-
-<h4>2.2.2 下沉</h4>
-
-<p>下沉与上浮正好相反，当某个结点的优先级下降时，需要<strong>与它的两个结点中的较大者比较</strong>，如果比子结点小，就进行交换。交换后继续与子结点比较，直到比它的两个子结点都大。</p>
-
-<h4>2.2.3 算法实现</h4>
-
-<p>```java
-public class MaxPQ<T extends Comparable<T>> implements IMaxPQ<T>{</p>
-
-<pre><code>private T[] pq;
-private int n = 0;
-
-public MaxPQ(int maxN) {
-    pq = (T[]) new Comparable[maxN + 1];
-}
-
-@Override
-public void insert(T v) {
-    pq[++n] = v;
-    swim(n);
-}
-
-@Override
-public T max() {
-    if (n &gt; 0) {
-        return pq[1];
-    }
-
-    return null;
-}
-
-@Override
-public T delMax() {
-    T max = pq[1];    //根结点最大
-    exchange(1, n--); //与最后一个结点交换
-    pq[n + 1] = null; //防止对象游离
-    sink(1);          //恢复堆的有序性
-
-    return max;
-}
-
-@Override
-public boolean isEmpty() {
-    return n == 0;
-}
-
-@Override
-public int size() {
-    return n;
-}
-
-private boolean less(int i, int j) {
-    return pq[i].compareTo(pq[j]) &lt; 0;
-}
-
-private void exchange(int i, int j) {
-    T t = pq[i]; pq[i] = pq[j]; pq[j] = t;
-}
-
-//上浮
-private void swim(int k) {
-    while (k &gt; 1 &amp;&amp; less(k / 2, k)) {
-        exchange(k / 2, k);
-        k = k / 2;
-    }
-}
-
-//下沉
-private void sink(int k) {
-    while (2 * k &lt;= n) {
-        int j = 2 * k;
-        if (j &lt; n &amp;&amp; less(j, j + 1)) {
-            j++;
-        }
-
-        if (!less(k, j)) {
-            break;
-        }
-
-        exchange(k, j);
-        k = j;
-    }
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p><strong>对于含有N个元素的基于堆的优先队列，插入元素操作只需不超过(lgN + 1)次比较，删除最大元素的操作需要不超过2lgN次比较！</strong></p>
-
-<h4>2.2.4 多叉堆</h4>
-
-<p>用数组表示的完全三叉树构造堆也很容易。位置k的结点大于等于3k-1, 3k, 3k+1的结点，小于等于位于(k+1)/3的结点。甚至任意的d叉树也不困难，只是需要平衡在树高和每个结点的d个子结点中找到最大值的代价。</p>
-
-<h4>2.2.5 动态数组大小</h4>
-
-<p>上面代码中的数组大小是固定的，如果要实现动态数组大小，只需要根据情况在insert中增加数组长度，在delMax中减少数组长度。</p>
-
-<h2>3. 堆排序</h2>
-
-<p>使用优先队列，我们有了一种新的排序方法：堆排序。把所有元素插入一个查找最小元素的优先队列，然后重复调用删除最小元素的操作来将它们按顺序删除。</p>
-
-<p>堆排序分为两个阶段：构造堆和下沉排序。</p>
-
-<h3>3.1 堆的构造</h3>
-
-<p>对于N个给定元素的数组，最简单的堆构造方法是从左至右遍历数组，用swim()保证指针左侧的所有元素已经是一棵堆有序的完全树。但一个更聪明更高效的办法是从右至左用sink()函数构造子堆。如果一个结点的两个子结点都已经是堆了，那么在该结点上调用sink可以将它们变成一个堆。这个过程会递归地建立起堆的秩序。开始时我们只需要扫描数据中的一半元素，最后在位置1上调用sink方法，扫描结束。</p>
-
-<h3>3.2 下沉排序</h3>
-
-<p>当堆构造完成后，将堆中的最大元素删除，然后放到堆缩小后数组中空出的位置。</p>
-
-<h3>3.3 算法实现</h3>
-
-<p>```java
-public class PQSort {</p>
-
-<pre><code>public void sort(Comparable[] a) {
-    int n = a.length;
-    //构造堆
-    for(int k = n/2; k &gt;= 1; k--) {
-        sink(a, k, n);
-    }
-
-    //下沉排序
-    while (n &gt; 1) {
-        exchange(a, 1, n--);
-        sink(a, 1, n);
-    }
-}
-
-private void sink(Comparable[] a, int k, int n) {
-    while (2 * k &lt;= n) {
-        int j = 2 * k;
-        if (j &lt; n &amp;&amp; less(a, j, j+1)) {
-            j++;
-        }
-
-        if (!less(a, k, j)) {
-            break;
-        }
-
-        exchange(a, k, j);
-        k = j;
-    }
-}
-
-private static boolean less(Comparable[] a, int i, int j) {
-    //要减1
-    return a[i - 1].compareTo(a[j - 1]) &lt; 0;
-}
-
-private static void exchange(Comparable[] a, int i, int j) {
-    //要减1
-    Comparable t = a[i - 1];
-    a[i - 1] = a[j - 1];
-    a[j - 1] = t;
-}
-</code></pre>
-
-<p>}
-```
-对于一百万随机整数，排序时间大约在750ms。</p>
-
-<p>用堆实现的优先队列在现代应用程序中越来越重要，因为它能在<strong>插入操作和删除最大元素操作</strong>混合的动态场景中保证对数级别的运行时间。</p>
-
-<h2>小结</h2>
-
-<p>学完了常用的算法，总结一下。各种算法的性能特点如下表：</p>
-
-<p><img src="/myresource/images/IMG_20140928_224145.jpg" alt="image" /></p>
-
-<p>快速排序是最快的通用排序算法。</p>
-
-<p>Java中，java.util.Arrays.sort()方法会根据不同的参数类型选择排序方法。对于原始数据类型使用（三向切分）快速排序，对引用类型使用归并排序。这种选择实际上暗示着用速度和空间（对于原始数据类型）来换取稳定性（对于引用类型）。</p>
 ]]></content>
   </entry>
   

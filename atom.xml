@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-10-30T23:05:32+08:00</updated>
+  <updated>2014-11-02T23:15:29+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,781 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[最小生成树]]></title>
+    <link href="http://blog.ubone.com/blog/2014/10/31/zui-xiao-sheng-cheng-shu/"/>
+    <updated>2014-10-31T22:38:49+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/10/31/zui-xiao-sheng-cheng-shu</id>
+    <content type="html"><![CDATA[<p>加权图是一种为每条边关联一个权值或成本的图模型。这种图最令人感兴趣的是将成本最小化。本节学习加权无向图模型并找到它的一棵最小生成树。</p>
+
+<p>图的生成树是它的一棵含有其所有顶点的无环连通子图。一幅加权图的最小生成树（MST）是它的一棵权值（树中所有边的权值之和）最小的生成树。</p>
+
+<!--more-->
+
+
+<h2>1. 一些约定</h2>
+
+<p>为了方便说明，有以下这些约定：</p>
+
+<ul>
+<li>只考虑连通图。如果图是非连通的，只能计算它的所有连通分量的最小生成树，合并起来称为最小生成森林。</li>
+<li>边的权重不一定表示距离。但为了看起来方便，示意图会用距离来表示权重。</li>
+<li>边的权重可能是0或者负数。</li>
+<li>所有边的权重都各不相同。如果权重可以相同，最小生成树就不一定唯一，算法证明会更复杂。但实际上算法也适用于存在权重相等的情况。</li>
+</ul>
+
+
+<h2>2. 原理</h2>
+
+<p>图的一种<strong>切分</strong>是将图的所有顶点分为两个非空且不重叠的两个集合。<strong>横切边</strong>是一条连接两个属于不同集合的顶点的边。</p>
+
+<blockquote><p>切分定理：在一幅加权图中，给定任意的切分，它的横切边中的权重最小者必然属于图的最小生成树。</p></blockquote>
+
+<p>切分定理会把加权图中的所有顶点分为两个集合，检查横跨两个集合的所有边并识别哪边边应属于图的最小生成树。</p>
+
+<h2>3. 加权无向图的数据结构</h2>
+
+<p>通过扩展无向图的邻接矩阵来表示加权无向图。在无向图的邻接表表示中，第v个顶点的列表中每个元素都是和顶点v相邻的顶点。在加权无向图中，我们将其替换为一个加权边Edge：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-11-02-edge-api.png" alt="image" /></p>
+
+<p>上图中，eaither()表示边的两个顶点中的某一个，而other()则返回另一个顶点。有了加权边Edge，加权无向图的API就与无向图非常接近，在实现上，只是在邻接表中用Edge对象替代了无向图Graph中的整数作为链表的结点：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-11-02-edge-weighted-graph-api.png" alt="image" /></p>
+
+<p>加权无向图的表示如下：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-11-02-edge-weighted-graph-representation.png" alt="image" /></p>
+
+<p>代码实现如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Edge</span> <span class="kd">implements</span> <span class="n">Comparable</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">v</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">w</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">weight</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">Edge</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">,</span> <span class="kt">int</span> <span class="n">w</span><span class="o">,</span> <span class="kt">double</span> <span class="n">weight</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">v</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IndexOutOfBoundsException</span><span class="o">(</span><span class="s">&quot;Vertex name must be a nonnegative integer&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">w</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IndexOutOfBoundsException</span><span class="o">(</span><span class="s">&quot;Vertex name must be a nonnegative integer&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">Double</span><span class="o">.</span><span class="na">isNaN</span><span class="o">(</span><span class="n">weight</span><span class="o">))</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;Weight is NaN&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">w</span> <span class="o">=</span> <span class="n">w</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">weight</span> <span class="o">=</span> <span class="n">weight</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">double</span> <span class="nf">weight</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">weight</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">either</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">v</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">other</span><span class="o">(</span><span class="kt">int</span> <span class="n">vertex</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span>      <span class="o">(</span><span class="n">vertex</span> <span class="o">==</span> <span class="n">v</span><span class="o">)</span> <span class="k">return</span> <span class="n">w</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">vertex</span> <span class="o">==</span> <span class="n">w</span><span class="o">)</span> <span class="k">return</span> <span class="n">v</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">else</span> <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;Illegal endpoint&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compareTo</span><span class="o">(</span><span class="n">Edge</span> <span class="n">that</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span>      <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">weight</span><span class="o">()</span> <span class="o">&lt;</span> <span class="n">that</span><span class="o">.</span><span class="na">weight</span><span class="o">())</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">weight</span><span class="o">()</span> <span class="o">&gt;</span> <span class="n">that</span><span class="o">.</span><span class="na">weight</span><span class="o">())</span> <span class="k">return</span> <span class="o">+</span><span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">else</span>                                    <span class="k">return</span>  <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;%d-%d %.5f&quot;</span><span class="o">,</span> <span class="n">v</span><span class="o">,</span> <span class="n">w</span><span class="o">,</span> <span class="n">weight</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EdgeWeightedGraph</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">V</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">int</span> <span class="n">E</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Bag</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;[]</span> <span class="n">adj</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Initializes an empty edge-weighted graph with &lt;tt&gt;V&lt;/tt&gt; vertices and 0 edges.</span>
+</span><span class='line'><span class="cm">     * param V the number of vertices</span>
+</span><span class='line'><span class="cm">     * @throws java.lang.IllegalArgumentException if &lt;tt&gt;V&lt;/tt&gt; &lt; 0</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">EdgeWeightedGraph</span><span class="o">(</span><span class="kt">int</span> <span class="n">V</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">V</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;Number of vertices must be nonnegative&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">V</span> <span class="o">=</span> <span class="n">V</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">E</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">adj</span> <span class="o">=</span> <span class="o">(</span><span class="n">Bag</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;[])</span> <span class="k">new</span> <span class="n">Bag</span><span class="o">[</span><span class="n">V</span><span class="o">];</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">V</span><span class="o">;</span> <span class="n">v</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">adj</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Bag</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;();</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Initializes a random edge-weighted graph with &lt;tt&gt;V&lt;/tt&gt; vertices and &lt;em&gt;E&lt;/em&gt; edges.</span>
+</span><span class='line'><span class="cm">     * param V the number of vertices</span>
+</span><span class='line'><span class="cm">     * param E the number of edges</span>
+</span><span class='line'><span class="cm">     * @throws java.lang.IllegalArgumentException if &lt;tt&gt;V&lt;/tt&gt; &lt; 0</span>
+</span><span class='line'><span class="cm">     * @throws java.lang.IllegalArgumentException if &lt;tt&gt;E&lt;/tt&gt; &lt; 0</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">EdgeWeightedGraph</span><span class="o">(</span><span class="kt">int</span> <span class="n">V</span><span class="o">,</span> <span class="kt">int</span> <span class="n">E</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">(</span><span class="n">V</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">E</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;Number of edges must be nonnegative&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">E</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">random</span><span class="o">()</span> <span class="o">*</span> <span class="n">V</span><span class="o">);</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">random</span><span class="o">()</span> <span class="o">*</span> <span class="n">V</span><span class="o">);</span>
+</span><span class='line'>            <span class="kt">double</span> <span class="n">weight</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">round</span><span class="o">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">Math</span><span class="o">.</span><span class="na">random</span><span class="o">())</span> <span class="o">/</span> <span class="mf">100.0</span><span class="o">;</span>
+</span><span class='line'>            <span class="n">Edge</span> <span class="n">e</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Edge</span><span class="o">(</span><span class="n">v</span><span class="o">,</span> <span class="n">w</span><span class="o">,</span> <span class="n">weight</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">addEdge</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**  </span>
+</span><span class='line'><span class="cm">     * Initializes an edge-weighted graph from an input stream.</span>
+</span><span class='line'><span class="cm">     * The format is the number of vertices &lt;em&gt;V&lt;/em&gt;,</span>
+</span><span class='line'><span class="cm">     * followed by the number of edges &lt;em&gt;E&lt;/em&gt;,</span>
+</span><span class='line'><span class="cm">     * followed by &lt;em&gt;E&lt;/em&gt; pairs of vertices and edge weights,</span>
+</span><span class='line'><span class="cm">     * with each entry separated by whitespace.</span>
+</span><span class='line'><span class="cm">     * @param in the input stream</span>
+</span><span class='line'><span class="cm">     * @throws java.lang.IndexOutOfBoundsException if the endpoints of any edge are not in prescribed range</span>
+</span><span class='line'><span class="cm">     * @throws java.lang.IllegalArgumentException if the number of vertices or edges is negative</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">EdgeWeightedGraph</span><span class="o">(</span><span class="n">In</span> <span class="n">in</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">E</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">readInt</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">E</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;Number of edges must be nonnegative&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">E</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">readInt</span><span class="o">();</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">readInt</span><span class="o">();</span>
+</span><span class='line'>            <span class="kt">double</span> <span class="n">weight</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">readDouble</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">Edge</span> <span class="n">e</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Edge</span><span class="o">(</span><span class="n">v</span><span class="o">,</span> <span class="n">w</span><span class="o">,</span> <span class="n">weight</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">addEdge</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Initializes a new edge-weighted graph that is a deep copy of &lt;tt&gt;G&lt;/tt&gt;.</span>
+</span><span class='line'><span class="cm">     * @param G the edge-weighted graph to copy</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">EdgeWeightedGraph</span><span class="o">(</span><span class="n">EdgeWeightedGraph</span> <span class="n">G</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">(</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">());</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">E</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="na">E</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">();</span> <span class="n">v</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="c1">// reverse so that adjacency list is in same order as original</span>
+</span><span class='line'>            <span class="n">Stack</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="n">reverse</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Stack</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;();</span>
+</span><span class='line'>            <span class="k">for</span> <span class="o">(</span><span class="n">Edge</span> <span class="n">e</span> <span class="o">:</span> <span class="n">G</span><span class="o">.</span><span class="na">adj</span><span class="o">[</span><span class="n">v</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">reverse</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>            <span class="k">for</span> <span class="o">(</span><span class="n">Edge</span> <span class="n">e</span> <span class="o">:</span> <span class="n">reverse</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">adj</span><span class="o">[</span><span class="n">v</span><span class="o">].</span><span class="na">add</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//图的顶点数</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">V</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">V</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//图的边数</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">E</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">E</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//向图中添加一条边e</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addEdge</span><span class="o">(</span><span class="n">Edge</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">either</span><span class="o">();</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">other</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">v</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">v</span> <span class="o">&gt;=</span> <span class="n">V</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IndexOutOfBoundsException</span><span class="o">(</span><span class="s">&quot;vertex &quot;</span> <span class="o">+</span> <span class="n">v</span> <span class="o">+</span> <span class="s">&quot; is not between 0 and &quot;</span> <span class="o">+</span> <span class="o">(</span><span class="n">V</span><span class="o">-</span><span class="mi">1</span><span class="o">));</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">w</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">w</span> <span class="o">&gt;=</span> <span class="n">V</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IndexOutOfBoundsException</span><span class="o">(</span><span class="s">&quot;vertex &quot;</span> <span class="o">+</span> <span class="n">w</span> <span class="o">+</span> <span class="s">&quot; is not between 0 and &quot;</span> <span class="o">+</span> <span class="o">(</span><span class="n">V</span><span class="o">-</span><span class="mi">1</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">adj</span><span class="o">[</span><span class="n">v</span><span class="o">].</span><span class="na">add</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">adj</span><span class="o">[</span><span class="n">w</span><span class="o">].</span><span class="na">add</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">E</span><span class="o">++;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//与v相关联的所有边</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="nf">adj</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">v</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">v</span> <span class="o">&gt;=</span> <span class="n">V</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IndexOutOfBoundsException</span><span class="o">(</span><span class="s">&quot;vertex &quot;</span> <span class="o">+</span> <span class="n">v</span> <span class="o">+</span> <span class="s">&quot; is not between 0 and &quot;</span> <span class="o">+</span> <span class="o">(</span><span class="n">V</span><span class="o">-</span><span class="mi">1</span><span class="o">));</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">adj</span><span class="o">[</span><span class="n">v</span><span class="o">];</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//图中的所有边</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="nf">edges</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Bag</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Bag</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;();</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">V</span><span class="o">;</span> <span class="n">v</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">selfLoops</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">for</span> <span class="o">(</span><span class="n">Edge</span> <span class="n">e</span> <span class="o">:</span> <span class="n">adj</span><span class="o">(</span><span class="n">v</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">other</span><span class="o">(</span><span class="n">v</span><span class="o">)</span> <span class="o">&gt;</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>                <span class="c1">// only add one copy of each self loop (self loops will be consecutive)</span>
+</span><span class='line'>                <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">other</span><span class="o">(</span><span class="n">v</span><span class="o">)</span> <span class="o">==</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="o">(</span><span class="n">selfLoops</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+</span><span class='line'>                    <span class="n">selfLoops</span><span class="o">++;</span>
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">list</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">NEWLINE</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;line.separator&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">StringBuilder</span> <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">s</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">V</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="n">E</span> <span class="o">+</span> <span class="n">NEWLINE</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">V</span><span class="o">;</span> <span class="n">v</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">s</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">v</span> <span class="o">+</span> <span class="s">&quot;: &quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">for</span> <span class="o">(</span><span class="n">Edge</span> <span class="n">e</span> <span class="o">:</span> <span class="n">adj</span><span class="o">[</span><span class="n">v</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">s</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">e</span> <span class="o">+</span> <span class="s">&quot;  &quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>            <span class="n">s</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">NEWLINE</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>4. 最小生成树的API及实现</h2>
+
+<p>下面API定义的构造函数接受加权无向图作为参数，并返回最小生成树和其权重。</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-11-02-mst-api.png" alt="image" /></p>
+
+<p>Prim算法和Kruskal算法都可以实现最小生成树，它们都基于贪心算法，区别在于保存切分和判定权重最小的横切边的方式。</p>
+
+<blockquote><p>贪心算法：初始状态下所有边均为灰色，找到一种切分，它产生的横切边均不为黑色。将权重最小的横切边标记为黑色。反复这个步骤直到标记了V-1条黑色边为止。</p></blockquote>
+
+<h3>4.1 Prim算法</h3>
+
+<p>Prim算法每一步都会为一棵生长中的树添加一条边。一开始这棵树只有一个顶点，然后会向它添加V-1条边，每次总是找到这样一条边并将其加入树中：这条边的一端在树中，另一端不在树中，并且权值最小。</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-11-02-prim-eager.png" alt="image" /></p>
+
+<p>每当向树中添加一条边后，也向树中添加了一个顶点。要维护一个包含所有横切边的集合，可以将连接这个顶点和其他所有不在树中的顶点的边加入优先队列。这样就可以得到符合条件的权值最小的边。当一个顶点加入树中后，连接这个顶点与树中其它顶点的所有边就失效了，因为这些边的两个顶点都已经在树中，这些边不再是横切边。那么何时删除这些边就形成了Prim算法的两种实现：</p>
+
+<ul>
+<li>延时(Lazy)实现会先把它们留在队列中，等要删除时再检查边的有效性；</li>
+<li>即时实现可以将它们从优先队列中删除。</li>
+</ul>
+
+
+<p>这两种实现所需的时间都与ElogE成正比（最坏情况下），延时实现所需的空间与E成正比，瓶颈在于优先队列的insert()和delMin()中比较边的权重次数。而即时实现所需空间的上限与V成正比，比延时实现有优势。两种实现代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LazyPrimMST</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">double</span> <span class="n">weight</span><span class="o">;</span>       <span class="c1">// total weight of MST</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="n">mst</span><span class="o">;</span>     <span class="c1">// edges in the MST</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">boolean</span><span class="o">[]</span> <span class="n">marked</span><span class="o">;</span>    <span class="c1">// marked[v] = true if v on tree</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">MinPQ</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="n">pq</span><span class="o">;</span>      <span class="c1">// edges with one endpoint in tree</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Compute a minimum spanning tree (or forest) of an edge-weighted graph.</span>
+</span><span class='line'><span class="cm">     * @param G the edge-weighted graph</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">LazyPrimMST</span><span class="o">(</span><span class="n">EdgeWeightedGraph</span> <span class="n">G</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">mst</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;();</span>
+</span><span class='line'>        <span class="n">pq</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MinPQ</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;();</span>
+</span><span class='line'>        <span class="n">marked</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">();</span> <span class="n">v</span><span class="o">++)</span>     <span class="c1">// run Prim from all vertices to</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(!</span><span class="n">marked</span><span class="o">[</span><span class="n">v</span><span class="o">])</span> <span class="n">prim</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">v</span><span class="o">);</span>     <span class="c1">// get a minimum spanning forest</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// run Prim&#39;s algorithm</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">prim</span><span class="o">(</span><span class="n">EdgeWeightedGraph</span> <span class="n">G</span><span class="o">,</span> <span class="kt">int</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">scan</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">s</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">while</span> <span class="o">(!</span><span class="n">pq</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>                        <span class="c1">// better to stop when mst has V-1 edges</span>
+</span><span class='line'>            <span class="n">Edge</span> <span class="n">e</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="na">delMin</span><span class="o">();</span>                      <span class="c1">// smallest edge on pq</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">either</span><span class="o">(),</span> <span class="n">w</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">other</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>        <span class="c1">// two endpoints</span>
+</span><span class='line'>            <span class="k">assert</span> <span class="n">marked</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">||</span> <span class="n">marked</span><span class="o">[</span><span class="n">w</span><span class="o">];</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">marked</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="n">marked</span><span class="o">[</span><span class="n">w</span><span class="o">])</span> <span class="k">continue</span><span class="o">;</span>      <span class="c1">// lazy, both v and w already scanned</span>
+</span><span class='line'>            <span class="n">mst</span><span class="o">.</span><span class="na">enqueue</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>                            <span class="c1">// add e to MST</span>
+</span><span class='line'>            <span class="n">weight</span> <span class="o">+=</span> <span class="n">e</span><span class="o">.</span><span class="na">weight</span><span class="o">();</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(!</span><span class="n">marked</span><span class="o">[</span><span class="n">v</span><span class="o">])</span> <span class="n">scan</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">v</span><span class="o">);</span>               <span class="c1">// v becomes part of tree</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(!</span><span class="n">marked</span><span class="o">[</span><span class="n">w</span><span class="o">])</span> <span class="n">scan</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">w</span><span class="o">);</span>               <span class="c1">// w becomes part of tree</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//标记顶点v并将所有连接v和未被标记顶点的边加入pq</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">scan</span><span class="o">(</span><span class="n">EdgeWeightedGraph</span> <span class="n">G</span><span class="o">,</span> <span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">assert</span> <span class="o">!</span><span class="n">marked</span><span class="o">[</span><span class="n">v</span><span class="o">];</span>
+</span><span class='line'>        <span class="n">marked</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">Edge</span> <span class="n">e</span> <span class="o">:</span> <span class="n">G</span><span class="o">.</span><span class="na">adj</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(!</span><span class="n">marked</span><span class="o">[</span><span class="n">e</span><span class="o">.</span><span class="na">other</span><span class="o">(</span><span class="n">v</span><span class="o">)])</span> <span class="n">pq</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//树的所有边</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="nf">edges</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">mst</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//树的权重</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">double</span> <span class="nf">weight</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">weight</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PrimMST</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Edge</span><span class="o">[]</span> <span class="n">edgeTo</span><span class="o">;</span>        <span class="c1">// 距离树最近的边，edgeTo[v] = shortest edge from tree vertex to non-tree vertex</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">double</span><span class="o">[]</span> <span class="n">distTo</span><span class="o">;</span>      <span class="c1">// distTo[v] = weight of shortest such edge</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">boolean</span><span class="o">[]</span> <span class="n">marked</span><span class="o">;</span>     <span class="c1">// marked[v] = true if v on tree, false otherwise</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">IndexMinPQ</span><span class="o">&lt;</span><span class="n">Double</span><span class="o">&gt;</span> <span class="n">pq</span><span class="o">;</span>  <span class="c1">//有效的横切边</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Compute a minimum spanning tree (or forest) of an edge-weighted graph.</span>
+</span><span class='line'><span class="cm">     * @param G the edge-weighted graph</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">PrimMST</span><span class="o">(</span><span class="n">EdgeWeightedGraph</span> <span class="n">G</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">edgeTo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Edge</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
+</span><span class='line'>        <span class="n">distTo</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">double</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
+</span><span class='line'>        <span class="n">marked</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
+</span><span class='line'>        <span class="n">pq</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IndexMinPQ</span><span class="o">&lt;</span><span class="n">Double</span><span class="o">&gt;(</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">());</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">();</span> <span class="n">v</span><span class="o">++)</span> <span class="n">distTo</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">=</span> <span class="n">Double</span><span class="o">.</span><span class="na">POSITIVE_INFINITY</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">();</span> <span class="n">v</span><span class="o">++)</span>      <span class="c1">// run from each vertex to find</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(!</span><span class="n">marked</span><span class="o">[</span><span class="n">v</span><span class="o">])</span> <span class="n">prim</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">v</span><span class="o">);</span>      <span class="c1">// minimum spanning forest</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// run Prim&#39;s algorithm in graph G, starting from vertex s</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">prim</span><span class="o">(</span><span class="n">EdgeWeightedGraph</span> <span class="n">G</span><span class="o">,</span> <span class="kt">int</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">distTo</span><span class="o">[</span><span class="n">s</span><span class="o">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">pq</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">distTo</span><span class="o">[</span><span class="n">s</span><span class="o">]);</span> <span class="c1">//用顶点0和权重0初始化pq</span>
+</span><span class='line'>        <span class="k">while</span> <span class="o">(!</span><span class="n">pq</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="na">delMin</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">scan</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">v</span><span class="o">);</span>          <span class="c1">//将最近的顶点添加到树中</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// scan vertex v</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">scan</span><span class="o">(</span><span class="n">EdgeWeightedGraph</span> <span class="n">G</span><span class="o">,</span> <span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="c1">//将顶点v添加到树中，更新数据</span>
+</span><span class='line'>        <span class="n">marked</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">Edge</span> <span class="n">e</span> <span class="o">:</span> <span class="n">G</span><span class="o">.</span><span class="na">adj</span><span class="o">(</span><span class="n">v</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">other</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">marked</span><span class="o">[</span><span class="n">w</span><span class="o">])</span> <span class="k">continue</span><span class="o">;</span>         <span class="c1">// v-w 已经失效</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">weight</span><span class="o">()</span> <span class="o">&lt;</span> <span class="n">distTo</span><span class="o">[</span><span class="n">w</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>                  <span class="c1">//连接w和树的最佳边Edge变为e</span>
+</span><span class='line'>                <span class="n">distTo</span><span class="o">[</span><span class="n">w</span><span class="o">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">weight</span><span class="o">();</span>
+</span><span class='line'>                <span class="n">edgeTo</span><span class="o">[</span><span class="n">w</span><span class="o">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">;</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">(</span><span class="n">pq</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">w</span><span class="o">))</span> <span class="n">pq</span><span class="o">.</span><span class="na">decreaseKey</span><span class="o">(</span><span class="n">w</span><span class="o">,</span> <span class="n">distTo</span><span class="o">[</span><span class="n">w</span><span class="o">]);</span>
+</span><span class='line'>                <span class="k">else</span>                <span class="n">pq</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">w</span><span class="o">,</span> <span class="n">distTo</span><span class="o">[</span><span class="n">w</span><span class="o">]);</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//所有边</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="nf">edges</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Queue</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="n">mst</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;();</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">edgeTo</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">v</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">Edge</span> <span class="n">e</span> <span class="o">=</span> <span class="n">edgeTo</span><span class="o">[</span><span class="n">v</span><span class="o">];</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">e</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">mst</span><span class="o">.</span><span class="na">enqueue</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">mst</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//权重</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">double</span> <span class="nf">weight</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">weight</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">Edge</span> <span class="n">e</span> <span class="o">:</span> <span class="n">edges</span><span class="o">())</span>
+</span><span class='line'>            <span class="n">weight</span> <span class="o">+=</span> <span class="n">e</span><span class="o">.</span><span class="na">weight</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">weight</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4.2 Kruskal算法</h3>
+
+<p>Kruskal算法构造最小生成树时也是一条边一条边地构造，但它寻找的边会连接一片森林中的两棵树。我们从一片由V棵单顶点的树构成的森林开始并不断将两棵树合并（用可以找到的最短边）直到只剩下一棵树。其主要思想是按边的权重顺序处理它们，将边加入最小生成树中，加入的边不会与已经加入的边构成环，直到树中含有V-1条边为止。</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-11-02-kruskal.png" alt="image" /></p>
+
+<p>实现时，采用优先队列将边按照权重排序，用一个union-find数据结构识别会形成环的边，以及一个队列来保存最小生成树的所有边。代码实现如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KruskalMST</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">double</span> <span class="n">weight</span><span class="o">;</span>  <span class="c1">// weight of MST</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="n">mst</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;();</span>  <span class="c1">// edges in MST</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">KruskalMST</span><span class="o">(</span><span class="n">EdgeWeightedGraph</span> <span class="n">G</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">// more efficient to build heap by passing array of edges</span>
+</span><span class='line'>        <span class="n">MinPQ</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="n">pq</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MinPQ</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;();</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">Edge</span> <span class="n">e</span> <span class="o">:</span> <span class="n">G</span><span class="o">.</span><span class="na">edges</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">pq</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// run greedy algorithm</span>
+</span><span class='line'>        <span class="n">UF</span> <span class="n">uf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">UF</span><span class="o">(</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">());</span>
+</span><span class='line'>        <span class="k">while</span> <span class="o">(!</span><span class="n">pq</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">mst</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&lt;</span> <span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">Edge</span> <span class="n">e</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="na">delMin</span><span class="o">();</span>  <span class="c1">//从pq得到权重最小的边和它的顶点</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">either</span><span class="o">();</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">other</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(!</span><span class="n">uf</span><span class="o">.</span><span class="na">connected</span><span class="o">(</span><span class="n">v</span><span class="o">,</span> <span class="n">w</span><span class="o">))</span> <span class="o">{</span> <span class="c1">// v-w does not create a cycle</span>
+</span><span class='line'>                <span class="n">uf</span><span class="o">.</span><span class="na">union</span><span class="o">(</span><span class="n">v</span><span class="o">,</span> <span class="n">w</span><span class="o">);</span>  <span class="c1">// merge v and w components</span>
+</span><span class='line'>                <span class="n">mst</span><span class="o">.</span><span class="na">enqueue</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>  <span class="c1">// add edge e to mst</span>
+</span><span class='line'>                <span class="n">weight</span> <span class="o">+=</span> <span class="n">e</span><span class="o">.</span><span class="na">weight</span><span class="o">();</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//树的所有边</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="nf">edges</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">mst</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//树的权重</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">double</span> <span class="nf">weight</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">weight</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Kruskal算法所需的空间与E成正比，所需时间与ElogE成正比（最坏情况下）。</p>
+
+<p>Prim和Kruskal算法不能处理有向图。</p>
+
+<p>参考：<a href="http://algs4.cs.princeton.edu/43mst/">http://algs4.cs.princeton.edu/43mst</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[有向图]]></title>
@@ -581,6 +1356,8 @@
 
 
 <p></p>
+
+<p>参考：<a href="http://algs4.cs.princeton.edu/42directed/">http://algs4.cs.princeton.edu/42directed/</a></p>
 ]]></content>
   </entry>
   
@@ -1271,6 +2048,8 @@
 <li>找出两个顶点间的最短路径。</li>
 </ol>
 
+
+<p>参考：<a href="http://algs4.cs.princeton.edu/41undirected/">http://algs4.cs.princeton.edu/41undirected/</a></p>
 ]]></content>
   </entry>
   
@@ -7496,23 +8275,6 @@
 
 
 <p>对于转换对象的方法，返回不同类型的独立对象的方法，通常被称为toType，如toString, toArray。返回视图的方法通常称为asType，如asList。静态工厂的常用名称为valueOf, of, getInstance, newInstance, getType和newType。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式:解释器模式与调停者模式]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/"/>
-    <updated>2014-08-20T22:31:36+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi</id>
-    <content type="html"><![CDATA[<p>之所以将这两个模式放在一起，是因为它们很少用得到。</p>
-
-<h3>解释器(Interpreter)模式</h3>
-
-<p>给定一个语言之后，解释器模式可以定义出其文法的一种表示，并同时提供一个解释器。客户端可以使用这个解释器来解释这个语言中的句子。例如对于数学运算表达式（a + b + c），如果a, b和c的值已知，如何得到结果？一种办法是使用直接计算值的方法写一个算法，但是如果有很多个表达式呢？不可能为每一个表达式写一个算法。这时候解释器模式就能派上用场了。</p>
-
-<h3>调停者(Mediator)模式</h3>
-
-<p>当对象之间的关系成网状时，就会耦合得过于紧密。通过调停者模式转换成星状结构，调停者在中心，所有对象都只与调停者打交道，实现对象间的解耦。</p>
 ]]></content>
   </entry>
   
