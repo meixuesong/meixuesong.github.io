@@ -3,6 +3,12 @@
   
   
   <url>
+    <loc>http://blog.ubone.com/blog/2014/11/03/zui-duan-lu-jing/</loc>
+    <lastmod>2014-11-03T20:22:31+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.ubone.com/blog/2014/10/31/zui-xiao-sheng-cheng-shu/</loc>
     <lastmod>2014-10-31T22:38:49+08:00</lastmod>
     <priority>0.8</priority>
@@ -401,14 +407,14 @@
   
   <url>
     <loc>http://blog.ubone.com/blog/archives/</loc>
-    <lastmod>2014-11-02T23:18:25+08:00</lastmod>
+    <lastmod>2014-11-06T19:09:15+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.ubone.com/</loc>
-    <lastmod>2014-11-02T23:18:25+08:00</lastmod>
+    <lastmod>2014-11-06T19:09:15+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>

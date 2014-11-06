@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 算法 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/suan-fa/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-11-02T23:18:25+08:00</updated>
+  <updated>2014-11-06T19:09:15+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,656 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[最短路径]]></title>
+    <link href="http://blog.ubone.com/blog/2014/11/03/zui-duan-lu-jing/"/>
+    <updated>2014-11-03T20:22:31+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/11/03/zui-duan-lu-jing</id>
+    <content type="html"><![CDATA[<p>最短路径算法可以解决很多问题，例如地图导航、任务调度和网络路由等。本章的主题就是找到从一个顶点到达另一个顶点的成本最小的路径。</p>
+
+<blockquote><p>在一幅加权有向图中，从顶点s到顶点t的最短路径是所有从s到t的路径中的权重最小者。</p></blockquote>
+
+<p>本章要涉及以下问题：</p>
+
+<ul>
+<li>加权有向图的API、单点最短路径的API及它们的实现；</li>
+<li>解决边的权重非负的最短路径问题的经典Dijkstra算法；</li>
+<li>在无环加权有向图中解决该问题的一种快速算法，边的权重甚至可以是负值；</li>
+<li>适用于一般情况的经典Bellman-Ford算法，其中图可以含有环，边的权重也可以是负值。</li>
+</ul>
+
+
+<!--more-->
+
+
+<h2>1. 最短路径的性质</h2>
+
+<ul>
+<li>路径是有向的；</li>
+<li>权重不一定等价于距离，但示例图会用距离代表权重；</li>
+<li>并不是所有顶点都是可达的；</li>
+<li>负权重会使问题更复杂，暂时假定边的权重是非负的；</li>
+<li>算法会忽略构成环的零权重边，找到的最短路径都不会含有环；</li>
+<li>最短路径不一定是唯一的，只找到其中一条即可；</li>
+<li>可能存在平行边和自环，为避免歧义假设不存在平行边，但代码处理它们并没有困难。</li>
+</ul>
+
+
+<p>单点最短路径的计算结果是一棵最短路径树（SPT），它包含了顶点s到达所有可达的顶点的最短路径。</p>
+
+<blockquote><p>给定一幅加权有向图和一个顶点s，以s为起点的一棵最短路径树是图的一幅子图，它包含s和从s可达的所有顶点。这棵有向树的根结点是s，树的每条路径都是有向图中的一条最短路径。</p></blockquote>
+
+<h2>2. 加权有向图的数据结构</h2>
+
+<p>有向边的数据结构比无向边更简单，因为有向边只有一个方向。其API定义如下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-04-directed-edge-api.png" alt="image" /></p>
+
+<p>```java
+public class DirectedEdge {</p>
+
+<pre><code>private final int v;                //边的起点
+private final int w;                //边的终点
+private final double weight;        //边的权重
+
+public DirectedEdge(int v, int w, double weight) {
+    if (v &lt; 0) throw new IndexOutOfBoundsException("Vertex names must be nonnegative integers");
+    if (w &lt; 0) throw new IndexOutOfBoundsException("Vertex names must be nonnegative integers");
+    if (Double.isNaN(weight)) throw new IllegalArgumentException("Weight is NaN");
+    this.v = v;
+    this.w = w;
+    this.weight = weight;
+}
+
+public int from() {return v;}
+public int to() {return w;}
+public double weight() {return weight;}
+
+public String toString() {
+    return v + "-&gt;" + w + " " + String.format("%5.2f", weight);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>加权有向图的API也与无向图类似：</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-04-edge-weighted-digraph-api.png" alt="image" /></p>
+
+<p>```java
+public class EdgeWeightedDigraph {</p>
+
+<pre><code>private final int V;                    //顶点总数
+private int E;                          //边的总数
+private Bag&lt;DirectedEdge&gt;[] adj;        //邻接表
+
+public EdgeWeightedDigraph(int V) {
+    if (V &lt; 0) throw new IllegalArgumentException("Number of vertices in a Digraph must be nonnegative");
+    this.V = V;
+    this.E = 0;
+    adj = (Bag&lt;DirectedEdge&gt;[]) new Bag[V];
+    for (int v = 0; v &lt; V; v++)
+        adj[v] = new Bag&lt;DirectedEdge&gt;();
+}
+
+public int V() {return V;}
+public int E() {return E;}
+
+//将e添加到有向图中
+public void addEdge(DirectedEdge e) {
+    adj[e.from()].add(e);
+    E++;
+}
+
+//从v指出的边
+public Iterable&lt;DirectedEdge&gt; adj(int v) {
+    return adj[v];
+}
+
+//有向图中的所有边
+public Iterable&lt;DirectedEdge&gt; edges() {
+    Bag&lt;DirectedEdge&gt; list = new Bag&lt;DirectedEdge&gt;();
+    for (int v = 0; v &lt; V; v++) {
+        for (DirectedEdge e : adj(v)) {
+            list.add(e);
+        }
+    }
+    return list;
+} 
+</code></pre>
+
+<p>}
+```</p>
+
+<p>加权有向图的表示：</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-04-edge-weighted-digraph-representation.png" alt="image" /></p>
+
+<h3>2.1 最短路径</h3>
+
+<p>最短路径的API：</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-04-sp-api.png" alt="image" /></p>
+
+<p>在实现时，分别用两个数组来表示最短路径：</p>
+
+<ul>
+<li>最短路径树中的边：DirectedEdge[] edgeTo，edgeTo[v]的值为树中连接v和它的父结点的边。</li>
+<li>到达起点的距离：Double[] distTo，distTo[v]为从起点s到v的已知最短路径的长度。</li>
+</ul>
+
+
+<p>同时约定edgeTo[s] == null, distTo[s] == 0; 不可达的顶点的距离为Double.POSITIVE_INFINITY。</p>
+
+<h3>2.2 松弛操作</h3>
+
+<p>松弛（Relaxation）操作是最短路径实现中使用的关键操作。对边v->w松弛意味着检查从s到w的最短路径是否是先从s到v，然后再由v到w。如果是，则由v到达w的最短路径是distTo[v] + e.weight()。如果这个值不小于distTo[w]，则证明刚才的边失效可忽略，否则证明现在的值更小，需要更新数据。</p>
+
+<p>下图演示了这种情况，左侧的v->w不满足条件，被忽略。而右侧的图v->满足条件，替换为新的最短路径。</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-04-relaxation-edge.png" alt="image" /></p>
+
+<p>对顶点的松弛操作就是对该顶点指出的所有边进行松弛操作。每次顶点的松弛操作都能得出到达某个顶点的更短的路径。算法就这样最终找出到达每个顶点的最短路径。</p>
+
+<h2>3. 最短路径算法的理论基础</h2>
+
+<p>最短路径的最优性条件：</p>
+
+<blockquote><p>令G为一幅加权有向图，顶点s是G中的起点，distTo[]是一个由顶点索引的数组，保存的是G中路径的长度。对于从s可达的所有顶点v，distTo[v]的值是从s到v的某条路径的长度，对于从s不可达的所有顶点v，该值为无穷大。当且仅当对于从v到w的任意一条边e, 这些值都满足distTo[w] &lt;= distTo[v] + e.weight()时，它们是最短路径的长度。</p></blockquote>
+
+<p>根据最优性条件，我们可以得到一个通用算法，暂时只考虑非负权重的情况：</p>
+
+<blockquote><p>将distTo[s]初始化为0，其它distTo[]元素初始化为无穷大，继续如下操作：放松G中的任意边，直到不存在有效边为止。对于任意从s可达的顶点w，进行这些操作后，distTo[w]的值即为从s到w的最短路径的长度。</p></blockquote>
+
+<h2>4. Dijkstra算法</h2>
+
+<p>Dijkstra算法能够解决边权重非负的加权有向图的单起点最短路径问题。它与无向图的最小生成树的Prim算法（每一步都向最小生成树中添加一条新的边）非常相似。首先将distTo[s]初始华为0，distTo[]的其他元素初始化为正无穷。然后<strong>将distTo[]最小的非树顶点放松并加入树中，如此这般，直到所有的顶点都在树中或者所有的非树顶点的distTo[]值均为无穷大。</strong></p>
+
+<p>Dijkstra算法实现时，除了要distTo[]和edgeTo[]之外，还需要一条索引优先队列pa，以保存需要被放松的顶点并确认下一个被放松的顶点。只要将v和distTo[v]关联起来放入队列就可以立即实现Dijkstra算法。Prim算法每次添加的都是离树最近的非树顶点，而Dijkstra算法每次添加的都是离起点最近的非树顶点。如果将加权无向图看成加权有向图，对无向图中的每条边都相应地创建方向相反的有向边，最短路径的问题是等价的。Dijkstra算法实现实现如下：</p>
+
+<p>```
+public class DijkstraSP {</p>
+
+<pre><code>private double[] distTo;          // distTo[v] = distance  of shortest s-&gt;v path
+private DirectedEdge[] edgeTo;    // edgeTo[v] = last edge on shortest s-&gt;v path
+private IndexMinPQ&lt;Double&gt; pq;    // priority queue of vertices
+
+/**
+ * Computes a shortest paths tree from &lt;tt&gt;s&lt;/tt&gt; to every other vertex in
+ * the edge-weighted digraph &lt;tt&gt;G&lt;/tt&gt;.
+ * @param G the edge-weighted digraph
+ * @param s the source vertex
+ * @throws IllegalArgumentException if an edge weight is negative
+ * @throws IllegalArgumentException unless 0 &amp;le; &lt;tt&gt;s&lt;/tt&gt; &amp;le; &lt;tt&gt;V&lt;/tt&gt; - 1
+ */
+public DijkstraSP(EdgeWeightedDigraph G, int s) {
+    for (DirectedEdge e : G.edges()) {
+        if (e.weight() &lt; 0)
+            throw new IllegalArgumentException("edge " + e + " has negative weight");
+    }
+
+    distTo = new double[G.V()];
+    edgeTo = new DirectedEdge[G.V()];
+    for (int v = 0; v &lt; G.V(); v++)
+        distTo[v] = Double.POSITIVE_INFINITY;
+    distTo[s] = 0.0;
+
+    // relax vertices in order of distance from s
+    pq = new IndexMinPQ&lt;Double&gt;(G.V());
+    pq.insert(s, distTo[s]);
+    while (!pq.isEmpty()) {
+        int v = pq.delMin();
+        for (DirectedEdge e : G.adj(v))
+            relax(e);
+    }
+}
+
+// relax edge e and update pq if changed
+private void relax(DirectedEdge e) {
+    int v = e.from(), w = e.to();
+    if (distTo[w] &gt; distTo[v] + e.weight()) {
+        distTo[w] = distTo[v] + e.weight();
+        edgeTo[w] = e;
+        if (pq.contains(w)) pq.decreaseKey(w, distTo[w]);
+        else                pq.insert(w, distTo[w]);
+    }
+}
+
+/**
+ * Returns the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+ * @param v the destination vertex
+ * @return the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;;
+ *    &lt;tt&gt;Double.POSITIVE_INFINITY&lt;/tt&gt; if no such path
+ */
+public double distTo(int v) {
+    return distTo[v];
+}
+
+/**
+ * Is there a path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;?
+ * @param v the destination vertex
+ * @return &lt;tt&gt;true&lt;/tt&gt; if there is a path from the source vertex
+ *    &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;, and &lt;tt&gt;false&lt;/tt&gt; otherwise
+ */
+public boolean hasPathTo(int v) {
+    return distTo[v] &lt; Double.POSITIVE_INFINITY;
+}
+
+/**
+ * Returns a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+ * @param v the destination vertex
+ * @return a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;
+ *    as an iterable of edges, and &lt;tt&gt;null&lt;/tt&gt; if no such path
+ */
+public Iterable&lt;DirectedEdge&gt; pathTo(int v) {
+    if (!hasPathTo(v)) return null;
+    Stack&lt;DirectedEdge&gt; path = new Stack&lt;DirectedEdge&gt;();
+    for (DirectedEdge e = edgeTo[v]; e != null; e = edgeTo[e.from()]) {
+        path.push(e);
+    }
+    return path;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>要解决<strong>加权有向图中给定两点（从s到t）的最短路径</strong>这个问题，只要使用Dijkstra算法并从优先队列中取到t之后终止搜索。</p>
+
+<h2>5. 无环加权有向图中的最短路径算法</h2>
+
+<p>如果加权有向图是不含有有向环的，那么可以采用一种比Dijkstra更快、更简单的最短路径算法。它能够在线性时间内解决单点最短路径问题，能够处理负权重的边，还能解决一些其它问题，如找出最长的路径。</p>
+
+<p>根据在<a href="/blog/2014/10/30/you-xiang-tu/">有向图</a>中学习的拓扑顺序知识，我们知道一幅有向无环图的拓扑顺序就是所有顶点的逆后序排列。如果我们按照拓扑顺序放松顶点，就能在E+V成正比的时间内解决无环加权有向图的单点最短路径问题。代码实现如下：</p>
+
+<p>```
+public class AcyclicSP {</p>
+
+<pre><code>private double[] distTo;         // distTo[v] = distance  of shortest s-&gt;v path
+private DirectedEdge[] edgeTo;   // edgeTo[v] = last edge on shortest s-&gt;v path
+
+
+/**
+ * Computes a shortest paths tree from &lt;tt&gt;s&lt;/tt&gt; to every other vertex in
+ * the directed acyclic graph &lt;tt&gt;G&lt;/tt&gt;.
+ * @param G the acyclic digraph
+ * @param s the source vertex
+ * @throws IllegalArgumentException if the digraph is not acyclic
+ * @throws IllegalArgumentException unless 0 &amp;le; &lt;tt&gt;s&lt;/tt&gt; &amp;le; &lt;tt&gt;V&lt;/tt&gt; - 1
+ */
+public AcyclicSP(EdgeWeightedDigraph G, int s) {
+    distTo = new double[G.V()];
+    edgeTo = new DirectedEdge[G.V()];
+    for (int v = 0; v &lt; G.V(); v++)
+        distTo[v] = Double.POSITIVE_INFINITY;
+    distTo[s] = 0.0;
+
+    // visit vertices in toplogical order
+    Topological topological = new Topological(G);
+    if (!topological.hasOrder())
+        throw new IllegalArgumentException("Digraph is not acyclic.");
+    for (int v : topological.order()) {
+        for (DirectedEdge e : G.adj(v))
+            relax(e);
+    }
+}
+
+// relax edge e
+private void relax(DirectedEdge e) {
+    int v = e.from(), w = e.to();
+    if (distTo[w] &gt; distTo[v] + e.weight()) {
+        distTo[w] = distTo[v] + e.weight();
+        edgeTo[w] = e;
+    }       
+}
+
+/**
+ * Returns the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+ * @param v the destination vertex
+ * @return the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;;
+ *    &lt;tt&gt;Double.POSITIVE_INFINITY&lt;/tt&gt; if no such path
+ */
+public double distTo(int v) {
+    return distTo[v];
+}
+
+/**
+ * Is there a path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;?
+ * @param v the destination vertex
+ * @return &lt;tt&gt;true&lt;/tt&gt; if there is a path from the source vertex
+ *    &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;, and &lt;tt&gt;false&lt;/tt&gt; otherwise
+ */
+public boolean hasPathTo(int v) {
+    return distTo[v] &lt; Double.POSITIVE_INFINITY;
+}
+
+/**
+ * Returns a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+ * @param v the destination vertex
+ * @return a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;
+ *    as an iterable of edges, and &lt;tt&gt;null&lt;/tt&gt; if no such path
+ */
+public Iterable&lt;DirectedEdge&gt; pathTo(int v) {
+    if (!hasPathTo(v)) return null;
+    Stack&lt;DirectedEdge&gt; path = new Stack&lt;DirectedEdge&gt;();
+    for (DirectedEdge e = edgeTo[v]; e != null; e = edgeTo[e.from()]) {
+        path.push(e);
+    }
+    return path;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面这个算法的效率几乎已经没有提高的空间。<strong>在已知加权图是无环的情况下，它是找出最短路径的最好方法。</strong>而且它与边的权重是否非负无关，因此无环加权有向图不会受到任何限制。</p>
+
+<h3>5.1 最长路径</h3>
+
+<p><strong>无环加权有向图中的单点最长路径。</strong>给定一幅无环加权有向图（边的权重可能为负）和一个起点s，回答“是否存在一条从s到达给定的顶点v的路径？如果有，找出最长（总权重最大）的那条路径。”</p>
+
+<p>最短路径的算法可以稍加改动就可以用于最长路径的计算。</p>
+
+<ul>
+<li>方法一：将无环加权有向图复制一份，将副本的所有边的权重取反数。这样副本中的最短路径即为原图中的最长路径。</li>
+<li>方法二：改变AcyclicLP类中relax()方法中的不等式方向。这种方法更加简单。</li>
+</ul>
+
+
+<p>最长路径有什么意义？例如并行任务调度中的关键路径问题。关键路径是最长的任务序列，是任务调度中的关键手段。如何利用无环加权有向图计算关键路径？</p>
+
+<blockquote><p>解决并行任务调度问题的关键路径方法的步骤如下：创建一幅无环加权有向图，其中包含一个起点s和一个终点t且每个任务都对应两个顶点（一个起点和一个结点顶点）。对于每个任务都有一条从它的起始顶点指向结束顶点的边，边的权重为任务所需的时间。对于每条优先级限制v->w，添加一条从v的结束顶点指向w的起始顶点的权重为零的边。为每个任务添加一条从起点指向该任务的起始顶点的权重为零的边以及一条从该任务的结束顶点到终点的权重为零的边。这样，每个任务预计的开始时间即为从起点到它的起始顶点的最长距离。</p></blockquote>
+
+<p>下图展示了一个任务调度的无环加权有向图表示。共有0-9个任务，红线表示任务依赖关系（如任务1、7和9依赖于任务0）其权重为0，图形表示如下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-05-scheduling-reduction.png" alt="image" /></p>
+
+<p>通过计算最长路径，得到任务的关键路径：</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-05-scheduling-critical-path.png" alt="image" /></p>
+
+<p>最后期限是任务调度中常见的问题，即某个任务必须在指定的时间点之前开始，这种类型的问题如何解决？相对最后期限限制下的并行任务调度问题是一个加权有向图中的最短路径问题（可能存在环和负权重边）。这时可以为每条最后期限限制添加一条边：如果任务v必须在任务w启动后的d个时间单位内开始，则添加一条从v指向w的负权重为d的边。将所有边的权重取反即可将该问题转化为一个最短路径问题。</p>
+
+<p>因此，负权重的边具有实际作用，但前面的算法Dijkstra只适用于非负权重的边，AcyclicSP要求有向图是无环的。它们都无法完成任务，因此需要一种更通用的方法。</p>
+
+<h2>6. 一般加权有向图中的最短路径问题</h2>
+
+<p>所谓一般加权有向图的最短路径问题，就是能够处理有环、负权重边的加权有向图最短路径问题。一幅加权有向图中包含环并不可怕，可怕的是这个环的总权重为负，这时候最短路径就会失去意义。因为无论何时绕这个环一圈都能得到权重更小的路径。<strong>负权重环</strong>就是这样一个总权重（环上的所有边的权重之和）为负的有向环。</p>
+
+<blockquote><p>当且仅当加权有向图中至少存在一条从s到v的有向路径且所有从s到v的有向路径上的任意顶点都不存在于任何负权重环中时，s到v的最短路径才是存在的。</p></blockquote>
+
+<p>Bellman-Ford算法，在任意含有V个顶点的加权有向图中给定起点s，从s无法到达任何负权重环，以下算法能够解决其中的单点最短路径问题：将distTo[s]初始化为0，其他distTo[]元素初始化为无穷大。以任意顺序放松有向图的所有边，重复V轮。</p>
+
+<p>Bellman-Ford算法所需的时间和EV成正比，空间和V成正比。因为每一轮算法都会放松E条边，共重复了V轮。把这个算法稍加改进可以提高效率。每一轮放松所有边的过程中，许多边的放松都不会成功。只有上一轮中的distTo[]值发生变化的顶点指出的边才能够改变其他distTo[]元素的值。因此可以用FIFO队列记录这样的顶点，不需要放松所有边。代码实现如下（先忽略负权重环的代码）：</p>
+
+<p>```
+public class BellmanFordSP {</p>
+
+<pre><code>private double[] distTo;               // distTo[v] = 从起点到某个顶点的路径长度
+private DirectedEdge[] edgeTo;         // edgeTo[v] = 从起点到某个顶点的最后一条边
+private boolean[] onQueue;             // onQueue[v] = 该顶点是否存在于队列中
+private Queue&lt;Integer&gt; queue;          // 正在被放松的顶点
+private int cost;                      // relax()的调用次数
+private Iterable&lt;DirectedEdge&gt; cycle;  // edgeTo[]是否有负权重环
+
+/**
+ * Computes a shortest paths tree from &lt;tt&gt;s&lt;/tt&gt; to every other vertex in
+ * the edge-weighted digraph &lt;tt&gt;G&lt;/tt&gt;.
+ * @param G the acyclic digraph
+ * @param s the source vertex
+ * @throws IllegalArgumentException unless 0 &amp;le; &lt;tt&gt;s&lt;/tt&gt; &amp;le; &lt;tt&gt;V&lt;/tt&gt; - 1
+ */
+public BellmanFordSP(EdgeWeightedDigraph G, int s) {
+    distTo  = new double[G.V()];
+    edgeTo  = new DirectedEdge[G.V()];
+    onQueue = new boolean[G.V()];
+    for (int v = 0; v &lt; G.V(); v++)
+        distTo[v] = Double.POSITIVE_INFINITY;
+    distTo[s] = 0.0;
+
+    // Bellman-Ford algorithm
+    queue = new Queue&lt;Integer&gt;();
+    queue.enqueue(s);
+    onQueue[s] = true;
+    while (!queue.isEmpty() &amp;&amp; !hasNegativeCycle()) {
+        int v = queue.dequeue();
+        onQueue[v] = false;
+        relax(G, v);
+    }
+}
+
+// relax vertex v and put other endpoints on queue if changed
+private void relax(EdgeWeightedDigraph G, int v) {
+    for (DirectedEdge e : G.adj(v)) {
+        int w = e.to();
+        if (distTo[w] &gt; distTo[v] + e.weight()) {
+            //成功放松的边指向的所有顶点加入到FIFO队列
+            distTo[w] = distTo[v] + e.weight();
+            edgeTo[w] = e;
+            if (!onQueue[w]) {
+                queue.enqueue(w);
+                onQueue[w] = true;
+            }
+        }
+        //周期性地检查是否有负权重环，避免无限循环
+        if (cost++ % G.V() == 0) 
+            findNegativeCycle();
+    }
+}
+
+/**
+ * Is there a negative cycle reachable from the source vertex &lt;tt&gt;s&lt;/tt&gt;?
+ * @return &lt;tt&gt;true&lt;/tt&gt; if there is a negative cycle reachable from the
+ *    source vertex &lt;tt&gt;s&lt;/tt&gt;, and &lt;tt&gt;false&lt;/tt&gt; otherwise
+ */
+public boolean hasNegativeCycle() {
+    return cycle != null;
+}
+
+/**
+ * Returns a negative cycle reachable from the source vertex &lt;tt&gt;s&lt;/tt&gt;, or &lt;tt&gt;null&lt;/tt&gt;
+ * if there is no such cycle.
+ * @return a negative cycle reachable from the soruce vertex &lt;tt&gt;s&lt;/tt&gt; 
+ *    as an iterable of edges, and &lt;tt&gt;null&lt;/tt&gt; if there is no such cycle
+ */
+public Iterable&lt;DirectedEdge&gt; negativeCycle() {
+    return cycle;
+}
+
+// by finding a cycle in predecessor graph
+private void findNegativeCycle() {
+    int V = edgeTo.length;
+    EdgeWeightedDigraph spt = new EdgeWeightedDigraph(V);
+    for (int v = 0; v &lt; V; v++)
+        if (edgeTo[v] != null)
+            spt.addEdge(edgeTo[v]);
+
+    EdgeWeightedDirectedCycle finder = new EdgeWeightedDirectedCycle(spt);
+    cycle = finder.cycle();
+}
+
+/**
+ * Returns the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+ * @param v the destination vertex
+ * @return the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;;
+ *    &lt;tt&gt;Double.POSITIVE_INFINITY&lt;/tt&gt; if no such path
+ * @throws UnsupportedOperationException if there is a negative cost cycle reachable
+ *    from the source vertex &lt;tt&gt;s&lt;/tt&gt;
+ */
+public double distTo(int v) {
+    if (hasNegativeCycle())
+        throw new UnsupportedOperationException("Negative cost cycle exists");
+    return distTo[v];
+}
+
+/**
+ * Is there a path from the source &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;?
+ * @param v the destination vertex
+ * @return &lt;tt&gt;true&lt;/tt&gt; if there is a path from the source vertex
+ *    &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;, and &lt;tt&gt;false&lt;/tt&gt; otherwise
+ */
+public boolean hasPathTo(int v) {
+    return distTo[v] &lt; Double.POSITIVE_INFINITY;
+}
+
+/**
+ * Returns a shortest path from the source &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+ * @param v the destination vertex
+ * @return a shortest path from the source &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;
+ *    as an iterable of edges, and &lt;tt&gt;null&lt;/tt&gt; if no such path
+ * @throws UnsupportedOperationException if there is a negative cost cycle reachable
+ *    from the source vertex &lt;tt&gt;s&lt;/tt&gt;
+ */
+public Iterable&lt;DirectedEdge&gt; pathTo(int v) {
+    if (hasNegativeCycle())
+        throw new UnsupportedOperationException("Negative cost cycle exists");
+    if (!hasPathTo(v)) return null;
+    Stack&lt;DirectedEdge&gt; path = new Stack&lt;DirectedEdge&gt;();
+    for (DirectedEdge e = edgeTo[v]; e != null; e = edgeTo[e.from()]) {
+        path.push(e);
+    }
+    return path;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>6.1 负权重环的检测</h3>
+
+<p>BellmanFordSP的实现会检测负权重环来避免陷入无限循环。当BellmanFordSP构造函数运行之后，将所有边放松V轮之后当且仅当队列非空时有向图中才存在从起点可达的负权重环。如果是这样，edgeTo[]数组中所表示的子图必然含有这个负权重环。因此nagativeCycle()的实现中，会根据edgeTo[]中的边构造一幅加权有向图并在该图中检测环。我们修改DirectedCycle类来在加权有向图中寻找环：</p>
+
+<p>```
+public class EdgeWeightedDirectedCycle {</p>
+
+<pre><code>private boolean[] marked;             // marked[v] = has vertex v been marked?
+private DirectedEdge[] edgeTo;        // edgeTo[v] = previous edge on path to v
+private boolean[] onStack;            // onStack[v] = is vertex on the stack?
+private Stack&lt;DirectedEdge&gt; cycle;    // directed cycle (or null if no such cycle)
+
+/**
+ * Determines whether the edge-weighted digraph &lt;tt&gt;G&lt;/tt&gt; has a directed cycle and,
+ * if so, finds such a cycle.
+ * @param G the edge-weighted digraph
+ */
+public EdgeWeightedDirectedCycle(EdgeWeightedDigraph G) {
+    marked  = new boolean[G.V()];
+    onStack = new boolean[G.V()];
+    edgeTo  = new DirectedEdge[G.V()];
+    for (int v = 0; v &lt; G.V(); v++)
+        if (!marked[v]) dfs(G, v);
+}
+
+// check that algorithm computes either the topological order or finds a directed cycle
+private void dfs(EdgeWeightedDigraph G, int v) {
+    onStack[v] = true;
+    marked[v] = true;
+    for (DirectedEdge e : G.adj(v)) {
+        int w = e.to();
+
+        // short circuit if directed cycle found
+        if (cycle != null) return;
+
+        //found new vertex, so recur
+        else if (!marked[w]) {
+            edgeTo[w] = e;
+            dfs(G, w);
+        }
+
+        // trace back directed cycle
+        else if (onStack[w]) {
+            cycle = new Stack&lt;DirectedEdge&gt;();
+            while (e.from() != w) {
+                cycle.push(e);
+                e = edgeTo[e.from()];
+            }
+            cycle.push(e);
+        }
+    }
+
+    onStack[v] = false;
+}
+
+/**
+ * Does the edge-weighted digraph have a directed cycle?
+ * @return &lt;tt&gt;true&lt;/tt&gt; if the edge-weighted digraph has a directed cycle,
+ * &lt;tt&gt;false&lt;/tt&gt; otherwise
+ */
+public boolean hasCycle() {
+    return cycle != null;
+}
+
+/**
+ * Returns a directed cycle if the edge-weighted digraph has a directed cycle,
+ * and &lt;tt&gt;null&lt;/tt&gt; otherwise.
+ * @return a directed cycle (as an iterable) if the edge-weighted digraph
+ *    has a directed cycle, and &lt;tt&gt;null&lt;/tt&gt; otherwise
+ */
+public Iterable&lt;DirectedEdge&gt; cycle() {
+    return cycle;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>6.2 套汇</h3>
+
+<p>前面的问题都是权重之和，而套汇问题演示了另一种方式。套汇是通过不同货币间进行兑换赚取利润。这也是一个加权有向图的应用。顶点是货币，s->t表示货币s到t的汇率。如何交易使得利润最大，就是找到各权重之<strong>积</strong>最大者。但我们之前所学的都是权重之和，那么如何解决这个问题呢？</p>
+
+<p>套汇问题等价于加权有向图中的负权重环的检测问题：</p>
+
+<blockquote><p>取每条边权重的自然对数并取反，这样在原始问题中所有边的权重之积的计算就转化为新图中所有边的权重之和的计算。任意权重之积 w<sub>1</sub>w<sub>2</sub>&hellip;w<sub>k</sub>即对应-ln(w<sub>1</sub>)-ln(w<sub>2</sub>)&ndash;&hellip;-ln(w<sub>k</sub>)之和。转换后边的权重可能为正也可能为负。一条从v到w的路径表示将货币v兑换为货币w，任意负权重环都是一次套汇的好机会。</p></blockquote>
+
+<h2>7. 总结</h2>
+
+<p>最短路径算法的性能特点如下表：</p>
+
+<table>
+<thead>
+<tr>
+<th>算法</th>
+<th>局限</th>
+<th>一般情况</th>
+<th>最坏情况</th>
+<th>所需空间</th>
+<th> 优势</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dijkstra算法（即时版本） </td>
+<td> 边的权重必须为正 </td>
+<td> ElogV </td>
+<td> ElogV </td>
+<td> V </td>
+<td> 最坏情况下仍有较好的性能</td>
+</tr>
+<tr>
+<td>拓扑排序</td>
+<td> 只适用于无环加权有向图</td>
+<td> E + V </td>
+<td> E + V </td>
+<td> V </td>
+<td> 是无环图中的最优算法</td>
+</tr>
+<tr>
+<td>Bellman-Ford算法（基于队列）</td>
+<td>不能存在负权重环</td>
+<td> E+V </td>
+<td> EV </td>
+<td> V</td>
+<td> 适用领域广泛</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>参考：<a href="http://algs4.cs.princeton.edu/44sp/">http://algs4.cs.princeton.edu/44sp/</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[最小生成树]]></title>
@@ -1305,365 +1955,6 @@ public int count() {return count;}
 <p>Q: 散列表的查找比红黑树更快吗？</p>
 
 <blockquote><p>取决于键的类型，也就是hashCode()的计算成本是否大于compareTo()的比较成本。但通常散列表会比红黑树快得多。但散列表无法高效支持有序性相关的操作。</p></blockquote>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[符号表]]></title>
-    <link href="http://blog.ubone.com/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/"/>
-    <updated>2014-10-02T11:26:20+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao</id>
-    <content type="html"><![CDATA[<p>符号表就是用键和值的方式来存储和检索数据。其关键点在于如何快速检索和高效插入。本章介绍了符号表的简单实现、二叉查找树、红黑树的实现。</p>
-
-<!--more-->
-
-
-<p>首先还是来定义一下简单的符号表API：</p>
-
-<p><img src="/myresource/images/image_blog_20141002_170641.jpg" alt="image" /></p>
-
-<h2>1. API定义</h2>
-
-<p>符号表遵循以下规则：</p>
-
-<ul>
-<li>每个键只对应一个值；</li>
-<li>当存入的键值对和表中已有的键冲突时，新的值会替代旧的值；</li>
-<li>键不能为空；</li>
-<li>值不允许为空；</li>
-</ul>
-
-
-<p>在简单的符号表中，键的等价性由equals()方法保证。而很多典型应用中，键都是Comparable对象，因此有序符号表可以保持键的有序并扩展其API：</p>
-
-<p><img src="/myresource/images/image_blog_20141002_170651.jpg" alt="image" /></p>
-
-<ul>
-<li>floor：向下取整，找出小于等于该键的最大键；</li>
-<li>ceiling：向上取整，找出大于等于该键的最小键；</li>
-<li>rank：小于key的键的数量；</li>
-<li>select：获得排名为第k的键。</li>
-</ul>
-
-
-<p>对于0到size()-1的所有i都有：i == rank(select(i))，且所有键都满足：key == select(rank(key))。</p>
-
-<h2>2. 实现</h2>
-
-<h3>2.1 无序链表的顺序查找</h3>
-
-<p>可以用链表来实现符号表，每个结点存储一个键值对，并保持一个链接指向下一个结点。这种方式非常简单，但是效率非常低。不论是get方法还是put方法，都需要从首节点开始一个一个地遍历。</p>
-
-<h3>2.2 有序数组中的二分查找</h3>
-
-<p>另一种实现方法是通过两个平行的数组来存储符号表。一个储存键，一个存储值。二分法可以用于保证数组中Comparable类型的键有序，并高效地实现get和其他操作(如select)。</p>
-
-<p>对N个键的有序数组进行二分查找最多需要（lgN + 1）次比较。然而put方法却仍然很慢，向大小为N的有序数组插入一个新的元素，在最坏的情况下需要访问约2N次数组。因此向一个空的符号表插入N个元素时，最坏的情况下需要访问约N<sup>2</sup>次数组。</p>
-
-<p>因此，我们需要一种结构，能够同时拥有二分法的查找效率和链表的插入效率。这就是二叉查找树。</p>
-
-<h3>2.3 二叉查找树(BST)</h3>
-
-<p>二叉查找树的定义：它是一棵二叉树，其中每个结点都含有一个Comparable的键以及相关联的值，每个结点的键都大于其左子树任意结点的键，同时小于右子树任意结点的键。</p>
-
-<h4>2.3.1 基本实现</h4>
-
-<p>如果将一棵二叉查找树的所有键投影到一条直线上，我们可以得到一条有序的键列，如下图所示：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_15.10.37.png" alt="image" /></p>
-
-<p>树结点的实现：</p>
-
-<p>```java</p>
-
-<pre><code>private class Node {
-    private Key key;           // sorted by key
-    private Value val;         // associated data
-    private Node left, right;  // left and right subtrees
-    private int N;             // number of nodes in subtree
-
-    public Node(Key key, Value val, int N) {
-        this.key = key;
-        this.val = val;
-        this.N = N;
-    }
-}
-</code></pre>
-
-<p>```</p>
-
-<h5>查找</h5>
-
-<p>可以使用递归算法在二叉查找树中查找一个键：如果树是空的，则查找未命中；如果被查找的键和根结点的键相等，查找命中；否则就（递归地）在某个子树中继续查找。如果被查找的键较小就选择左子树，较大则选择右子树。查找过程与二分查找一样简单，代码实现如下：</p>
-
-<p>```java</p>
-
-<pre><code>public Value get(Key key) {
-    return get(root, key);
-}
-
-private Value get(Node x, Key key) {
-    if (x == null) return null;
-    int cmp = key.compareTo(x.key);
-    if      (cmp &lt; 0) return get(x.left, key);
-    else if (cmp &gt; 0) return get(x.right, key);
-    else              return x.val;
-}
-</code></pre>
-
-<p>```</p>
-
-<h5>插入</h5>
-
-<p>二叉查找树的插入实现难度和查找差不多。当查找到一个不存在于树中的结点并结束于一条空链接时，我们需要做的就是将链接指向一个含有被查找的键的新结点。代码实现如下：</p>
-
-<p>```java</p>
-
-<pre><code>public void put(Key key, Value val) {
-    if (val == null) { delete(key); return; }
-    root = put(root, key, val);
-}
-
-private Node put(Node x, Key key, Value val) {
-    if (x == null) return new Node(key, val, 1);
-    int cmp = key.compareTo(x.key);
-    if      (cmp &lt; 0) x.left  = put(x.left,  key, val);
-    else if (cmp &gt; 0) x.right = put(x.right, key, val);
-    else              x.val   = val;
-    x.N = 1 + size(x.left) + size(x.right);
-    return x;
-}
-</code></pre>
-
-<p>```</p>
-
-<h5>分析</h5>
-
-<p>二叉查找树的算法效率取决于树的形状。在最好的情况下，树是完全平衡的，此时查找和插入的效率都非常高。</p>
-
-<p>但是，树的结构与结点插入的顺序是相关的。在最坏的情况下（例如升序队列中的元素按顺序插入）可能形成一条单边的树，就变成了链表的结构。这种不平衡的树完全失去了二分查找的效率。</p>
-
-<p>因此，如何保持树的平衡是一个重要问题。要在二叉树动态插入中保证树的完美平衡，代价太高了。因此需要对结构进行一些调整，这就是平衡查找树。</p>
-
-<h3>2.4 2-3查找树</h3>
-
-<p>所谓2-3查找树，是指它或者为一棵空树，或者由以下结点组成：</p>
-
-<ul>
-<li>2-结点，含有一个键（及其对应的值）和两条链接，左链接指向的树的所有键都小于该结点，右链接指向的树的所有键都大于该结点。</li>
-<li>3-结点，含有两个键（及其对应的值）和两条链接，左链接指向的树的所有键都小于该结点，中链接指向的树的所有键都位于该结点的两个键之间，右链接指向的树的所有键都大于该结点。</li>
-</ul>
-
-
-<p>利用2-3查找树，可以方便地实现完美平衡的查找树，2-3查找树示意图如下：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_17_49.png" alt="image" /></p>
-
-<h4>2.4.1 查找</h4>
-
-<p>查找的过程与二叉查找树类似，区别仅在于3-结点树多了一个中链接。</p>
-
-<h4>2.4.2 插入</h4>
-
-<p>2-3查找树实现平衡的关键是插入过程，插入时先进行查找，如果未命中，将根据结束位置的多种情况，采用不同的方法。详细说明如下：</p>
-
-<h5>向2-结点插入新键</h5>
-
-<p>如果查找结束于一个2-结点，只要把这个2-结点替换为一个3-结点，将要插入的键保存在其中即可。如下图所示：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_23tree-insert2.png" alt="image" /></p>
-
-<h5>向一棵只含有一个3-结点的树中插入新键</h5>
-
-<p>向3-结点的树中插入新键，也有多种情况，先看最简单的这种。如下图所示，先将3-结点变成4-结点，然后再分解为2-3树。</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_23tree-insert3a.png" alt="image" /></p>
-
-<h5>向一个父结点为2-结点的3-结点插入新键</h5>
-
-<p>如果父结点为2-结点，则先把3-结点变成4-结点，然后将2-结点变成3-结点，如下图所示：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_23tree-insert3b.png" alt="image" /></p>
-
-<h5>向一个父结点为3-结点的3-结点插入新键</h5>
-
-<p>跟前一步一样，先变成4-结点并分解它，然后再将它的中键插入它的父结点中。但其父结点也是3-结点，因此再用这个中键构造一个临时的4-结点，进行相同的变化，直到遇到一个2-结点将它变成3-结点。如果一直到根结点都是3-结点，则需要分解根结点。插入新键的过程如下图所示：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10_02_23tree-insert3c.png" alt="image" /></p>
-
-<h5>分解根结点</h5>
-
-<p>在上一步中，根结点变成了一个临时的4-结点，此时我们按照向一棵只有一个3-结点的树中插入新键的方法处理此问题。将4-结点分解成3个2-结点，树高加1。如下图所示：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_23tree-split.png" alt="image" /></p>
-
-<h4>2.4.3 性能分析</h4>
-
-<p>从上面这些情况可以看出，插入过程都是进行局部变换，除了相关的结点和链接之外不必修改或检查树的其他部分，因此效率非常高。经过变换后，保持了树的有序性和平衡性。因此在一棵大小为N的2-3树中，查找和插入操作访问的结点必然不超过lgN个！例如含有10亿个结点的一棵2-3树的高度仅在19-30之间，最多只需要访问30个结点就能够在10亿个键中进行任意查找和插入操作，这是多么惊人！这也是<a href="/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/">程序员的数学</a>中提到的利用指数爆炸解决问题。</p>
-
-<h3>2.5 红黑二叉查找树</h3>
-
-<p>2-3查找树很容易理解，现在我们通过红黑二叉树来表达并实现它。其关键是3-结点如何实现。我们将树中的链接分为两种类型：红链接将两个2-结点连接起来构成一个3-结点，黑链接则是普通链接。如下图所示：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_redblack-encoding.png" alt="image" /></p>
-
-<p>红黑树是含有红黑链接并满足以下条件的二叉查找树：</p>
-
-<ul>
-<li>红链接均为左链接；</li>
-<li>没有任何一个结点同时和两条红链接相连；</li>
-<li>该树是完美黑色平衡的，即任意空链接到根结点的路径上的黑链接数量相同。</li>
-</ul>
-
-
-<p>因此在节点类（Node）中，增加一个属性color表示从父结点指向自己的链接是否为红链接：</p>
-
-<p>```java</p>
-
-<pre><code>private class Node {
-    private Key key;           // sorted by key
-    private Value val;         // associated data
-    private Node left, right;  // left and right subtrees
-    private int N;             // number of nodes in subtree
-    boolean color;             //是否红链接    
-
-    public Node(Key key, Value val, int N, boolean color) {
-        this.key = key;
-        this.val = val;
-        this.N = N;
-        this.color = color;
-    }
-}
-</code></pre>
-
-<p>```</p>
-
-<p>在进一步实现红黑树之前，要了解几个基本的动作：左旋转、右旋转和颜色转换。</p>
-
-<h4>2.5.1 旋转</h4>
-
-<p>左旋转是将一条红色的右链接转化为左链接。转换的过程为：将两个键中的较小者作为根结点变为将较大者作为根结点。如下图所示：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_redblack-left-rotate.png" alt="image" /></p>
-
-<p>右旋转是将一条红色的左链接转化为右链接，实现过程与左旋转相似，只需要将left和right互换即可：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_redblack-right-rotate.png" alt="image" /></p>
-
-<h4>2.5.2 颜色转换</h4>
-
-<p>颜色转换是对一个结点的两个红色子结点的颜色进行转换。除了将子结点的颜色由红变黑外，还要同时将父结点的颜色由黑变红。如下图所示：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_color-flip.png" alt="image" /></p>
-
-<h4>2.5.3 插入处理过程</h4>
-
-<p>插入新键时，都使用红链接与父结点相连，然后谨慎地使用左旋转、右旋转和颜色转换这三个简单的操作，就能够保证操作后的红黑树与2-3树一一对应的关系。在沿着插入点到根结点的路径向上移动时在所经过的每个结点中顺序完成以下操作，我们就能完成插入操作：</p>
-
-<ol>
-<li>如果右子结点是红色，而左子结点是黑色，进行左旋转；</li>
-<li>如果左子结点是红色，且它的左子结点也是红色，进行右旋转；</li>
-<li>如果左右子结点都是红色，进行颜色转换。</li>
-</ol>
-
-
-<p>下面是各种情况的示例：</p>
-
-<p><img src="/myresource/images/IMG_20141002_222628.jpg" alt="image" /></p>
-
-<p><img src="/myresource/images/IMG_20141002_222714.jpg" alt="image" /></p>
-
-<h4>2.5.4 插入算法的实现</h4>
-
-<p>以下为红黑树的插入算法：</p>
-
-<p>```java
-public class RedBlackBST<Key extends Comparable<Key>, Value> {</p>
-
-<pre><code>private static final boolean RED   = true;
-private static final boolean BLACK = false;
-
-private Node root;     // root of the BST
-
-// BST helper node data type
-private class Node {
-    private Key key;           // key
-    private Value val;         // associated data
-    private Node left, right;  // links to left and right subtrees
-    private boolean color;     // color of parent link
-    private int N;             // subtree count
-
-    public Node(Key key, Value val, boolean color, int N) {
-        this.key = key;
-        this.val = val;
-        this.color = color;
-        this.N = N;
-    }
-}
-
-// insert the key-value pair; overwrite the old value with the new value
-// if the key is already present
-public void put(Key key, Value val) {
-    root = put(root, key, val);
-    root.color = BLACK;
-}
-
-// insert the key-value pair in the subtree rooted at h
-private Node put(Node h, Key key, Value val) { 
-    if (h == null) return new Node(key, val, RED, 1);
-
-    int cmp = key.compareTo(h.key);
-    if      (cmp &lt; 0) h.left  = put(h.left,  key, val); 
-    else if (cmp &gt; 0) h.right = put(h.right, key, val); 
-    else              h.val   = val;
-
-    // fix-up any right-leaning links
-    if (isRed(h.right) &amp;&amp; !isRed(h.left))      h = rotateLeft(h);
-    if (isRed(h.left)  &amp;&amp;  isRed(h.left.left)) h = rotateRight(h);
-    if (isRed(h.left)  &amp;&amp;  isRed(h.right))     flipColors(h);
-    h.N = size(h.left) + size(h.right) + 1;
-
-    return h;
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h4>2.5.5 删除操作</h4>
-
-<h5>删除最小键</h5>
-
-<p>先来看删除最小键。从树底部的3-结点删除键很简单，但2-结点则不然。为了保证我们不会删除一个2-结点，我们沿着左链接向下进行变换，确保当前结点不是2-结点。在沿着左链接向下的过程中，保证以下情况之一成立：</p>
-
-<ul>
-<li>如果当前结点的左子结点不是2-结点，完成；</li>
-<li>如果当前结点的左子结点是2-结点而它的亲兄弟结点不是2-结点，将左子结点的兄弟结点中的一个键移到左子结点；</li>
-<li>如果当前结点的左子结点和它的亲兄弟结点都是2-结点，将左子结点、父结点中的最小键和左子结点最近的兄弟结点合并为一个4-结点，使父结点由3-结点变为2-结点或者4-结点变为3-结点。</li>
-</ul>
-
-
-<p>在遍历的过程中执行这个过程，最后能够得到一个含有最小键的3-结点或者4-结点，然后我们就可以直接从中将其删除，将3-结点变为2-结点，或者将4-结点变为3-结点。然后我们再回头向上分解所有临时的4-结点。</p>
-
-<p><img src="/myresource/images/IMG_20141002_232607.jpg" alt="image" /></p>
-
-<h5>删除操作</h5>
-
-<p>在查找路径上进行和删除最小键相同的变换同样可以保证在查找过程中任意当前结点均不是2-结点。如果被查找的键在树的底部，我们可以直接删除它。如果不在，我们需要将它和它的后续结点交换，就和二叉查找树一样。因为当前结点必然不是2-结点，问题已经转化为在一棵根结点不是2-结点的子树中删除最小键，我们可以在这棵子树中使用上面的算法。删除之后，同样需要向上回溯并分解余下的4-结点。</p>
-
-<p><a href="/myresource/code/RedBlackBST.java">红黑树完整代码</a></p>
-
-<h4>2.5.6 红黑树的性能</h4>
-
-<p>一棵大小为N的红黑树的高度不会超过2lgN，根结点到任意结点的平均路径长度为1.00lgN，以下操作在最坏的情况下所需的时间是对数级别的：get, put, min, max, floor, ceiling, rank, select, deleteMin, deleteMax, delete, range。</p>
-
-<h2>总结</h2>
-
-<p>各种符号表实现的性能总结：</p>
-
-<p><img src="/myresource/images/IMG_20141002_233353.jpg" alt="image" /></p>
-
-<p>在信息世界的汪洋大海中，表的大小可能是上千亿，但我们仍然能够确保在几十次比较之内就完成这些操作！</p>
 ]]></content>
   </entry>
   

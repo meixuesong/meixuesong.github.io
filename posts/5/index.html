@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="适配器模式分为类的适配器和对象的适配器。它们都是把被适配类的API转换成目标类的API。但前者使用继承关系，而后者使用委派关系。它们的结构如下图： ">
+  <meta name="description" content="缺省适配模式其实很简单，就是一个接口有很多方法，通过一个抽象类为这些方法提供默认实现，而具体的类继承这个抽象类，实现自己关心的方法即可。其结构如下： 什么情况下用缺省适配模式？如果不准备实现一个接口的所有方法时，可以通过一个抽象类，给出所有方法的实现。有用的方法要有实现，没用的方法也要有空的、 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,56 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/31/she-ji-mo-shi-que-sheng-gua-pei-mo-shi/">设计模式:缺省适配模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-31T20:31:57+08:00" pubdate data-updated="true">2014-07-31</time>
+        
+           | <a href="/blog/2014/07/31/she-ji-mo-shi-que-sheng-gua-pei-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-que-sheng-gua-pei-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>缺省适配模式其实很简单，就是一个接口有很多方法，通过一个抽象类为这些方法提供默认实现，而具体的类继承这个抽象类，实现自己关心的方法即可。其结构如下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-31_20.37.12.jpg" alt="image" /></p>
+
+<p>什么情况下用缺省适配模式？如果不准备实现一个接口的所有方法时，可以通过一个抽象类，给出所有方法的实现。有用的方法要有实现，没用的方法也要有空的、平庸的实现。这样子类就不必实现所有方法了。对应适配器模式的三个角色：</p>
+
+<ul>
+<li>Adapter：子类</li>
+<li>Adaptee：抽象类</li>
+<li>Target：接口</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -495,50 +545,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/23/yi-zhang-tu-kan-dong/">一张图看懂UML类图的关系</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-23T23:37:18+08:00" pubdate data-updated="true">2014-07-23</time>
-        
-           | <a href="/blog/2014/07/23/yi-zhang-tu-kan-dong/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/23/yi-zhang-tu-kan-dong/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在UML类图中，类之间的关系包括：继承、关联、聚合、组合和依赖关系。如何分辨这些关系呢？每种关系使用什么样的连线呢？</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/23/yi-zhang-tu-kan-dong/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/6">&larr; Older</a>
@@ -560,10 +566,14 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (10)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (11)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/03/zui-duan-lu-jing/">最短路径</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/10/31/zui-xiao-sheng-cheng-shu/">最小生成树</a>
@@ -579,10 +589,6 @@
     
       <li class="post">
         <a href="/blog/2014/10/18/zhong-yu-wan-cheng-rss2epubde-xiang-mu/">终于完成RSS2EPUB的项目</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/10/05/ji-yu-jekyll-sheng-cheng-dian-zi-shu/">基于Jekyll(Octopress)将博客生成EPUB和Mobi电子书</a>
       </li>
     
   </ul>
