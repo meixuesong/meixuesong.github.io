@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:taxo="http://purl.org/rss/1.0/modules/taxonomy/" version="2.0">
+  <channel>
+    <title>架构师</title>
+    <link>http://www.infoq.com/cn/</link>
+    <description></description>
+    <item>
+      <title>华三通信研发副总裁王飓谈传统通信技术与云计算</title>
+      <link>http://www.infoq.com/cn/articles/interview-wangju</link>
+      <description></description>
+      <pubDate>Sat, 08 Nov 2014 16:10:00 GMT</pubDate>
+      <guid></guid>
+      <dc:creator>郑亮亮</dc:creator>
+      <dc:date>2014-11-08T16:10:00Z</dc:date>
+      <dc:identifier></dc:identifier>
+    </item>
+
+    <item>
+      <title>Databricks连城谈Spark的现状</title>
+      <link>http://www.infoq.com/cn/news/2014/09/spark-status</link>
+      <description></description>
+      <pubDate>Sat, 08 Nov 2014 16:10:00 GMT</pubDate>
+      <guid></guid>
+      <dc:creator>郑亮亮</dc:creator>
+      <dc:date>2014-11-08T16:10:00Z</dc:date>
+      <dc:identifier></dc:identifier>
+    </item>
+
+    <item>
+      <title>闪存将改变数据库存储引擎的设计</title>
+      <link>http://www.infoq.com/cn/news/2014/09/flash-database-design</link>
+      <description></description>
+      <pubDate>Sat, 08 Nov 2014 16:10:00 GMT</pubDate>
+      <guid></guid>
+      <dc:creator>郑亮亮</dc:creator>
+      <dc:date>2014-11-08T16:10:00Z</dc:date>
+      <dc:identifier></dc:identifier>
+    </item>
+
+    <item>
+      <title>关于代码审查的几点建议</title>
+      <link>http://www.infoq.com/cn/news/2014/09/code-check</link>
+      <description></description>
+      <pubDate>Sat, 08 Nov 2014 16:10:00 GMT</pubDate>
+      <guid></guid>
+      <dc:creator>郑亮亮</dc:creator>
+      <dc:date>2014-11-08T16:10:00Z</dc:date>
+      <dc:identifier></dc:identifier>
+    </item>
+
+    <item>
+      <title>构建高可伸缩性的WEB交互式系统（上）</title>
+      <link>http://www.infoq.com/cn/articles/construction-of-web-interactive-system-part1</link>
+      <description></description>
+      <pubDate>Sat, 08 Nov 2014 16:10:00 GMT</pubDate>
+      <guid></guid>
+      <dc:creator>郑亮亮</dc:creator>
+      <dc:date>2014-11-08T16:10:00Z</dc:date>
+      <dc:identifier></dc:identifier>
+    </item>
+
+    <item>
+      <title>构建高可伸缩性的WEB交互式系统（中）</title>
+      <link>http://www.infoq.com/cn/articles/construction-of-web-interactive-system-part2</link>
+      <description></description>
+      <pubDate>Sat, 08 Nov 2014 16:10:00 GMT</pubDate>
+      <guid></guid>
+      <dc:creator>郑亮亮</dc:creator>
+      <dc:date>2014-11-08T16:10:00Z</dc:date>
+      <dc:identifier></dc:identifier>
+    </item>
+
+    <item>
+      <title>构建高可伸缩性的WEB交互式系统（下）</title>
+      <link>http://www.infoq.com/cn/articles/construction-of-web-interactive-system-part3</link>
+      <description></description>
+      <pubDate>Sat, 08 Nov 2014 16:10:00 GMT</pubDate>
+      <guid></guid>
+      <dc:creator>郑亮亮</dc:creator>
+      <dc:date>2014-11-08T16:10:00Z</dc:date>
+      <dc:identifier></dc:identifier>
+    </item>
+
+    <item>
+      <title>看板如何奏效</title>
+      <link>http://www.infoq.com/cn/articles/how-kanban-works</link>
+      <description></description>
+      <pubDate>Sat, 08 Nov 2014 16:10:00 GMT</pubDate>
+      <guid></guid>
+      <dc:creator>郑亮亮</dc:creator>
+      <dc:date>2014-11-08T16:10:00Z</dc:date>
+      <dc:identifier></dc:identifier>
+    </item>
+
+    <item>
+      <title>理解Spark的核心RDD</title>
+      <link>http://www.infoq.com/cn/articles/spark-core-rdd</link>
+      <description></description>
+      <pubDate>Sat, 08 Nov 2014 16:10:00 GMT</pubDate>
+      <guid></guid>
+      <dc:creator>郑亮亮</dc:creator>
+      <dc:date>2014-11-08T16:10:00Z</dc:date>
+      <dc:identifier></dc:identifier>
+    </item>
+
+    <item>
+      <title>缓存一致性入门</title>
+      <link>http://www.infoq.com/cn/articles/cache-coherency-primer</link>
+      <description></description>
+      <pubDate>Sat, 08 Nov 2014 16:10:00 GMT</pubDate>
+      <guid></guid>
+      <dc:creator>郑亮亮</dc:creator>
+      <dc:date>2014-11-08T16:10:00Z</dc:date>
+      <dc:identifier></dc:identifier>
+    </item>
+
+    <item>
+      <title>腾讯大数据之TDW计算引擎解析——Shuffle</title>
+      <link>http://www.infoq.com/cn/news/2014/09/tecent-tdw</link>
+      <description></description>
+      <pubDate>Sat, 08 Nov 2014 16:10:00 GMT</pubDate>
+      <guid></guid>
+      <dc:creator>郑亮亮</dc:creator>
+      <dc:date>2014-11-08T16:10:00Z</dc:date>
+      <dc:identifier></dc:identifier>
+    </item>
+
+    <item>
+      <title>梁定安：解密腾讯SNG云运维平台“织云”</title>
+      <link>http://www.infoq.com/cn/news/2014/09/tencent-sng-cms</link>
+      <description></description>
+      <pubDate>Sat, 08 Nov 2014 16:10:00 GMT</pubDate>
+      <guid></guid>
+      <dc:creator>郑亮亮</dc:creator>
+      <dc:date>2014-11-08T16:10:00Z</dc:date>
+      <dc:identifier></dc:identifier>
+    </item>
+
+    <item>
+      <title>李大维：互联网人做硬件创业容易产生的七大误解</title>
+      <link>http://www.infoq.com/cn/news/2014/09/7-iot-misconceptions</link>
+      <description></description>
+      <pubDate>Sat, 08 Nov 2014 16:10:00 GMT</pubDate>
+      <guid></guid>
+      <dc:creator>郑亮亮</dc:creator>
+      <dc:date>2014-11-08T16:10:00Z</dc:date>
+      <dc:identifier></dc:identifier>
+    </item>
+
+    <item>
+      <title>可伸缩NoSQL数据库的五条建议</title>
+      <link>http://www.infoq.com/cn/news/2014/09/nosql-advise</link>
+      <description></description>
+      <pubDate>Sat, 08 Nov 2014 16:10:00 GMT</pubDate>
+      <guid></guid>
+      <dc:creator>郑亮亮</dc:creator>
+      <dc:date>2014-11-08T16:10:00Z</dc:date>
+      <dc:identifier></dc:identifier>
+    </item>
+
+  </channel>
+</rss>
+
