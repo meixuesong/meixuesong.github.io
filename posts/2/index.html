@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="快速排序可能是应用最广泛的算法，原因是它实现简单、速度快。它完美地实现了原地排序（只需要一个很小的辅助栈），并且时间与NlgN成正比。它的内循环比大多数排序算法都要短小，因此理论上要更快。但它的主要缺点是非常脆弱，实现时要非常小心才能避免低劣的性能。 ">
+  <meta name="description" content="符号表就是用键和值的方式来存储和检索数据。其关键点在于如何快速检索和高效插入。本章介绍了符号表的简单实现、二叉查找树、红黑树的实现。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,94 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/">符号表</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-02T11:26:20+08:00" pubdate data-updated="true">2014-10-02</time>
+        
+           | <a href="/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>符号表就是用键和值的方式来存储和检索数据。其关键点在于如何快速检索和高效插入。本章介绍了符号表的简单实现、二叉查找树、红黑树的实现。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/27/you-xian-dui-lie/">优先队列</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-27T23:08:56+08:00" pubdate data-updated="true">2014-09-27</time>
+        
+           | <a href="/blog/2014/09/27/you-xian-dui-lie/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/09/27/you-xian-dui-lie/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>优先队列是广泛使用的一种抽象数据类型。例如如果你需要从10亿个元素中选出最大的十个，你不可能对10亿规模的数组排序。对于这些类似的场景，我们不一定要求它们全部有序，或者不一定要一次就将它们排序。我们会收集一些元素，处理当前键值最大的元素，然后再收集更多的元素，再处理当前键值最大的元素。例如应用程序的事件优先级，模拟系统，任务调度等。在这种情况下，优先队列应该支持两种操作：<strong>删除最大元素和插入元素。</strong></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/09/27/you-xian-dui-lie/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -422,107 +510,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/28/effective-java-yi-chang/">Effective Java - 异常</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-28T23:15:18+08:00" pubdate data-updated="true">2014-08-28</time>
-        
-           | <a href="/blog/2014/08/28/effective-java-yi-chang/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/28/effective-java-yi-chang/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Effective Java 通用程序设计，读书笔记：</p>
-
-<ol>
-<li>只对异常情况才使用异常</li>
-<li>对可恢复的情况使用受检异常，对编程错误使用运行时异常</li>
-<li>避免不必要地使用受检的异常</li>
-<li>优先使用标准的异常</li>
-<li>抛出与抽象相对应的异常</li>
-<li>每个方法抛出的异常都要有文档</li>
-<li>在细节消息中包含能捕获失败的消息</li>
-<li>努力使失败保持原子性</li>
-<li>不要忽略异常</li>
-</ol>
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/08/28/effective-java-yi-chang/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/">程序员的数学</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-25T22:22:26+08:00" pubdate data-updated="true">2014-08-25</time>
-        
-           | <a href="/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>这是一篇《程序员的数学》读书笔记。这本书没有讲高深的数学理论，而是用浅显易懂的道理推导出一些数学知识。整本书浅显易懂，学不了太多东西，但对启发数学思维有一点用处。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -544,10 +531,18 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (11)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (12)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/15/zi-fu-chuan-pai-xu/">字符串排序</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/12/androidying-multidex/">Android应用打破65K方法数限制</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/11/03/zui-duan-lu-jing/">最短路径</a>
@@ -559,14 +554,6 @@
     
       <li class="post">
         <a href="/blog/2014/10/30/you-xiang-tu/">有向图</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/10/27/fa-bu-liang-kuan-zi-yong-de-gaeying-yong/">发布两款自用的GAE应用</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/10/18/zhong-yu-wan-cheng-rss2epubde-xiang-mu/">终于完成RSS2EPUB的项目</a>
       </li>
     
   </ul>

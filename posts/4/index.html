@@ -9,8 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="模板方法（Template Method）模式是最常见的模式，几乎每个人都用过。它将部分逻辑以具体方法以及具体构造子的形式实现。抽象类定义顶级逻辑，具体类实现具体方法。类图如下： 抽象模板角色：定义一个或多个抽象操作，以便让子类实现。定义并实现一个模板方法，给出顶级逻辑的骨架。
-具体模板角色： &hellip;">
+  <meta name="description" content="迭代子模式是最常见的几个设计模式之一，Java Collection广泛使用迭代子来遍历其元素。之所以需要迭代子模式，是因为它将迭代逻辑与聚集对象分离，两者可以自由演变。其结构示意图如下： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -68,6 +67,95 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/10/she-ji-mo-shi-die-dai-zi-mo-shi/">设计模式:迭代子模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-10T12:18:42+08:00" pubdate data-updated="true">2014-08-10</time>
+        
+           | <a href="/blog/2014/08/10/she-ji-mo-shi-die-dai-zi-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/10/she-ji-mo-shi-die-dai-zi-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>迭代子模式是最常见的几个设计模式之一，Java Collection广泛使用迭代子来遍历其元素。之所以需要迭代子模式，是因为它将迭代逻辑与聚集对象分离，两者可以自由演变。其结构示意图如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140810_163841.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/10/she-ji-mo-shi-die-dai-zi-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/10/she-ji-mo-shi-guan-cha-zhe-mo-shi/">设计模式:观察者模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-10T11:36:40+08:00" pubdate data-updated="true">2014-08-10</time>
+        
+           | <a href="/blog/2014/08/10/she-ji-mo-shi-guan-cha-zhe-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/10/she-ji-mo-shi-guan-cha-zhe-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>观察者模式也称为发布-订阅模式，它定义了一种一对多的依赖关系，让多个观察者同时监听一个主题对象。当主题对象的状态发生变化时，会通知观察者对象，使它们能够自动更新自己。它的类图如下所示：</p>
+
+<p><img src="/myresource/images/image_blog_20140810_115301.jpg" alt="image" /></p>
+
+<p>在实际应用中，如果有多个ConcreteSubject，也可以将Subject变成抽象类，将observers和notifyObservers方法上移到抽象Subject。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -439,98 +527,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/">设计模式:装饰模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-01T20:00:16+08:00" pubdate data-updated="true">2014-08-01</time>
-        
-           | <a href="/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>装饰模式以对客户端透明的方式扩展对象的功能。客户端并不会觉得对象在装饰前和装饰后有什么不同。装饰模式可以在不使用创造更多子类的情况下，将对象的功能加以扩展。其类图所下：</p>
-
-<p><img src="/myresource/images/image_blog_2014-08-01_20.13.33.jpg" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/">设计模式:组合（Composite）模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-31T21:08:30+08:00" pubdate data-updated="true">2014-07-31</time>
-        
-           | <a href="/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>组合模式将对象以树状结构组织起来，达成“部分－整体”的层次结构，使得客户端对单个对象和组合对象的使用具有一致性。结构示意图：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-31_21.14.15.jpg" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/5">&larr; Older</a>
@@ -552,10 +548,18 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (11)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (12)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/15/zi-fu-chuan-pai-xu/">字符串排序</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/12/androidying-multidex/">Android应用打破65K方法数限制</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/11/03/zui-duan-lu-jing/">最短路径</a>
@@ -567,14 +571,6 @@
     
       <li class="post">
         <a href="/blog/2014/10/30/you-xiang-tu/">有向图</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/10/27/fa-bu-liang-kuan-zi-yong-de-gaeying-yong/">发布两款自用的GAE应用</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/10/18/zhong-yu-wan-cheng-rss2epubde-xiang-mu/">终于完成RSS2EPUB的项目</a>
       </li>
     
   </ul>

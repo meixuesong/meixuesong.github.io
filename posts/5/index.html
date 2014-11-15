@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="缺省适配模式其实很简单，就是一个接口有很多方法，通过一个抽象类为这些方法提供默认实现，而具体的类继承这个抽象类，实现自己关心的方法即可。其结构如下： 什么情况下用缺省适配模式？如果不准备实现一个接口的所有方法时，可以通过一个抽象类，给出所有方法的实现。有用的方法要有实现，没用的方法也要有空的、 &hellip;">
+  <meta name="description" content="装饰模式以对客户端透明的方式扩展对象的功能。客户端并不会觉得对象在装饰前和装饰后有什么不同。装饰模式可以在不使用创造更多子类的情况下，将对象的功能加以扩展。其类图所下： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,98 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/">设计模式:装饰模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-01T20:00:16+08:00" pubdate data-updated="true">2014-08-01</time>
+        
+           | <a href="/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>装饰模式以对客户端透明的方式扩展对象的功能。客户端并不会觉得对象在装饰前和装饰后有什么不同。装饰模式可以在不使用创造更多子类的情况下，将对象的功能加以扩展。其类图所下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-08-01_20.13.33.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/">设计模式:组合（Composite）模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-31T21:08:30+08:00" pubdate data-updated="true">2014-07-31</time>
+        
+           | <a href="/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>组合模式将对象以树状结构组织起来，达成“部分－整体”的层次结构，使得客户端对单个对象和组合对象的使用具有一致性。结构示意图：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-31_21.14.15.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -444,107 +536,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/">设计模式:简单工厂模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-27T09:44:35+08:00" pubdate data-updated="true">2014-07-27</time>
-        
-           | <a href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>简单工厂模式其实就是静态工厂方法模式，即通过静态工厂方法来创建对象。其结构可表示为：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-27_1.png" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/25/yi-xie-she-ji-yuan-ze/">一些设计原则</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-25T21:01:51+08:00" pubdate data-updated="true">2014-07-25</time>
-        
-           | <a href="/blog/2014/07/25/yi-xie-she-ji-yuan-ze/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/25/yi-xie-she-ji-yuan-ze/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>关于设计，有一些原则。本文总结一些常见的原则。包括：</p>
-
-<ul>
-<li>(S)单一职责原则</li>
-<li>(O)开闭原则</li>
-<li>(L)里氏替换原则</li>
-<li>(I)接口隔离原则</li>
-<li>(D)依赖反转原则</li>
-<li>迪米特法则</li>
-<li>组合/聚合复用原则</li>
-</ul>
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/25/yi-xie-she-ji-yuan-ze/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/6">&larr; Older</a>
@@ -566,10 +557,18 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (11)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (12)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/15/zi-fu-chuan-pai-xu/">字符串排序</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/12/androidying-multidex/">Android应用打破65K方法数限制</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/11/03/zui-duan-lu-jing/">最短路径</a>
@@ -581,14 +580,6 @@
     
       <li class="post">
         <a href="/blog/2014/10/30/you-xiang-tu/">有向图</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/10/27/fa-bu-liang-kuan-zi-yong-de-gaeying-yong/">发布两款自用的GAE应用</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/10/18/zhong-yu-wan-cheng-rss2epubde-xiang-mu/">终于完成RSS2EPUB的项目</a>
       </li>
     
   </ul>

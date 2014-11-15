@@ -1,0 +1,937 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>字符串排序 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="字符串是最常用的数据类型，因此它的排序算法非常重要。虽然Java的字符串排序已经非常快，但了解一些字符串的排序算法仍然很必要，也是进一步了解字符串其它应用的基础。 在Java中表示字符串的两种方法： 操作 字符数组 Java字符串 声明 char[] a String s 根据索引访问字符 a[i &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/11/15/zi-fu-chuan-pai-xu">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">字符串排序</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-15T09:49:02+08:00" pubdate data-updated="true">2014-11-15</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>字符串是最常用的数据类型，因此它的排序算法非常重要。虽然Java的字符串排序已经非常快，但了解一些字符串的排序算法仍然很必要，也是进一步了解字符串其它应用的基础。</p>
+
+<!--more-->
+
+
+<p>在Java中表示字符串的两种方法：</p>
+
+<table>
+<thead>
+<tr>
+<th>操作 </th>
+<th> 字符数组 </th>
+<th> Java字符串</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>声明</td>
+<td> char[] a</td>
+<td> String s</td>
+</tr>
+<tr>
+<td>根据索引访问字符</td>
+<td> a[i] </td>
+<td> s.charAt(i)</td>
+</tr>
+<tr>
+<td>获取字符串长度</td>
+<td> a.length </td>
+<td> s.length()</td>
+</tr>
+<tr>
+<td>表示方法转换</td>
+<td> a = s.toCharArray(); </td>
+<td> s= new String(a);</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>1. 字母表</h2>
+
+<p>字母表是字符串相关算法的基础，表示字符串由哪些字母组成。字符索引的数组能够提高算法的效率。在这个数组中，用字符作为索引来获取与之相关联的信息。在一些算法中会产生大量的这类数组。如果使用Java的String类，就必须使用大小为65536的数组。有了字母表，则只需要使用一个字母表大小的数组即可。</p>
+
+<p>字母表(Alphabet)API定义如下：</p>
+
+<table>
+<thead>
+<tr>
+<th>方法 </th>
+<th>  说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alphabet(String s) </td>
+<td> 构造方法，根据s中的字符创建一张新的字母表</td>
+</tr>
+<tr>
+<td>char toChar(int index) </td>
+<td> 获取字母表中索引位置的字符</td>
+</tr>
+<tr>
+<td>int toIndex(char c)  </td>
+<td> 获取c的索引，在0到R-1之间</td>
+</tr>
+<tr>
+<td>boolean contains(char c) </td>
+<td> c在字母表中吗</td>
+</tr>
+<tr>
+<td>int R() </td>
+<td> 基数（字母表中的字符数量）</td>
+</tr>
+<tr>
+<td>int lgR() </td>
+<td> 表示一个索引所需的比特数</td>
+</tr>
+<tr>
+<td>int[] toIndices(String s) </td>
+<td> 将s转换为R进制的整数数组</td>
+</tr>
+<tr>
+<td>String toChars(int[] indices) </td>
+<td> 将R进制的整数数组转换为基于该字母表的字符串</td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>标准字母表</h3>
+
+<table>
+<thead>
+<tr>
+<th>名称 </th>
+<th> R() </th>
+<th> lgR() </th>
+<th> 字符集</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BINARY </td>
+<td> 2 </td>
+<td> 1 </td>
+<td> 01</td>
+</tr>
+<tr>
+<td>DNA </td>
+<td> 4 </td>
+<td> 2 </td>
+<td> ACTG</td>
+</tr>
+<tr>
+<td>OCTAL </td>
+<td> 8 </td>
+<td> 3 </td>
+<td> 0..7</td>
+</tr>
+<tr>
+<td>DECIMAL </td>
+<td> 10 </td>
+<td> 4 </td>
+<td> 0..9</td>
+</tr>
+<tr>
+<td>HEXADECIMAL </td>
+<td> 16 </td>
+<td> 4 </td>
+<td> 0..9ABCDEF</td>
+</tr>
+<tr>
+<td>PROTEIN </td>
+<td> 20 </td>
+<td> 5 </td>
+<td> ACDEFGHIKLMNPQRSTVWY</td>
+</tr>
+<tr>
+<td>LOWERCASE </td>
+<td> 26 </td>
+<td> 5 </td>
+<td> a..z</td>
+</tr>
+<tr>
+<td>UPPERCASE </td>
+<td> 26 </td>
+<td> 5 </td>
+<td> A..Z</td>
+</tr>
+<tr>
+<td>BASE64 </td>
+<td> 64 </td>
+<td> 6 </td>
+<td> A..Za..z0..9+/</td>
+</tr>
+<tr>
+<td>ASCII </td>
+<td> 128 </td>
+<td> 7 </td>
+<td> ASCII字符集</td>
+</tr>
+<tr>
+<td>EXTENDED_ASCII </td>
+<td> 256 </td>
+<td> 8 </td>
+<td> 扩展ASCII字符集</td>
+</tr>
+<tr>
+<td>UNICODE16 </td>
+<td> 65536 </td>
+<td> 16 </td>
+<td> Unicode字符集</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>2. 键索引计数法</h2>
+
+<p>假设老师在统计学生分数时，学生被分为若干组，标号为0、1、2、3等。老师希望将全班同学按组分类，也就是按组排序。因为组的编号是较小的整数，使用键索引计数法来排序非常合适。</p>
+
+<p>我们用一个数组a[]来保存数据。每个元素都保存了一个姓名和一个组号。组号在0到R-1之间，a[i].key()会返回指定学生的组号。键索引计数法通过四个步骤来完成排序。</p>
+
+<p><strong>第一步，频率统计</strong>
+使用一个int数组count[]来计算每个键（组号）出现的频率。遍历一遍数组，如果键为r，则将count[r+1]加1。因此对第1组的学生，将会把count[2]++。（在第二步的代码中可以看到为什么是r+1）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">count</span><span class="o">[</span><span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">key</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]++;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>第二步，将频率转换为索引</strong>
+有了count[]中每个键出现的次数，就可以得到每个键在排序结果中的起始索引位置。假如第1组3个人，第2组5个人，那么第三种的同学在排序结果中的起始位置就是8. 因此可以将count[]转化为一张索引表。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">r</span><span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="n">R</span><span class="o">;</span> <span class="n">r</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">count</span><span class="o">[</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="o">]</span> <span class="o">+=</span> <span class="n">count</span><span class="o">[</span><span class="n">r</span><span class="o">];</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>第三步，数据分类</strong>
+在第二步中，得到了每个键的起始序号。我们就可以将所有元素（学生）移动到一个辅助数组aux[]。元素在aux[]中的位置由count[]值决定，在移动的过程中将count[]中对应的元素值加1。这个过程只需要遍历一遍数据就可以产生排序结果。并且这种方式是稳定的！键相同的元素在排序后会被聚集到一起，而且相对顺序没有变化。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">aux</span><span class="o">[</span><span class="n">count</span><span class="o">[</span><span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">key</span><span class="o">()]++]</span>  <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>第四步，回写</strong>
+在第三步已经完成了排序，只需要将排序结果复制回原数组。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">aux</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>键索引计数法是一种对于小整数键排序非常有效却常常被忽略的排序方法。它排序N个键为0到R-1之间的整数的元素需要访问数组11N+4R+1次。也就是说<strong>它突破了NlogN的排序算法运行时间下限（<a href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">快速排序算法</a>）。原因是什么？因为它是不需要比较的，它只通过key()方法访问数据。只要当R在N的一个常数因子范围之内，它都是一个线性时间级别的排序方法。</strong></p>
+
+<p>理解键索引计数法的工作原理非常重要。学生的组号对应字母表中的元素，利用字母表大小的数组count[]来统计每个字母出现的次数，计算出每个字母在最终数组的起始序号，从而完成排序。</p>
+
+<p>有了键索引计数法，我们来看如何实现两种字符串排序算法。</p>
+
+<h2>3. 低位优先(Least-Significant-DigitFirst, LSD)的字符串排序</h2>
+
+<p>这种算法适用于<strong>键的长度相等</strong>的字符串排序应用。例如对车牌号进行排序。它会从右往左检查键中的字符，所以称为低位优先。</p>
+
+<p>如果字符串的长度均为W，在排序的过程中，从右向左，将每个位置的字符作为键，用键索引计数法将字符串排序W遍。理解了键索引计数法，实现低位优先的字符串排序就很容易了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LSD</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">W</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">N</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">R</span> <span class="o">=</span> <span class="mi">256</span><span class="o">;</span>   <span class="c1">// extend ASCII alphabet size</span>
+</span><span class='line'>        <span class="n">String</span><span class="o">[]</span> <span class="n">aux</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">[</span><span class="n">N</span><span class="o">];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">d</span> <span class="o">=</span> <span class="n">W</span><span class="o">-</span><span class="mi">1</span><span class="o">;</span> <span class="n">d</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">d</span><span class="o">--)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="c1">//将第d个字符用键索引计数法排序</span>
+</span><span class='line'>            <span class="c1">// 计算出现次数</span>
+</span><span class='line'>            <span class="kt">int</span><span class="o">[]</span> <span class="n">count</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">R</span><span class="o">+</span><span class="mi">1</span><span class="o">];</span>
+</span><span class='line'>            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span><span class='line'>                <span class="n">count</span><span class="o">[</span><span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]++;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// 将次数转换为索引</span>
+</span><span class='line'>            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="n">R</span><span class="o">;</span> <span class="n">r</span><span class="o">++)</span>
+</span><span class='line'>                <span class="n">count</span><span class="o">[</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="o">]</span> <span class="o">+=</span> <span class="n">count</span><span class="o">[</span><span class="n">r</span><span class="o">];</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// 移到辅助数组，进行排序</span>
+</span><span class='line'>            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span><span class='line'>                <span class="n">aux</span><span class="o">[</span><span class="n">count</span><span class="o">[</span><span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">)]++]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// 回写数据</span>
+</span><span class='line'>            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span><span class='line'>                <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">aux</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>低位优先的字符串排序算法能够将定长字符串排序，其中的键索引计数法的稳定性起了关键作用。</p>
+
+<p>对于基于R个字符的字母表的N个以长为W的字符串为键的元素，低位优先的字符串排序需要访问~7WN+3WR次数组，使用的额外空间与N+R成正比。</p>
+
+<h2>4. 高位优先(MSD)的字符串排序</h2>
+
+<p>这种算法从左往右检查键中的字符，所以称为高位优先。它不一定要检查所有的输入才能完成排序。它是更通用的字符串排序算法，字符串的长度不一定相同。</p>
+
+<p>和快速排序一样，高位优先的字符串排序会将数组切分为能够独立排序的子数组来完成排序任务，但它的切分会为每个首字母得到一个子数组，而不是像快速排序中那样产生固定的两个或三个切分。首先用键索引计数法将所有字符串按照首字母排序，然后（递归地）再将每个首字母所对应的子数组排序（忽略首字母，因为每个子数组中的首字母是相同的）。</p>
+
+<p>由于高位优先字符串排序算法要处理不等长的字符串，因此要处理字符串已经结束的情况。因此约定charAt方法中，如果指定位置超出字符串长度则返回-1. 其它情况则加1后返回。因此字符串中的每个字符都可能产生R+1种不同的值，0表示结束，1表示字母表的第一个字符。而键索引计数法还需要一个额外的位置，所以count[]的长度应为R+2。</p>
+
+<p>对于很小的子数组（15个以内），采用插入排序更快。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MSD</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">R</span>             <span class="o">=</span> <span class="mi">256</span><span class="o">;</span>   <span class="c1">// 基数 extended ASCII alphabet size</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">CUTOFF</span>        <span class="o">=</span>  <span class="mi">15</span><span class="o">;</span>   <span class="c1">// 小数组的切换阈值 cutoff to insertion sort</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// sort array of strings</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">N</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">String</span><span class="o">[]</span> <span class="n">aux</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">[</span><span class="n">N</span><span class="o">];</span>
+</span><span class='line'>        <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">aux</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// return dth character of s, -1 if d = length of string</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">charAt</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">assert</span> <span class="n">d</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">d</span> <span class="o">&lt;=</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// sort from a[lo] to a[hi], starting at the dth character</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">lo</span><span class="o">,</span> <span class="kt">int</span> <span class="n">hi</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">,</span> <span class="n">String</span><span class="o">[]</span> <span class="n">aux</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// cutoff to insertion sort for small subarrays</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">hi</span> <span class="o">&lt;=</span> <span class="n">lo</span> <span class="o">+</span> <span class="n">CUTOFF</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">insertion</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">lo</span><span class="o">,</span> <span class="n">hi</span><span class="o">,</span> <span class="n">d</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// 计算次数</span>
+</span><span class='line'>        <span class="kt">int</span><span class="o">[]</span> <span class="n">count</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">R</span><span class="o">+</span><span class="mi">2</span><span class="o">];</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">lo</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">hi</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">charAt</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">],</span> <span class="n">d</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">count</span><span class="o">[</span><span class="n">c</span><span class="o">+</span><span class="mi">2</span><span class="o">]++;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// 将次数转换为索引</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="n">R</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span> <span class="n">r</span><span class="o">++)</span>
+</span><span class='line'>            <span class="n">count</span><span class="o">[</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="o">]</span> <span class="o">+=</span> <span class="n">count</span><span class="o">[</span><span class="n">r</span><span class="o">];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// 生成辅助数据内容，完成排序。</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">lo</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">hi</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">charAt</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">],</span> <span class="n">d</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">aux</span><span class="o">[</span><span class="n">count</span><span class="o">[</span><span class="n">c</span><span class="o">+</span><span class="mi">1</span><span class="o">]++]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// 回写</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">lo</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">hi</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span><span class='line'>            <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">aux</span><span class="o">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">lo</span><span class="o">];</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// 递归地以每个字符为键进行排序。</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="n">R</span><span class="o">;</span> <span class="n">r</span><span class="o">++)</span>
+</span><span class='line'>            <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">lo</span> <span class="o">+</span> <span class="n">count</span><span class="o">[</span><span class="n">r</span><span class="o">],</span> <span class="n">lo</span> <span class="o">+</span> <span class="n">count</span><span class="o">[</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="o">]</span> <span class="o">-</span> <span class="mi">1</span><span class="o">,</span> <span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">aux</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 插入排序算法insertion sort a[lo..hi], starting at dth character</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">insertion</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">lo</span><span class="o">,</span> <span class="kt">int</span> <span class="n">hi</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">lo</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">hi</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span><span class='line'>            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="n">lo</span> <span class="o">&amp;&amp;</span> <span class="n">less</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">],</span> <span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">],</span> <span class="n">d</span><span class="o">);</span> <span class="n">j</span><span class="o">--)</span>
+</span><span class='line'>                <span class="n">exch</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// exchange a[i] and a[j]</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">exch</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i</span><span class="o">,</span> <span class="kt">int</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+</span><span class='line'>        <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+</span><span class='line'>        <span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">temp</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// is v less than w, starting at character d</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">less</span><span class="o">(</span><span class="n">String</span> <span class="n">v</span><span class="o">,</span> <span class="n">String</span> <span class="n">w</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">// assert v.substring(0, d).equals(w.substring(0, d));</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">d</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">v</span><span class="o">.</span><span class="na">length</span><span class="o">(),</span> <span class="n">w</span><span class="o">.</span><span class="na">length</span><span class="o">());</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">v</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">&lt;</span> <span class="n">w</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">))</span> <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">v</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">&gt;</span> <span class="n">w</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">))</span> <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&lt;</span> <span class="n">w</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4.1 三个必须解决的问题</h3>
+
+<h4>4.1.1 小型子数组</h4>
+
+<p>高位优先的字符串排序算法能够快速地将需要排序的数组切分小的数组，但这肯定会需要处理大量的微型数组，因此必须快速处理它们。<strong>小型子数组对于高位优先的字符串排序性能至关重要！</strong>假设要将数百万个不同的ASCII字符串排序，每个字符串最终都会产生一个只含有它自己的子数组，因此你需要将数百万个大小为1的子数组排序。每次排序还需要将count[]r 258个元素初始化为0并转化为索引。这个代价比排序其他部分高得多。如果使用Unicode(R=65536)则可能会慢上千倍！</p>
+
+<p>所以对小型子数组要切换到插入排序。在一个典型应用中，当长度小于等于10时切换到插入排序能够将运行时间降低到原来的十分之一。</p>
+
+<h4>4.1.2 等值键</h4>
+
+<p>如果字符串有大量重复的前缀，排序会较慢。高位优先字符串排序算法的最坏情况就是所有的键均相同。</p>
+
+<h4>4.1.3 额外空间</h4>
+
+<p>为了进行切分，高位优先的算法使用了两个辅助数组：aux[]和count[]. aux可以在递归方法sort()外创建。而count[]所需的空间是主要问题，它在内循环中创建。</p>
+
+<p>解决这三个问题需要新算法。</p>
+
+<h2>5. 三向字符串快速排序</h2>
+
+<p>在高位优先的字符串排序算法上改进快速排序。根据键的首字母进行三向切分，分成三个数组：首字母小于、等于和大于切分字符的三个数组。仅在中间子数组中的下一个字符（因为首字母就是切分字符）继续递归排序。这是一种将高位优先字符串排序与快速排序结合的算法。</p>
+
+<p>这种算法不会像高位优先算法那样创建大量（空）子数组，它的切分总是只有三个。能解决所有高位优先字符串排序算法不擅长的各种情况。并且它也不需要额外的空间。</p>
+
+<p>对于所有递归算法都可以通过对小型子数组进行特殊处理高效率，所以它同样使用到了插入排序。</p>
+
+<p>和快速排序一样，最好在排序之前将数组打乱，或者将第一个元素和一个随机位置的元素交换以得到一个随机的切分元素。这么做主要是预防数组已经有序或者接近有序的最坏情况。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Quick3string</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">CUTOFF</span> <span class="o">=</span>  <span class="mi">15</span><span class="o">;</span>   <span class="c1">// cutoff to insertion sort</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// sort the array a[] of strings</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">StdRandom</span><span class="o">.</span><span class="na">shuffle</span><span class="o">(</span><span class="n">a</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">assert</span> <span class="nf">isSorted</span><span class="o">(</span><span class="n">a</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// return the dth character of s, -1 if d = length of s</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">charAt</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">assert</span> <span class="n">d</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">d</span> <span class="o">&lt;=</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 3-way string quicksort a[lo..hi] starting at dth character</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">lo</span><span class="o">,</span> <span class="kt">int</span> <span class="n">hi</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// cutoff to insertion sort for small subarrays</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">hi</span> <span class="o">&lt;=</span> <span class="n">lo</span> <span class="o">+</span> <span class="n">CUTOFF</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">insertion</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">lo</span><span class="o">,</span> <span class="n">hi</span><span class="o">,</span> <span class="n">d</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">lt</span> <span class="o">=</span> <span class="n">lo</span><span class="o">,</span> <span class="n">gt</span> <span class="o">=</span> <span class="n">hi</span><span class="o">;</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="n">charAt</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">lo</span><span class="o">],</span> <span class="n">d</span><span class="o">);</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">lo</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="n">gt</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">t</span> <span class="o">=</span> <span class="n">charAt</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">],</span> <span class="n">d</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">if</span>      <span class="o">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="n">v</span><span class="o">)</span> <span class="n">exch</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">lt</span><span class="o">++,</span> <span class="n">i</span><span class="o">++);</span>
+</span><span class='line'>            <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">t</span> <span class="o">&gt;</span> <span class="n">v</span><span class="o">)</span> <span class="n">exch</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">gt</span><span class="o">--);</span>
+</span><span class='line'>            <span class="k">else</span>              <span class="n">i</span><span class="o">++;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// a[lo..lt-1] &lt; v = a[lt..gt] &lt; a[gt+1..hi]. </span>
+</span><span class='line'>        <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">lo</span><span class="o">,</span> <span class="n">lt</span><span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">d</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">v</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">lt</span><span class="o">,</span> <span class="n">gt</span><span class="o">,</span> <span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">gt</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">hi</span><span class="o">,</span> <span class="n">d</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// sort from a[lo] to a[hi], starting at the dth character</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">insertion</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">lo</span><span class="o">,</span> <span class="kt">int</span> <span class="n">hi</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">lo</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">hi</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span><span class='line'>            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="n">lo</span> <span class="o">&amp;&amp;</span> <span class="n">less</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">],</span> <span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">],</span> <span class="n">d</span><span class="o">);</span> <span class="n">j</span><span class="o">--)</span>
+</span><span class='line'>                <span class="n">exch</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// exchange a[i] and a[j]</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">exch</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i</span><span class="o">,</span> <span class="kt">int</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+</span><span class='line'>        <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+</span><span class='line'>        <span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">temp</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// is v less than w, starting at character d</span>
+</span><span class='line'>    <span class="c1">// DEPRECATED BECAUSE OF SLOW SUBSTRING EXTRACTION IN JAVA 7</span>
+</span><span class='line'>    <span class="c1">// private static boolean less(String v, String w, int d) {</span>
+</span><span class='line'>    <span class="c1">//    assert v.substring(0, d).equals(w.substring(0, d));</span>
+</span><span class='line'>    <span class="c1">//    return v.substring(d).compareTo(w.substring(d)) &lt; 0; </span>
+</span><span class='line'>    <span class="c1">// }</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// is v less than w, starting at character d</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">less</span><span class="o">(</span><span class="n">String</span> <span class="n">v</span><span class="o">,</span> <span class="n">String</span> <span class="n">w</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">d</span><span class="o">).</span><span class="na">equals</span><span class="o">(</span><span class="n">w</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">d</span><span class="o">));</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">d</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">v</span><span class="o">.</span><span class="na">length</span><span class="o">(),</span> <span class="n">w</span><span class="o">.</span><span class="na">length</span><span class="o">());</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">v</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">&lt;</span> <span class="n">w</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">))</span> <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">v</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">&gt;</span> <span class="n">w</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">))</span> <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&lt;</span> <span class="n">w</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// is the array sorted</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isSorted</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">compareTo</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">])</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>要将含有N个随机字符串的数组排序，三向字符串快速排序平均需要比较字符~2NlnN次。</p>
+
+<p>Java系统的标准实现中的字符串比较非常快，因此它的排序性能与上面的算法不相上下。</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-15-string-sort.jpg" alt="image" /></p>
+
+<p>参考：<a href="http://algs4.cs.princeton.edu/51radix/">http://algs4.cs.princeton.edu/51radix/</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-15T09:49:02+08:00" pubdate data-updated="true">2014-11-15</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/suan-fa/'>算法</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/11/12/androidying-multidex/" title="Previous Post: Android应用打破65K方法数限制">&laquo; Android应用打破65K方法数限制</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (12)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/15/zi-fu-chuan-pai-xu/">字符串排序</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/12/androidying-multidex/">Android应用打破65K方法数限制</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/03/zui-duan-lu-jing/">最短路径</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/31/zui-xiao-sheng-cheng-shu/">最小生成树</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/30/you-xiang-tu/">有向图</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fb4e47bf6950f9d2496daf84fe62cec59' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/11/15/zi-fu-chuan-pai-xu/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/11/15/zi-fu-chuan-pai-xu/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
