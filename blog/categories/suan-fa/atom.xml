@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 算法 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/suan-fa/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-11-15T17:14:16+08:00</updated>
+  <updated>2014-11-16T16:49:42+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,528 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[单词查找树]]></title>
+    <link href="http://blog.ubone.com/blog/2014/11/16/dan-ci-cha-zhao-shu/"/>
+    <updated>2014-11-16T22:37:38+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/11/16/dan-ci-cha-zhao-shu</id>
+    <content type="html"><![CDATA[<p>在<a href="/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/">符号表</a>中学习了二叉树、红黑树等，单词查找树比这些通用算法更加有效。它查找命中所需的时间与被查找的键的长度成正比，查找未命中只需检查若干个字符。这样的性能是相当惊人的，它们是算法研究的最高成就之一。</p>
+
+<!--more-->
+
+
+<p>我们扩展符号表的API，增加基于字符的用于处理字符串类型的键的操作。</p>
+
+<p>以字符串为键的符号表的API(<code>StringST&lt;Value&gt;</code>)</p>
+
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>StringST()</code> </td>
+<td> 创建一个符号表</td>
+</tr>
+<tr>
+<td><code>void put(String key, Value val)</code> </td>
+<td> 向表中插入键值对（如果值为null则删除键key）</td>
+</tr>
+<tr>
+<td><code>Value get(String key)</code> </td>
+<td> 键key所对应的值，如果不存在则返回null</td>
+</tr>
+<tr>
+<td><code>void delete(String key)</code> </td>
+<td> 删除键key（和它的值）</td>
+</tr>
+<tr>
+<td><code>boolean contains(String key)</code> </td>
+<td> 表中是否存在key的值</td>
+</tr>
+<tr>
+<td><code>boolean isEmpty()</code> </td>
+<td> 符号表是否为空</td>
+</tr>
+<tr>
+<td><strong><code>String longestPrefixOf(String s)</code></strong> </td>
+<td> s的前缀中最长的键 </td>
+</tr>
+<tr>
+<td><strong><code>Iterable&lt;String&gt; keysWithPrefix(String s)</code></strong> </td>
+<td> 所有以s为前缀的键</td>
+</tr>
+<tr>
+<td><strong><code>Iterable&lt;String&gt; keysThatMatch(String s)</code></strong> </td>
+<td> 所有和s匹配的键（其中“.”能够匹配任意字符）</td>
+</tr>
+<tr>
+<td><code>int size()</code>  </td>
+<td> 键值对的数量 </td>
+</tr>
+<tr>
+<td><code>Iterable&lt;String&gt; keys()</code> </td>
+<td> 符号表中的所有键 </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>上面的API与符号表API的不同之处在于Key换成了String, 增加了粗体显示的三个方法。</p>
+
+<h2>1. R向单词查找树</h2>
+
+<p>与各种查找树一样，单词查找树也是由链接的结点所组成的数据结构。每个结点只有一个父结点（根结点除外），每个结点都含有R条链接，其中R为字母表的大小。每个键所关联的值保存在该键的最后一个字母所对应的结点中。值为空的结点在符号表中没有对应的键，它们的存在是为了简化单词查找树中的查找操作。</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-16-tries-node.jpg" alt="image" /></p>
+
+<h3>1.1 查找操作</h3>
+
+<p>单词查找树的查找操作非常简单，从首字母开始延着树结点查找就可以：</p>
+
+<ul>
+<li>键的尾字符所对应的结点中的值非空，命中！</li>
+<li>键的尾字符所对应的结点中的值为空，未命中！</li>
+<li>查找结束于一条空链接，未命中！</li>
+</ul>
+
+
+<h3>1.2 插入操作</h3>
+
+<p>和二叉查找树一样，在插入之前要进行一次查找。</p>
+
+<ul>
+<li>在到达键的尾字符之前就遇到了一个空链接。证明不存在匹配的结点，为键中还未被检查的每个字符创建一个对应的结点，并将键对应的值保存到最后一个字符的结点中。</li>
+<li>在遇到空链接之前就到达了键的尾字符。将该结点的值设为键对应的值（无论该值是否为空）。</li>
+</ul>
+
+
+<h3>1.3 删除操作</h3>
+
+<p>删除的第一步是找到键所对应的结点并将它的值设为空null. 如果该结点含有一个非空的链接指向某个子结点，那么就不需要再进行其他操作了。如果它的所有链接均为空，那就需要从数据结构中删除这个结点。如果删除它使得它的父结点的所有链接也均为空，就要继续删除它的父结点，依此类推。</p>
+
+<h3>1.4 实现</h3>
+
+<p>```java
+public class TrieST<Value> {</p>
+
+<pre><code>private static final int R = 256;        // extended ASCII
+
+
+private Node root;      // root of trie
+private int N;          // number of keys in trie
+
+// R-way trie node
+private static class Node {
+    private Object val;
+    private Node[] next = new Node[R];
+}
+
+public TrieST() {
+}
+</code></pre>
+
+<p>   /**</p>
+
+<pre><code> * Initializes an empty string symbol table.
+ */
+
+/**
+ * Returns the value associated with the given key.
+ * @param key the key
+ * @return the value associated with the given key if the key is in the symbol table
+ *     and &lt;tt&gt;null&lt;/tt&gt; if the key is not in the symbol table
+ * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
+ */
+public Value get(String key) {
+    Node x = get(root, key, 0);
+    if (x == null) return null;
+    return (Value) x.val;
+}
+
+/**
+ * Does this symbol table contain the given key?
+ * @param key the key
+ * @return &lt;tt&gt;true&lt;/tt&gt; if this symbol table contains &lt;tt&gt;key&lt;/tt&gt; and
+ *     &lt;tt&gt;false&lt;/tt&gt; otherwise
+ * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
+ */
+public boolean contains(String key) {
+    return get(key) != null;
+}
+
+private Node get(Node x, String key, int d) {
+    if (x == null) return null;
+    if (d == key.length()) return x;
+    char c = key.charAt(d);
+    return get(x.next[c], key, d+1);
+}
+
+/**
+ * Inserts the key-value pair into the symbol table, overwriting the old value
+ * with the new value if the key is already in the symbol table.
+ * If the value is &lt;tt&gt;null&lt;/tt&gt;, this effectively deletes the key from the symbol table.
+ * @param key the key
+ * @param val the value
+ * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
+ */
+public void put(String key, Value val) {
+    if (val == null) delete(key);
+    else root = put(root, key, val, 0);
+}
+
+private Node put(Node x, String key, Value val, int d) {
+    if (x == null) x = new Node();
+    if (d == key.length()) {
+        if (x.val == null) N++;
+        x.val = val;
+        return x;
+    }
+    char c = key.charAt(d);
+    x.next[c] = put(x.next[c], key, val, d+1);
+    return x;
+}
+
+/**
+ * Returns the number of key-value pairs in this symbol table.
+ * @return the number of key-value pairs in this symbol table
+ */
+public int size() {
+    return N;
+}
+
+/**
+ * Is this symbol table empty?
+ * @return &lt;tt&gt;true&lt;/tt&gt; if this symbol table is empty and &lt;tt&gt;false&lt;/tt&gt; otherwise
+ */
+public boolean isEmpty() {
+    return size() == 0;
+}
+
+/**
+ * Returns all keys in the symbol table as an &lt;tt&gt;Iterable&lt;/tt&gt;.
+ * To iterate over all of the keys in the symbol table named &lt;tt&gt;st&lt;/tt&gt;,
+ * use the foreach notation: &lt;tt&gt;for (Key key : st.keys())&lt;/tt&gt;.
+ * @return all keys in the sybol table as an &lt;tt&gt;Iterable&lt;/tt&gt;
+ */
+public Iterable&lt;String&gt; keys() {
+    return keysWithPrefix("");
+}
+
+/**
+ * Returns all of the keys in the set that start with &lt;tt&gt;prefix&lt;/tt&gt;.
+ * @param prefix the prefix
+ * @return all of the keys in the set that start with &lt;tt&gt;prefix&lt;/tt&gt;,
+ *     as an iterable
+ */
+public Iterable&lt;String&gt; keysWithPrefix(String prefix) {
+    Queue&lt;String&gt; results = new Queue&lt;String&gt;();
+    Node x = get(root, prefix, 0);
+    collect(x, new StringBuilder(prefix), results);
+    return results;
+}
+
+private void collect(Node x, StringBuilder prefix, Queue&lt;String&gt; results) {
+    if (x == null) return;
+    if (x.val != null) results.enqueue(prefix.toString());  //有值才是键
+    for (char c = 0; c &lt; R; c++) {
+        prefix.append(c);
+        collect(x.next[c], prefix, results);
+        prefix.deleteCharAt(prefix.length() - 1);
+    }
+}
+
+/**
+ * Returns all of the keys in the symbol table that match &lt;tt&gt;pattern&lt;/tt&gt;,
+ * where . symbol is treated as a wildcard character.
+ * @param pattern the pattern
+ * @return all of the keys in the symbol table that match &lt;tt&gt;pattern&lt;/tt&gt;,
+ *     as an iterable, where . is treated as a wildcard character.
+ */
+public Iterable&lt;String&gt; keysThatMatch(String pattern) {
+    Queue&lt;String&gt; results = new Queue&lt;String&gt;();
+    collect(root, new StringBuilder(), pattern, results);
+    return results;
+}
+
+private void collect(Node x, StringBuilder prefix, String pattern, Queue&lt;String&gt; results) {
+    if (x == null) return;
+    int d = prefix.length();
+    if (d == pattern.length() &amp;&amp; x.val != null)
+        results.enqueue(prefix.toString());
+    if (d == pattern.length())
+        return;
+    char c = pattern.charAt(d);
+    if (c == '.') {
+        for (char ch = 0; ch &lt; R; ch++) {
+            prefix.append(ch);
+            collect(x.next[ch], prefix, pattern, results);
+            prefix.deleteCharAt(prefix.length() - 1);
+        }
+    }
+    else {
+        prefix.append(c);
+        collect(x.next[c], prefix, pattern, results);
+        prefix.deleteCharAt(prefix.length() - 1);
+    }
+}
+
+/**
+ * Returns the string in the symbol table that is the longest prefix of &lt;tt&gt;query&lt;/tt&gt;,
+ * or &lt;tt&gt;null&lt;/tt&gt;, if no such string.
+ * @param query the query string
+ * @throws NullPointerException if &lt;tt&gt;query&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
+ * @return the string in the symbol table that is the longest prefix of &lt;tt&gt;query&lt;/tt&gt;,
+ *     or &lt;tt&gt;null&lt;/tt&gt; if no such string
+ */
+public String longestPrefixOf(String query) {
+    int length = longestPrefixOf(root, query, 0, 0);
+    return query.substring(0, length);
+}
+
+// returns the length of the longest string key in the subtrie
+// rooted at x that is a prefix of the query string,
+// assuming the first d character match and we have already
+// found a prefix match of length length
+private int longestPrefixOf(Node x, String query, int d, int length) {
+    if (x == null) return length;
+    if (x.val != null) length = d;
+    if (d == query.length()) return length;
+    char c = query.charAt(d);
+    return longestPrefixOf(x.next[c], query, d+1, length);
+}
+
+/**
+ * Removes the key from the set if the key is present.
+ * @param key the key
+ * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
+ */
+public void delete(String key) {
+    root = delete(root, key, 0);
+}
+
+private Node delete(Node x, String key, int d) {
+    if (x == null) return null;
+    if (d == key.length()) {
+        if (x.val != null) N--;
+        x.val = null;
+    }
+    else {
+        char c = key.charAt(d);
+        x.next[c] = delete(x.next[c], key, d+1);
+    }
+
+    // remove subtrie rooted at x if it is completely empty
+    if (x.val != null) return x;
+    for (int c = 0; c &lt; R; c++)
+        if (x.next[c] != null)
+            return x;
+    return null;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面的代码可以处理扩展ASCII码，但很容易就可以修改为能够处理由任意字母表得到的键：</p>
+
+<ol>
+<li>实现一个构造函数，接受Alphabet，将R设置为字母表大小。</li>
+<li>在get()、put()中使用Alphabet的toIndex()，将字符串中的字符转化为0到R-1的索引值。</li>
+<li>在keys()、keysWithPrefix()和keysThatMatch()方法中，使用Alphabet的toChar()方法，将0到R-1之间的索引值转化为字符型(char)值。</li>
+</ol>
+
+
+<h3>1.5 单词查找树的性质</h3>
+
+<p>单词查找树的链表结构（形状）和键的插入或删除顺序无关，对于任意给定的一组键，其单词查找树都是唯一的。</p>
+
+<p>在单词查找树中查找一个键或是插入一个键时，访问数组的次数最多为键的长度加1！</p>
+
+<p>字母表的大小为R，在一棵由N个随机键构造的单词树中，未命中查找平均所需检查的结点数量为~log<sub>R</sub><sup>N</sup>。</p>
+
+<p>一棵单词查找树中的链接总数在RN到RNw之间，其中w为键的平均长度。因此单词查找树的空间消耗非常大。长键也可能占用大量空间，因为它通常有一条长长的尾巴。单词查找树的内部也可能存在单向的分支。例如两个长键可能只有最后一个字符不同。</p>
+
+<p>如果能够负担得起R向单词查找树的庞大空间，它的性能是无可匹敌的。</p>
+
+<h2>2. 三向单词查找树</h2>
+
+<p>三向单词查找树可以避免R向单词查找树过度的空间消耗。它的每个结点都含有一个字符、三条链接和一个值。三条链接分别对应当前字母小于、等于和大于结点字母的所有键。</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-16-tst.jpg" alt="image" /></p>
+
+<h3>2.1 查找、插入和删除操作</h3>
+
+<p>在查找时，首先比较键的首字母和根结点的字母。如果键的首字母较小，就选择左链接；如果较大，就选择右链接；如果相等则选择中链接。然后递归地使用相同的算法。如果遇到一个空链接或者当键结束时结点的值为空，那么查找未命中。如果键结束时结点的值非空则查找命中。</p>
+
+<p>插入一个新键时，首先进行查找，然后和单词查找树一样，在树中补全键末尾的所有结点。</p>
+
+<p>在三向单词查找树中，需要使用在二叉查找树中删除结点的方法来删去与该字符对应的结点。</p>
+
+<h3>2.2 实现</h3>
+
+<p>```java
+public class TST<Value> {</p>
+
+<pre><code>private int N;       // size
+private Node root;   // root of TST
+
+private class Node {
+    private char c;                 // character
+    private Node left, mid, right;  // left, middle, and right subtries
+    private Value val;              // value associated with string
+}
+
+// return number of key-value pairs
+public int size() {
+    return N;
+}
+</code></pre>
+
+<p>   /**************************************************************</p>
+
+<pre><code>* Is string key in the symbol table?
+**************************************************************/
+public boolean contains(String key) {
+    return get(key) != null;
+}
+
+public Value get(String key) {
+    if (key == null) throw new NullPointerException();
+    if (key.length() == 0) throw new IllegalArgumentException("key must have length &gt;= 1");
+    Node x = get(root, key, 0);
+    if (x == null) return null;
+    return x.val;
+}
+
+// return subtrie corresponding to given key
+private Node get(Node x, String key, int d) {
+    if (key == null) throw new NullPointerException();
+    if (key.length() == 0) throw new IllegalArgumentException("key must have length &gt;= 1");
+    if (x == null) return null;
+    char c = key.charAt(d);
+    if      (c &lt; x.c)              return get(x.left,  key, d);
+    else if (c &gt; x.c)              return get(x.right, key, d);
+    else if (d &lt; key.length() - 1) return get(x.mid,   key, d+1);
+    else                           return x;
+}
+</code></pre>
+
+<p>   /**************************************************************</p>
+
+<pre><code>* Insert string s into the symbol table.
+**************************************************************/
+public void put(String s, Value val) {
+    if (!contains(s)) N++;
+    root = put(root, s, val, 0);
+}
+
+private Node put(Node x, String s, Value val, int d) {
+    char c = s.charAt(d);
+    if (x == null) {
+        x = new Node();
+        x.c = c;
+    }
+    if      (c &lt; x.c)             x.left  = put(x.left,  s, val, d);
+    else if (c &gt; x.c)             x.right = put(x.right, s, val, d);
+    else if (d &lt; s.length() - 1)  x.mid   = put(x.mid,   s, val, d+1);
+    else                          x.val   = val;
+    return x;
+}
+</code></pre>
+
+<p>   /**************************************************************</p>
+
+<pre><code>* Find and return longest prefix of s in TST
+**************************************************************/
+public String longestPrefixOf(String s) {
+    if (s == null || s.length() == 0) return null;
+    int length = 0;
+    Node x = root;
+    int i = 0;
+    while (x != null &amp;&amp; i &lt; s.length()) {
+        char c = s.charAt(i);
+        if      (c &lt; x.c) x = x.left;
+        else if (c &gt; x.c) x = x.right;
+        else {
+            i++;
+            if (x.val != null) length = i;
+            x = x.mid;
+        }
+    }
+    return s.substring(0, length);
+}
+
+// all keys in symbol table
+public Iterable&lt;String&gt; keys() {
+    Queue&lt;String&gt; queue = new Queue&lt;String&gt;();
+    collect(root, "", queue);
+    return queue;
+}
+
+// all keys starting with given prefix
+public Iterable&lt;String&gt; prefixMatch(String prefix) {
+    Queue&lt;String&gt; queue = new Queue&lt;String&gt;();
+    Node x = get(root, prefix, 0);
+    if (x == null) return queue;
+    if (x.val != null) queue.enqueue(prefix);
+    collect(x.mid, prefix, queue);
+    return queue;
+}
+
+// all keys in subtrie rooted at x with given prefix
+private void collect(Node x, String prefix, Queue&lt;String&gt; queue) {
+    if (x == null) return;
+    collect(x.left,  prefix,       queue);
+    if (x.val != null) queue.enqueue(prefix + x.c);
+    collect(x.mid,   prefix + x.c, queue);
+    collect(x.right, prefix,       queue);
+}
+
+
+// return all keys matching given wildcard pattern
+public Iterable&lt;String&gt; wildcardMatch(String pat) {
+    Queue&lt;String&gt; queue = new Queue&lt;String&gt;();
+    collect(root, "", 0, pat, queue);
+    return queue;
+}
+
+private void collect(Node x, String prefix, int i, String pat, Queue&lt;String&gt; q) {
+    if (x == null) return;
+    char c = pat.charAt(i);
+    if (c == '.' || c &lt; x.c) collect(x.left, prefix, i, pat, q);
+    if (c == '.' || c == x.c) {
+        if (i == pat.length() - 1 &amp;&amp; x.val != null) q.enqueue(prefix + x.c);
+        if (i &lt; pat.length() - 1) collect(x.mid, prefix + x.c, i+1, pat, q);
+    }
+    if (c == '.' || c &gt; x.c) collect(x.right, prefix, i, pat, q);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>2.3 三向单词查找树的性质</h3>
+
+<p>三向单词查找树与R向单词查找树的数据结构性质截然不同。它和其他所有二叉查找树一样，每个单词查找树结点的二叉查找树表示也取决于键的插入顺序。</p>
+
+<p>它的每个结点只含有三个链接，因此所需空间远小于对应的单词查找树。由N个平均长度为w的字符串构造的三向单词查找树中的链接总数在3N到3Nw之间。</p>
+
+<p>在一棵由N个随机字符串构造的三向单词查找树中，查找未命中平均需要比较字符~lnN次。除~lnN次外，一次插入或命中的查找会比较一次被查找的键中的每个字符。</p>
+
+<p>使用三向单词查找树的最大好处是它能够很好地适应实际应用中可能出现的被查找键的不规则性。它可以使用256个字符的ASCII编码或者65536个字符的Unicode编码，而不必担心分支带来的巨大开销。</p>
+
+<h2>3. 总结</h2>
+
+<p><img src="/myresource/images/image_blog_2014-11-16-wordsfind-conclude.jpg" alt="image" /></p>
+
+<p>参考：<a href="http://algs4.cs.princeton.edu/52trie/">http://algs4.cs.princeton.edu/52trie/</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[字符串排序]]></title>
@@ -2008,354 +2530,6 @@ public boolean reachable(int v, int w) {
 ```</p>
 
 <p>参考：<a href="http://algs4.cs.princeton.edu/42directed/">http://algs4.cs.princeton.edu/42directed/</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[无向图]]></title>
-    <link href="http://blog.ubone.com/blog/2014/10/03/wu-xiang-tu/"/>
-    <updated>2014-10-03T18:18:44+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/10/03/wu-xiang-tu</id>
-    <content type="html"><![CDATA[<p>无向图由一组顶点(Vertex)和一组能够将两个顶点相连的边(Edge)组成。本章学习无向图的邻接表实现，以及相关的搜索和应用，例如深度优先和广度优先搜索，路径查找和最短路径计算，连通分量和符号图。本文要解决的无向图问题包括：</p>
-
-<ol>
-<li>单点连通性</li>
-<li>单点路径</li>
-<li>单点最短路径</li>
-<li>连通性</li>
-<li>检测环</li>
-<li>双色问题（图的二分性）</li>
-</ol>
-
-
-<!--more-->
-
-
-<h2>1. 术语</h2>
-
-<p>v-w表示连接v和w的边。自环和平行边是两种特殊的图。<strong>自环</strong>即一条连接一个顶点和其自身的边；<strong>平行边</strong>是连接同一对顶点的两条边。含有平行边的图称为多重图，没有平行边和自环的图称为<strong>简单图</strong>。</p>
-
-<p>当两个顶点通过一条边相连时，这两个顶点是<strong>相邻的</strong>。某个顶点的<strong>度数(Degree)</strong>即为依附于它的边的总数。<strong>子图</strong>是由一幅图的所有边的一个子集（以及它们所依附的所有顶点）组成的图。</p>
-
-<p>在图中，<strong>路径</strong>是由边顺序连接的一系列顶点。<strong>简单路径</strong>是一条没有重复顶点的路径。<strong>环</strong>是一条至少含有一条边，并且起点和终点相同的路径。<strong>简单环</strong>是一条（除了起点和终点必须相同之外）不含有重复顶点和边的环。路径或环的<strong>长度</strong>为其中所包含的边数。</p>
-
-<p>如果从任意一个顶点都存在一条路径到达另一个任意顶点，这幅图就是<strong>连通图</strong>。一幅非连通的图由若干连通的部分组成，它们都是其极大连通子图。</p>
-
-<p>树是一幅无环(Acyclic)连通图。互不相连的树组成的集合称为<strong>森林</strong>。连通图的<strong>生成树</strong>是它的一幅子图，它含有图中的所有顶点且是一棵树。图的<strong>生成树森林</strong>是它的所有连通子图的生成树的集合。</p>
-
-<p>当且仅当一幅含有V个顶点的图G满足下列5个条件之一时，它就是一棵树：</p>
-
-<ul>
-<li>G有V-1条边且不含有环；</li>
-<li>G有V-1条边且是连通的；</li>
-<li>G是连通的，但删除任意一条边都会使它不再连通；</li>
-<li>G是无环图，但添加任意一条边都会产生一条环；</li>
-<li>G中的任意一对顶点之间仅存在一条简单路径。</li>
-</ul>
-
-
-<h2>2. API</h2>
-
-<p>先看一份定义了无向图的基本操作的API：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-04_graph-api.png" alt="image" /></p>
-
-<p>```java
-//////////////////常用的图处理代码//////////////////</p>
-
-<p>//计算v的度数
-public static int degree(Graph G, int v) {</p>
-
-<pre><code>int degree = 0;
-for(int w: G.adj(v)) degree++;
-return degree;
-</code></pre>
-
-<p>}</p>
-
-<p>//计算所有顶点的最大度数
-public static int maxDegree(Graph G) {</p>
-
-<pre><code>int max = 0;
-for(int v = 0; v &lt; G.V(); v++) 
-    if (degree(G, v) &gt; max)
-        max = degree(G, v);
-return max;
-</code></pre>
-
-<p>}</p>
-
-<p>//计算所有顶点的平均度数
-public static double avgDegree(Graph G) {</p>
-
-<pre><code>return 2.0 * G.E() / G.V(); 
-</code></pre>
-
-<p>}</p>
-
-<p>//计算自环的个数
-public static int numberOfSelfLoops(Graph G) {</p>
-
-<pre><code>int count = 0;
-for(int v = 0; v &lt; G.V(); v++)
-    for(int w : G.adj(v))
-        if (v == w) count++;
-return count / 2; //每条边都被记过2次
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>2.1 邻接表</h3>
-
-<p>图有多种表示方法，包括邻接矩阵（V乘V的布尔矩阵，占用空间过大），边的数组（边类含有两个int实例变量，实现adj方法需要检查图中的所有边）和邻接表数组。</p>
-
-<p>邻接表数组是以顶点为索引的列表数组，例如第0个顶点的列表中每个元素都是和顶点0相邻的顶点。示意图如下：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-03_adjacency-lists.png" alt="image" /></p>
-
-<p>它具有以下特点：</p>
-
-<ul>
-<li>使用的空间和V+E成正比；</li>
-<li>添加一条边所需的时间为常数；</li>
-<li>遍历顶点v的所有相邻顶点所需的时间和v的度数成正比。</li>
-</ul>
-
-
-<p>代码实现示意如下：</p>
-
-<p>```java
-public class Graph {</p>
-
-<pre><code>private final int V;        //顶点数目
-private int E;              //边的数目
-private Bag&lt;Integer&gt;[] adj; //邻接表
-
-public void addEdge(int v, int w) {
-    adj[v].add(w);
-    adj[w].add(v);
-    E++;
-}
-
-public Iterable&lt;Integer&gt; adj(int v) {
-    return adj[v];
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>2.2 图的处理算法API</h3>
-
-<p><img src="/myresource/images/image_blog_2014-10-04_search-api.png" alt="image" /></p>
-
-<h2>3. 深度优先搜索(DFS)</h2>
-
-<p>深度优先搜索一幅图，只需要一个递归方法来遍历所有顶点。在访问其中一个顶点时：</p>
-
-<ul>
-<li>将它标记为已访问；</li>
-<li>递归地访问它的所有没有被标记过的邻居顶点。</li>
-</ul>
-
-
-<p>```java
-//深度优先搜索
-public class DepthFirstSearch {</p>
-
-<pre><code>private boolean[] marked;
-private int count;
-
-public DepthFirstSearch(Graph G, int s) {
-    marked = new boolean[G.V()];
-    dfs(G, s);
-}
-
-private void dfs(Graph G, int v) {
-    marked[v] = true;
-    count++;
-    for(int w : G.adj(v))
-        if (!marked[w]) dfs(G, w);
-}
-
-public boolean marked(int w) {return marked[w];}
-
-public int count() {return count;}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>利用深度优先搜索很容易找到一些问题的答案。例如“两个给定的顶点是否连通？有多少个连通子图？从s到给定目的顶点v是否存在一条路径？如果有，找到这条路径。”</p>
-
-<h2>4. 寻找路径</h2>
-
-<p>路径的API:</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-04_paths-api.png" alt="image" /></p>
-
-<p>```java
-//使用深度优先搜索查找图的路径
-public class DepthFirstPaths {</p>
-
-<pre><code>private boolean[] marked;   //这个顶点上调用过dfs()吗？
-private int[] edgeTo;       //从起点到一个顶点的已知路径上的最后一个顶点
-private final int s;        //起点
-
-public DepthFirstPaths(Graph G, int s) {
-    marked = new boolean[G.V()];
-    edgeTo = new int[G.V()];
-    this.s = s;
-    dfs(G, s);
-}
-
-private void dfs(Graph G, int v) {
-    marked[v] = true;
-    for(int w : G.adj(v))
-        if (!marked[w]) {
-            edgeTo[w] = v;
-            dfs(G, w);
-        }
-}
-
-public boolean hasPathTo(int v) {return marked[v];}
-
-public Iterable&lt;Integer&gt; pathTo(int v) {
-    if (!hasPathTo(v)) return null;
-    Stack&lt;Integer&gt; path = new Stack&lt;Integer&gt;();
-    for(int x = v; x != s; x = edgeTo[x])
-        path.push(x);
-    path.push(s);
-    return path;
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h2>5. 广度优先搜索(BFS)</h2>
-
-<p>广度优先搜索可以解决单点最短路径的问题，即“从s到给定目的顶点v是否存在一条路径？如果有，找出其中最短的那条。”要找到从s到v的最短路径，从s开始，在所有由一条边就可以到达的顶点中寻找v，如果找不到就继续在与s距离两条边的所有顶点中找v，如此一直进行。实现广度优先搜索时，可以使用先进先出（FIFO）队列。代码示意如下：</p>
-
-<p>```java
-public class BreadthFirstPaths {</p>
-
-<pre><code>private boolean[] marked;  //到达该顶点的最短路径已知吗？
-private int[] edgeTo;      //到达该顶点的已知路径上的最后一个顶点
-private final int s;       //起点
-
-public BreadthFirstPaths(Graph G, int s) {
-    marked = new boolean[G.V()];
-    edgeTo = new int[G.v()];
-    this.s = s;
-    bfs(G, s);
-}
-
-private void bfs(Grapth G, int s) {
-    Queue&lt;Integer&gt; queue = new Queue&lt;Integer&gt;();
-    marked[s] = true;  //标记起点
-    queue.enqueue(s);  //入列
-    while (!queue.isEmpty()) {
-        int v = queue.dequeue();
-        for(int w : G.adj(v))
-            if (!marked[w]) {
-                edgeTo[w] = v;
-                marked[w] = true;
-                queue.enqueue(w);
-            }
-    }
-}
-
-public boolean hasPathTo(int v) {return marked[v];}
-
-public Iterable&lt;Integer&gt; pathTo(int v) {//与深度优先实现相同}
-</code></pre>
-
-<p>}
-```</p>
-
-<h2>6. 连通分量</h2>
-
-<p>所谓连通分量就是连通子图，深度优先搜索可用于找出一幅图的所有连通分量。其API定义如下：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-04_cc-api.png" alt="image" /></p>
-
-<p>递归的深度优先搜索第一次调用的参数是顶点0，它会标记所有与0连通的顶点。然后构造函数中的for循环会查找每个没有被标记的顶点并递归调用dfs()来标记和它相邻的所有顶点。代码如下：</p>
-
-<p>```java
-public class CC {</p>
-
-<pre><code>private boolean[] marked;
-private int[] id;
-private int count = 0;
-
-public CC(Graph G) {
-    marked = new boolean[G.V()];
-    id = new int[G.V()];
-    for(int s = 0; s &lt; G.V(); s++)
-        if (!marked[s]) {
-            dfs(G, s);
-            count++;
-        }
-}
-
-private void dfs(Graph G, int v) {
-    marked[v] = true;
-    id[v] = count;
-    for(int w : G.adj(v))
-        if (!marked[w])
-            dfs(G, w);
-}
-
-public boolean connected(int v, int w) { return id[v] == id[w]; }
-
-public int id(int v) {return id[v]; }
-
-public int count() {return count;}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>深度优先搜索还可用于解决两个问题：1. 给定的图是无环图吗（假定不存在自环和平行边）？<a href="http://algs4.cs.princeton.edu/41undirected/Cycle.java.html">代码实现</a> 2. 这是一幅二分图吗？也就是说能够用两种颜色将图的所有顶点着色，使得任意一条边的两个端点的颜色都不相同。<a href="http://baike.baidu.com/view/501081.htm">二分图</a>，<a href="http://algs4.cs.princeton.edu/41undirected/Bipartite.java.html">代码实现</a></p>
-
-<h2>7. 符号图</h2>
-
-<p>在典型应用中，通常使用字符串而非整数来表示和指代顶点。为了适应这样的应用，需要符号图。符号图使用字符串代替整数索引。其API定义如下：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-04_symbol-graph-api.png" alt="image" /></p>
-
-<p>符号图的实现可以在无向图的基础上增加一个符号表和反向索引。符号表完成符号到邻接表索引的映射，键为String(顶点名)，值的类型为int(邻接表的索引)。反向索引是一个数组keys[]，保存每个顶点索引所对应的顶点名。结构如下图：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-04_symbol-graph.png" alt="image" /></p>
-
-<p>其实现较为简单，<a href="http://algs4.cs.princeton.edu/41undirected/SymbolGraph.java.html">查看代码</a>。</p>
-
-<p><strong>利用符号图可以处理一个经典问题，找到一个社交网络中两个人间隔的度数。这其实就是用符号图+广度优先求最短路径的用例。</strong></p>
-
-<h2>总结</h2>
-
-<p>本文主要学习无向图的邻接表实现，以及深度、广度优先算法及其应用：</p>
-
-<p>深度优先：</p>
-
-<ol>
-<li>两个顶点是否连通？如果有，给出路径。</li>
-<li>有多少个连通子图？找出所有连通分量。</li>
-<li>给定的图是无环图吗？</li>
-<li>是一幅二分图吗？</li>
-</ol>
-
-
-<p>广度优先：</p>
-
-<ol>
-<li>找出两个顶点间的最短路径。</li>
-</ol>
-
-
-<p>参考：<a href="http://algs4.cs.princeton.edu/41undirected/">http://algs4.cs.princeton.edu/41undirected/</a></p>
 ]]></content>
   </entry>
   
