@@ -102,7 +102,7 @@ keytool -importkeystore -deststorepass  XXXXXX -destkeystore mykeystore.jks -src
 第三步，导入CA证书：
 
 ```
-keytool -import -alias startsslca -file sub.class1.server.ca.pem -keystore mykeystore.jks
+keytool -import -alias startsslca -file a.class1.server.ca.pem -keystore mykeystore.jks
 ```
 
 最后一步，配置Tomcat，修改server.xml，将8443端口取消注释：
