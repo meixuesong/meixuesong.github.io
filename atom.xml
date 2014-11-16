@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-11-16T16:49:42+08:00</updated>
+  <updated>2014-11-16T22:16:42+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -1560,7 +1560,7 @@
     <id>http://blog.ubone.com/blog/2014/11/12/androidying-multidex</id>
     <content type="html"><![CDATA[<p>普通Android应用的方法总数不能超过65536，这是开发者长期以来非常头疼的一个问题。最近Google发布了新的Multidex支持库，为方法总数超过65K的Android应用提供官方支持。</p>
 
-<p>本文为原创，已经发表在<a href="http://www.infoq.com/cn/news/2014/11/android-multidex">InfoQ</a>。</p>
+<p>本文已经发表在<a href="http://www.infoq.com/cn/news/2014/11/android-multidex">InfoQ</a>。</p>
 
 <!--more-->
 
