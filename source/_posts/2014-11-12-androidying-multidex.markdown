@@ -9,7 +9,7 @@ categories:
 
 普通Android应用的方法总数不能超过65536，这是开发者长期以来非常头疼的一个问题。最近Google发布了新的Multidex支持库，为方法总数超过65K的Android应用提供官方支持。
 
-本文为原创，已经发表在[InfoQ](http://www.infoq.com/cn/news/2014/11/android-multidex)。
+本文已经发表在[InfoQ](http://www.infoq.com/cn/news/2014/11/android-multidex)。
 
 <!--more-->
 
