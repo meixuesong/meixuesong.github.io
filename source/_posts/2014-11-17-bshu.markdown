@@ -1,0 +1,107 @@
+---
+layout: post
+title: "B树"
+date: 2014-11-17 21:44:42 +0800
+comments: true
+categories: 
+- 算法
+---
+B树就是B-树，英语原文为B-Tree，但不知道以前的翻译为何要翻译成B-树。它是对平衡树的扩展，支持对保存在磁盘或网络上的符号表进行外部查找。只需要4～5个指向一小块数据的引用就可以支持在含有数百亿或者更多元素的符号表中进行查找和插入操作。
+
+<!--more-->
+
+## 1. B树
+B树与2-3树的关键不同在于，数据不会保存在树中，而是会构造一棵由键的副本组成的树。每个副本都关联着一条链接。这种方式能够更加方便地将索引和符号表本身分开。与2-3树一样，也限制了“键-链接”对的上下数量界限。对于M阶B树，每个结点最多含有M-1对键和链接，最少含有M/2对键和链接。根结点例外，可以含有少于M/2对键和链接，但不能少于2对。M必须是正偶数。
+
+“页”表示一块连续的数据，用“探查”表示访问一个页。一个页可能是本地计算机上的一个文件，也可能是另一计算机上的一网页等等。对于B树，使用两种不同类型的结点：
+
+1. 内部结点：含有与页相关联的键的副本。
+2. 外部结点：含有指向实际数据的引用。
+
+内部结点中的每个键都与一个结点相关联，以此结点为根的子树中，所有的键都大于等于与此结点关联的键，但小于原内部结点中的更大的键（如果存在的话）。为了描述方便，使用一个特殊的哨兵键“*”，它小于其他所有键。一开始B树只有一个根结点，并且根结点只有哨兵键。同时符号表不含有重复键，但B树中会使用键的多个副本来引导查找。一棵B树如下图所示：
+
+![image](/myresource/images/image_blog_2014-11-17-btree.jpg)
+
+## 2. 查找与插入
+B树中查找的方法是在可能含有被查找键的唯一子树中进行递归搜索。当且仅当被查找的键包含在集合中时，每次查找便会结束于一个外部结点。在内部结点中遇到被查找的键的副本时就判断查找命中并结束，但总会找到相应的外部结点。
+
+在查找时，从根结点开始，根据被查找的键选择当前结点中的适当区间并根据适当的链接从一个结点移动到下一个结点。最终，查找过程会到达树底的一个含有键的页。如果被查找的键在该页中，查找命中并结束；如果不在，则查找未命中。
+
+和2-3树一样，要在树的底部插入一个新键，可以使用递归代码。如果空间不足，那么可以允许被插入的结点暂时“溢出”（也就是利用最后一个结点），并在递归调用后向上不断分裂结点，直到根结点。如果根结点也溢出就把它分裂成两个结点。如下图所示：
+
+![image](/myresource/images/image_blog_2014-11-17-btreeinsert.jpg)
+
+## 3. 数据表示与实现
+我们将B树结点的表示方法及其操作封装在Page API中。它可以关联键与指向Page对象的链接，支持检测页是否溢出、分裂页并区分内部页和外部页的操作。可以将Page看作一张符号表，但是是保存在外部介质上。Page<Key> API定义如下：
+
+方法 | 说明
+---|---
+Page(boolean bottom) | 创建并打开一个页
+void close() | 关闭页
+void add(Key key) | 将键插入（外部的）页中
+void add(Page p) | 打开p，向这个（内部）而中插入一个条目，并将p和p中的最小键相关联
+boolean isExternal() | 这是一个外部页吗
+boolean contains(Key key) | 键key在页中吗
+Page next(Key key) | 可能含有键key的子树
+boolean isFull() | 页是否已经溢出
+Page split() | 将较大的中间键移动到一个新页中
+Iterable<Key> keys() | 页中所有键的迭代器
+
+open和close操作是指将外部页读入内存和将内存内容写加外部页（如果需要的话）的过程。
+
+内部页的add方法是一个符号表操作，将给定页和以该页为根结点的子树中的最小键关联起来。外部页的add和contains方法和SET中相应的方法类似。
+
+最重要的是split方法，分裂一张饱和页时，将排序后位置正好大于M/2的键移动到一个新的Page对象中，并返回该对象的引用。
+
+有了Page，B树集合的实现就简单了：
+
+```java
+public class BTreeSET<Key extends Comparable<Key>> {
+	private Page root = new Page(true);
+	
+	public BTreeSET(Key sentinel) {
+		add(sentinel);
+	}
+	
+	public boolean contains(Key key) {
+		return contains(root, key);
+	}
+	
+	private boolean contains(Page h, Key key) {
+		if (h.isExternal()) return h.contains(key);
+		return contains(h.next(key), key);
+	}
+	
+	public void add(Key key) {
+		add(root, key);
+		if (root.isFull()) {
+			Page lefthalf = root;
+			Page righthalf = root.split();
+			root = new Page(false);
+			root.add(lefthalf);
+			root.add(righthalf);
+		}
+	}
+	
+	public void add(Page h, Key key) {
+		if (h.isExternal()) {
+			h.add(key);
+			return;
+		}
+		
+		Page next = h.next(key);
+		add(next, key);
+		if (next.isFull())
+			h.add(next.split());		
+		next.close();
+	}	
+}
+```
+
+## 4. 性能与空间
+**B树最重要的性质就是，在实际应用中对于适当的参数M，查找的成本是常数级别的。**
+
+>含有N个元素的M阶B树中的一次查找或者插入操作需要log<sub>M</sub>N ~ log<sub>M/2</sub>N 次探查，在实际情况下这基本是一个常数。
+
+B树的空间至少是半满的，在最坏的情况下，B树所需的空间是所有键占用的实际空间的两倍再加上链接所需的空间。对于随机键，B树浪费的空间约占44%。
+
