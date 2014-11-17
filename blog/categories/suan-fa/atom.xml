@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 算法 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/suan-fa/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-11-16T22:16:42+08:00</updated>
+  <updated>2014-11-17T23:01:49+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,162 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[B树]]></title>
+    <link href="http://blog.ubone.com/blog/2014/11/17/bshu/"/>
+    <updated>2014-11-17T21:44:42+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/11/17/bshu</id>
+    <content type="html"><![CDATA[<p>B树就是B-树，英语原文为B-Tree，但不知道以前的翻译为何要翻译成B-树。它是对平衡树的扩展，支持对保存在磁盘或网络上的符号表进行外部查找。只需要4～5个指向一小块数据的引用就可以支持在含有数百亿或者更多元素的符号表中进行查找和插入操作。</p>
+
+<!--more-->
+
+
+<h2>1. B树</h2>
+
+<p>B树与2-3树的关键不同在于，数据不会保存在树中，而是会构造一棵由键的副本组成的树。每个副本都关联着一条链接。这种方式能够更加方便地将索引和符号表本身分开。与2-3树一样，也限制了“键-链接”对的上下数量界限。对于M阶B树，每个结点最多含有M-1对键和链接，最少含有M/2对键和链接。根结点例外，可以含有少于M/2对键和链接，但不能少于2对。M必须是正偶数。</p>
+
+<p>“页”表示一块连续的数据，用“探查”表示访问一个页。一个页可能是本地计算机上的一个文件，也可能是另一计算机上的一网页等等。对于B树，使用两种不同类型的结点：</p>
+
+<ol>
+<li>内部结点：含有与页相关联的键的副本。</li>
+<li>外部结点：含有指向实际数据的引用。</li>
+</ol>
+
+
+<p>内部结点中的每个键都与一个结点相关联，以此结点为根的子树中，所有的键都大于等于与此结点关联的键，但小于原内部结点中的更大的键（如果存在的话）。为了描述方便，使用一个特殊的哨兵键“*”，它小于其他所有键。一开始B树只有一个根结点，并且根结点只有哨兵键。同时符号表不含有重复键，但B树中会使用键的多个副本来引导查找。一棵B树如下图所示：</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-17-btree.jpg" alt="image" /></p>
+
+<h2>2. 查找与插入</h2>
+
+<p>B树中查找的方法是在可能含有被查找键的唯一子树中进行递归搜索。当且仅当被查找的键包含在集合中时，每次查找便会结束于一个外部结点。在内部结点中遇到被查找的键的副本时就判断查找命中并结束，但总会找到相应的外部结点。</p>
+
+<p>在查找时，从根结点开始，根据被查找的键选择当前结点中的适当区间并根据适当的链接从一个结点移动到下一个结点。最终，查找过程会到达树底的一个含有键的页。如果被查找的键在该页中，查找命中并结束；如果不在，则查找未命中。</p>
+
+<p>和2-3树一样，要在树的底部插入一个新键，可以使用递归代码。如果空间不足，那么可以允许被插入的结点暂时“溢出”（也就是利用最后一个结点），并在递归调用后向上不断分裂结点，直到根结点。如果根结点也溢出就把它分裂成两个结点。如下图所示：</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-17-btreeinsert.jpg" alt="image" /></p>
+
+<h2>3. 数据表示与实现</h2>
+
+<p>我们将B树结点的表示方法及其操作封装在Page API中。它可以关联键与指向Page对象的链接，支持检测页是否溢出、分裂页并区分内部页和外部页的操作。可以将Page看作一张符号表，但是是保存在外部介质上。Page<Key> API定义如下：</p>
+
+<table>
+<thead>
+<tr>
+<th>方法 </th>
+<th> 说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Page(boolean bottom) </td>
+<td> 创建并打开一个页</td>
+</tr>
+<tr>
+<td>void close() </td>
+<td> 关闭页</td>
+</tr>
+<tr>
+<td>void add(Key key) </td>
+<td> 将键插入（外部的）页中</td>
+</tr>
+<tr>
+<td>void add(Page p) </td>
+<td> 打开p，向这个（内部）而中插入一个条目，并将p和p中的最小键相关联</td>
+</tr>
+<tr>
+<td>boolean isExternal() </td>
+<td> 这是一个外部页吗</td>
+</tr>
+<tr>
+<td>boolean contains(Key key) </td>
+<td> 键key在页中吗</td>
+</tr>
+<tr>
+<td>Page next(Key key) </td>
+<td> 可能含有键key的子树</td>
+</tr>
+<tr>
+<td>boolean isFull() </td>
+<td> 页是否已经溢出</td>
+</tr>
+<tr>
+<td>Page split() </td>
+<td> 将较大的中间键移动到一个新页中</td>
+</tr>
+<tr>
+<td>Iterable<Key> keys() </td>
+<td> 页中所有键的迭代器</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>open和close操作是指将外部页读入内存和将内存内容写加外部页（如果需要的话）的过程。</p>
+
+<p>内部页的add方法是一个符号表操作，将给定页和以该页为根结点的子树中的最小键关联起来。外部页的add和contains方法和SET中相应的方法类似。</p>
+
+<p>最重要的是split方法，分裂一张饱和页时，将排序后位置正好大于M/2的键移动到一个新的Page对象中，并返回该对象的引用。</p>
+
+<p>有了Page，B树集合的实现就简单了：</p>
+
+<p>```java
+public class BTreeSET<Key extends Comparable<Key>> {</p>
+
+<pre><code>private Page root = new Page(true);
+
+public BTreeSET(Key sentinel) {
+    add(sentinel);
+}
+
+public boolean contains(Key key) {
+    return contains(root, key);
+}
+
+private boolean contains(Page h, Key key) {
+    if (h.isExternal()) return h.contains(key);
+    return contains(h.next(key), key);
+}
+
+public void add(Key key) {
+    add(root, key);
+    if (root.isFull()) {
+        Page lefthalf = root;
+        Page righthalf = root.split();
+        root = new Page(false);
+        root.add(lefthalf);
+        root.add(righthalf);
+    }
+}
+
+public void add(Page h, Key key) {
+    if (h.isExternal()) {
+        h.add(key);
+        return;
+    }
+
+    Page next = h.next(key);
+    add(next, key);
+    if (next.isFull())
+        h.add(next.split());        
+    next.close();
+}   
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>4. 性能与空间</h2>
+
+<p><strong>B树最重要的性质就是，在实际应用中对于适当的参数M，查找的成本是常数级别的。</strong></p>
+
+<blockquote><p>含有N个元素的M阶B树中的一次查找或者插入操作需要log<sub>M</sub>N ~ log<sub>M/2</sub>N 次探查，在实际情况下这基本是一个常数。</p></blockquote>
+
+<p>B树的空间至少是半满的，在最坏的情况下，B树所需的空间是所有键占用的实际空间的两倍再加上链接所需的空间。对于随机键，B树浪费的空间约占44%。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[单词查找树]]></title>
@@ -2141,395 +2297,6 @@ public double weight() {
 <p>Prim和Kruskal算法不能处理有向图。</p>
 
 <p>参考：<a href="http://algs4.cs.princeton.edu/43mst/">http://algs4.cs.princeton.edu/43mst</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[有向图]]></title>
-    <link href="http://blog.ubone.com/blog/2014/10/30/you-xiang-tu/"/>
-    <updated>2014-10-30T20:10:54+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/10/30/you-xiang-tu</id>
-    <content type="html"><![CDATA[<p>有向图也就是有方向性的图，是由一组顶点和一组有方向的边组成，每条有方向的边都连接着有序的一对顶点。本文要解决的有向图问题：</p>
-
-<ol>
-<li>单点和多点的可达性</li>
-<li>单点有向路径</li>
-<li>单点最短有向路径</li>
-<li>有向环检测</li>
-<li>深度优先的顶点排序</li>
-<li>优先级限制下的调度问题</li>
-<li>拓扑排序</li>
-<li>强连通性</li>
-<li>顶点对的可达性</li>
-</ol>
-
-
-<!--more-->
-
-
-<h2>1. 术语</h2>
-
-<ul>
-<li>出度：一个顶点指出的边的总数；</li>
-<li>入度：指向该顶点的边的总数；</li>
-<li>一条有向边的第一个顶点称为头，第二个顶点称为尾。</li>
-<li>在一幅有向图中，有向路径由一系列顶点组成，对于其中的每个顶点都存在一条有向边从它指向序列中的下一个顶点。</li>
-</ul>
-
-
-<h2>2. 有向图的数据类型</h2>
-
-<p>有向图的API与无向图本质相同，只是多了一个取反操作。如下图：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-20-digraph-api.png" alt="image" /></p>
-
-<p>其中，reverse()方向返回有向图的一个副本，但是将其中的方向反转。adj()返回的是每个顶点指出的边所连接的所有顶点。</p>
-
-<p>Diagraph的实现与无向图Graph非常类似，也是采用邻接表实现，但由于边是有向的，所以假设7&mdash;>8的一条边，则在顶点7的邻接表中有8，而顶点8的邻接表却没有7. <a href="http://algs4.cs.princeton.edu/42directed/Digraph.java.html">实现代码</a>不再重复。</p>
-
-<h2>3. 有向图中的可达性</h2>
-
-<ul>
-<li>单点可达性：是否存在一条从s到达给定顶点v的有向路径？</li>
-<li>多点可达性：是否存在一条从集合中的任意顶点到达给定顶点v的有向路径？</li>
-</ul>
-
-
-<p>API定义和实现如下：</p>
-
-<p>```
-public class DirectedDFS {</p>
-
-<pre><code>private boolean[] marked;
-
-//在G中找到从s可达的所有顶点
-public DirectedDFS(Digraph G, int s) {
-    marked = new boolean[G.V()];
-    dfs(G, s);
-}
-
-//在G中找到从sources中的所有顶点可达的所有顶点
-public DirectedDFS(Digraph G, Iterable&lt;Integer&gt; sources) {
-    marked = new boolean[G.V()];
-    for(int s : sources) {
-        if (! marked[s]) dfs(G, s);
-    }
-}
-
-private void dfs(Digraph G, int v) {
-    marked[v] = true;
-    for(int w : G.adj(v)){
-        if (!marked[w]) dfs(G, w);
-    }
-}
-
-//v是可达的吗？
-public boolean marked(int v) {
-    return marked[v];
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p><strong>标记-清除：</strong>多点可达性的一个重要典型应用就是内存管理，包括许多Java的实现。一个顶点表示一个对象，一条边表示一个对象对另一个对象的引用。在程序执行任何时候，都有某些对象是可以被直接访问的，而不能通过这些对象访问到的所有对象都应该被回收。标记-清除的垃圾回收策略会为每个对象保留一个位做垃圾收集之用。</p>
-
-<p><strong>有向图的寻路：</strong></p>
-
-<ul>
-<li>单点有向路径：从s到给定的顶点v是否存在一条有向路径？如果有，找出这条路径。</li>
-<li>单点最短有向路径：从s到给定的顶点v是否存在一条有向路径？如果有，找出最短的那边。</li>
-</ul>
-
-
-<p>这两个问题都可以通过深度优先和广度优先解决，它们仍是有向图的重要算法。API和代码也基本相同。</p>
-
-<h2>4. 环和有向无环图</h2>
-
-<h3>4.1 有向图中的环</h3>
-
-<p>任务调度是一个典型的有向图用例，其限制条件包括任务的起始时间、时耗、优先级限制（某个任务是另一个任务的前置条件）等。如何进行正确的任务调度？这需要<strong>拓扑排序</strong>：给定一幅有向图，将所有的顶点排序，使得所有的有向边均从排在前面的元素指向排在后面的元素。拓扑排序的例子还包括课程安排（先导课程限制）、继承（Java extends）、电子表格公式等等。</p>
-
-<p>如果一个有优先级限制的问题中存在有向环，例如任务x必须在任务y之前完成，而y必须在z之前完成，但z又必须在x之前完成，那么这个问题就无解了！所以首先要解决<strong>有向环的检测</strong>：给定的有向图中包含有向环吗？</p>
-
-<p><strong>有向无环图（DAG）是一幅不含有向环的有向图。</strong></p>
-
-<p>有向环的检测可以通过深度优先搜索来解决。用一个栈表示正在遍历的有向路径，一旦找到一条有向边v->w且w已经在堆栈中，就找到了一个环。</p>
-
-<p>```java
-public class DirectedCycle {</p>
-
-<pre><code>private boolean[] marked;        // marked[v] = 顶点v是否已经访问过?
-private int[] edgeTo;            // edgeTo[v] = 指向v的前一个顶点
-private boolean[] onStack;       // onStack[v] = 顶点v在递归调用的堆栈上吗？
-private Stack&lt;Integer&gt; cycle;    // 有向环 (null表示不存在有向环)
-
-public DirectedCycle(Digraph G) {
-    marked  = new boolean[G.V()];
-    onStack = new boolean[G.V()];
-    edgeTo  = new int[G.V()];
-    for (int v = 0; v &lt; G.V(); v++)
-        if (!marked[v]) dfs(G, v);
-}
-
-private void dfs(Digraph G, int v) {
-    onStack[v] = true;
-    marked[v] = true;
-    for (int w : G.adj(v)) {
-        // 如果环已找到，退出
-        if (cycle != null) {
-               return;
-        }
-        //找到新顶点，继续
-        else if (!marked[w]) {
-            edgeTo[w] = v;
-            dfs(G, w);
-        }
-        // 找到有向环，记录下路径
-        else if (onStack[w]) {
-            cycle = new Stack&lt;Integer&gt;();
-            for (int x = v; x != w; x = edgeTo[x]) {
-                cycle.push(x);
-            }
-            cycle.push(w);
-            cycle.push(v);
-        }
-    }
-
-    onStack[v] = false;
-}
-
-//是否含有有向环
-public boolean hasCycle() {
-    return cycle != null;
-}
-
-//有向环中的所有顶点（如果存在有向环的话）
-public Iterable&lt;Integer&gt; cycle() {
-    return cycle;
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>4.2 顶点的深度优先次序与拓扑排序</h3>
-
-<p>优先级限制下的调度问题等价于计算有向无环图中的所有顶点的拓扑排序。只需要在标准深度优先搜索中，将<code>dfs()</code>的顶点参数保存在一个数据结构中，遍历这个数据结构就能访问所有的顶点。遍历的顺序取决于这个数据结构的性质以及是在递归调用之前还是之后进行保存。主要有3种排序顺序：</p>
-
-<ol>
-<li>前序(pre)：在递归调用之前将顶点加入队列。</li>
-<li>后序(post)：在递归调用之后将顶点加入队列。</li>
-<li>逆后序(reversePost)：在递归调用之后将顶点压入堆栈。</li>
-</ol>
-
-
-<p>对于这样一张有向图，三种顺序遍历过程如下：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-29-dag.png" alt="image" /></p>
-
-<p><img src="/myresource/images/image_blog_2014-10-29-depth-first-orders.png" alt="image" /></p>
-
-<p>下面实现的DepthFirstOrder实现了这三种排序：</p>
-
-<p>```java
-public class DepthFirstOrder {</p>
-
-<pre><code>private boolean[] marked;          // marked[v] = has v been marked in dfs?
-private Queue&lt;Integer&gt; pre;                 // pre[v]    = preorder  number of v
-private Queue&lt;Integer&gt; post;                // post[v]   = postorder number of v
-private Stack&lt;Integer&gt; reversePost;
-
-public DepthFirstOrder(Digraph G) {
-    pre    = new Queue&lt;Integer&gt;();
-    post   = new Queue&lt;Integer&gt;();
-    reversePost = new Stack&lt;Integer&gt;();
-    marked    = new boolean[G.V()];
-
-    for (int v = 0; v &lt; G.V(); v++)
-        if (!marked[v]) dfs(G, v);
-}
-
-private void dfs(Digraph G, int v) {
-    pre.enqueue(v);
-
-    marked[v] = true;
-
-    for (int w : G.adj(v)) {
-        if (!marked[w]) {
-            dfs(G, w);
-        }
-    }
-
-    post.enqueue(v);
-    reversePost.push(v);
-}
-
-public Iterable&lt;Integer&gt; pre() {
-    return pre;
-}
-public Iterable&lt;Integer&gt; post() {
-    return post;
-}   
-public Iterable&lt;Integer&gt; reversePost() {
-    return reversePost;
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>DepthFirstOrder提供了三种排序的顶点列表：pre, post, reversePost，因此拓扑排序就非常简单了：</p>
-
-<p>```java
-public class Topological {</p>
-
-<pre><code>private Iterable&lt;Integer&gt; order;    // topological order
-
-public Topological(Digraph G) {
-    DirectedCycle finder = new DirectedCycle(G);
-    if (!finder.hasCycle()) {
-        DepthFirstOrder dfs = new DepthFirstOrder(G);
-        order = dfs.reversePost();
-    }
-}
-
-//拓扑有序的所有顶点
-public Iterable&lt;Integer&gt; order() {
-    return order;
-}
-
-//G是有向无环图吗？
-public boolean isDAG() {
-    return order != null;
-}
-</code></pre>
-
-<p>}  <br/>
-```</p>
-
-<p><strong>一幅有向无环图的拓扑顺序就是所有顶点的逆后序排列。</strong>这是一个重要结论！证明如下：对于任意边v->w, 在调用dfs(v)时，必有以下三种情况之一：</p>
-
-<ol>
-<li>dfs(w)已经被调用过且已经返回（w已经被标记）。</li>
-<li>dfs(w)还没有被调用，因此v->会直接或间接调用并返回dfs(w)，且dfs(w)会在dfs(v)返回前返回。</li>
-<li>dfs(w)已经被调用但未返回。</li>
-</ol>
-
-
-<p>第3种情况表示存在环，所以在有向无环图中是不可能出现的。第1、2种情况都证明了dfs(w)会先于dfs(v)完成。后序排列时w在v之前，只有逆后序时，w排在v之后。因此逆后序是有向无环图的拓扑顺序。</p>
-
-<p>再次说明，拓扑排序和有向环的检测总是一起出现的，因为有向环的检测是排序的前提。</p>
-
-<h2>5. 有向图的强连通性</h2>
-
-<p>如果两个顶点v和w是互相可达的，也就是存在一条从v到w的有向路径，同时还存在一条从w到v的有向路径，那么v和w是<strong>强连通</strong>的。</p>
-
-<p>强连通性将所有顶点分为一些等价类，每个等价类都由相互均为强连通的顶点的最大子集组成，这些子集称为<strong>强连通分量</strong>。强连通分量的典型应用包括：网络（网页和超链接）、软件（模块和调用）、食物链（物种和捕食关系）等。强连通分量的API:</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-30-scc-api.png" alt="image" /></p>
-
-<h3>5.1 Kosaraju算法</h3>
-
-<p>Kosaraju算法实现了SCC API：</p>
-
-<ul>
-<li>在给定的一幅有向图G中，使用DepthFirstOrder来计算它的反向图G<sup>R</sup>的逆后序排列。</li>
-<li>在G中进行标准的深度优先搜索，但是要按照刚才计算得到的顺序而非标准的顺序来访问所有未被标记的顶点。</li>
-<li>在构造函数中，所有在同一个递归dfs()调用中被访问到的顶点都在同一个强连通分量中，将它们按照和CC相同的方式识别出来。</li>
-</ul>
-
-
-<p>要证明Kosaraju算法的正确性，首先证明：“每个和s强连通的顶点v都会在构造函数调用的dfs(G,s)中被访问到。”这个毫无疑问。然后再证明：“构造函数调用的dfs(G,s)所到达的任意顶点v都必然是和s强连通的。”设v为dfs(G,s)到达的某个顶点。那么G中必然存在一条从s到v的路径，因此只需证明G中还存在一条从v到s的路径即可。也就等价于证明G<sup>R</sup>中存在一条从s到v的路径：</p>
-
-<blockquote><p>按照逆后序进行的深度优先搜索意味着，在G<sup>R</sup>中进行的深度优先搜索中，dfs(G,v)必然在dfs(G,s)之前就已经结束了，这样dfs(G,v)的调用就只会出现两种情况：</p>
-
-<ol>
-<li>调用在dfs(G,s)的调用之前（并且也在dfs(G,s)的调用之前结束）</li>
-<li>调用在dfs(G,s)的调用之后（并且也在dfs(G,s)的调用之前结束）</li>
-</ol>
-
-
-<p>第一种情况不可能出现，因为在G<sup>R</sup>中存在一条从v到s的路径；而第二种情况说明G<sup>R</sup>中存在一条从s到v的路径。证毕。</p></blockquote>
-
-<p>```java
-public class KosarajuSharirSCC {</p>
-
-<pre><code>private boolean[] marked;     //已访问过的顶点
-private int[] id;             //强连通分量的标识符
-private int count;            //强连通分量的数量
-
-public KosarajuSharirSCC(Digraph G) {
-
-    // compute reverse postorder of reverse graph
-    DepthFirstOrder dfs = new DepthFirstOrder(G.reverse());
-
-    // run DFS on G, using reverse postorder to guide calculation
-    marked = new boolean[G.V()];
-    id = new int[G.V()];
-    for (int v : dfs.reversePost()) {
-        if (!marked[v]) {
-            dfs(G, v);
-            count++;
-        }
-    }
-}
-
-private void dfs(Digraph G, int v) { 
-    marked[v] = true;
-    id[v] = count;
-    for (int w : G.adj(v)) {
-        if (!marked[w]) dfs(G, w);
-    }
-}
-
-//图中的强连通分量的总数
-public int count() {
-    return count;
-}
-
-//v和w是强连通的吗
-public boolean stronglyConnected(int v, int w) {
-    return id[v] == id[w];
-}
-
-//v所在的强连通分量的标识符（在0至count()-1之间）
-public int id(int v) {
-    return id[v];
-}
-</code></pre>
-
-<p>}  <br/>
-```</p>
-
-<h3>5.2 顶点对的可达性</h3>
-
-<p>给定一幅有向图，回答“是否存在一条从一个给定的顶点v到达另一个给定的顶点w的路径？”对于无向图，这个问题等价于连通性问题。而对有向图，有很大区别。看似简单的问题困难了专家数十年。如何大幅减少预处理所需的时间和空间，又保证常数的查询时间。这仍然是一个有待解决的问题。而且这个问题有重要的实际意义：处理互联网这样的巨型有向图。</p>
-
-<p>下面的算法只是简单地实现了可达性，但不适用于处理大型有向图，因为它所需的空间与V<sup>2</sup>成正比，所需时间和V(V+E)成正比。但如果图小的话，仍然是一个理想的解决办法。</p>
-
-<p>```
-public class TransitiveClosure {</p>
-
-<pre><code>private DirectedDFS[] tc;  // tc[v] = reachable from v
-
-//预处理的构造方法
-public TransitiveClosure(Digraph G) {
-    tc = new DirectedDFS[G.V()];
-    for (int v = 0; v &lt; G.V(); v++)
-        tc[v] = new DirectedDFS(G, v);
-}
-
-//w是从v可达的吗？
-public boolean reachable(int v, int w) {
-    return tc[v].marked(w);
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>参考：<a href="http://algs4.cs.princeton.edu/42directed/">http://algs4.cs.princeton.edu/42directed/</a></p>
 ]]></content>
   </entry>
   

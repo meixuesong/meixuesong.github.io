@@ -1,0 +1,446 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>B树 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="B树就是B-树，英语原文为B-Tree，但不知道以前的翻译为何要翻译成B-树。它是对平衡树的扩展，支持对保存在磁盘或网络上的符号表进行外部查找。只需要4～5个指向一小块数据的引用就可以支持在含有数百亿或者更多元素的符号表中进行查找和插入操作。 1. B树 B树与2-3树的关键不同在于， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/11/17/bshu">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">B树</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-17T21:44:42+08:00" pubdate data-updated="true">2014-11-17</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>B树就是B-树，英语原文为B-Tree，但不知道以前的翻译为何要翻译成B-树。它是对平衡树的扩展，支持对保存在磁盘或网络上的符号表进行外部查找。只需要4～5个指向一小块数据的引用就可以支持在含有数百亿或者更多元素的符号表中进行查找和插入操作。</p>
+
+<!--more-->
+
+
+<h2>1. B树</h2>
+
+<p>B树与2-3树的关键不同在于，数据不会保存在树中，而是会构造一棵由键的副本组成的树。每个副本都关联着一条链接。这种方式能够更加方便地将索引和符号表本身分开。与2-3树一样，也限制了“键-链接”对的上下数量界限。对于M阶B树，每个结点最多含有M-1对键和链接，最少含有M/2对键和链接。根结点例外，可以含有少于M/2对键和链接，但不能少于2对。M必须是正偶数。</p>
+
+<p>“页”表示一块连续的数据，用“探查”表示访问一个页。一个页可能是本地计算机上的一个文件，也可能是另一计算机上的一网页等等。对于B树，使用两种不同类型的结点：</p>
+
+<ol>
+<li>内部结点：含有与页相关联的键的副本。</li>
+<li>外部结点：含有指向实际数据的引用。</li>
+</ol>
+
+
+<p>内部结点中的每个键都与一个结点相关联，以此结点为根的子树中，所有的键都大于等于与此结点关联的键，但小于原内部结点中的更大的键（如果存在的话）。为了描述方便，使用一个特殊的哨兵键“*”，它小于其他所有键。一开始B树只有一个根结点，并且根结点只有哨兵键。同时符号表不含有重复键，但B树中会使用键的多个副本来引导查找。一棵B树如下图所示：</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-17-btree.jpg" alt="image" /></p>
+
+<h2>2. 查找与插入</h2>
+
+<p>B树中查找的方法是在可能含有被查找键的唯一子树中进行递归搜索。当且仅当被查找的键包含在集合中时，每次查找便会结束于一个外部结点。在内部结点中遇到被查找的键的副本时就判断查找命中并结束，但总会找到相应的外部结点。</p>
+
+<p>在查找时，从根结点开始，根据被查找的键选择当前结点中的适当区间并根据适当的链接从一个结点移动到下一个结点。最终，查找过程会到达树底的一个含有键的页。如果被查找的键在该页中，查找命中并结束；如果不在，则查找未命中。</p>
+
+<p>和2-3树一样，要在树的底部插入一个新键，可以使用递归代码。如果空间不足，那么可以允许被插入的结点暂时“溢出”（也就是利用最后一个结点），并在递归调用后向上不断分裂结点，直到根结点。如果根结点也溢出就把它分裂成两个结点。如下图所示：</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-17-btreeinsert.jpg" alt="image" /></p>
+
+<h2>3. 数据表示与实现</h2>
+
+<p>我们将B树结点的表示方法及其操作封装在Page API中。它可以关联键与指向Page对象的链接，支持检测页是否溢出、分裂页并区分内部页和外部页的操作。可以将Page看作一张符号表，但是是保存在外部介质上。Page<Key> API定义如下：</p>
+
+<table>
+<thead>
+<tr>
+<th>方法 </th>
+<th> 说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Page(boolean bottom) </td>
+<td> 创建并打开一个页</td>
+</tr>
+<tr>
+<td>void close() </td>
+<td> 关闭页</td>
+</tr>
+<tr>
+<td>void add(Key key) </td>
+<td> 将键插入（外部的）页中</td>
+</tr>
+<tr>
+<td>void add(Page p) </td>
+<td> 打开p，向这个（内部）而中插入一个条目，并将p和p中的最小键相关联</td>
+</tr>
+<tr>
+<td>boolean isExternal() </td>
+<td> 这是一个外部页吗</td>
+</tr>
+<tr>
+<td>boolean contains(Key key) </td>
+<td> 键key在页中吗</td>
+</tr>
+<tr>
+<td>Page next(Key key) </td>
+<td> 可能含有键key的子树</td>
+</tr>
+<tr>
+<td>boolean isFull() </td>
+<td> 页是否已经溢出</td>
+</tr>
+<tr>
+<td>Page split() </td>
+<td> 将较大的中间键移动到一个新页中</td>
+</tr>
+<tr>
+<td>Iterable<Key> keys() </td>
+<td> 页中所有键的迭代器</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>open和close操作是指将外部页读入内存和将内存内容写加外部页（如果需要的话）的过程。</p>
+
+<p>内部页的add方法是一个符号表操作，将给定页和以该页为根结点的子树中的最小键关联起来。外部页的add和contains方法和SET中相应的方法类似。</p>
+
+<p>最重要的是split方法，分裂一张饱和页时，将排序后位置正好大于M/2的键移动到一个新的Page对象中，并返回该对象的引用。</p>
+
+<p>有了Page，B树集合的实现就简单了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BTreeSET</span><span class="o">&lt;</span><span class="n">Key</span> <span class="kd">extends</span> <span class="n">Comparable</span><span class="o">&lt;</span><span class="n">Key</span><span class="o">&gt;&gt;</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Page</span> <span class="n">root</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Page</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">BTreeSET</span><span class="o">(</span><span class="n">Key</span> <span class="n">sentinel</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">add</span><span class="o">(</span><span class="n">sentinel</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">contains</span><span class="o">(</span><span class="n">Key</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nf">contains</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">contains</span><span class="o">(</span><span class="n">Page</span> <span class="n">h</span><span class="o">,</span> <span class="n">Key</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">h</span><span class="o">.</span><span class="na">isExternal</span><span class="o">())</span> <span class="k">return</span> <span class="n">h</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nf">contains</span><span class="o">(</span><span class="n">h</span><span class="o">.</span><span class="na">next</span><span class="o">(</span><span class="n">key</span><span class="o">),</span> <span class="n">key</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">add</span><span class="o">(</span><span class="n">Key</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">add</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">root</span><span class="o">.</span><span class="na">isFull</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">Page</span> <span class="n">lefthalf</span> <span class="o">=</span> <span class="n">root</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">Page</span> <span class="n">righthalf</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">split</span><span class="o">();</span>
+</span><span class='line'>          <span class="n">root</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Page</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">root</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">lefthalf</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">root</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">righthalf</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">add</span><span class="o">(</span><span class="n">Page</span> <span class="n">h</span><span class="o">,</span> <span class="n">Key</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">h</span><span class="o">.</span><span class="na">isExternal</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">h</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</span><span class='line'>          <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">Page</span> <span class="n">next</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="na">next</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">add</span><span class="o">(</span><span class="n">next</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">next</span><span class="o">.</span><span class="na">isFull</span><span class="o">())</span>
+</span><span class='line'>          <span class="n">h</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">next</span><span class="o">.</span><span class="na">split</span><span class="o">());</span>      
+</span><span class='line'>      <span class="n">next</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>    
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>4. 性能与空间</h2>
+
+<p><strong>B树最重要的性质就是，在实际应用中对于适当的参数M，查找的成本是常数级别的。</strong></p>
+
+<blockquote><p>含有N个元素的M阶B树中的一次查找或者插入操作需要log<sub>M</sub>N ~ log<sub>M/2</sub>N 次探查，在实际情况下这基本是一个常数。</p></blockquote>
+
+<p>B树的空间至少是半满的，在最坏的情况下，B树所需的空间是所有键占用的实际空间的两倍再加上链接所需的空间。对于随机键，B树浪费的空间约占44%。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-17T21:44:42+08:00" pubdate data-updated="true">2014-11-17</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/suan-fa/'>算法</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/11/16/dan-ci-cha-zhao-shu/" title="Previous Post: 单词查找树">&laquo; 单词查找树</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/17/bshu/">B树</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/16/dan-ci-cha-zhao-shu/">单词查找树</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/15/zi-fu-chuan-pai-xu/">字符串排序</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/12/androidying-multidex/">Android应用打破65K方法数限制</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/03/zui-duan-lu-jing/">最短路径</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fb4e47bf6950f9d2496daf84fe62cec59' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/11/17/bshu/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/11/17/bshu/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
