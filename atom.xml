@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-11-17T23:01:49+08:00</updated>
+  <updated>2014-11-18T23:01:59+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,195 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Java 7的6个新特性]]></title>
+    <link href="http://blog.ubone.com/blog/2014/11/18/java-7de-6ge-xin-te-xing/"/>
+    <updated>2014-11-18T22:20:52+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/11/18/java-7de-6ge-xin-te-xing</id>
+    <content type="html"><![CDATA[<p>Java 8早都出来了，现在来了解一下Java 7语言上的几个新特性。 :) switch语句支持String、数字常量的新形式、改进的异常处理、TWR语句、钻石语法和变参警告位置的修改。</p>
+
+<!--more-->
+
+
+<h2>1. switch语句支持String</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">printDay</span><span class="o">(</span><span class="n">String</span> <span class="n">dayOfWeek</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">switch</span><span class="o">(</span><span class="n">dayOfWeek</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">case</span> <span class="s">&quot;Sunday&quot;</span><span class="o">:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;周日&quot;</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">case</span> <span class="s">&quot;Saturday&quot;</span><span class="o">:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;周六&quot;</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">...</span>
+</span><span class='line'>      <span class="k">default</span><span class="o">:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;不知道&quot;</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>2. 更强的数值文本表示法</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="n">b1100110</span><span class="o">;</span> <span class="c1">//0b表示二进制</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">bitPattern</span> <span class="o">=</span> <span class="mi">0</span><span class="n">b0001_1100_0011</span><span class="o">;</span> <span class="c1">//也可以加下划线</span>
+</span><span class='line'><span class="kt">long</span> <span class="n">longValue</span> <span class="o">=</span> <span class="mi">2</span><span class="n">_111_000_888L</span><span class="o">;</span> <span class="c1">//加下划线便于阅读</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>3. 改善的异常处理</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">String</span> <span class="n">fileText</span> <span class="o">=</span> <span class="n">getFile</span><span class="o">(</span><span class="n">fileName</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">cfg</span> <span class="o">=</span> <span class="n">verifyConfig</span><span class="o">(</span><span class="n">parseConfig</span><span class="o">(</span><span class="n">fileText</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">FileNotFoundException</span> <span class="o">|</span> <span class="n">ParseException</span> <span class="o">|</span> <span class="n">ConfigurationException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="c1">//可以用或来表示可能的异常</span>
+</span><span class='line'>  <span class="o">...</span>
+</span><span class='line'><span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">IOException</span> <span class="n">iox</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>另一个新语法对需要重新抛出异常时很有用：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">doSomethingWhichMightThrowIOException</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">doSomethingElseWhichMightThrowSQLException</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="kd">final</span> <span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="o">...</span>
+</span><span class='line'>  <span class="c1">//不再是抛出笼统的Exception，而是抛出实际的异常。</span>
+</span><span class='line'>  <span class="c1">//final不是必须的，但留着提个醒有好处。</span>
+</span><span class='line'>  <span class="k">throw</span> <span class="n">e</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>4. TWR(try-with-resources)</h2>
+
+<p>这个很有用，特别是io操作时，可以抛掉大串丑陋的代码了。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">try</span> <span class="o">(</span>
+</span><span class='line'>  <span class="n">OutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">InputStream</span> <span class="n">is</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="na">openStream</span><span class="o">()</span>
+</span><span class='line'><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kt">byte</span><span class="o">[]</span> <span class="n">buf</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">4096</span><span class="o">];</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">len</span><span class="o">;</span>
+</span><span class='line'>  <span class="k">while</span> <span class="o">(</span><span class="n">len</span> <span class="o">=</span> <span class="n">is</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buf</span><span class="o">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buf</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">len</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码将资源放在try的圆括号内，当处理完后会自动关闭！但一定要注意不要嵌套创建，否则可能无法正确关闭。一定要声明变量。例如下面的代码就应该修改：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">try</span> <span class="o">(</span><span class="n">ObjectInputStream</span> <span class="n">in</span> <span class="o">=</span>
+</span><span class='line'>  <span class="k">new</span> <span class="nf">ObjectInputStream</span><span class="o">(</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nf">FileInputStream</span><span class="o">(</span><span class="s">&quot;someFile.bin&quot;</span><span class="o">)))</span> <span class="o">{</span>
+</span><span class='line'>  <span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//要改为：</span>
+</span><span class='line'><span class="k">try</span> <span class="o">(</span>
+</span><span class='line'>  <span class="n">FileInputStream</span> <span class="n">fin</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">&quot;someFile.bin&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">ObjectInputStream</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectInputStream</span><span class="o">(</span><span class="n">fin</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>  <span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>TWR特性依赖于try从句中的资源类实现新接口AutoCloseable。Java 7平台的大多数资源都已经修改过了。</p>
+
+<h2>5. 钻石语法</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//不用这么麻烦了：</span>
+</span><span class='line'><span class="n">Map</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;&gt;</span> <span class="n">userList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;&gt;();</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//可以直接写成：</span>
+</span><span class='line'><span class="n">Map</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;&gt;</span> <span class="n">userList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>6. 简化变参方法调用</h2>
+
+<p>在Java 7之前，如果泛型和变参结合起来会怎么样？</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">doSomething</span><span class="o">(</span><span class="n">T</span><span class="o">...</span> <span class="n">entries</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Java处理变参实际上是把它放到一个编译器自动创建的数组中。但我们知道泛型的实现其实是通过<a href="http://blog.ubone.com/blog/2014/07/02/javafan-xing/">擦拭法</a>实现的。所以Java数组不支持泛型:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;[]</span> <span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;[</span><span class="mi">3</span><span class="o">];</span> <span class="c1">//编译错误</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;[]</span> <span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">[</span><span class="mi">3</span><span class="o">];</span> <span class="c1">//编译可通过，但会有警告：</span>
+</span><span class='line'><span class="c1">//Type safety: The expression of type HashMap[] needs unchecked conversion to conform to HashMap&lt;String,String&gt;[]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>因此，当泛型遇到变参时，编译器只好给你个警告。但这个问题更应该由API的设计者去关注，而不是API使用者。所以Java 7把警告信息挪到了定义API的地方。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[B树]]></title>
@@ -8909,605 +9098,6 @@
 <blockquote><p>jar cf myJarFile.jar *.class 创建jar文件，包含当前目录中的所有类文件，以及自动产生的清单文件</p>
 
 <p>jar cvf myApp.jar audio classes image 将三个子目录合并到myApp.jar中。</p></blockquote>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java并发编程（三）]]></title>
-    <link href="http://blog.ubone.com/blog/2014/09/02/javabing-fa-bian-cheng-san/"/>
-    <updated>2014-09-02T23:13:06+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/09/02/javabing-fa-bian-cheng-san</id>
-    <content type="html"><![CDATA[<p>本文是《Java编程思想》第21章并发的读书笔记。<a href="http://blog.ubone.com/blog/2014/08/30/javabing-fa-bian-cheng/">Java并发编程（一）</a>、<a href="http://blog.ubone.com/blog/2014/09/02/javabing-fa-er/">Java并发编程（二）</a></p>
-
-<!--more-->
-
-
-<h2>6. 新类库中的构件</h2>
-
-<p>java.util.concurrent引入的新类库，有助于编写更简单和健壮的并发程序。</p>
-
-<h2>6.1 CountDownLatch</h2>
-
-<p>用于同步一个或多个任务，强制它们等待由其他任务执行的一组操作完成。可以向CountDownLatch对象设置一初始值，任务在这个对象上调用wait()方法都将阻塞，直到计数值为0。其它任务结束工作时，可以调用countDown()来减少这个计数值。</p>
-
-<p>示例代码：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LatchDemo</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Latch</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kd">private</span> <span class="n">CountDownLatch</span> <span class="n">latch</span><span class="o">;</span>
-</span><span class='line'>      <span class="n">Latch</span><span class="o">(</span><span class="n">CountDownLatch</span> <span class="n">latch</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">this</span><span class="o">.</span><span class="na">latch</span> <span class="o">=</span> <span class="n">latch</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nd">@Override</span>
-</span><span class='line'>      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>              <span class="n">doSomething</span><span class="o">();</span>
-</span><span class='line'>              <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Latch runing...&quot;</span><span class="o">);</span>
-</span><span class='line'>              <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
-</span><span class='line'>              <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Latch sleeped 3 seconds.&quot;</span><span class="o">);</span>
-</span><span class='line'>              <span class="c1">//2. 当完成后，调用countDown()，将计数减1</span>
-</span><span class='line'>              <span class="n">latch</span><span class="o">.</span><span class="na">countDown</span><span class="o">();</span>
-</span><span class='line'>          <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kd">private</span> <span class="kt">void</span> <span class="nf">doSomething</span><span class="o">()</span> <span class="o">{}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">LatchWaiter</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kd">private</span> <span class="n">CountDownLatch</span> <span class="n">latch</span><span class="o">;</span>
-</span><span class='line'>      <span class="n">LatchWaiter</span><span class="o">(</span><span class="n">CountDownLatch</span> <span class="n">latch</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">this</span><span class="o">.</span><span class="na">latch</span> <span class="o">=</span> <span class="n">latch</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nd">@Override</span>
-</span><span class='line'>      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>              <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;LatchWaiter waiting...&quot;</span><span class="o">);</span>
-</span><span class='line'>              <span class="c1">//3. 一直等到latch的计数变为0</span>
-</span><span class='line'>              <span class="n">latch</span><span class="o">.</span><span class="na">await</span><span class="o">();</span>
-</span><span class='line'>              <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;LatchWaiter exit wait...&quot;</span><span class="o">);</span>
-</span><span class='line'>          <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="c1">//todo</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kd">private</span> <span class="kt">void</span> <span class="nf">doOtherthing</span><span class="o">()</span> <span class="o">{}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="c1">//1. 先赋一个值，例如1</span>
-</span><span class='line'>      <span class="n">CountDownLatch</span> <span class="n">latch</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CountDownLatch</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>      <span class="n">ExecutorService</span> <span class="n">exec</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newCachedThreadPool</span><span class="o">();</span>
-</span><span class='line'>      <span class="n">exec</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">Latch</span><span class="o">(</span><span class="n">latch</span><span class="o">));</span>
-</span><span class='line'>      <span class="n">exec</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">LatchWaiter</span><span class="o">(</span><span class="n">latch</span><span class="o">));</span>
-</span><span class='line'>      <span class="n">exec</span><span class="o">.</span><span class="na">shutdown</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意：CountDownLatch只会触发一次，计数值不能重置。</p>
-
-<h3>6.2 CyclicBarrier</h3>
-
-<p>CyclicBarrier适用于有一组任务，它们并行工作，直到它们全部完成后，才一起向前移动。与CountDownLatch只会触发一次不同，CyclicBarrier可以多次重用。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CyclicBarrierDemo</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Horse</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kd">private</span> <span class="n">CyclicBarrier</span> <span class="n">barrier</span><span class="o">;</span>
-</span><span class='line'>      <span class="kd">private</span> <span class="n">String</span> <span class="n">id</span><span class="o">;</span>
-</span><span class='line'>      <span class="kd">private</span> <span class="kt">int</span> <span class="n">stepCount</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>      <span class="kd">private</span> <span class="kd">static</span> <span class="n">Random</span> <span class="n">rand</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">(</span><span class="mi">5000</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="n">Horse</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">,</span> <span class="n">CyclicBarrier</span> <span class="n">barrier</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span>
-</span><span class='line'>          <span class="k">this</span><span class="o">.</span><span class="na">barrier</span> <span class="o">=</span> <span class="n">barrier</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nd">@Override</span>
-</span><span class='line'>      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">doSomething</span><span class="o">();</span>
-</span><span class='line'>          <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>              <span class="k">while</span> <span class="o">(!</span><span class="n">Thread</span><span class="o">.</span><span class="na">interrupted</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>                  <span class="kd">synchronized</span> <span class="o">(</span><span class="k">this</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>                      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;Thread %s is doing.&quot;</span><span class="o">,</span>
-</span><span class='line'>                              <span class="n">id</span><span class="o">));</span>
-</span><span class='line'>                      <span class="n">stepCount</span><span class="o">++;</span>
-</span><span class='line'>                      <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">rand</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="mi">5000</span><span class="o">));</span>
-</span><span class='line'>                      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;Thread %s has done.&quot;</span><span class="o">,</span>
-</span><span class='line'>                              <span class="n">id</span><span class="o">));</span>
-</span><span class='line'>                  <span class="o">}</span>
-</span><span class='line'>                  <span class="c1">// await：待所有线程都在这一步调用await方法。</span>
-</span><span class='line'>                  <span class="n">barrier</span><span class="o">.</span><span class="na">await</span><span class="o">();</span>
-</span><span class='line'>              <span class="o">}</span>
-</span><span class='line'>          <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="c1">// ...</span>
-</span><span class='line'>          <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">BrokenBarrierException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="c1">// ...</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kd">private</span> <span class="kt">void</span> <span class="nf">doSomething</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kd">private</span> <span class="kt">int</span> <span class="nf">getStepCount</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">return</span> <span class="n">stepCount</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kd">final</span> <span class="n">ExecutorService</span> <span class="n">exec</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newCachedThreadPool</span><span class="o">();</span>
-</span><span class='line'>      <span class="kt">int</span> <span class="n">threadCount</span> <span class="o">=</span> <span class="mi">3</span><span class="o">;</span>
-</span><span class='line'>      <span class="kd">final</span> <span class="n">Counter</span> <span class="n">cycleCount</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Counter</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="c1">// 注意构造方法的参数</span>
-</span><span class='line'>      <span class="n">CyclicBarrier</span> <span class="n">barrier</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CyclicBarrier</span><span class="o">(</span><span class="n">threadCount</span><span class="o">,</span> <span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>          <span class="nd">@Override</span>
-</span><span class='line'>          <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>              <span class="c1">// 当所有threadCount线程结束时，执行到这里。</span>
-</span><span class='line'>              <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;All Thread has done.&quot;</span> <span class="o">+</span> <span class="n">cycleCount</span><span class="o">.</span><span class="na">count</span><span class="o">);</span>
-</span><span class='line'>              <span class="n">cycleCount</span><span class="o">.</span><span class="na">count</span><span class="o">++;</span>
-</span><span class='line'>              <span class="k">if</span> <span class="o">(</span><span class="n">cycleCount</span><span class="o">.</span><span class="na">count</span> <span class="o">==</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>                  <span class="n">exec</span><span class="o">.</span><span class="na">shutdownNow</span><span class="o">();</span>
-</span><span class='line'>              <span class="o">}</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>      <span class="o">});</span>
-</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">threadCount</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">exec</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">Horse</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">i</span><span class="o">),</span> <span class="n">barrier</span><span class="o">));</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Counter</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="cm">/*output:</span>
-</span><span class='line'><span class="cm">Thread 1 is doing.</span>
-</span><span class='line'><span class="cm">Thread 2 is doing.</span>
-</span><span class='line'><span class="cm">Thread 0 is doing.</span>
-</span><span class='line'><span class="cm">Thread 1 has done.</span>
-</span><span class='line'><span class="cm">Thread 2 has done.</span>
-</span><span class='line'><span class="cm">Thread 0 has done.</span>
-</span><span class='line'><span class="cm">All Thread has done.0</span>
-</span><span class='line'><span class="cm">Thread 0 is doing.</span>
-</span><span class='line'><span class="cm">Thread 1 is doing.</span>
-</span><span class='line'><span class="cm">Thread 2 is doing.</span>
-</span><span class='line'><span class="cm">Thread 2 has done.</span>
-</span><span class='line'><span class="cm">Thread 1 has done.</span>
-</span><span class='line'><span class="cm">Thread 0 has done.</span>
-</span><span class='line'><span class="cm">All Thread has done.1</span>
-</span><span class='line'><span class="cm">*/</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>6.3 DelayQueue</h3>
-
-<p>DelayQueue是一个无界的BlockingQueue，用于放置实现了Delayed接口的对象，其中的对象只能在其到期时才能从队列中取走。队列是有序的，延迟时间最长的对象最先取出。可以使用多种获取方法：poll(取出并从队列删除，不等待), take(取出并从队列删除，如果队列中还没有则等待), peek(取出但不从队列删除，不等待，可能会返回未过期的)，详细区别见JavaDoc。</p>
-
-<p>DelayQueue适合的场景包括：</p>
-
-<ol>
-<li>关闭空闲连接。服务器中，有很多客户端的连接，空闲一段时间之后需要关闭之。</li>
-<li>缓存。缓存中的对象，超过了空闲时间，需要从缓存中移出。</li>
-<li>任务超时处理。在网络协议滑动窗口请求应答式交互时，处理超时未响应的请求。</li>
-</ol>
-
-
-<h3>6.4 PriorityBlockingQueue</h3>
-
-<p>这是一个很基础的优先级队列，具有可阻塞的读取操作。放入该队列的对象实现Comparable接口就可以轻松实现优先级调度了，优先级越小则优先级越高。代码示例：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">PriorityBlockingQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;</span> <span class="n">queue</span> <span class="o">=</span>
-</span><span class='line'>      <span class="k">new</span> <span class="n">PriorityBlockingQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;();</span>
-</span><span class='line'><span class="n">ExecutorService</span> <span class="n">exec</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newCachedThreadPool</span><span class="o">();</span>
-</span><span class='line'><span class="n">exec</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">Producer</span><span class="o">(</span><span class="n">queue</span><span class="o">,</span> <span class="n">exec</span><span class="o">));</span>
-</span><span class='line'><span class="n">exec</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">Consumer</span><span class="o">(</span><span class="n">queue</span><span class="o">));</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>6.5 ScheduledExecutor</h3>
-
-<p>通过使用ScheduledExecutor.schedule()（运行一次任务）或者scheduleAtFixedRate()（每隔规则的时间重复执行任务），你可以将Runnable对象设置为在将来的某个时刻执行。代码示例：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SheduledThreadDemo</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">ScheduledThreadPoolExecutor</span> <span class="n">scheduler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ScheduledThreadPoolExecutor</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">repeat</span><span class="o">(</span><span class="n">Runnable</span> <span class="n">event</span><span class="o">,</span> <span class="kt">long</span> <span class="n">initialDelay</span><span class="o">,</span> <span class="kt">long</span> <span class="n">period</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">scheduler</span><span class="o">.</span><span class="na">scheduleAtFixedRate</span><span class="o">(</span><span class="n">event</span><span class="o">,</span> <span class="n">initialDelay</span><span class="o">,</span> <span class="n">period</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">schedule</span><span class="o">(</span><span class="n">Runnable</span> <span class="n">event</span><span class="o">,</span> <span class="kt">long</span> <span class="n">delay</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">scheduler</span><span class="o">.</span><span class="na">schedule</span><span class="o">(</span><span class="n">event</span><span class="o">,</span> <span class="n">delay</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>6.6 Semaphore</h3>
-
-<p>普通的锁（concurrent.locks或synchronized锁）在任何时刻都只允许一个任务访问一项资源，而<strong>计数信号量</strong>允许n个任务同时访问这个资源。作为一个示例，Pool是一个对象池，管理者数量有限的对象，要使用对象可以先签出，用完后再签入。</p>
-
-<p>Semaphore 可以很轻松完成信号量控制，Semaphore可以控制某个资源可被同时访问的个数，通过 acquire() 获取一个许可，如果没有就等待，而 release() 释放一个许可。比如在Windows下可以设置共享文件的最大客户端访问个数。</p>
-
-<p>Semaphore实现的功能就类似厕所有5个坑，假如有10个人要上厕所，那么同时只能有多少个人去上厕所呢？同时只能有5个人能够占用，当5个人中 的任何一个人让开后，其中等待的另外5个人中又有一个人可以占用了。另外等待的5个人中可以是随机获得优先机会，也可以是按照先来后到的顺序获得机会，这取决于构造Semaphore对象时传入的参数选项。单个信号量的Semaphore对象可以实现互斥锁的功能，并且可以是由一个线程获得了“锁”，再由另一个线程释放“锁”，这可应用于死锁恢复的一些场合。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Pool</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">size</span><span class="o">;</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">items</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;();</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">volatile</span> <span class="kt">boolean</span><span class="o">[]</span> <span class="n">checkedOut</span><span class="o">;</span> <span class="c1">//跟踪被签出的对象</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="n">Semaphore</span> <span class="n">available</span><span class="o">;</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="nf">Pool</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">classObject</span><span class="o">,</span> <span class="kt">int</span> <span class="n">size</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">size</span> <span class="o">=</span> <span class="n">size</span><span class="o">;</span>
-</span><span class='line'>      <span class="n">checkedOut</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="n">size</span><span class="o">];</span>
-</span><span class='line'>      <span class="n">available</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Semaphore</span><span class="o">(</span><span class="n">size</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span> <span class="c1">//size个许可，先进先出:true</span>
-</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">size</span><span class="o">;</span> <span class="o">++</span><span class="n">i</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>              <span class="c1">//Assums a default constructor</span>
-</span><span class='line'>              <span class="n">items</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">classObject</span><span class="o">.</span><span class="na">newInstance</span><span class="o">());</span>
-</span><span class='line'>          <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="n">T</span> <span class="nf">checkOut</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">available</span><span class="o">.</span><span class="na">acquire</span><span class="o">();</span> <span class="c1">//从Semaphore获取一个许可，如果没有将阻塞</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nf">getItem</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">checkIn</span><span class="o">(</span><span class="n">T</span> <span class="n">x</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">releaseItem</span><span class="o">(</span><span class="n">x</span><span class="o">))</span>
-</span><span class='line'>          <span class="c1">//释放一个permit，返回到Semaphore， 可用许可加1</span>
-</span><span class='line'>          <span class="n">available</span><span class="o">.</span><span class="na">release</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">synchronized</span> <span class="n">T</span> <span class="nf">getItem</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">size</span><span class="o">;</span> <span class="o">++</span><span class="n">i</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">if</span> <span class="o">(!</span> <span class="n">checkedOut</span><span class="o">[</span><span class="n">i</span><span class="o">])</span> <span class="o">{</span>
-</span><span class='line'>              <span class="n">checkedOut</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
-</span><span class='line'>              <span class="k">return</span> <span class="n">items</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">releaseItem</span><span class="o">(</span><span class="n">T</span> <span class="n">item</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">items</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="n">item</span><span class="o">);</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">index</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">checkedOut</span><span class="o">[</span><span class="n">index</span><span class="o">])</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">checkedOut</span><span class="o">[</span><span class="n">index</span><span class="o">]</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
-</span><span class='line'>          <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>6.7 Exchanger</h3>
-
-<p>Exchanger用于实现两个人之间的数据交换，每个人在完成一定的事物后想与对方交换数据，第一个先拿出数据的人将一直等待第二个人拿着数据到来时，才能彼此交换数据。</p>
-
-<p>好比两个毒贩要进行交易，一手交money，一手交drug，不管谁先来到接头地点后，就处于等待状态了，当另外一方也到达接头地点时，两者的数据就立即交换了，然后就可以各忙各的了。</p>
-
-<p>示例代码如下和运行结果如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ExchangerTest</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">ExecutorService</span> <span class="n">service</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newCachedThreadPool</span><span class="o">();</span>
-</span><span class='line'>      <span class="kd">final</span> <span class="n">Exchanger</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">exchanger</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Exchanger</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
-</span><span class='line'>      <span class="n">service</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>          <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>              <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>                  <span class="n">String</span> <span class="n">data1</span> <span class="o">=</span> <span class="s">&quot;money&quot;</span><span class="o">;</span>
-</span><span class='line'>                  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;线程&quot;</span>
-</span><span class='line'>                          <span class="o">+</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span>
-</span><span class='line'>                          <span class="o">+</span> <span class="s">&quot;正在把数据&quot;</span> <span class="o">+</span> <span class="n">data1</span> <span class="o">+</span> <span class="s">&quot;换出去&quot;</span><span class="o">);</span>
-</span><span class='line'>                  <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">((</span><span class="kt">long</span><span class="o">)</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">random</span><span class="o">()</span> <span class="o">*</span> <span class="mi">10000</span><span class="o">));</span>
-</span><span class='line'>                  <span class="n">String</span> <span class="n">data2</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span> <span class="n">exchanger</span><span class="o">.</span><span class="na">exchange</span><span class="o">(</span><span class="n">data1</span><span class="o">);</span>
-</span><span class='line'>                  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;线程&quot;</span>
-</span><span class='line'>                          <span class="o">+</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span>
-</span><span class='line'>                          <span class="o">+</span> <span class="s">&quot;换回数据为&quot;</span> <span class="o">+</span> <span class="n">data2</span><span class="o">);</span>
-</span><span class='line'>              <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>                  <span class="c1">// TODO Auto-generated catch block</span>
-</span><span class='line'>                  <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-</span><span class='line'>              <span class="o">}</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>      <span class="o">});</span>
-</span><span class='line'>      <span class="n">service</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>          <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>              <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>                  <span class="n">String</span> <span class="n">data1</span> <span class="o">=</span> <span class="s">&quot;drug&quot;</span><span class="o">;</span>
-</span><span class='line'>                  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;线程&quot;</span>
-</span><span class='line'>                          <span class="o">+</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;正在把数据&quot;</span>
-</span><span class='line'>                          <span class="o">+</span> <span class="n">data1</span> <span class="o">+</span> <span class="s">&quot;换出去&quot;</span><span class="o">);</span>
-</span><span class='line'>                  <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">((</span><span class="kt">long</span><span class="o">)</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">random</span><span class="o">()</span> <span class="o">*</span> <span class="mi">10000</span><span class="o">));</span>
-</span><span class='line'>                  <span class="n">String</span> <span class="n">data2</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span> <span class="n">exchanger</span><span class="o">.</span><span class="na">exchange</span><span class="o">(</span><span class="n">data1</span><span class="o">);</span>
-</span><span class='line'>                  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;线程&quot;</span>
-</span><span class='line'>                          <span class="o">+</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;换回数据为&quot;</span>
-</span><span class='line'>                          <span class="o">+</span> <span class="n">data2</span><span class="o">);</span>
-</span><span class='line'>              <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>                  <span class="c1">// TODO Auto-generated catch block</span>
-</span><span class='line'>                  <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-</span><span class='line'>              <span class="o">}</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>      <span class="o">});</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="cm">/** output:</span>
-</span><span class='line'><span class="cm">线程pool-1-thread-1正在把数据money换出去</span>
-</span><span class='line'><span class="cm">线程pool-1-thread-2正在把数据drug换出去</span>
-</span><span class='line'><span class="cm">线程pool-1-thread-2换回数据为money</span>
-</span><span class='line'><span class="cm">线程pool-1-thread-1换回数据为drug</span>
-</span><span class='line'><span class="cm">*/</span>
-</span></code></pre></td></tr></table></div></figure>
-
 ]]></content>
   </entry>
   

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-11-17T23:01:49+08:00</updated>
+  <updated>2014-11-18T23:01:59+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,166 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Java 7的6个新特性]]></title>
+    <link href="http://blog.ubone.com/blog/2014/11/18/java-7de-6ge-xin-te-xing/"/>
+    <updated>2014-11-18T22:20:52+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/11/18/java-7de-6ge-xin-te-xing</id>
+    <content type="html"><![CDATA[<p>Java 8早都出来了，现在来了解一下Java 7语言上的几个新特性。 :) switch语句支持String、数字常量的新形式、改进的异常处理、TWR语句、钻石语法和变参警告位置的修改。</p>
+
+<!--more-->
+
+
+<h2>1. switch语句支持String</h2>
+
+<p>```java
+public void printDay(String dayOfWeek) {</p>
+
+<pre><code>switch(dayOfWeek) {
+    case "Sunday": System.out.println("周日"); break;
+    case "Saturday": System.out.println("周六"); break;
+    ...
+    default: System.out.println("不知道"); break;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>2. 更强的数值文本表示法</h2>
+
+<p><code>java
+int x = 0b1100110; //0b表示二进制
+int bitPattern = 0b0001_1100_0011; //也可以加下划线
+long longValue = 2_111_000_888L; //加下划线便于阅读
+</code></p>
+
+<h2>3. 改善的异常处理</h2>
+
+<p>```java
+try {</p>
+
+<pre><code>String fileText = getFile(fileName);
+cfg = verifyConfig(parseConfig(fileText));
+</code></pre>
+
+<p>} catch(FileNotFoundException | ParseException | ConfigurationException e) {</p>
+
+<pre><code>//可以用或来表示可能的异常
+...
+</code></pre>
+
+<p>} catch(IOException iox) {</p>
+
+<pre><code>...
+</code></pre>
+
+<p>}
+```
+另一个新语法对需要重新抛出异常时很有用：</p>
+
+<p>```java
+try {</p>
+
+<pre><code>doSomethingWhichMightThrowIOException();
+doSomethingElseWhichMightThrowSQLException();
+</code></pre>
+
+<p>} catch (final Exception e) {</p>
+
+<pre><code>...
+//不再是抛出笼统的Exception，而是抛出实际的异常。
+//final不是必须的，但留着提个醒有好处。
+throw e;
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>4. TWR(try-with-resources)</h2>
+
+<p>这个很有用，特别是io操作时，可以抛掉大串丑陋的代码了。</p>
+
+<p>```java
+try (</p>
+
+<pre><code>OutputStream out = new FileOutputStream(file);
+InputStream is = url.openStream()
+</code></pre>
+
+<p>) {</p>
+
+<pre><code>byte[] buf = new byte[4096];
+int len;
+while (len = is.read(buf)) &gt; 0)
+    out.write(buf, 0, len);
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面的代码将资源放在try的圆括号内，当处理完后会自动关闭！但一定要注意不要嵌套创建，否则可能无法正确关闭。一定要声明变量。例如下面的代码就应该修改：</p>
+
+<p>```java
+try (ObjectInputStream in =</p>
+
+<pre><code>new ObjectInputStream(
+    new FileInputStream("someFile.bin"))) {
+...
+</code></pre>
+
+<p>}</p>
+
+<p>//要改为：
+try (</p>
+
+<pre><code>FileInputStream fin = new FileInputStream("someFile.bin");
+ObjectInputStream in = new ObjectInputStream(fin)) {
+...
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<p>TWR特性依赖于try从句中的资源类实现新接口AutoCloseable。Java 7平台的大多数资源都已经修改过了。</p>
+
+<h2>5. 钻石语法</h2>
+
+<p>```java
+//不用这么麻烦了：
+Map&lt;Integer, Map&lt;String, String>> userList = new HashMap&lt;Integer, Map&lt;String, String>>();</p>
+
+<p>//可以直接写成：
+Map&lt;Integer, Map&lt;String, String>> userList = new HashMap&lt;>();
+```</p>
+
+<h2>6. 简化变参方法调用</h2>
+
+<p>在Java 7之前，如果泛型和变参结合起来会怎么样？</p>
+
+<p>```java
+public static <T> Collection<T> doSomething(T&hellip; entries) {</p>
+
+<pre><code>...
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Java处理变参实际上是把它放到一个编译器自动创建的数组中。但我们知道泛型的实现其实是通过<a href="/blog/2014/07/02/javafan-xing/">擦拭法</a>实现的。所以Java数组不支持泛型:</p>
+
+<p>```java
+HashMap&lt;String, String>[] a = new HashMap&lt;String, String>[3]; //编译错误</p>
+
+<p>HashMap&lt;String, String>[] a = new HashMap[3]; //编译可通过，但会有警告：
+//Type safety: The expression of type HashMap[] needs unchecked conversion to conform to HashMap&lt;String,String>[]
+```</p>
+
+<p>因此，当泛型遇到变参时，编译器只好给你个警告。但这个问题更应该由API的设计者去关注，而不是API使用者。所以Java 7把警告信息挪到了定义API的地方。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[再读《重构》]]></title>
@@ -2411,445 +2571,6 @@ public void run() {
 
 
 <p>要防止死锁，只需破坏上述四条中的任意一条。破坏第4条是最容易的。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java并发编程（一）]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/30/javabing-fa-bian-cheng/"/>
-    <updated>2014-08-30T21:58:15+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/30/javabing-fa-bian-cheng</id>
-    <content type="html"><![CDATA[<p>本文是《Java编程思想》第21章并发的读书笔记。</p>
-
-<!--more-->
-
-
-<p>操作系统：抢占式（调度机制会周期性地中断线程，将上下文切换到另一个线程）、协作式（每个任务自己放弃控制）。</p>
-
-<h2>1. 基本线程机制</h2>
-
-<h3>1.1 定义任务</h3>
-
-<p>```java
-public class LiftOff implements Runnable {</p>
-
-<pre><code> public void run() {
-      //...
-      Thread.yield(); //声明，我已经干完重要的事，可以把CPU让给其他任务了。
- }
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>1.2 Thread类</h3>
-
-<p><code>java
-Thread t = new Thread(new LiftOff());
-t.start();
-</code></p>
-
-<h3>1.3 使用Executor</h3>
-
-<p>```java
-ExecutorService exec = Executors.newCachedThreadPool(); //or newFixedThreadPool, newSingleThreadExecutor
-exec.execute(new LiftOff());</p>
-
-<p>exec.shutdown(); //防止加入新任务。
-```</p>
-
-<h3>1.4 从任务中产生返回值</h3>
-
-<p>Runnable不返回任何值，Callable接口可以返回值。两者的区别只是后者的方法是call()而不是run()。</p>
-
-<p>```java
-class TaskWithResult implements Callable<String> {</p>
-
-<pre><code> public String call() {
-      return "result";
- }
-</code></pre>
-
-<p>}</p>
-
-<p>ExecutorService exec = Executors.newSingleThreadExecutor();
-Future<String> future = exec.submit(new TaskWithResult());
-String result = future.get(); //get方法会一直等线程结束后返回结果。isDone()查询Future是否已经完成。
-```</p>
-
-<h3>1.5 休眠</h3>
-
-<p>```java
-public class SleepingTask extends LiftOff {</p>
-
-<pre><code> public void run() {
-      try {
-           while(countDown-- &gt; 0) {
-                //...
-                TimeUnit.MILLISECONDS.sleep(100);
-           }
-      } catch(InterruptedException e) {
-           //...
-      }
- }
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>1.6 优先级</h3>
-
-<p>```java</p>
-
-<pre><code> public void run() {
-      Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
- }
-</code></pre>
-
-<p>```</p>
-
-<p>Windows有7个优先级， Solaris有2<sup>31</sup>个优先级。各操作系统不一致，因此建议只使用三个优先级：Thread.MAX_PRIORITY, NORM_PRIORITY, MIN_PRIORITY。</p>
-
-<h3>1.7 后台线程</h3>
-
-<p>后台线程指程序运行时在后台提供通用服务的线程，并且不属性程序中不可或缺的部分。<strong>当所有非后台线程结束时，程序就终止了，同时会杀死所有后台线程。</strong>如果有非后台线程还在运行，则程序不会终止。</p>
-
-<p>要设置为后台线程，必须在线程启动之前调用setDaemon()方法。</p>
-
-<p>```java</p>
-
-<pre><code> Thread daemon = new Thread(new LiftOff() );
- daemon.setDaemon(true); //必须在start()方法前调用
- daemon.start(); 
-</code></pre>
-
-<p>```</p>
-
-<p>可以通过定制的ThreadFactory创建后台线程，例如：</p>
-
-<p>```java
-public class DaemonThreadFactory implements ThreadFactory {</p>
-
-<pre><code> public Thread newThread(Runnable r) {
-      Thread t = new Thread(r);
-      t.setDaemon(true);
-      //还可以设置优先级、名称等，这些将成为新线程的默认值。
-
-      return t;
- }
-</code></pre>
-
-<p>}</p>
-
-<p>ExecutorService exec = Executors.newCachedThreadPool(new DaemonThreadFactory()); //这个Factory将用于创建新的线程。
-exec.execute(new LiftOff());
-```</p>
-
-<p><code>isDaemon()</code>方法用于判断是否后台线程。后台线程创建的任何线程都将自动设置为后台线程。</p>
-
-<p>注意！对于后台线程，在不会执行<code>finally</code>子句的情况下就会终止其<code>run()</code>方法：</p>
-
-<p>```java
-class ADaemon implements Runnable {</p>
-
-<pre><code>public void run() {
-    try {
-        //...
-        TimeUnit.SECONDS.sleep(1);
-    } catch(InterruptedException e) {
-        //...
-        //注意，此时已经是false, 因为异常被捕获时将清理这个标志
-        print("isInterrupted(): " + isInterrupted()); 
-    } finally {
-        print("会运行到这吗？")
-    }
-}
-</code></pre>
-
-<p>}</p>
-
-<p>public class DaemonsDontRunFinally {</p>
-
-<pre><code>public static void main(String[] args) {
-    Thread t = new Thread(new ADaemon());
-    t.setDaemon(true);
-    t.start();
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>一旦<code>setDaemon(true)</code>，finally并没有被执行。因为一旦main结束，所有后台线程就立即终止了。</p>
-
-<h3>1.8 编码的变体</h3>
-
-<p>除了实现Runnable，也可以直接继承Thread类。但是由于Java不支持多重继承，所以继承自Thread适应的场景要少一些。</p>
-
-<p>```java
-private class SampleThread extends Thread{</p>
-
-<pre><code>public SampleThread() {
-    super("线程名称");  //线程名称可通过getName()获取。
-}
-
-public void run() {
-    //...
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>自管理的Runnable</p>
-
-<p>```java
-public class SelfManaged implements Runnable {</p>
-
-<pre><code>private Thread t = new Thread(this);
-public SelfManaged() {
-    t.start();  //注，不建议在构造器中启动线程，可能会有问题，建议使用Executor
-}
-
-public void run() {
-    //...
-}
-
-public static void main(String[] args) {
-    new SelfManaged();
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>1.9 加入一个线程</h3>
-
-<p>某个线程在另一个线程t上调用<code>t.join()</code>方法，此线程被挂起，直到t线程结束（即<code>t.isActive() == false</code>）。join方法也可以加超时参数，表示如果时间到期还未结束的话，join()方法总能返回。</p>
-
-<h3>1.10 捕获异常</h3>
-
-<p>线程中的未捕获的异常会导致系统不稳定，但常规方法并不能在外面捕获这些异常，因此需要借助特殊处理。下面的例子创建了一个新类型的ThreadFactory，它将在每个新创建的Thread对象上附着一个Thread.UncaughtExceptionHandler。</p>
-
-<p>```java
-class MyUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {</p>
-
-<pre><code>@Override
-public void uncaughtException(Thread t, Throwable e) {
-    // TODO Auto-generated method stub
-}
-</code></pre>
-
-<p>}</p>
-
-<p>class HandlerThreadFactory implements ThreadFactory {</p>
-
-<pre><code>@Override
-public Thread newThread(Runnable r) {
-    Thread t = new Thread(r);
-    t.setUncaughtExceptionHandler(new MyUncaughtExceptionHandler());
-
-    return t;
-}
-</code></pre>
-
-<p>}</p>
-
-<p>ExecutorService exec = Executors.newCachedThreadPool(new HandlerThreadFactory());
-exec.execute(new SomeThread());
-```</p>
-
-<p>如果你知道将要在代码中处处使用相同的异常处理器，那么更简单的方式是在Thread类中设置一个表态域，示例如下：</p>
-
-<p><code>
-Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler());
-</code></p>
-
-<h2>2. 共享受限资源</h2>
-
-<h3>2.1  解决共享资源竞争</h3>
-
-<p>Java提供了关键字synchronized，为防止资源冲突提供支持。如果某个线程处于一个对synchronized方法的调用中，那么这个线程在从该方法返回之前，其它所有调用类中任何synchronized方法的线程都会被阻塞。也就是说，对于某个特定对象来说，其所有synchronized方法共享同一个锁。</p>
-
-<p>线程可以多次获得对象的锁，例如先调用synchronized方法获得锁后，又调用该类的其它方法获得锁。JVM会跟踪对象加锁的计数，每次调用加1，离开synchronized方法时减1。当计数变为0则锁被完全释放。</p>
-
-<p>synchronized static方法可以在类的范围内防止对static数据的并发访问。</p>
-
-<p>如果你正在写一个变量，它可能接下来被另一个线程读取，或者在读取一个上一次已经被另一个线程写过的变量，那么你必须使用同步，并且，读写线程都必须用相同的监视器锁同步。</p>
-
-<p>Lock对象也用于解决共享资源竞争。它必须被显式地创建、锁定和释放。</p>
-
-<p>```java
-public class MutexEvenGenerator extends IntGenerator {</p>
-
-<pre><code>private Lock lock = new ReentrantLock();
-public int next() {
-    lock.lock();
-    try {
-        //...
-
-        //注意！必须在try中返回值，以避免lock.unlock之后将数据暴露给其它线程。
-        return someValue; 
-    } finally {
-        lock.unlock();
-    }
-
-    //不要在这里返回值
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>Lock提供了更细粒度的控制能力。使用Lock，可以更加自由地控制锁。例如尝试获得锁，如果获取不到，可以先干点别的事：</p>
-
-<p>```java
-boolean captured = lock.tryLock();</p>
-
-<p>//设置超时时间，超时则触发异常。
-try {</p>
-
-<pre><code>boolean captured = lock.tryLock(2, TimeUnit.SECONDS);
-</code></pre>
-
-<p>} catch(InterruptedException e) {
-}</p>
-
-<p>```</p>
-
-<h3>2.2 原子性和易变性</h3>
-
-<p>原子性可用于除long、double之外的所有基本类型上的“简单操作”（读取和写入）。可以保证它们会被当作不可分（原子）的操作来操作内存。但JVM在读取和写入64位（long和double变量）时，可以拆成两个32位操作。因此可能导致“字撕裂”。作为普通开发者，<strong>不要依赖原子操作而移除了同步，那会得不偿失。</strong></p>
-
-<p>关键字<code>volatile</code>可以帮助获得原子性。<code>volatile</code>还确保了数据的可视性。当一个域声明为<code>volatile</code>时，那么只要对它进行了写操作，即使使用了本地缓存，其它读操作也可以看到这个修改。因为<code>volatile</code>域会被立即写入主内存中，而读取操作就发生在主存中。</p>
-
-<p>非<code>volatile</code>域上的原子操作不必刷新到主存，因此其它任务读取该域时可能看不到新值（修改操作的任务可以看到新值）。如果多个任务(线程)在同时访问某个域，那么这个域就应该是<code>volatile</code>的，否则这个域就应该经由同步来访问。同步也会导致向主存刷新。</p>
-
-<h3>2.3 原子类</h3>
-
-<p>Java引入了AtomicInteger, AtomicLong, AtomicReference等特殊的原子性变量类，它们提供机器级别上的原子性。常规编程很少派上用场，但在涉及性能调优时，会有用武之地。</p>
-
-<p>需要强调的是，Atomic类被设计用来构建java.util.concurrent中的类，因此只有在特殊情况下才在自己的代码中使用它们。通常依赖于锁（Lock, synchronized）更安全一些。</p>
-
-<h3>2.4 临界区(Critical section)</h3>
-
-<p>以下同步控制块就是临界区：</p>
-
-<p>```java
-synchronized(synObject) {</p>
-
-<pre><code>//这部分代码一次只能被一个线程访问
-</code></pre>
-
-<p>}
-```</p>
-
-<p>使用同步控制块，可以防止整个方法都同步，显著提高性能。但要注意，上面例子中，只要没有退出同步控制块，那么被同步对象synObject的所有同步方法都无法被其它线程调用。</p>
-
-<h3>2.5 线程本地存储</h3>
-
-<p>去除变量共享，在线程本地存储也是防止共享资源冲突的一种方法。如果你有5个线程都要使用变量x所表示的对象，那么线程本地存储就会生成5个用于x的不同的存储块。ThreadLocal对象用于线程本地存储。</p>
-
-<p>ThreadLocal对象通常当作静态域存储。示例如下：</p>
-
-<p>```java
-public class ThreadLocalVariableHolder {</p>
-
-<pre><code>private static final ThreadLocal&lt;Integer&gt; value = new ThreadLocal&lt;Integer&gt;() {
-    @Override
-    protected synchronized Integer initialValue() {
-        return 10;
-    }
-};
-
-public static int get() {
-    return value.get();
-}
-
-public static void increment() {
-    value.set(value.get() + 1);
-}
-</code></pre>
-
-<p>}</p>
-
-<p>public class Accessor implements Runnable {</p>
-
-<pre><code>@Override
-public void run() {
-    ThreadLocalVariableHolder.increment();
-    //..
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h2>慎用延迟初始化</h2>
-
-<p>在并发编程时，延迟初始化可能导致问题。除非绝对必要，否则就不要使用延迟初始化。</p>
-
-<p><code>java
-//正常的初始化
-private final FieldType field = computeFieldValue();
-</code></p>
-
-<p>如果要使用延迟初始化，就要使用同步方法，例如：</p>
-
-<p>```java
-private FieldType field;</p>
-
-<p>synchronized FieldType getField() {</p>
-
-<pre><code> if (field == null) {
-      field = computeFieldValue();
- }
-
- return field;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>如果出于性能考虑，需要对静态域使用延迟初始化，就使用<strong>Lazy initialization holder class</strong>模式：</p>
-
-<p>```java
-private static Class FieldHolder {</p>
-
-<pre><code> static final FieldType field = computefieldValue();
-</code></pre>
-
-<p>}</p>
-
-<p>static FieldType getField() { return FieldHolder.field; }
-```</p>
-
-<p>如果出于性能考虑，需要对实例域使用延迟初始化，就使用双重检查模式(Double check idiom)：
-<code>java
-private volatile FieldType field;
-FieldType getField() {
-FieldType result = field;
-if (result == null) {
-synchronized(this) {
-result = field;
-if (result == null) {
-field = result = computeFieldValue();
-}
-}
-}
-return result;
-}
-</code></p>
-
-<p>注意上面的代码：</p>
-
-<ol>
-<li>使用volatile很重要；</li>
-<li>使用局域变量result可以提高性能。据称在作者的机器上使用局域变量要快25%。</li>
-<li>对于静态域，没有必要使用双重检查，<strong>Lazy initialization holder class</strong>是更好的选择。</li>
-<li>如果延迟初始化可以接受重复初始化的实例域，则可以省去第二次检查。</li>
-</ol>
-
 ]]></content>
   </entry>
   
