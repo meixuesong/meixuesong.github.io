@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-11-18T23:01:59+08:00</updated>
+  <updated>2014-11-25T13:01:23+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,382 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Java NIO.2]]></title>
+    <link href="http://blog.ubone.com/blog/2014/11/23/java-nio-dot-2/"/>
+    <updated>2014-11-23T10:59:37+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/11/23/java-nio-dot-2</id>
+    <content type="html"><![CDATA[<p>Java 7提供了新的NIO(或称为NIO.2, JSR-203)，这是一组新的类和方法，用于取代File类与文件系统的交互，提供新的异步处理类并简化Socket与通道的编码工作。</p>
+
+<!--more-->
+
+
+<p>在Java 1.4之前，Java缺乏对非阻塞I/O的支持，1.4引入了非阻塞I/O，为I/O操作抽象出缓冲区和通道层；提供字符集的编码和解码能力；能够将文件映射为内存数据；实现正则表达式。Java 7进一步扩展了NIO的能力。</p>
+
+<h2>1. PATH</h2>
+
+<p>Path相关的类包括：</p>
+
+<ul>
+<li>Path：获取路径信息</li>
+<li>Paths：工具类，提供返回一个路径的辅助方法</li>
+<li>FileSystem：与文件系统交互的类</li>
+<li>FileSystems：工具类，提供各种方法。</li>
+</ul>
+
+
+<p>Path不仅用于传统的文件系统，也能表示zip或jar这样的文件系统。</p>
+
+<p>```java
+//创建Path
+Path listing = Paths.get(&ldquo;/user/bin/zip&rdquo;)；
+//相当于
+Path listing = FileSystems.getDefault().getPath(&ldquo;/user/bin/zip&rdquo;);</p>
+
+<p>//获取Path信息：
+listing.getFileName(): zip
+listing.getNameCount(): 3
+listing.subpath(0, 2): /user/bin
+listing.getParent(): /user/bin
+listing.getRoot(): /
+```</p>
+
+<p>如果Path是一个文件的路径，有时需要去除冗余信息。例如去除表示当前路径的<code>./</code>，或者该文件只是个符号链接，指向了另一个真正的位置，此时需要得到真实路径。</p>
+
+<p>```java
+//移除冗余
+Path testPath = Paths.get(&ldquo;./test.java&rdquo;);
+Path normalizedPath = testPath.normalize();</p>
+
+<p>//获取绝对路径
+Path absolutePath = testPath.toAbsolutePath();
+//获取绝对路径并去除冗余信息，或者获取符号连接的真实路径
+Path realPath = testPath.toRealPath();
+```</p>
+
+<p>合并路径与路径比较。</p>
+
+<p>```java
+//合并
+Path prefix = Paths.get(&ldquo;/usr&rdquo;);
+Path completePath = prefix.resolve(&ldquo;mxs&rdquo;);
+//completePath: /usr/mxs</p>
+
+<p>//比较
+Path path1 = Paths.get(&ldquo;/Users/mxs/Documents/Blog/&rdquo;);
+Path path2 = Paths.get(&ldquo;/Users/mxs&rdquo;);
+path1.relativize(path2): ../..
+path2.relativize(path1): Documents/Blog
+```</p>
+
+<p>新的API完全替换了java.io.File类，在处理遗留代码时，可能将其进行互换：</p>
+
+<p><code>java
+File file = new File("../abcd.txt");
+Path listing = file.toPath();
+file = listing.toFile();
+</code></p>
+
+<h2>2. 处理目录与目录树</h2>
+
+<p>新的DirectoryStream<T>接口实现了目录相关的操作：</p>
+
+<ul>
+<li>循环遍历目录中的子项</li>
+<li>用glob表达式（如<code>*Foobar*</code>）进行目录子项的匹配和MIME内容检测（如text/xml文件）</li>
+<li>用walkFileTree实现递归移动、复制和删除操作</li>
+</ul>
+
+
+<p><strong>在目录中查找文件：</strong></p>
+
+<p>```java
+Path dir = Paths.get(&ldquo;/user/mxs/Documents&rdquo;);</p>
+
+<p>try(DirectoryStream<Path> stream = Files.newDirectoryStream(dir, &ldquo;*.properties&rdquo;)) {</p>
+
+<pre><code>for(Path entry : stream){
+    System.out.println(entry.getFileName());    
+}
+</code></pre>
+
+<p>} catch(IOException e) {</p>
+
+<pre><code>//...
+</code></pre>
+
+<p>}
+```</p>
+
+<p><strong>遍历目录树。</strong>Files.walkFileTree方法是遍历目录树的关键，该方法定义如下：</p>
+
+<p><code>Files.walkFileTree(Path startingDir, FileVisitor&lt;? super Path&gt; visitor);
+</code></p>
+
+<p>其中Visitor是一个接口，包括5个方法，但一般使用Java的默认实现SimpleFileVisitor就可以了。</p>
+
+<p>```java
+public void walk() {</p>
+
+<pre><code>Path dir = Paths.get("/code/src");
+Files.walkFileTree(dir, new FindJavaVisitor());
+</code></pre>
+
+<p>}</p>
+
+<p>private static class FindJavaVisitor extends SimpleFileVisitor<Path> {</p>
+
+<pre><code>@Override
+public FileVisitresult visitFile(Path file, BasicFileAttributes attrs) {
+    if (file.toString().endsWith(".java")) {
+        //...
+    }
+
+    return FileVisitResult.CONTINUE;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>需要注意的是，walkFileTree方法不会自动跟随符号链接（为了确保递归等操作的安全性）。因此如果你需要跟随符号链接，就需要检查相应属性并执行相应操作。</p>
+
+<h2>3. 文件系统I/O</h2>
+
+<p>在NIO.2中，Files和WatchService是两个重要的基础类。前者用于复制、移动、删除或处理文件，后者用于监视文件或目录，发出定制通知等。</p>
+
+<h3>3.1 创建和删除文件</h3>
+
+<p><code>java
+Path target = Paths.get("/Users/mxs/Document/mystuff.txt");
+Path file = Files.createFile(target);
+</code></p>
+
+<p>如果需要设置文件属性，如读、写和执行的权限，则需要设置FileAttribute，但文件属性与操作系统相关，因此要使用与操作系统相关的文件权限类。以下是POSIX文件系统的示例(其它文件系统参考java.nio.file.attribute.*FilePermission类)：</p>
+
+<p><code>java
+Set&lt;PosixFilePermission&gt; perms = PosixFilePermissions.fromString("rw-rw-rw-");
+FileAttribute&lt;Set&lt;PosixFilePermission&gt;&gt; attr = PosixFilePermissions.asFileAttribute(perms);
+Files.createFile(target, attr);
+</code></p>
+
+<p>删除文件只需要调用<code>Files.delete(target)</code>方法。</p>
+
+<h3>3.2 文件复制与移动</h3>
+
+<p>```java
+Path source = Paths.get(&ldquo;c:\My Documents\stuff.txt&rdquo;);
+Path target = Paths.get(&ldquo;D:\backup\stuff.txt&rdquo;);
+Files.copy(source, target);</p>
+
+<p>//复制时还可以设置CopyOptions选项（变参，可多个。ATOMIC_MOVE确保两边都成功，否则回滚）
+import static java.nio.file.StandardCopyOption.*;
+Files.copy(source, target, REPLACE_EXISTING, COPY_ATTRIBUTES, ATOMIC_MOVE);</p>
+
+<p>//移动
+Files.move(source, target);
+Files.move(source, target, CopyOptions);
+```</p>
+
+<h3>3.3 文件属性</h3>
+
+<p>由于不同的文件系统属性不同，因此Java中的文件属性分为基本文件属性、特定文件属性。前者是各文件系统通用的文件属性。</p>
+
+<p><code>java
+Path zip = Paths.get("/usr/bin/zip");
+Files.getLastModifiedTime(zip);
+Files.size(zip);
+Files.isSymbolicLink(zip);
+Files.isDirectory(zip);
+Files.readAttributes(zip, "*"); //批量读取属性
+</code></p>
+
+<p>特定文件属性独立于某个操作系统。以POSIX文件系统为例：</p>
+
+<p>```java
+//获取文件属性
+PosixFileAttributes attrs = Files.readAttributes(zip, PosixFileAttributes.class);</p>
+
+<p>//修改属性
+Set<PosixFilePermission> permissions = attrs.permissions();
+permissions.clear;
+permissions.add(GROUP_READ);
+//&hellip;
+Files.setPosixFilePermissions(zip, permissions);
+```</p>
+
+<p>符号链接的处理：</p>
+
+<p>```java
+Path file = Paths.get(&ldquo;/opt/platform/java&rdquo;);
+if (Files.isSymbolicLink(file)) {</p>
+
+<pre><code>file = Files.readSymbolicLink(file);
+</code></pre>
+
+<p>}
+//继续处理文件相关操作
+Files.readAttributes(file, BasicFileAttributes.class);
+```</p>
+
+<h3>3.4. 快速读写数据</h3>
+
+<p>Files工具类提供了更方便的方法来读写数据：</p>
+
+<p>```java
+Path logFile = Paths.get(&ldquo;/tmp/app.log&rdquo;);
+try(BufferedReader reader =</p>
+
+<pre><code>Files.newBufferedReader(logFile, StandardCharsets.UTF_8)) {
+String line;
+while((line = reader.readLine()) != null) {
+    //...
+}
+</code></pre>
+
+<p>}</p>
+
+<p>//写入
+try(BufferedWriter writer =</p>
+
+<pre><code>Files.newBufferedWrite(logFile, StandardCharsets.UTF_8, StandardOpenOption.WRITE)) //变参，可多个
+</code></pre>
+
+<p>{</p>
+
+<pre><code>writer.write("Hello!");
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Files工具类提供的方法还有<code>newInputStream()</code>, <code>newOutputStream()</code>等方法，用于配合现有IO类。还有更方便的方式：</p>
+
+<p><code>java
+List&lt;String&gt; lines = Files.readAllLines(logFile, StandardCharsets.UTF_8);
+byte[] bytes = Files.readAllBytes(logFile);
+</code></p>
+
+<h3>3.5. 文件修改通知</h3>
+
+<p>WatchService可用于监测文件或目录的变化，可监测的事件包括：ENTRY_CREATE, ENTRY_DELETE, OVERFLOW(事件已经丢弃或丢失)。</p>
+
+<p>```java
+import static java.nio.file.StandardWatchEventKinds.*;</p>
+
+<p>try {</p>
+
+<pre><code>WatchService watcher = FileSystems.getDefault().newWatchService();
+Path dir = FileSystems.getDefault().getPath("/usr/mxs");
+WatchKey key = dir.register(watcher, ENTRY_MODIFY);
+
+while(!shutdown ) { //一个标志，判断循环是否该结束
+    key = watcher.take();
+    for (WatchEvent&lt;?&gt; event: key.pollEvents()) {
+        if (event.kind() == ENTRY_MODIFY) {
+            //dir changed
+        }
+    }
+    key.reset(); 
+}
+</code></pre>
+
+<p>} catch(IOException | InterruptedException e) {</p>
+
+<pre><code>//...
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>3.6 SeekableByteChannel</h3>
+
+<p>这是Java 7引入的新接口，用于改变字节通道的位置和大小。例如用多个线程去分析一个大型日志文件的字节通道。FileChannel是这个接口的一种实现，下面的示例读取日志文件的最后1000个字符：</p>
+
+<p><code>java
+Path logFile = Paths.get("c:\\temp.log");
+ByteBuffer buffer = ByteBuffer.allocate(1024);
+FileChannel channel = FileChannel.open(logFile, StandardOpenOption.READ);
+channel.read(buffer, channel.size() - 1000);
+</code></p>
+
+<h2>4. 异步I/O操作</h2>
+
+<p>异步I/O操作主要有两种方式：Future和回调。Java 7提供了三个新的异步通道：</p>
+
+<ul>
+<li>AsynchronousFileChannel 用于文件I/O</li>
+<li>AsynchronousSocketChannel 用于Socket I/O, 支持超时</li>
+<li>AsynchronousServerSocketChannel 用于Socket接受异步连接</li>
+</ul>
+
+
+<h3>4.1 Future方式</h3>
+
+<p>```java
+try {</p>
+
+<pre><code>Path file = Paths.get("/usr/mxs/foobar.txt");
+AsynchronousFileChannel channel = AsynchronousFileChannel.open(file);
+
+//读取100 000字节
+ByteBuffer buffer = ByteBuffer.allocate(100_1000); 
+Future&lt;Integer&gt; result = channel.read(buffer, 0);//返回值为Integer
+
+//如果未结束
+while(! result.isDone()) {
+    //...干点别的事。
+}
+
+//获取结果
+Integer byteRead = result.get();
+</code></pre>
+
+<p>} catch(IOException | ExecutionException | InterruptedException e) {</p>
+
+<pre><code>//...
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>4.2 回调方式</h3>
+
+<p>CompletionHandler&lt;V, A>是回调的接口。V表示结果类型，A是提供结果的附着对象。</p>
+
+<p>```
+try {</p>
+
+<pre><code>Path file = Paths.get("/usr/mxs/foobar.txt");
+AsynchronousFileChannel channel = AsynchronousFileChannel.open(file);
+//读取100 000字节
+ByteBuffer buffer = ByteBuffer.allocate(100_1000); 
+
+channel.read(buffer, 0, buffer, new CompletionHandler&lt;Integer, ByteBuffer&gt;(){
+    public void completed(Integer result, ByteBuffer attachment) {
+        //完成时的回调方法
+    }
+
+    public void failed(Throwable exception, ByteBuffer attachment) {
+        //失败时的回调方法
+    }
+});
+</code></pre>
+
+<p>} catch(IOException e) {</p>
+
+<pre><code>//...
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>5. Socket与Channel整合</h2>
+
+<p>NetworkChannel把Socket和Channel结合起来，更好地应对网络编程。而MulticastChannel则可以用于像BitTorrent这样的多播编程。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Java 7的6个新特性]]></title>
@@ -2161,416 +2537,6 @@ public class ExchangerTest {</p>
 线程pool-1-thread-1换回数据为drug
 </em>/
 ```</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java并发编程（二）]]></title>
-    <link href="http://blog.ubone.com/blog/2014/09/02/javabing-fa-er/"/>
-    <updated>2014-09-02T21:03:49+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/09/02/javabing-fa-er</id>
-    <content type="html"><![CDATA[<p>本文是《Java编程思想》第21章并发的读书笔记。<a href="/blog/2014/08/30/javabing-fa-bian-cheng/">Java并发编程（一）</a></p>
-
-<!--more-->
-
-
-<h2>3. 终结任务</h2>
-
-<h3>3.1 阻塞</h3>
-
-<p>一个任务进入阻塞状态，可能有如下原因：</p>
-
-<ol>
-<li>调用sleep(milliseconds)</li>
-<li>调用wait()挂起线程，直到线程得到了notify()或notifyAll()（Java5中的signal或signalAll）</li>
-<li>等待某个输入/输出完成</li>
-<li>试图在某个对象上调用同步控制方法，但对象锁不可用。</li>
-</ol>
-
-
-<p>早期代码中还有suspend()和resume()来阻塞和唤醒线程，但现在已经被废止了（可能导致死锁），还有stop()也已经废止了（因为不释放线程获得的锁）。</p>
-
-<h3>3.2 中断</h3>
-
-<p>有几种方法中断线程。</p>
-
-<p>一是声明一个变量canceled，然后正常的run方法中循环检查它的值，从而决定是否跳出循环，退出run方法。</p>
-
-<p>二是调用Thread类的interrupt()方法，该方法提供了离开run()循环而不抛出异常的第二种方式。这种方式必须持有Thread对象。</p>
-
-<p>如果调用Executor的shutdownNow()，那么它将发送一个interrupt()调用给它启动的所有线程。如果想只中断某一个线程，可以使用Future的cancel方法。下面是各种中断的示例：</p>
-
-<h4>中断Sleep Runnable</h4>
-
-<p>```java
-public class ThreadInterrupt {</p>
-
-<pre><code>public static void main(String[] args) {
-    ExecutorService exec = Executors.newCachedThreadPool();
-    Future f = exec.submit(new SleepInterruptThread());
-    try {
-        TimeUnit.SECONDS.sleep(1);
-        f.cancel(true);
-
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-    System.out.println("退出主程序");
-}
-</code></pre>
-
-<p>}</p>
-
-<p>public class SleepInterrupt implements Runnable {</p>
-
-<pre><code>@Override
-public void run() {
-    try {
-        TimeUnit.SECONDS.sleep(10);
-        System.out.println("end sleep 10s");
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-
-    System.out.println("exit SleepInterrupt run");
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>上面的代码可以正常中断Sleep线程，捕获了InterruptedException异常。</p>
-
-<h4>中断Sleep Thread</h4>
-
-<p>```java
-public class ThreadInterrupt {</p>
-
-<pre><code>public static void main(String[] args) {
-    Thread f = new SleepInterruptThread();
-    f.start();
-    try {
-        TimeUnit.SECONDS.sleep(1);
-        f.interrupt();
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-    System.out.println("退出主程序");
-}
-</code></pre>
-
-<p>}</p>
-
-<p>public class SleepInterruptThread extends Thread {</p>
-
-<pre><code>@Override
-public void run() {
-    try {
-        TimeUnit.SECONDS.sleep(5);
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-
-    System.out.println("exit SleepInterrupt run");
-}
-</code></pre>
-
-<p>}</p>
-
-<p>```</p>
-
-<p>上面的代码可以正常中断Sleep线程，捕获了InterruptedException异常。</p>
-
-<h4>中断IO线程</h4>
-
-<p>```java
-public class ThreadInterrupt {</p>
-
-<pre><code>public static void main(String[] args) {
-    ExecutorService exec = Executors.newCachedThreadPool();
-    Future f = exec.submit(new IOInterrupt(System.in));
-    try {
-        TimeUnit.SECONDS.sleep(1);
-        f.cancel(true);
-
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-    System.out.println("退出主程序");
-}
-</code></pre>
-
-<p>}</p>
-
-<p>public class IOInterrupt implements Runnable {</p>
-
-<pre><code>private InputStream in;
-
-public IOInterrupt(InputStream is) {
-    in = is;
-}
-
-@Override
-public void run() {
-    try {
-        in.read();
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-
-    System.out.println("exit run");
-}
-</code></pre>
-
-<p>}</p>
-
-<p>```
-<strong>对于IO阻塞线程，则无法进行中断！从catch语句中没有InterruptedException也可以看出。</strong>同样无法中断的还有SynchronizedBlocked，也就是如果线程进入synchronized方法或临界区中后，将无法中断。</p>
-
-<p>对于网络访问这样的IO阻塞，如果不能中断有时挺烦人的。一个较笨的办法是关闭底层资源（例如关闭连接。）示例如下：</p>
-
-<p><code>java
-InputStream socketInput = new Socket("localhost", 8080).getInputStream();
-exec.execute(new IOBlocked(socketInput));
-//...
-exec.shutdownNow(); //无法中断线程
-//...
-socketInput.close(); //关闭后，解除阻塞。
-</code></p>
-
-<p><strong>Java提供的各种nio类具有更人性化的I/O中断，被阻塞的nio通道会自动地响应中断。</strong></p>
-
-<p><strong>synchronized方法或临界区上的阻塞，存在锁住程序的可能。而ReentrantLock上的阻塞则具备被中断的能力。</strong>例如当线程1 lock后，线程2也请求lock，在等待的过程中将产生阻塞，调用Thread.interrupt或Future.cancel可以将其中断。</p>
-
-<h3>3.3 检查中断</h3>
-
-<p>当你在线程上调用interrupt()时，如何保证安全地退出run方法，释放该释放的资源？</p>
-
-<p>如果类必须响应interrupt()，那么就必须建立一种策略。当创建了需要清理的对象后，就必须紧跟try-finally子句，使得无论run()循环如何退出，都能正常清理。</p>
-
-<h2>4. 线程之间的协作</h2>
-
-<h3>4.1 wait()与notifyAll()</h3>
-
-<p>调用sleep()和yield()时，锁并没有被释放。而调用wait()时，线程的执行被挂起，对象上的锁被释放。wait()表示无限期等待下去，直到notify或notifyAll，它也可以传入参数表示时间到期后恢复。当wait恢复时，会首先重新获取进入wait时释放的锁，在这个锁变为可用之前，是不会被唤醒的。</p>
-
-<p><strong>只能在同步控制方法或者同步控制块里调用wait(), notify()和notifyAll()！</strong>否则虽然能够编译通过，但运行时将报异常：IllegalMonitorStateException。为什么要这样设计？<a href="http://javarevisited.blogspot.sg/2011/05/wait-notify-and-notifyall-in-java.html">这篇博客</a>作了解释。如果不这样做，就没有锁，就可能导致下一节中的“错失的信号”。</p>
-
-<p>当从wait唤醒时，往往需要判断特定条件是否满足，如果不满足就返回到wait中，惯用的方法就是使用while来编写这种代码。下例是一个汽车打蜡抛光的示例，其它两个线程未列出。</p>
-
-<p>```java
-class Car {
-private boolean waxOn = false;
-public synchronized void waxed() {
-waxOn = true;
-notifyAll();
-}
-public synchronized void buffed() {
-waxOn = false;
-notifyAll();
-}
-public synchronized void waitForWaxing() throws InterruptedException {
-while (waxOn == false) {
-wait();
-}
-}
-public synchronized void waitForBuffing() throws InterruptedException {
-while (waxOn == true) {
-wait();
-}
-}
-}</p>
-
-<p>```</p>
-
-<h4>错失的信号</h4>
-
-<p>当两个线程协作时，要特别注意可能会错过某个信号，例如下例T1通知T2，但是有可能T2收不到这个信号：</p>
-
-<p>```java
-T1:
-synchronized(shareMonitor) {</p>
-
-<pre><code> //&lt;setup condition for T2&gt;
- shareMonitor.notify();
-</code></pre>
-
-<p>}</p>
-
-<p>T2:
-while(someCondition) {</p>
-
-<pre><code> //Point 1
- synchronized(shareMonitor) {
-      shareMonitor.wait();
- }
-</code></pre>
-
-<p>}
-```</p>
-
-<p>以上代码运行到Point1时，如果调度到了T1，则T2收不到通知，就会永远在那里等待。T2正确的做法是：</p>
-
-<p>```java
-synchronized(shareMonitor) {</p>
-
-<pre><code> while(someCondition) {
-      shareMonitor.wait();
- }
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>4.2 notify()与notifyAll()</h3>
-
-<p>两者的不同之处在于，前者只唤醒一个线程，而后者唤醒同一锁定的所有线程。当有多个等待线程时，notify唤醒哪一个线程由调度决定。notifyAll唤醒多个线程后，它们将先为锁而战，先取得锁的线程先执行。</p>
-
-<p>什么情况下使用notify或者notifyAll？在多个等待的线程中，如果它们都在等同一个条件，并且当条件变为真时，只有一个线程从中受益，那么用notify比notifyAll更好，因为它避免浪费CPU循环。 notify()只唤醒其中一个。因此当你使用notify时要确保只唤醒正确的那个。</p>
-
-<p>notifyAll并不是唤醒所有等待线程，而是等待某个特定锁的所有线程。</p>
-
-<h3>4.3 生产者和消费者</h3>
-
-<p>除了wait()、notify()和notifyAll()方法用于同步方法或者同步代码块外，也可以使用Lock、Condition、await()、signal()和signalAll()方法。示例如下：</p>
-
-<p>```java
-class Car {</p>
-
-<pre><code>private Lock lock = new ReentrantLock();
-private Condition condition = lock.newCondition();
-private boolean waxOn = false;
-public void waxed() {
-    lock.lock();
-    try {
-        waxOn = true;
-        condition.signalAll();
-    } finally {
-        lock.unlock();
-    }
-}
-
-public void waitForWaxing() throws InterruptedException {
-    lock.lock();
-    try {
-        while (waxOn == false) 
-            condition.await();
-    } finally {
-        lock.unlock();
-    }
-}
-
-//...
-</code></pre>
-
-<p>}
-```</p>
-
-<p>注意，每个lock()的调用都必须紧跟一个try-finally子句，以保证所有情况都可以释放锁。在await()、signal()或signalAll()之前，必须拥有这个锁。</p>
-
-<p>使用wait()和notifyAll()这样的方法来解决任务互操作的问题比较复杂。在典型的生产者-消费者实现中，常使用先进先出队列来存储被生产和消费的对象。BlockingQueue接口提供了这样的同步队列，该接口有多种实现，常见的是LinkedBlockingQueue和ArrayBlockingQueue(固定尺寸)。</p>
-
-<p>如果消费者试图从队列中获取对象，而此时该队列为空，那么消费者将挂起，直到队列中有可消费的内容。阻塞队列可以解决很多问题，比wait()和notifyAll()相比，要简单得多，也更加可靠。示例如下：</p>
-
-<p>```java
-class LiftOffRunner implements Runnable {</p>
-
-<pre><code>private BlockingQueue&lt;LiftOff&gt; rockets;
-public LiftOffRunner(BlockingQueue&lt;LiftOff&gt; queue) {
-    rockets = queue;
-}
-
-public void add(LiftOff lo) {
-    try {
-        rockets.put(lo);
-    } catch(InterruptedException e) {
-        print("Interrupted during put");
-    }
-}
-
-public void run() {
-    try {
-        while(! Thread.interrupted)) {
-            LiftOff rocket = rockets.take(); //阻塞直至rockets中有东西
-            rocket.run();
-        }
-    } catch(InterruptedException e) {
-        print("Exiting LiftOffRunner");
-    }
-}
-</code></pre>
-
-<p>}</p>
-
-<p>//其它线程可以往rockets中添加内容，无需同步方法或者锁。
-```</p>
-
-<h3>4.4 任务间使用管道进行输入/输出</h3>
-
-<p>通过输入/输出在线程间进行通信也很有用。这种管道在Java IO库中的对应物就是PipedWriter类和PipedReader类。这也是“生产者-消费者”的变体。示例如下：</p>
-
-<p>```java
-class Sender implements Runnable {</p>
-
-<pre><code>private PipedWriter out = new PipedWriter();
-public PipedWriter getWriter() { return out;}
-public void run() {
-    try {
-        while (true) {
-            for(char c = 'A'; c &lt;= 'z'; c++) {
-                out.write(c);
-                TimeUnit.MILLISECONDS.sleep(rand.nextInt(500));
-            }
-        }
-    } catch(IOException e) {
-        //...
-    } catch(InterruptedException e ) {
-        //...
-    }
-}
-</code></pre>
-
-<p>}</p>
-
-<p>class Receiver implements Runnable {</p>
-
-<pre><code>private PipedReader in;
-public Receiver(Sender sender) {
-    in = new PipedReader(sender.getWriter());
-}
-
-public void run() {
-    try {
-        while (true) {
-            print("read: " + (char) in.read());
-        }
-    } catch (IOException e) {
-        //...
-    }
-}
-</code></pre>
-
-<p>}</p>
-
-<p>//与普通I/O不能interrupt不同，PipedReader是可以中断的。</p>
-
-<p>```</p>
-
-<p>相比之下，BlockingQueue使用起来更加健壮而容易。</p>
-
-<h2>5. 死锁</h2>
-
-<p>当以下四个条件同时满足时，就会发生死锁：</p>
-
-<ol>
-<li>互斥条件。任务使用的资源中至少有一个是不能共享的。</li>
-<li>至少有一个任务必须持有一个资源且正在等待获取一个当前被别的任务持有的资源。</li>
-<li>资源不能被任务抢占，任务必须把资源释放当作普通事件。</li>
-<li>必须有循环等待。A等待B持有的资源，B又等待C持有的资源，这样一直下去之后，直到X在等待A所持有的资源。</li>
-</ol>
-
-
-<p>要防止死锁，只需破坏上述四条中的任意一条。破坏第4条是最容易的。</p>
 ]]></content>
   </entry>
   
