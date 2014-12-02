@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-11-25T13:01:23+08:00</updated>
+  <updated>2014-12-03T00:29:10+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,329 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Java并发编程(四)]]></title>
+    <link href="http://blog.ubone.com/blog/2014/12/01/javabing-fa-bian-cheng-si/"/>
+    <updated>2014-12-01T22:43:50+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/12/01/javabing-fa-bian-cheng-si</id>
+    <content type="html"><![CDATA[<p>在学习了《Java编程思想》中关于<a href="/blog/2014/09/02/javabing-fa-bian-cheng-san/">并发编程</a>的内容后，继续学习Java并发编程。</p>
+
+<!--more-->
+
+
+<h2>1. 常用的并发构件</h2>
+
+<h3>为什么是synchronized?</h3>
+
+<p>这个单词的意思是同步，那么Java中synchronized表示什么意思呢？其实就是同步被锁定对象的主内存块。</p>
+
+<ul>
+<li>当进入一个synchronized代码块时，持有锁的线程和被锁定对象主内存中的视图会进行同步。</li>
+<li>当synchronized代码块执行完之后，被锁定对象所做的任何修改会在线程锁释放之前刷回到主内存中。</li>
+</ul>
+
+
+<p>而volatile变量，在使用之前总是会从主内存中再读出来。线程所写的值总会在指令完成之前被刷回到主内存中。volatile变量不会引入线程锁，是真正线程安全的。<strong>但只有写入时不依赖当前状态（读取的状态）的变量才应该声明为volatile变量。对于要关注当前状态的变量，只能借助线程锁保证绝对安全性。</strong></p>
+
+<h3>Lock有什么好处？</h3>
+
+<ul>
+<li>添加不同类型的锁，比如读取锁和写入锁。</li>
+<li>对锁的阻塞没有限制，即允许在一个方法中上锁，在另一个方法中解锁。</li>
+<li>如果线程得不到锁，比如锁由另外一个线程持有，就允许该线程后退或继续执行，或者做点别的事情——运用tryLock()方法。</li>
+<li>允许线程尝试取锁，并可以在超过等待时间后放弃。</li>
+</ul>
+
+
+<p>Lock接口的两个实现类：</p>
+
+<ul>
+<li>ReentranLock: 本质上与同步块一样，但更灵活些。</li>
+<li>ReentranReadWriteLock: 在读多写入的时候，性能更好。</li>
+</ul>
+
+
+<h3>ConcurrentHashMap</h3>
+
+<p>ConcurrentHashMap是HashMap的并发版本，改进了Collections.synchronizedMap()功能。它是concurrent包中最有用的类之一，不仅提供了多线程的安全性，而且性能更优。它提供了原子操作的新方法：</p>
+
+<ul>
+<li>putIfAbsent(): 如果没有对应键，则将键值对添加到HashMap中。</li>
+<li>remove(): 如果键存在，且值与当前状态相等，则用原子方式移除键值对。</li>
+<li>replace(): 当键存在时，进行原子替换。</li>
+</ul>
+
+
+<h3>CopyOnWriteArrayList</h3>
+
+<p>它是标准ArrayList的替代品，通过copy-on-write来实现线程安全性，对修改列表的任何操作都会创建一个新复本。当快速、一致的数据快照（不同的读取器读到的数据偶尔可能会不一样）比完美的同步以及性能上的突破更重要时，这种共享数据的方法非常理想，经常出现在非关键任务中。</p>
+
+<h3>Queue</h3>
+
+<p>Java有些多线程编程模型在很大程度上依赖于Queue实现线程安全性。BlockingQueue是最简单的实现。向队列put()时，如果队列满则放入线程会等待。从队列take()时，如果队列空，则取出线程阻塞。</p>
+
+<p>Queue接口全是泛型<code>Queue&lt;E&gt;</code>，利用这一点把工作项封装到一个人工容器中会更方便。例如工作单元MyAwesomeClass，与其用<code>BlockingQueue&lt;MyAwesomeClass&gt;</code>不如使用<code>BlockingQueue&lt;WorkUnit&lt;MyAwesomeClass&gt;&gt;</code>：</p>
+
+<p>```java
+public class WorkUnit<T> {</p>
+
+<pre><code>private final T workUnit;
+public T getWork() {return workUnit;}
+public WorkUnit(T workUnit) {
+    this.workUnit = workUnit;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>有了这层间接引用，可以添加额外的元数据而不用牺牲MyAwesomeClass的完整性。例如在WorkUnit中添加用于测试、性能指标和运行时系统信息等。</p>
+
+<p>除了基本的put()和take()方法，BlockingQueue还提供了还超时的放入和取出方法：offer(E e, long timeout, TimeUnit unit)和poll(long timeout, TimeUnit unit)。</p>
+
+<p>Java 7还引入了TransferQueue，本质上是多了transfer()操作的BlockingQueue。在BlockingQueue中，当上游线程池比下游快时，可能会引发一些问题，导致LinkedBlockingQueue溢出。反之，如果下游比上游快，则可能队列经常空着。TransferQueue可以优化这种情况，调控上/下游的速度。当消费线程在等待时，transfer()操作会马上把工作项传给它，否则就会阻塞直到取走工作项的线程出现。可以把这看做“挂号信”选项，即正在处理工作项的线程在交付当前工作项之前不会开始其他工作项的工作。</p>
+
+<p>用TransferQueue取代BlockingQueue的代码性能可能会更好，因为前者的实现考虑了现代编译器和处理器的特性，执行效率更高。</p>
+
+<h2>2. 控制执行</h2>
+
+<p>如果每个工作单元都启动一个新线程执行，效率会太低。因此可以利用线程池来执行工作单元/任务。</p>
+
+<h3>任务建模</h3>
+
+<p>任务建模可以采用三种办法：Callable, Future接口和FutureTask类。</p>
+
+<h4>Callable接口</h4>
+
+<p>Callable接口代表一段可以调用并返回结果的代码，典型用法是匿名实现类：</p>
+
+<p>```java
+final MyObject obj = new MyObject();</p>
+
+<p>Callable<String> cb = new Callable<String>() {</p>
+
+<pre><code>public String call() throws Exception {
+    return obj.someMethod();
+}
+</code></pre>
+
+<p>};</p>
+
+<p>String s = cb.call();
+```</p>
+
+<h4>Future接口</h4>
+
+<p>Future接口用来表示异步任务。主要有三个方法：</p>
+
+<ul>
+<li>get()，获取结果，如果没执行完会阻塞，直到能取得结果。</li>
+<li>cancel()，在结束前取消。</li>
+<li>isDonw()，判断是否结束。</li>
+</ul>
+
+
+<p>```java
+interface ArchiveSearcher { String search(String target); }
+ class App {
+   ExecutorService executor = &hellip;
+   ArchiveSearcher searcher = &hellip;
+   void showSearch(final String target)</p>
+
+<pre><code>   throws InterruptedException {
+ Future&lt;String&gt; future
+   = executor.submit(new Callable&lt;String&gt;() {
+     public String call() {
+         return searcher.search(target);
+     }});
+ displayOtherThings(); // do other things while searching
+ try {
+   displayText(future.get()); // use future
+ } catch (ExecutionException ex) { cleanup(); return; }
+</code></pre>
+
+<p>   }
+ }
+```</p>
+
+<h4>FutureTask类</h4>
+
+<p>FutureTask类是Future接口的常用实现类，实现了Runnable接口，因此可以由执行者调度。它提供的方法基本是Future和Runnable接口的组合：get(), cancel(), isDone(), isCancelled()和run()。它还提供了两个很方便的构造器：一个以Callable为参数，另一个以Runnable为参数。</p>
+
+<p>```java
+FutureTask<String> future =</p>
+
+<pre><code>   new FutureTask&lt;String&gt;(new Callable&lt;String&gt;() {
+     public String call() {
+       return searcher.search(target);
+   }});
+</code></pre>
+
+<p>executor.execute(future);
+```</p>
+
+<h3>ScheduledThreadPoolExecutor(STPE)</h3>
+
+<p>STPE是Executors类工厂方法的众多执行者之一。它有以下特点：</p>
+
+<ul>
+<li>可以预定线程池大小，也可自适应</li>
+<li>所安排的任务可以定期执行，也可只运行一次。</li>
+</ul>
+
+
+<p>```java
+ScheduledExecutorService stpe = Executors.newScheduledThreadPool(2);</p>
+
+<p>final Runnable msgReader = new Runnable() {</p>
+
+<pre><code>public void run() {
+    //...
+}
+</code></pre>
+
+<p>};</p>
+
+<p>//每10毫秒唤醒一个线程。该线程可以尝试poll一个队列&hellip;
+ScheduledFuture&lt;?> hndl = stpe.scheduleAtFixedRate(msgReader, 10, 10, TimeUnit.MILLISECONDS);
+```</p>
+
+<h2>3.分支/合并框架</h2>
+
+<p>这是Java 7重点突出的框架之一，用于轻量级并发，实现线程池中任务的自动调度。</p>
+
+<p>先来看看之前的并发算法可能存在的问题。如果某个线程的运行队列都是小任务，而另一个全是大任务。那么小任务的线程可能会空闲很多。而基于Work-Stealing（工作窃取）算法的ForkJoin则可以很好地解决此问题。</p>
+
+<p><img src="/myresource/images/image_blog_2014-12-02-fork-join.GIF" alt="image" /></p>
+
+<ul>
+<li>分支/合并框架引入一种新的执行者服务，称为ForkJoinPool</li>
+<li>ForkJoinPool处理比线程更小的并发单元ForkJoinTask</li>
+<li>ForkJoinTask是一种由ForkJoinPool以更轻量化的方式所调度的抽象</li>
+<li>通常使用两种任务（尽管都表示为ForkJoinTask实例）：“小型”任务是无需耗费太多时间就可以直接执行的任务；“大型”任务是需要分解（可能多次分解）后再执行的任务。</li>
+</ul>
+
+
+<p>这个框架的关键特性之一就是这些轻量的任务都能生成新的ForkJoinTask实例，而这些实例将仍由执行它们父任务的线程池来安排调度。这就是分而治之。例如在归并算法中，就可以将左侧、右侧的排序任务视为一个ForkJoinTask，在递归过程中，不断产生小型任务执行。下面的示例是一个对微博按时间归并排序的例子：</p>
+
+<p>```java
+//RecursiveAction继承自ForkJoinTask<Void>
+public class MicroBlogUpdateSorter extends RecursiveAction {
+  private static final int SMALL_ENOUGH = 32;
+  private final Update[] updates;
+  private final int start, end;
+  private final Update[] result;</p>
+
+<p>  public MicroBlogUpdateSorter(Update[] updates_) {</p>
+
+<pre><code>this(updates_, 0, updates_.length);
+</code></pre>
+
+<p>  }</p>
+
+<p>  public MicroBlogUpdateSorter(Update[] upds<em>, int startPos</em>, int endPos_) {</p>
+
+<pre><code>start = startPos_;
+end = endPos_;
+updates = upds_;
+result = new Update[updates.length];
+</code></pre>
+
+<p>  }</p>
+
+<p>  private void merge(MicroBlogUpdateSorter left<em>, MicroBlogUpdateSorter right</em>) {</p>
+
+<pre><code>int i = 0;
+int lCt = 0;
+int rCt = 0;
+while (lCt &lt; left_.size() &amp;&amp; rCt &lt; right_.size()) {
+  result[i++] = (left_.result[lCt].compareTo(right_.result[rCt]) &lt; 0) ? left_.result[lCt++]
+      : right_.result[rCt++];
+}
+while (lCt &lt; left_.size())
+  result[i++] = left_.result[lCt++];
+while (rCt &lt; right_.size())
+  result[i++] = right_.result[rCt++];
+</code></pre>
+
+<p>  }</p>
+
+<p>  public int size() {</p>
+
+<pre><code>return end - start;
+</code></pre>
+
+<p>  }</p>
+
+<p>  public Update[] getResult() {</p>
+
+<pre><code>return result;
+</code></pre>
+
+<p>  }</p>
+
+<p>  @Override
+  protected void compute() {</p>
+
+<pre><code>  //如果数组太小，就用系统排序
+if (size() &lt; SMALL_ENOUGH) {
+  System.arraycopy(updates, start, result, 0, size());
+  Arrays.sort(result, 0, size());
+} else {
+  int mid = size() / 2;
+  MicroBlogUpdateSorter left = new MicroBlogUpdateSorter(updates, start,
+      start + mid);
+  MicroBlogUpdateSorter right = new MicroBlogUpdateSorter(updates, start
+      + mid, end);
+  invokeAll(left, right);
+  merge(left, right);
+}
+</code></pre>
+
+<p>  }</p>
+
+<pre><code>public static void main() {
+List&lt;Update&gt; lu = new ArrayList&lt;Update&gt;();
+String text = "";
+final Update.Builder ub = new Update.Builder();
+final Author a = new Author("Tallulah");
+
+for (int i = 0; i &lt; 256; i++) {
+  text = text + "X";
+  long now = System.currentTimeMillis();
+  lu.add(ub.author(a).updateText(text).createTime(now).build());
+  try {
+    Thread.sleep(1);
+  } catch (InterruptedException e) {
+  }
+}
+Collections.shuffle(lu);
+Update[] updates = lu.toArray(new Update[0]); // Avoid allocation by passing
+                                              // zero-sized array
+MicroBlogUpdateSorter sorter = new MicroBlogUpdateSorter(updates);
+ForkJoinPool pool = new ForkJoinPool(4);
+pool.invoke(sorter);
+
+for (Update u : sorter.getResult()) {
+  System.out.println(u);
+}
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>如果下面这些问题答案是肯定的，那么就适合于使用分支/合并框架：</p>
+
+<ul>
+<li>问题的子任务是否无需与其他子任务有显式的协作或同步也可以工作？</li>
+<li>子任务是不是不会对数据进行修改，只是经过计算得出结果？</li>
+<li>对于子任务来说，分而治之是不是很自然的事？子任务是不是会创建更多的子任务，而且它们要比派生出它们的任务粒度更细？</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Java NIO.2]]></title>
@@ -2178,365 +2501,6 @@ public static class ZipCompress {</p>
 <blockquote><p>jar cf myJarFile.jar *.class 创建jar文件，包含当前目录中的所有类文件，以及自动产生的清单文件</p>
 
 <p>jar cvf myApp.jar audio classes image 将三个子目录合并到myApp.jar中。</p></blockquote>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java并发编程（三）]]></title>
-    <link href="http://blog.ubone.com/blog/2014/09/02/javabing-fa-bian-cheng-san/"/>
-    <updated>2014-09-02T23:13:06+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/09/02/javabing-fa-bian-cheng-san</id>
-    <content type="html"><![CDATA[<p>本文是《Java编程思想》第21章并发的读书笔记。<a href="/blog/2014/08/30/javabing-fa-bian-cheng/">Java并发编程（一）</a>、<a href="/blog/2014/09/02/javabing-fa-er/">Java并发编程（二）</a></p>
-
-<!--more-->
-
-
-<h2>6. 新类库中的构件</h2>
-
-<p>java.util.concurrent引入的新类库，有助于编写更简单和健壮的并发程序。</p>
-
-<h2>6.1 CountDownLatch</h2>
-
-<p>用于同步一个或多个任务，强制它们等待由其他任务执行的一组操作完成。可以向CountDownLatch对象设置一初始值，任务在这个对象上调用wait()方法都将阻塞，直到计数值为0。其它任务结束工作时，可以调用countDown()来减少这个计数值。</p>
-
-<p>示例代码：</p>
-
-<p>```java
-public class LatchDemo {</p>
-
-<pre><code>private static class Latch implements Runnable {
-    private CountDownLatch latch;
-    Latch(CountDownLatch latch) {
-        this.latch = latch;
-    }
-
-    @Override
-    public void run() {
-        try {
-            doSomething();
-            System.out.println("Latch runing...");
-            TimeUnit.SECONDS.sleep(3);
-            System.out.println("Latch sleeped 3 seconds.");
-            //2. 当完成后，调用countDown()，将计数减1
-            latch.countDown();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void doSomething() {}
-}
-
-private static class LatchWaiter implements Runnable {
-    private CountDownLatch latch;
-    LatchWaiter(CountDownLatch latch) {
-        this.latch = latch;
-    }
-
-    @Override
-    public void run() {
-        try {
-            System.out.println("LatchWaiter waiting...");
-            //3. 一直等到latch的计数变为0
-            latch.await();
-            System.out.println("LatchWaiter exit wait...");
-        } catch (InterruptedException e) {
-            //todo
-        }
-    }
-
-    private void doOtherthing() {}
-}
-
-public static void main(String[] args) {
-    //1. 先赋一个值，例如1
-    CountDownLatch latch = new CountDownLatch(1);
-    ExecutorService exec = Executors.newCachedThreadPool();
-    exec.execute(new Latch(latch));
-    exec.execute(new LatchWaiter(latch));
-    exec.shutdown();
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>注意：CountDownLatch只会触发一次，计数值不能重置。</p>
-
-<h3>6.2 CyclicBarrier</h3>
-
-<p>CyclicBarrier适用于有一组任务，它们并行工作，直到它们全部完成后，才一起向前移动。与CountDownLatch只会触发一次不同，CyclicBarrier可以多次重用。</p>
-
-<p>```java
-public class CyclicBarrierDemo {</p>
-
-<pre><code>private static class Horse implements Runnable {
-    private CyclicBarrier barrier;
-    private String id;
-    private int stepCount = 0;
-    private static Random rand = new Random(5000);
-
-    Horse(String id, CyclicBarrier barrier) {
-        this.id = id;
-        this.barrier = barrier;
-    }
-
-    @Override
-    public void run() {
-        doSomething();
-        try {
-            while (!Thread.interrupted()) {
-                synchronized (this) {
-                    System.out.println(String.format("Thread %s is doing.",
-                            id));
-                    stepCount++;
-                    TimeUnit.MILLISECONDS.sleep(rand.nextInt(5000));
-                    System.out.println(String.format("Thread %s has done.",
-                            id));
-                }
-                // await：待所有线程都在这一步调用await方法。
-                barrier.await();
-            }
-        } catch (InterruptedException e) {
-            // ...
-        } catch (BrokenBarrierException e) {
-            // ...
-        }
-    }
-
-    private void doSomething() {
-    }
-
-    private int getStepCount() {
-        return stepCount;
-    }
-}
-
-public static void main(String[] args) {
-    final ExecutorService exec = Executors.newCachedThreadPool();
-    int threadCount = 3;
-    final Counter cycleCount = new Counter();
-
-    // 注意构造方法的参数
-    CyclicBarrier barrier = new CyclicBarrier(threadCount, new Runnable() {
-        @Override
-        public void run() {
-            // 当所有threadCount线程结束时，执行到这里。
-            System.out.println("All Thread has done." + cycleCount.count);
-            cycleCount.count++;
-            if (cycleCount.count == 2) {
-                exec.shutdownNow();
-            }
-        }
-    });
-    for (int i = 0; i &lt; threadCount; i++) {
-        exec.execute(new Horse(String.valueOf(i), barrier));
-    }
-}
-
-private static class Counter {
-    int count = 0;
-}
-</code></pre>
-
-<p>}</p>
-
-<p>/<em>output:
-Thread 1 is doing.
-Thread 2 is doing.
-Thread 0 is doing.
-Thread 1 has done.
-Thread 2 has done.
-Thread 0 has done.
-All Thread has done.0
-Thread 0 is doing.
-Thread 1 is doing.
-Thread 2 is doing.
-Thread 2 has done.
-Thread 1 has done.
-Thread 0 has done.
-All Thread has done.1
-</em>/
-```</p>
-
-<h3>6.3 DelayQueue</h3>
-
-<p>DelayQueue是一个无界的BlockingQueue，用于放置实现了Delayed接口的对象，其中的对象只能在其到期时才能从队列中取走。队列是有序的，延迟时间最长的对象最先取出。可以使用多种获取方法：poll(取出并从队列删除，不等待), take(取出并从队列删除，如果队列中还没有则等待), peek(取出但不从队列删除，不等待，可能会返回未过期的)，详细区别见JavaDoc。</p>
-
-<p>DelayQueue适合的场景包括：</p>
-
-<ol>
-<li>关闭空闲连接。服务器中，有很多客户端的连接，空闲一段时间之后需要关闭之。</li>
-<li>缓存。缓存中的对象，超过了空闲时间，需要从缓存中移出。</li>
-<li>任务超时处理。在网络协议滑动窗口请求应答式交互时，处理超时未响应的请求。</li>
-</ol>
-
-
-<h3>6.4 PriorityBlockingQueue</h3>
-
-<p>这是一个很基础的优先级队列，具有可阻塞的读取操作。放入该队列的对象实现Comparable接口就可以轻松实现优先级调度了，优先级越小则优先级越高。代码示例：</p>
-
-<p>```java
-PriorityBlockingQueue<Runnable> queue =</p>
-
-<pre><code>    new PriorityBlockingQueue&lt;Runnable&gt;();
-</code></pre>
-
-<p>ExecutorService exec = Executors.newCachedThreadPool();
-exec.execute(new Producer(queue, exec));
-exec.execute(new Consumer(queue));
-```</p>
-
-<h3>6.5 ScheduledExecutor</h3>
-
-<p>通过使用ScheduledExecutor.schedule()（运行一次任务）或者scheduleAtFixedRate()（每隔规则的时间重复执行任务），你可以将Runnable对象设置为在将来的某个时刻执行。代码示例：</p>
-
-<p>```java
-public class SheduledThreadDemo {</p>
-
-<pre><code>ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(10);
-
-public void repeat(Runnable event, long initialDelay, long period) {
-    scheduler.scheduleAtFixedRate(event, initialDelay, period, TimeUnit.SECONDS);
-}
-
-public void schedule(Runnable event, long delay) {
-    scheduler.schedule(event, delay, TimeUnit.SECONDS);
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>6.6 Semaphore</h3>
-
-<p>普通的锁（concurrent.locks或synchronized锁）在任何时刻都只允许一个任务访问一项资源，而<strong>计数信号量</strong>允许n个任务同时访问这个资源。作为一个示例，Pool是一个对象池，管理者数量有限的对象，要使用对象可以先签出，用完后再签入。</p>
-
-<p>Semaphore 可以很轻松完成信号量控制，Semaphore可以控制某个资源可被同时访问的个数，通过 acquire() 获取一个许可，如果没有就等待，而 release() 释放一个许可。比如在Windows下可以设置共享文件的最大客户端访问个数。</p>
-
-<p>Semaphore实现的功能就类似厕所有5个坑，假如有10个人要上厕所，那么同时只能有多少个人去上厕所呢？同时只能有5个人能够占用，当5个人中 的任何一个人让开后，其中等待的另外5个人中又有一个人可以占用了。另外等待的5个人中可以是随机获得优先机会，也可以是按照先来后到的顺序获得机会，这取决于构造Semaphore对象时传入的参数选项。单个信号量的Semaphore对象可以实现互斥锁的功能，并且可以是由一个线程获得了“锁”，再由另一个线程释放“锁”，这可应用于死锁恢复的一些场合。</p>
-
-<p>```java
-public class Pool<T> {</p>
-
-<pre><code>private int size;
-private List&lt;T&gt; items = new ArrayList&lt;T&gt;();
-private volatile boolean[] checkedOut; //跟踪被签出的对象
-private Semaphore available;
-
-public Pool(Class&lt;T&gt; classObject, int size) {
-    this.size = size;
-    checkedOut = new boolean[size];
-    available = new Semaphore(size, true); //size个许可，先进先出:true
-    for(int i = 0; i &lt; size; ++i) {
-        try {
-            //Assums a default constructor
-            items.add(classObject.newInstance());
-        } catch(Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-}
-
-public T checkOut() throws InterruptedException {
-    available.acquire(); //从Semaphore获取一个许可，如果没有将阻塞
-    return getItem();
-}
-
-public void checkIn(T x) {
-    if (releaseItem(x))
-        //释放一个permit，返回到Semaphore， 可用许可加1
-        available.release();
-}
-
-private synchronized T getItem() {
-    for(int i=0; i &lt; size; ++i) {
-        if (! checkedOut[i]) {
-            checkedOut[i] = true;
-            return items.get(i);
-        }
-    }
-
-    return null;
-}
-
-private synchronized boolean releaseItem(T item) {
-    int index = items.indexOf(item);
-    if (index == -1) return false;
-    if (checkedOut[index]) {
-        checkedOut[index] = false;
-        return true;
-    }
-
-    return false;
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>6.7 Exchanger</h3>
-
-<p>Exchanger用于实现两个人之间的数据交换，每个人在完成一定的事物后想与对方交换数据，第一个先拿出数据的人将一直等待第二个人拿着数据到来时，才能彼此交换数据。</p>
-
-<p>好比两个毒贩要进行交易，一手交money，一手交drug，不管谁先来到接头地点后，就处于等待状态了，当另外一方也到达接头地点时，两者的数据就立即交换了，然后就可以各忙各的了。</p>
-
-<p>示例代码如下和运行结果如下：</p>
-
-<p>```java
-public class ExchangerTest {</p>
-
-<pre><code>public static void main(String[] args) {
-    ExecutorService service = Executors.newCachedThreadPool();
-    final Exchanger&lt;String&gt; exchanger = new Exchanger&lt;String&gt;();
-    service.execute(new Runnable() {
-        public void run() {
-            try {
-                String data1 = "money";
-                System.out.println("线程"
-                        + Thread.currentThread().getName() 
-                        + "正在把数据" + data1 + "换出去");
-                Thread.sleep((long) (Math.random() * 10000));
-                String data2 = (String) exchanger.exchange(data1);
-                System.out.println("线程"
-                        + Thread.currentThread().getName() 
-                        + "换回数据为" + data2);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-    });
-    service.execute(new Runnable() {
-        public void run() {
-            try {
-                String data1 = "drug";
-                System.out.println("线程"
-                        + Thread.currentThread().getName() + "正在把数据"
-                        + data1 + "换出去");
-                Thread.sleep((long) (Math.random() * 10000));
-                String data2 = (String) exchanger.exchange(data1);
-                System.out.println("线程"
-                        + Thread.currentThread().getName() + "换回数据为"
-                        + data2);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-    });
-}
-</code></pre>
-
-<p>}</p>
-
-<p>/<em>* output:
-线程pool-1-thread-1正在把数据money换出去
-线程pool-1-thread-2正在把数据drug换出去
-线程pool-1-thread-2换回数据为money
-线程pool-1-thread-1换回数据为drug
-</em>/
-```</p>
 ]]></content>
   </entry>
   

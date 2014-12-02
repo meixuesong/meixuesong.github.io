@@ -9,11 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="序列生成器是常见的一个应用组件。Oracle数据库有Sequence，但不是所有数据库都有序列。本文尝试将单例模式、多例模式应用于序列生成器。采用了以下方式实现： 没有数据库的单例实现
-有数据库的单例实现
-有缓存的单例实现
-有缓存的多序列实现
-多序列的多例实现。 ">
+  <meta name="description" content="原型（Prototype）模式的用处是：对于给定的原型对象，用复制的方法创建出更多的同类型对象。之前学习的工厂方法模式常常需要有一个与产品等级相同的等级结构，而原型模式则不需要这样。Java语言天生就支持原型模式。原型模式的结构图如下： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +67,97 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/">设计模式: 原型（Prototype）模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-30T20:58:15+08:00" pubdate data-updated="true">2014-07-30</time>
+        
+           | <a href="/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>原型（Prototype）模式的用处是：对于给定的原型对象，用复制的方法创建出更多的同类型对象。之前学习的工厂方法模式常常需要有一个与产品等级相同的等级结构，而原型模式则不需要这样。Java语言天生就支持原型模式。原型模式的结构图如下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-30_21.10.50.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/29/she-ji-mo-shi-buildermo-shi/">设计模式:Builder模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-29T22:28:54+08:00" pubdate data-updated="true">2014-07-29</time>
+        
+           | <a href="/blog/2014/07/29/she-ji-mo-shi-buildermo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/29/she-ji-mo-shi-buildermo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Builder模式感觉没什么特别的，甚至都不值得称为一种模式。无非就是由Director构建部分，然后再使用一个方法完成构建过程。但Builder模式对于参数太多的构造器却非常有用。先看Builder模式的类图：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-29_22.38.17.png" alt="image" /></p>
+
+<p><a href="/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">这篇博客</a>建议当构造器参数比较多时，考虑使用Builder模式。这是一种非常优雅的方式。</p>
+
+<p>我觉得Builder模式的好处一是使客户端的代码很清晰，不需要那么多的set方法；二是实现了产品构建的原子性，也就是可以在build时，确保产品构建是有效的，如果某些部分或者参数有问题、冲突，就能够在build时失败，避免残次的半成品出现。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -452,96 +539,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/">Macbook Pro，送给自己的生日礼物</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-21T23:08:33+08:00" pubdate data-updated="true">2014-07-21</time>
-        
-           | <a href="/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>这台Macbook Pro配置还不错，8G RAM ＋ 256G SSD，用个5、6年应该没问题吧。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/19/archsummit-2014shen-zhen/">ArchSummit 2014深圳</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-19T21:10:46+08:00" pubdate data-updated="true">2014-07-19</time>
-        
-           | <a href="/blog/2014/07/19/archsummit-2014shen-zhen/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/19/archsummit-2014shen-zhen/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>InfoQ举办的全球架构师会议(ArchSummit 2014)18、19号在深圳万科国际会议中心举办。万科国际会议中心也是万科的总部所在地，建筑风格独特，在可持续发展和绿色节能方面具有很多尝试。参见<a href="http://baike.baidu.com/view/6272136.htm">百度百科</a>。</p>
-
-<p><img src="/myresource/images/archsummit201407/archsummit201407_IMG_1153.jpg" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/19/archsummit-2014shen-zhen/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/7">&larr; Older</a>
@@ -563,10 +560,18 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (19)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (20)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/01/javabing-fa-bian-cheng-si/">Java并发编程(四)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/01/javabing-fa-bian-cheng-(si-)/">Java并发编程（四）</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/11/23/java-nio-dot-2/">Java NIO.2</a>
@@ -578,14 +583,6 @@
     
       <li class="post">
         <a href="/blog/2014/11/17/bshu/">B树</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/16/dan-ci-cha-zhao-shu/">单词查找树</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/15/zi-fu-chuan-pai-xu/">字符串排序</a>
       </li>
     
   </ul>
