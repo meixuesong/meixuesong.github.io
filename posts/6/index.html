@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="原型（Prototype）模式的用处是：对于给定的原型对象，用复制的方法创建出更多的同类型对象。之前学习的工厂方法模式常常需要有一个与产品等级相同的等级结构，而原型模式则不需要这样。Java语言天生就支持原型模式。原型模式的结构图如下： ">
+  <meta name="description" content="Builder模式感觉没什么特别的，甚至都不值得称为一种模式。无非就是由Director构建部分，然后再使用一个方法完成构建过程。但Builder模式对于参数太多的构造器却非常有用。先看Builder模式的类图： 这篇博客建议当构造器参数比较多时，考虑使用Builder模式。这是一种非常优雅的方式 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,52 +67,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/">设计模式: 原型（Prototype）模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-30T20:58:15+08:00" pubdate data-updated="true">2014-07-30</time>
-        
-           | <a href="/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>原型（Prototype）模式的用处是：对于给定的原型对象，用复制的方法创建出更多的同类型对象。之前学习的工厂方法模式常常需要有一个与产品等级相同的等级结构，而原型模式则不需要这样。Java语言天生就支持原型模式。原型模式的结构图如下：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-30_21.10.50.jpg" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
   
   
     <article>
@@ -539,6 +493,50 @@
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/">Macbook Pro，送给自己的生日礼物</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-21T23:08:33+08:00" pubdate data-updated="true">2014-07-21</time>
+        
+           | <a href="/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>这台Macbook Pro配置还不错，8G RAM ＋ 256G SSD，用个5、6年应该没问题吧。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/posts/7">&larr; Older</a>
@@ -560,14 +558,10 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (21)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (20)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2014/12/03/hello/">Hello</a>
-      </li>
     
       <li class="post">
         <a href="/blog/2014/12/01/javabing-fa-bian-cheng-si/">Java并发编程(四)</a>
@@ -583,6 +577,10 @@
     
       <li class="post">
         <a href="/blog/2014/11/17/bshu/">B树</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/16/dan-ci-cha-zhao-shu/">单词查找树</a>
       </li>
     
   </ul>

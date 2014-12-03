@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-12-03T21:43:42+08:00</updated>
+  <updated>2014-12-03T21:49:51+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,15 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Hello]]></title>
-    <link href="http://blog.ubone.com/blog/2014/12/03/hello/"/>
-    <updated>2014-12-03T21:16:44+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/12/03/hello</id>
-    <content type="html"><![CDATA[<p>just a test!</p>
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[Java并发编程(四)]]></title>
@@ -1876,6 +1867,640 @@ balance -= amount;
 <h3>8.12 Replace Delegation with Inheritance</h3>
 
 <p>与上一个正好相反。如果你发现自己需要使用受托类中的所有函数，并且费了很大力气编写所有极简的委托函数，那么你可以考虑回头使用继承。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Java I/O]]></title>
+    <link href="http://blog.ubone.com/blog/2014/09/14/java-i-slash-o/"/>
+    <updated>2014-09-14T21:22:58+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/09/14/java-i-slash-o</id>
+    <content type="html"><![CDATA[<p>本文是《Java编程思想》第18章Java I/O系统的读书笔记。涉及Java I/O, NIO和压缩等内容。</p>
+
+<!--more-->
+
+
+<h2>1. File类</h2>
+
+<h3>1.1 目录列表器</h3>
+
+<p>下面的代码示例，通过正则表达式过滤并返回指定文件的下级列表：</p>
+
+<p>```java</p>
+
+<pre><code>public static String[] dirList(String path, final String ptn) {
+    File file = new File(path);
+    if (ptn == null || "".equals(ptn.trim())) {
+        return file.list();
+    }
+
+    FilenameFilter fnf = new FilenameFilter() {
+        private Pattern pattern = Pattern.compile(ptn);
+        @Override
+        public boolean accept(File dir, String name) {
+            return pattern.matcher(name).matches();
+        }
+    };
+
+    return file.list(fnf);
+}
+</code></pre>
+
+<p>```</p>
+
+<h3>1.2 目录实用工具</h3>
+
+<p>```java</p>
+
+<pre><code>public static File[] local(File dir, final String regex) {
+    return dir.listFiles(new FilenameFilter() {
+        private Pattern pattern = Pattern.compile(regex);
+
+        public boolean accept(File dir, String name) {
+            return pattern.matcher(new File(name).getName()).matches();
+        }
+    });
+}
+</code></pre>
+
+<p>以及File类的exists(), isDirectory(), isFile(), mkdirs(), delete(), renameTo()等方法。
+```</p>
+
+<h2>2. I/O流的典型使用方式</h2>
+
+<h3>2.1 缓冲输入文件</h3>
+
+<p>下面的例子适用于字符输入：</p>
+
+<p>```java
+public class BufferedInputFile {</p>
+
+<pre><code>// Throw exceptions to console:
+public static String read(String filename) throws IOException {
+    // Reading input by lines:
+    BufferedReader in = new BufferedReader(new FileReader(filename));
+    String s;
+    StringBuilder sb = new StringBuilder();
+    while ((s = in.readLine()) != null)
+        sb.append(s + "\n");
+    in.close();
+    return sb.toString();
+}
+
+public static void main(String[] args) throws IOException {
+    System.out.print(read("BufferedInputFile.java"));
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>2.2 从内存输入</h3>
+
+<p>在下面的示例中，从BufferedInputFile.read()读入的String结果被用来创建一个StringReader。然后调用read()每次读取一个字符：</p>
+
+<p>```java
+public static class MemoryInput {</p>
+
+<pre><code>public static void main(String[] args) throws IOException {
+    StringReader in = new StringReader(
+            BufferedInputFile.read("MemoryInput.java"));
+    int c;
+    while ((c = in.read()) != -1)
+        System.out.print((char) c);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>2.3 格式化的内存输入</h3>
+
+<p>```java
+DataInputStream in = new DataInputStream(</p>
+
+<pre><code>    new ByteArrayInputStream(
+            BufferedInputFile.read("FormattedMemoryInput.java")
+            .getBytes()));
+</code></pre>
+
+<p>in.readInt();
+in.readChar();</p>
+
+<p>DataInputStream in2 = new DataInputStream(</p>
+
+<pre><code>    new BufferedInputStream(
+            new FileInputStream("TestEOF.java")));                          
+</code></pre>
+
+<p>while (in.available() != 0)</p>
+
+<pre><code>System.out.print((char) in.readByte());
+</code></pre>
+
+<p>/<em>注意available()的工作方式会随着媒介类型的不同而不同。
+  表示“在没有阻塞的情况下所能读取的字节数”，
+  对于文件，这意味着整个文件，但不同类型的流可能不是这样。
+</em>/
+```</p>
+
+<h3>2.4 基本的文件输出</h3>
+
+<p>FileWriter可用于向文件写入数据，通常会用BufferedWriter将其包装。下例写入文本文件：</p>
+
+<p>```java
+PrintWriter out = new PrintWriter(</p>
+
+<pre><code>    new BufferedWriter(
+            new FileWriter("something.out")));
+</code></pre>
+
+<p>out.println(&ldquo;Hello!&rdquo;);
+out.close();</p>
+
+<p>//对于文本文件有快捷方式：
+PrintWriter out = new PrintWriter(file);
+out.println(&ldquo;Hello!&rdquo;);
+out.close();
+```</p>
+
+<h3>2.5 存储和恢复数据</h3>
+
+<p>```java
+public class StoringAndRecoveringData {
+  public static void main(String[] args)
+  throws IOException {</p>
+
+<pre><code>DataOutputStream out = new DataOutputStream(
+  new BufferedOutputStream(
+    new FileOutputStream("Data.txt")));
+out.writeDouble(3.14159);
+out.writeUTF("That was pi");
+out.writeDouble(1.41413);
+out.writeUTF("Square root of 2"); 
+out.close();
+DataInputStream in = new DataInputStream(
+  new BufferedInputStream(
+    new FileInputStream("Data.txt")));
+System.out.println(in.readDouble());
+// Only readUTF() will recover the
+// Java-UTF String properly:
+System.out.println(in.readUTF());
+System.out.println(in.readDouble());
+System.out.println(in.readUTF());
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<h3>2.6 读写随机访问文件</h3>
+
+<p>使用RandomAccessFile，类似于组合使用DataInputStream和DataOutputStream。它不支持装饰，所以不能与InputStream和OutputStream子类的任何部分组合起来。可以假定其已经被正确地缓冲。</p>
+
+<p>```java
+public class UsingRandomAccessFile {
+  static String file = &ldquo;rtest.dat&rdquo;;
+  static void display() throws IOException {</p>
+
+<pre><code>RandomAccessFile rf = new RandomAccessFile(file, "r");
+for(int i = 0; i &lt; 7; i++)
+  System.out.println(
+    "Value " + i + ": " + rf.readDouble());
+System.out.println(rf.readUTF());
+rf.close();
+</code></pre>
+
+<p>  }
+  public static void main(String[] args)
+  throws IOException {</p>
+
+<pre><code>RandomAccessFile rf = new RandomAccessFile(file, "rw");
+for(int i = 0; i &lt; 7; i++)
+  rf.writeDouble(i*1.414);
+rf.writeUTF("The end of the file");
+rf.close();
+display();
+rf = new RandomAccessFile(file, "rw");
+rf.seek(5*8);
+rf.writeDouble(47.0001);
+rf.close();
+display();
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<h2>3. NIO</h2>
+
+<p>新的I/O速度提升来自于所使用的结构更接近于操作系统执行I/O的方式：通道和缓冲器。我们只和缓冲器交互，并把缓冲器派送到通道。通道要么从缓冲器获得数据，要么向缓冲器发送数据。以下示例演示了三种类型的流，用以产生可写、可读可写以及可读的通道。</p>
+
+<p>```java
+public class GetChannel {</p>
+
+<pre><code>private static final int BSIZE = 1024;
+
+public static void main(String[] args) throws Exception {
+    // Write a file:
+    FileChannel fc = new FileOutputStream("/Users/mxs/Desktop/data.txt")
+            .getChannel();
+    fc.write(ByteBuffer.wrap("Some text ".getBytes()));
+    fc.close();
+    // Add to the end of the file:
+    fc = new RandomAccessFile("/Users/mxs/Desktop/data.txt", "rw")
+            .getChannel();
+    fc.position(fc.size()); // Move to the end
+    fc.write(ByteBuffer.wrap("Some more".getBytes()));
+    fc.close();
+    // Read the file:
+    fc = new FileInputStream("/Users/mxs/Desktop/data.txt").getChannel();
+    ByteBuffer buff = ByteBuffer.allocate(BSIZE);
+    fc.read(buff);
+    buff.flip();
+    while (buff.hasRemaining())
+        System.out.print((char) buff.get());
+}
+</code></pre>
+
+<p>} /<em>
+ * Output: Some text Some more
+ </em>/// :~</p>
+
+<p>```</p>
+
+<h3>3.1 转换数据</h3>
+
+<p>```java
+public class BufferToText {</p>
+
+<pre><code>private static final int BSIZE = 1024;
+
+public static void main(String[] args) throws Exception {
+    FileChannel fc = new FileOutputStream("/Users/mxs/Desktop/data2.txt").getChannel();
+    fc.write(ByteBuffer.wrap("Some text".getBytes()));
+    fc.close();
+    fc = new FileInputStream("/Users/mxs/Desktop/data2.txt").getChannel();
+    ByteBuffer buff = ByteBuffer.allocate(BSIZE);
+    fc.read(buff);
+    buff.flip();
+    // Doesn't work:
+    System.out.println(buff.asCharBuffer());
+    // Decode using this system's default Charset:
+    buff.rewind();
+    String encoding = System.getProperty("file.encoding");
+    System.out.println("Decoded using " + encoding + ": "
+            + Charset.forName(encoding).decode(buff));
+    // Or, we could encode with something that will print:
+    fc = new FileOutputStream("/Users/mxs/Desktop/data2.txt").getChannel();
+    fc.write(ByteBuffer.wrap("Some text".getBytes("UTF-16BE")));
+    fc.close();
+    // Now try reading again:
+    fc = new FileInputStream("/Users/mxs/Desktop/data2.txt").getChannel();
+    buff.clear();
+    fc.read(buff);
+    buff.flip();
+    System.out.println(buff.asCharBuffer());
+    // Use a CharBuffer to write through:
+    fc = new FileOutputStream("/Users/mxs/Desktop/data2.txt").getChannel();
+    buff = ByteBuffer.allocate(24); // More than needed
+    buff.asCharBuffer().put("Some text");
+    fc.write(buff);
+    fc.close();
+    // Read and display:
+    fc = new FileInputStream("/Users/mxs/Desktop/data2.txt").getChannel();
+    buff.clear();
+    fc.read(buff);
+    buff.flip();
+    System.out.println(buff.asCharBuffer());
+}
+</code></pre>
+
+<p>}
+/<em>
+ * Output: ???? Decoded using Cp1252: Some text Some text Some text
+ </em>/// :~
+```</p>
+
+<h3>3.2 获取基本类型</h3>
+
+<p>下面的示例演示了怎样插入和抽取各种数值：</p>
+
+<p>```java
+public class GetData {</p>
+
+<pre><code>private static final int BSIZE = 1024;
+
+public static void main(String[] args) {
+    ByteBuffer bb = ByteBuffer.allocate(BSIZE);
+    // Allocation automatically zeroes the ByteBuffer:
+    int i = 0;
+    while (i++ &lt; bb.limit())
+        if (bb.get() != 0)
+            print("nonzero");
+    print("i = " + i);
+    bb.rewind();
+    // Store and read a char array:
+    bb.asCharBuffer().put("Howdy!");
+    char c;
+    while ((c = bb.getChar()) != 0)
+        printnb(c + " ");
+    print();
+    bb.rewind();
+    // Store and read a short:
+    bb.asShortBuffer().put((short) 471142);
+    print(bb.getShort());
+    bb.rewind();
+    // Store and read an int:
+    bb.asIntBuffer().put(99471142);
+    print(bb.getInt());
+    bb.rewind();
+    // Store and read a long:
+    bb.asLongBuffer().put(99471142);
+    print(bb.getLong());
+    bb.rewind();
+    // Store and read a float:
+    bb.asFloatBuffer().put(99471142);
+    print(bb.getFloat());
+    bb.rewind();
+    // Store and read a double:
+    bb.asDoubleBuffer().put(99471142);
+    print(bb.getDouble());
+    bb.rewind();
+}
+</code></pre>
+
+<p>}</p>
+
+<p>/<em> Output:
+i = 1025
+H o w d y !
+12390
+99471142
+99471142
+9.9471144E7
+9.9471142E7
+</em>///:~
+```</p>
+
+<h3>3.3 视图缓冲器</h3>
+
+<p>视图缓冲器（View buffer）可以让我们通过某个特定的基本数据类型的视窗查看其底层的ByteBuffer。</p>
+
+<p>```java
+public class IntBufferDemo {
+  private static final int BSIZE = 1024;
+  public static void main(String[] args) {</p>
+
+<pre><code>ByteBuffer bb = ByteBuffer.allocate(BSIZE);
+IntBuffer ib = bb.asIntBuffer();
+// Store an array of int:
+ib.put(new int[]{ 11, 42, 47, 99, 143, 811, 1016 });
+// Absolute location read and write:
+System.out.println(ib.get(3));
+ib.put(3, 1811);
+// Setting a new limit before rewinding the buffer.
+ib.flip();
+while(ib.hasRemaining()) {
+  int i = ib.get();
+  System.out.println(i);
+}
+</code></pre>
+
+<p>  }
+} /<em> Output:
+99
+11
+42
+47
+1811
+143
+811
+1016
+</em>///:~
+```</p>
+
+<p>```java
+public class ViewBuffers {
+  public static void main(String[] args) {</p>
+
+<pre><code>ByteBuffer bb = ByteBuffer.wrap(
+  new byte[]{ 0, 0, 0, 0, 0, 0, 0, 'a' });
+bb.rewind();
+printnb("Byte Buffer ");
+while(bb.hasRemaining())
+  printnb(bb.position()+ " -&gt; " + bb.get() + ", ");
+print();
+CharBuffer cb =
+  ((ByteBuffer)bb.rewind()).asCharBuffer();
+printnb("Char Buffer ");
+while(cb.hasRemaining())
+  printnb(cb.position() + " -&gt; " + cb.get() + ", ");
+print();
+FloatBuffer fb =
+  ((ByteBuffer)bb.rewind()).asFloatBuffer();
+printnb("Float Buffer ");
+while(fb.hasRemaining())
+  printnb(fb.position()+ " -&gt; " + fb.get() + ", ");
+print();
+IntBuffer ib =
+  ((ByteBuffer)bb.rewind()).asIntBuffer();
+printnb("Int Buffer ");
+while(ib.hasRemaining())
+  printnb(ib.position()+ " -&gt; " + ib.get() + ", ");
+print();
+LongBuffer lb =
+  ((ByteBuffer)bb.rewind()).asLongBuffer();
+printnb("Long Buffer ");
+while(lb.hasRemaining())
+  printnb(lb.position()+ " -&gt; " + lb.get() + ", ");
+print();
+ShortBuffer sb =
+  ((ByteBuffer)bb.rewind()).asShortBuffer();
+printnb("Short Buffer ");
+while(sb.hasRemaining())
+  printnb(sb.position()+ " -&gt; " + sb.get() + ", ");
+print();
+DoubleBuffer db =
+  ((ByteBuffer)bb.rewind()).asDoubleBuffer();
+printnb("Double Buffer ");
+while(db.hasRemaining())
+  printnb(db.position()+ " -&gt; " + db.get() + ", ");
+</code></pre>
+
+<p>  }
+}
+/<em> Output:
+Byte Buffer 0 &ndash;> 0, 1 &ndash;> 0, 2 &ndash;> 0, 3 &ndash;> 0, 4 &ndash;> 0, 5 &ndash;> 0, 6 &ndash;> 0, 7 &ndash;> 97,
+Char Buffer 0 &ndash;>  , 1 &ndash;>  , 2 &ndash;>  , 3 &ndash;> a,
+Float Buffer 0 &ndash;> 0.0, 1 &ndash;> 1.36E-43,
+Int Buffer 0 &ndash;> 0, 1 &ndash;> 97,
+Long Buffer 0 &ndash;> 97,
+Short Buffer 0 &ndash;> 0, 1 &ndash;> 0, 2 &ndash;> 0, 3 &ndash;> 97,
+Double Buffer 0 &ndash;> 4.8E-322,
+</em>///:~
+```</p>
+
+<h3>3.4 用缓冲器操纵数据</h3>
+
+<p><img src="/myresource/images/image_blog_20140916_001220.jpg" alt="image" /></p>
+
+<h3>3.5 缓冲器的细节</h3>
+
+<p>Buffer由数据和四个索引组成：mark, position, limit, capacity。相关的方法：</p>
+
+<ul>
+<li>capacity() 返回缓冲区容量。</li>
+<li>clear() 清空缓冲区，position设置为0，limit设置为容量。</li>
+<li>flip() 将limit设置为position, position设置为0.用于准备从缓冲区读取已经写入的数据。</li>
+<li>limit() 返回limit值。</li>
+<li>limit(int lim) 设置limit值。</li>
+<li>mark() 将mark设置为position。</li>
+<li>position() 返回position值。</li>
+<li>position(int pos) 设置position值。</li>
+<li>remaining() 返回（limit &ndash; position）。</li>
+<li>hasRemaining() 若有介于position和limit之间的元素，则返回true。</li>
+</ul>
+
+
+<h3>3.6 内存映射文件</h3>
+
+<p>它帮助我们创建和修改那些因为太大而不能放入内存的文件。以了它，我们可以假定整个文件都放在内存中，而且可以完全把它当作非常大的数组来访问。映射文件访问往往可以显著地加快速度。</p>
+
+<p>```java
+public class LargeMappedFiles {
+  static int length = 0x8FFFFFF; // 128 MB
+  public static void main(String[] args) throws Exception {</p>
+
+<pre><code>MappedByteBuffer out =
+  new RandomAccessFile("test.dat", "rw").getChannel()
+  .map(FileChannel.MapMode.READ_WRITE, 0, length);
+for(int i = 0; i &lt; length; i++)
+  out.put((byte)'x');
+print("Finished writing");
+for(int i = length/2; i &lt; length/2 + 6; i++)
+  printnb((char)out.get(i));
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<h3>3.7 文件加锁</h3>
+
+<p>```java
+public class FileLocking {
+  public static void main(String[] args) throws Exception {</p>
+
+<pre><code>FileOutputStream fos= new FileOutputStream("file.txt");
+FileLock fl = fos.getChannel().tryLock(); //获得锁
+if(fl != null) {
+  System.out.println("Locked File");
+  TimeUnit.MILLISECONDS.sleep(100);
+  fl.release();  //释放锁
+  System.out.println("Released Lock");
+}
+fos.close();
+</code></pre>
+
+<p>  }
+} /<em> Output:
+Locked File
+Released Lock
+</em>///:~
+```</p>
+
+<p>FileChannel调用tryLock()或lock()，可以获得整个文件的FileLock。（SocketChannel, DatagramChannel和ServerSocketChannel不需要加锁）。tryLock()是非阻塞式的，如果不能获得锁将直接返回。lock()是阻塞式的，它将阻塞进程直到获得锁。</p>
+
+<p>也可以锁一部分：</p>
+
+<p>```java
+tryLock(long position, long size, boolean shared)
+或
+lock(long position, long size, boolean shared)</p>
+
+<p>加锁的区域由size &ndash; position决定。shared表示是否是共享锁
+```</p>
+
+<h2>4. 压缩</h2>
+
+<h3>4.1 Zip压缩和解压缩</h3>
+
+<p>```java
+public static class ZipCompress {</p>
+
+<pre><code>public static void main(String[] args) throws IOException {
+    FileOutputStream f = new FileOutputStream("test.zip");
+    CheckedOutputStream csum = new CheckedOutputStream(f, new Adler32());
+    ZipOutputStream zos = new ZipOutputStream(csum);
+    BufferedOutputStream out = new BufferedOutputStream(zos);
+    zos.setComment("A test of Java Zipping");
+    // No corresponding getComment(), though.
+    for (String arg : args) {
+        print("Writing file " + arg);
+        BufferedReader in = new BufferedReader(new FileReader(arg));
+        zos.putNextEntry(new ZipEntry(arg));
+        int c;
+        while ((c = in.read()) != -1)
+            out.write(c);
+        in.close();
+        out.flush();
+    }
+    out.close();
+    // Checksum valid only after the file has been closed!
+    print("Checksum: " + csum.getChecksum().getValue());
+    // Now extract the files:
+    print("Reading file");
+    FileInputStream fi = new FileInputStream("test.zip");
+    CheckedInputStream csumi = new CheckedInputStream(fi, new Adler32());
+    ZipInputStream in2 = new ZipInputStream(csumi);
+    BufferedInputStream bis = new BufferedInputStream(in2);
+    ZipEntry ze;
+    while ((ze = in2.getNextEntry()) != null) {
+        print("Reading file " + ze);
+        int x;
+        while ((x = bis.read()) != -1)
+            System.out.write(x);
+    }
+    if (args.length == 1)
+        print("Checksum: " + csumi.getChecksum().getValue());
+    bis.close();
+    // Alternative way to open and read Zip files:
+    ZipFile zf = new ZipFile("test.zip");
+    Enumeration e = zf.entries();
+    while (e.hasMoreElements()) {
+        ZipEntry ze2 = (ZipEntry) e.nextElement();
+        print("File: " + ze2);
+        // ... and extract the data as before
+    }
+    /* if(args.length == 1) */
+}
+</code></pre>
+
+<p>} /<em> (Execute to see output) </em>/// :~
+```</p>
+
+<h3>4.2 Java档案文件</h3>
+
+<p>Jar文件也是zip格式，jar命令如下：</p>
+
+<blockquote><p>jar [options] destination [manifest] inputfile(s)</p></blockquote>
+
+<p>options:
+* c 创建一个新的或空的压缩文档
+* t 列出目录表
+* x 解压所有文件
+* x file 解压该文件
+* f 意指“我打算指定一个文件名”
+* m 表示第一个参数将是用户自建的清单文件的名字
+* O 只储存文件，不压缩文件
+* M 不自动创建文件清单</p>
+
+<p>常用命令：</p>
+
+<blockquote><p>jar cf myJarFile.jar *.class 创建jar文件，包含当前目录中的所有类文件，以及自动产生的清单文件</p>
+
+<p>jar cvf myApp.jar audio classes image 将三个子目录合并到myApp.jar中。</p></blockquote>
 ]]></content>
   </entry>
   
