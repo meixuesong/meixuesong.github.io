@@ -1,21 +1,24 @@
 * + table {
   border-style:solid;
   border-width:1px;
-  border-color:#e7e3e7;
+  border-color:#bbb;
+  margin-bottom: 0.5em;
 }
 
 * + table th, * + table td {
-  border-style:dashed;
+  border-style:solid;
   border-width:1px;
-  border-color:#e7e3e7;
-  padding-left: 3px;
-  padding-right: 3px;
+  border-color:#bbb;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-size: 0.8em;
 }
 
 * + table th {
+  text-align: center;
   border-style:solid;
   font-weight:bold;
-  background: url("/images/noise.png?1330434582") repeat scroll left top #F7F3F7;
+  background: url("/images/noise.png?1330434582") repeat scroll left top #DDD;
 }
 
 * + table th[align="left"], * + table td[align="left"] {

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Others | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/others/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-10-04T12:17:39+08:00</updated>
+  <updated>2014-12-03T21:34:49+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,184 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[发布两款自用的GAE应用]]></title>
+    <link href="http://blog.ubone.com/blog/2014/10/27/fa-bu-liang-kuan-zi-yong-de-gaeying-yong/"/>
+    <updated>2014-10-27T22:58:19+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/10/27/fa-bu-liang-kuan-zi-yong-de-gaeying-yong</id>
+    <content type="html"><![CDATA[<p>今天正式公开我的两款GAE(Google App Engine)应用：RSS2EPUB和背单词应用。供有需要的朋友使用。</p>
+
+<!--more-->
+
+
+<h2>RSS2EPUB/MOBI</h2>
+
+<p>RSS2EPUB用于将RSS订阅全文转换成Epub或者MOBI格式，每天推送至邮箱或Kindle等阅读器。开发这款应用的目的主要是想专注于阅读，少一些网络的干扰。使用说明见：<a href="https://github.com/meixuesong/rss2epub">https://github.com/meixuesong/rss2epub</a></p>
+
+<p>网址：<a href="rss2epub.appspot.com">http://rss2epub.appspot.com</a></p>
+
+<h2>背单词</h2>
+
+<p>背单词应用是我数年前开发的一款应用，也是第一次使用GAE。之后对页面升级改造过一次。这个应用提供了“词典”和“我的生词本”功能。词典内容来源于Collins英语学习词典和Collins英汉双解词典，并按四、六级和专四、专八进行了分类。系统按照记忆曲线列出您每天应该复习的单词。另外例句默写是非常有效的强化记忆功能，系统自动列出单词的所有例句，将单词空出来，默写完后可以检查答案。</p>
+
+<p>网址：<a href="http://enubone.appspot.com">http://enubone.appspot.com</a></p>
+
+<h2>注</h2>
+
+<p>这两个应用都部署在Google的云上，所以需要翻墙才能使用。翻墙是我等这么多年练出的拿手绝活，应该不在话下。</p>
+
+<p>GAE与几年前相比，不论是功能还是文档都有了长足进步，现在上手已经很简单了，最关键是免费，并且从GAE访问国外资源不会被墙。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[终于完成RSS2EPUB的项目]]></title>
+    <link href="http://blog.ubone.com/blog/2014/10/18/zhong-yu-wan-cheng-rss2epubde-xiang-mu/"/>
+    <updated>2014-10-18T22:37:33+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/10/18/zhong-yu-wan-cheng-rss2epubde-xiang-mu</id>
+    <content type="html"><![CDATA[<p>国庆期间，自从10月5日完成博客转EPUB电子书后，脑子突然短路，是不是可以把RSS订阅的内容也自动转成EPUB电子书呢？然后就没停下来，利用业余时间终于完成了，各项功能基本完善！</p>
+
+<p>这个项目运行于GAE平台，接受用户订阅，然后每天把最新内容生成电子书发邮件给用户。</p>
+
+<p>运行于GAE平台的好处是直接使用Google的云服务，特别是邮件服务和图片服务非常棒！但坏处是Google被墙，国内无法直接访问。所以又开发了邮件订阅的方法。总体来说效果不错！</p>
+
+<p>项目地址：<a href="http://rss2epub.appspot.com/">http://rss2epub.appspot.com</a></p>
+
+<p>使用方法参考：<a href="https://github.com/meixuesong/rss2epub">RSS2EPUB</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[基于Jekyll(Octopress)将博客生成EPUB和Mobi电子书]]></title>
+    <link href="http://blog.ubone.com/blog/2014/10/05/ji-yu-jekyll-sheng-cheng-dian-zi-shu/"/>
+    <updated>2014-10-05T21:03:50+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/10/05/ji-yu-jekyll-sheng-cheng-dian-zi-shu</id>
+    <content type="html"><![CDATA[<p>采用Octopress，基于Jekyll，<a href="/blog/2014/06/25/zai-githubshang-xie-bo-ke/">在GitHub上写博客</a>已经快一年了。随着博客的增多，有了一个想法，如果能将这些博客整理成册，变成电子书放入Kindle，有空时温习一下，那该多好。今天进行了尝试，效果还不错。</p>
+
+<!--more-->
+
+
+<p>Kindle默认支持的电子书格式是Mobi，但开源软件很少支持这种格式。电子书格式最普及的还是EPUB，而Amazon提供了从EPUB转为Mobi的支持。因此我们的第一步是将博客转换成EPUB格式的电子书。</p>
+
+<h2>1. 准备工作</h2>
+
+<p>在Github上找到了一个项目<a href="https://github.com/lmullen/jekyll-ebook">Jekyll E-book</a>，支持将Jekyll博客转换成EPUB电子书。按照其说明，以管理员身份安装：</p>
+
+<p><code>bash
+gem install jekyll-ebook
+</code></p>
+
+<p>然后安装Pandoc，打开<a href="https://github.com/jgm/pandoc/releases">下载页面</a>，下载相应系统的安装包，安装完成后，确保命令能够识别：</p>
+
+<p><code>bash
+pandoc --version
+</code></p>
+
+<p>现在就可以开始准备生成EPUB电子书了。需要先定义这本书的标题等信息，以及书中包括哪些博客。这些信息都保存在manifest.yml中，这是一个YAML格式的文件。分两部分说明这个文件的内容，我们先看第一部分：文件的定义。</p>
+
+<p><code>yaml
+title: meixuesong blog
+author: Jason Mei
+date: October 2014
+epub-filename: /Users/mxs/Documents/jasonblog.epub
+epub-cover-image: myresource/epub/cover.jpg
+epub-stylesheet: myresource/epub/stylesheet.css
+epub-metadata: myresource/epub/metadata.xml
+epub-dir: /Users/mxs/Documents/blog/
+header-items:
+- title: meixuesong blog
+- author: meixuesong
+- author-note: na
+- citation: na
+</code></p>
+
+<p>其中要注意的是路径，<code>epub-dir</code>是博客资源的根路径，其中文件夹如<code>epub-cover-image</code>, <code>epub-stylesheet</code>和<code>epub-metadata</code>都是相对根路径的相对路径。<code>metadata.xml</code>是EPUB文件所需的文件，可以是个空文件。为了美观，我们稍微修改了stylesheet.css：</p>
+
+<p><code>css
+/*stylesheet.css*/
+body { margin: 5%; text-align: justify; font-size: medium; }
+code { font-family: monospace; font-size:0.75em;}
+h1 { text-align: center; margin:0px; padding:0px;font-size:1.5em; border-bottom: black solid 1px;}
+h2 { text-align: left; margin:0px; padding:0px;font-size:1.2em;}
+h3 { text-align: left; margin:0px; padding:0px;font-size:1.1em;}
+h4 { text-align: left; margin:0px; padding:0px; font-size:1em;}
+h5 { text-align: left; }
+h6 { text-align: left; }
+h1.title { }
+h2.author { }
+h3.date { }
+ol.toc { padding: 0; margin-left: 1em; }
+ol.toc li { list-style-type: none; margin: 0; padding: 0; }
+</code></p>
+
+<p>开始定义第二部分，章节定义。这部分比较简单，就是定义书中包含哪几章，名字是什么，每章包括哪些博客。示例如下：</p>
+
+<p>```
+content-dir: _posts/   #博客所在的相对路径
+contents:
+  &ndash; section-title: Articles   #章节名称</p>
+
+<pre><code>files:                    #该章以下包括哪些内容
+- article1.markdown
+- article2.markdown
+</code></pre>
+
+<ul>
+<li>section-title: Reviews
+files:
+
+<ul>
+<li>review.markdown
+```</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>2. 生成EPUB电子书</h2>
+
+<p>完成<code>manifest.yml</code>的定义之后，就可以开始生成电子书了：</p>
+
+<p><code>bash
+jekyll-ebook manifest.yml
+</code></p>
+
+<p>EPUB电子书就这样生成了，字体完美，甚至还有代码高亮显示功能，电子书的目录默认显示到第三级，在Kindle上看显得多了，需要改为只显示第1级，即目录只显示文章标题，而不用详细到每章的<code>h3</code>级内容。另外图片显示不正常，应该是路径不正确。</p>
+
+<p>先来解决第一个问题，将目录级别改为只显示第1级标题。可以修改文件<code>ebook.rb</code>，在Mac OSX下，这个文件位于：</p>
+
+<p>```ruby</p>
+
+<h1>文件路径：</h1>
+
+<p>/Library/Ruby/Gems/2.0.0/gems/jekyll-ebook-0.0.2/lib/jekyll-ebook/ebook.rb</p>
+
+<h1>修改代码，加上：'toc-depth' => 1,</h1>
+
+<p>PandocRuby.new( self.generate_content ,</p>
+
+<pre><code>               {:f =&gt; :markdown, :to =&gt; :epub},
+               'smart', 'o' =&gt; self.manifest['epub-filename'],
+               'toc-depth' =&gt; 1,
+</code></pre>
+
+<p>```</p>
+
+<p>再来解决图片不显示的问题。该问题主要是因为写博客时，图片的地址为<code>/myresource/images/</code>，因此在生成电子书无法找到这个绝对路径。解决办法使用<code>ln</code>命令在根文件夹下建立一个符号连接myresource，Windows下好像是<code>mklink</code>命令。重新生成电子书，问题解决。</p>
+
+<p>现在，我们的EPUB电子书通过Kindle多看系统阅读已经非常完美了。接下来我们尝试一下Mobi格式的电子书。</p>
+
+<h2>3. 生成Mobi电子书</h2>
+
+<p>Amazon提供了一个工具包<a href="http://www.amazon.com/gp/feature.html?docId=1000765211">KindleGen</a>。该工具可以将html、EPUB等转换成Mobi格式。下载解压缩后，就可以执行命令转换了：</p>
+
+<p><code>bash
+./kindlegen -locale zh aaa.epub
+</code>
+分别在原生Kindle和多看系统下查看这个mobi电子书，整体效果还是不错的，但是相比EPUB来说，还是差了那么一点点。例如h1到h3的标题下方空白的内容太多，也就是CSS中的margin-bottom值太大，但不论怎么修改，Mobi格式的显示效果好像都没有变化。最后还是选择继续使用多看系统，阅读EPUB格式的电子书。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[在GitHub上写博客]]></title>

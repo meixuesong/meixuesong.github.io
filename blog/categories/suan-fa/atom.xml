@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 算法 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/suan-fa/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-10-04T12:17:39+08:00</updated>
+  <updated>2014-12-03T21:34:49+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -14,211 +14,1437 @@
 
   
   <entry>
-    <title type="html"><![CDATA[无向图]]></title>
-    <link href="http://blog.ubone.com/blog/2014/10/03/wu-xiang-tu/"/>
-    <updated>2014-10-03T18:18:44+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/10/03/wu-xiang-tu</id>
-    <content type="html"><![CDATA[<p>无向图由一组顶点(Vertex)和一组能够将两个顶点相连的边(Edge)组成。本章学习无向图的邻接表实现，以及相关的搜索和应用，例如深度优先和广度优先搜索，路径查找和最短路径计算，连通分量和符号图。</p>
+    <title type="html"><![CDATA[B树]]></title>
+    <link href="http://blog.ubone.com/blog/2014/11/17/bshu/"/>
+    <updated>2014-11-17T21:44:42+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/11/17/bshu</id>
+    <content type="html"><![CDATA[<p>B树就是B-树，英语原文为B-Tree，但不知道以前的翻译为何要翻译成B-树。它是对平衡树的扩展，支持对保存在磁盘或网络上的符号表进行外部查找。只需要4～5个指向一小块数据的引用就可以支持在含有数百亿或者更多元素的符号表中进行查找和插入操作。</p>
 
 <!--more-->
 
 
-<h2>1. 术语</h2>
+<h2>1. B树</h2>
 
-<p>v-w表示连接v和w的边。自环和平行边是两种特殊的图。<strong>自环</strong>即一条连接一个顶点和其自身的边；<strong>平行边</strong>是连接同一对顶点的两条边。含有平行边的图称为多重图，没有平行边和自环的图称为<strong>简单图</strong>。</p>
+<p>B树与2-3树的关键不同在于，数据不会保存在树中，而是会构造一棵由键的副本组成的树。每个副本都关联着一条链接。这种方式能够更加方便地将索引和符号表本身分开。与2-3树一样，也限制了“键-链接”对的上下数量界限。对于M阶B树，每个结点最多含有M-1对键和链接，最少含有M/2对键和链接。根结点例外，可以含有少于M/2对键和链接，但不能少于2对。M必须是正偶数。</p>
 
-<p>当两个顶点通过一条边相连时，这两个顶点是<strong>相邻的</strong>。某个顶点的<strong>度数(Degree)</strong>即为依附于它的边的总数。<strong>子图</strong>是由一幅图的所有边的一个子集（以及它们所依附的所有顶点）组成的图。</p>
+<p>“页”表示一块连续的数据，用“探查”表示访问一个页。一个页可能是本地计算机上的一个文件，也可能是另一计算机上的一网页等等。对于B树，使用两种不同类型的结点：</p>
 
-<p>在图中，<strong>路径</strong>是由边顺序连接的一系列顶点。<strong>简单路径</strong>是一条没有重复顶点的路径。<strong>环</strong>是一条至少含有一条边，并且起点和终点相同的路径。<strong>简单环</strong>是一条（除了起点和终点必须相同之外）不含有重复顶点和边的环。路径或环的<strong>长度</strong>为其中所包含的边数。</p>
-
-<p>如果从任意一个顶点都存在一条路径到达另一个任意顶点，这幅图就是<strong>连通图</strong>。一幅非连通的图由若干连通的部分组成，它们都是其极大连通子图。</p>
-
-<p>树是一幅无环(Acyclic)连通图。互不相连的树组成的集合称为<strong>森林</strong>。连通图的<strong>生成树</strong>是它的一幅子图，它含有图中的所有顶点且是一棵树。图的<strong>生成树森林</strong>是它的所有连通子图的生成树的集合。</p>
-
-<p>当且仅当一幅含有V个顶点的图G满足下列5个条件之一时，它就是一棵树：</p>
-
-<ul>
-<li>G有V-1条边且不含有环；</li>
-<li>G有V-1条边且是连通的；</li>
-<li>G是连通的，但删除任意一条边都会使它不再连通；</li>
-<li>G是无环图，但添加任意一条边都会产生一条环；</li>
-<li>G中的任意一对顶点之间仅存在一条简单路径。</li>
-</ul>
+<ol>
+<li>内部结点：含有与页相关联的键的副本。</li>
+<li>外部结点：含有指向实际数据的引用。</li>
+</ol>
 
 
-<h2>2. API</h2>
+<p>内部结点中的每个键都与一个结点相关联，以此结点为根的子树中，所有的键都大于等于与此结点关联的键，但小于原内部结点中的更大的键（如果存在的话）。为了描述方便，使用一个特殊的哨兵键“*”，它小于其他所有键。一开始B树只有一个根结点，并且根结点只有哨兵键。同时符号表不含有重复键，但B树中会使用键的多个副本来引导查找。一棵B树如下图所示：</p>
 
-<p>先看一份定义了无向图的基本操作的API：</p>
+<p><img src="/myresource/images/image_blog_2014-11-17-btree.jpg" alt="image" /></p>
 
-<p><img src="/myresource/images/image_blog_2014-10-04_graph-api.png" alt="image" /></p>
+<h2>2. 查找与插入</h2>
+
+<p>B树中查找的方法是在可能含有被查找键的唯一子树中进行递归搜索。当且仅当被查找的键包含在集合中时，每次查找便会结束于一个外部结点。在内部结点中遇到被查找的键的副本时就判断查找命中并结束，但总会找到相应的外部结点。</p>
+
+<p>在查找时，从根结点开始，根据被查找的键选择当前结点中的适当区间并根据适当的链接从一个结点移动到下一个结点。最终，查找过程会到达树底的一个含有键的页。如果被查找的键在该页中，查找命中并结束；如果不在，则查找未命中。</p>
+
+<p>和2-3树一样，要在树的底部插入一个新键，可以使用递归代码。如果空间不足，那么可以允许被插入的结点暂时“溢出”（也就是利用最后一个结点），并在递归调用后向上不断分裂结点，直到根结点。如果根结点也溢出就把它分裂成两个结点。如下图所示：</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-17-btreeinsert.jpg" alt="image" /></p>
+
+<h2>3. 数据表示与实现</h2>
+
+<p>我们将B树结点的表示方法及其操作封装在Page API中。它可以关联键与指向Page对象的链接，支持检测页是否溢出、分裂页并区分内部页和外部页的操作。可以将Page看作一张符号表，但是是保存在外部介质上。Page<Key> API定义如下：</p>
+
+<table>
+<thead>
+<tr>
+<th>方法 </th>
+<th> 说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Page(boolean bottom) </td>
+<td> 创建并打开一个页</td>
+</tr>
+<tr>
+<td>void close() </td>
+<td> 关闭页</td>
+</tr>
+<tr>
+<td>void add(Key key) </td>
+<td> 将键插入（外部的）页中</td>
+</tr>
+<tr>
+<td>void add(Page p) </td>
+<td> 打开p，向这个（内部）而中插入一个条目，并将p和p中的最小键相关联</td>
+</tr>
+<tr>
+<td>boolean isExternal() </td>
+<td> 这是一个外部页吗</td>
+</tr>
+<tr>
+<td>boolean contains(Key key) </td>
+<td> 键key在页中吗</td>
+</tr>
+<tr>
+<td>Page next(Key key) </td>
+<td> 可能含有键key的子树</td>
+</tr>
+<tr>
+<td>boolean isFull() </td>
+<td> 页是否已经溢出</td>
+</tr>
+<tr>
+<td>Page split() </td>
+<td> 将较大的中间键移动到一个新页中</td>
+</tr>
+<tr>
+<td>Iterable<Key> keys() </td>
+<td> 页中所有键的迭代器</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>open和close操作是指将外部页读入内存和将内存内容写加外部页（如果需要的话）的过程。</p>
+
+<p>内部页的add方法是一个符号表操作，将给定页和以该页为根结点的子树中的最小键关联起来。外部页的add和contains方法和SET中相应的方法类似。</p>
+
+<p>最重要的是split方法，分裂一张饱和页时，将排序后位置正好大于M/2的键移动到一个新的Page对象中，并返回该对象的引用。</p>
+
+<p>有了Page，B树集合的实现就简单了：</p>
 
 <p>```java
-//////////////////常用的图处理代码//////////////////</p>
+public class BTreeSET<Key extends Comparable<Key>> {</p>
 
-<p>//计算v的度数
-public static int degree(Graph G, int v) {</p>
+<pre><code>private Page root = new Page(true);
 
-<pre><code>int degree = 0;
-for(int w: G.adj(v)) degree++;
-return degree;
-</code></pre>
+public BTreeSET(Key sentinel) {
+    add(sentinel);
+}
 
-<p>}</p>
+public boolean contains(Key key) {
+    return contains(root, key);
+}
 
-<p>//计算所有顶点的最大度数
-public static int maxDegree(Graph G) {</p>
+private boolean contains(Page h, Key key) {
+    if (h.isExternal()) return h.contains(key);
+    return contains(h.next(key), key);
+}
 
-<pre><code>int max = 0;
-for(int v = 0; v &lt; G.V(); v++) 
-    if (degree(G, v) &gt; max)
-        max = degree(G, v);
-return max;
-</code></pre>
+public void add(Key key) {
+    add(root, key);
+    if (root.isFull()) {
+        Page lefthalf = root;
+        Page righthalf = root.split();
+        root = new Page(false);
+        root.add(lefthalf);
+        root.add(righthalf);
+    }
+}
 
-<p>}</p>
+public void add(Page h, Key key) {
+    if (h.isExternal()) {
+        h.add(key);
+        return;
+    }
 
-<p>//计算所有顶点的平均度数
-public static double avgDegree(Graph G) {</p>
-
-<pre><code>return 2.0 * G.E() / G.V(); 
-</code></pre>
-
-<p>}</p>
-
-<p>//计算自环的个数
-public static int numberOfSelfLoops(Graph G) {</p>
-
-<pre><code>int count = 0;
-for(int v = 0; v &lt; G.V(); v++)
-    for(int w : G.adj(v))
-        if (v == w) count++;
-return count / 2; //每条边都被记过2次
+    Page next = h.next(key);
+    add(next, key);
+    if (next.isFull())
+        h.add(next.split());        
+    next.close();
+}   
 </code></pre>
 
 <p>}
 ```</p>
 
-<h3>2.1 邻接表</h3>
+<h2>4. 性能与空间</h2>
 
-<p>图有多种表示方法，包括邻接矩阵（V乘V的布尔矩阵，占用空间过大），边的数组（边类含有两个int实例变量，实现adj方法需要检查图中的所有边）和邻接表数组。</p>
+<p><strong>B树最重要的性质就是，在实际应用中对于适当的参数M，查找的成本是常数级别的。</strong></p>
 
-<p>邻接表数组是以顶点为索引的列表数组，例如第0个顶点的列表中每个元素都是和顶点0相邻的顶点。示意图如下：</p>
+<blockquote><p>含有N个元素的M阶B树中的一次查找或者插入操作需要log<sub>M</sub>N ~ log<sub>M/2</sub>N 次探查，在实际情况下这基本是一个常数。</p></blockquote>
 
-<p><img src="/myresource/images/image_blog_2014-10-03_adjacency-lists.png" alt="image" /></p>
+<p>B树的空间至少是半满的，在最坏的情况下，B树所需的空间是所有键占用的实际空间的两倍再加上链接所需的空间。对于随机键，B树浪费的空间约占44%。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[单词查找树]]></title>
+    <link href="http://blog.ubone.com/blog/2014/11/16/dan-ci-cha-zhao-shu/"/>
+    <updated>2014-11-16T22:37:38+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/11/16/dan-ci-cha-zhao-shu</id>
+    <content type="html"><![CDATA[<p>在<a href="/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/">符号表</a>中学习了二叉树、红黑树等，单词查找树比这些通用算法更加有效。它查找命中所需的时间与被查找的键的长度成正比，查找未命中只需检查若干个字符。这样的性能是相当惊人的，它们是算法研究的最高成就之一。</p>
 
-<p>它具有以下特点：</p>
+<!--more-->
+
+
+<p>我们扩展符号表的API，增加基于字符的用于处理字符串类型的键的操作。</p>
+
+<p>以字符串为键的符号表的API(<code>StringST&lt;Value&gt;</code>)</p>
+
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>StringST()</code> </td>
+<td> 创建一个符号表</td>
+</tr>
+<tr>
+<td><code>void put(String key, Value val)</code> </td>
+<td> 向表中插入键值对（如果值为null则删除键key）</td>
+</tr>
+<tr>
+<td><code>Value get(String key)</code> </td>
+<td> 键key所对应的值，如果不存在则返回null</td>
+</tr>
+<tr>
+<td><code>void delete(String key)</code> </td>
+<td> 删除键key（和它的值）</td>
+</tr>
+<tr>
+<td><code>boolean contains(String key)</code> </td>
+<td> 表中是否存在key的值</td>
+</tr>
+<tr>
+<td><code>boolean isEmpty()</code> </td>
+<td> 符号表是否为空</td>
+</tr>
+<tr>
+<td><strong><code>String longestPrefixOf(String s)</code></strong> </td>
+<td> s的前缀中最长的键 </td>
+</tr>
+<tr>
+<td><strong><code>Iterable&lt;String&gt; keysWithPrefix(String s)</code></strong> </td>
+<td> 所有以s为前缀的键</td>
+</tr>
+<tr>
+<td><strong><code>Iterable&lt;String&gt; keysThatMatch(String s)</code></strong> </td>
+<td> 所有和s匹配的键（其中“.”能够匹配任意字符）</td>
+</tr>
+<tr>
+<td><code>int size()</code>  </td>
+<td> 键值对的数量 </td>
+</tr>
+<tr>
+<td><code>Iterable&lt;String&gt; keys()</code> </td>
+<td> 符号表中的所有键 </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>上面的API与符号表API的不同之处在于Key换成了String, 增加了粗体显示的三个方法。</p>
+
+<h2>1. R向单词查找树</h2>
+
+<p>与各种查找树一样，单词查找树也是由链接的结点所组成的数据结构。每个结点只有一个父结点（根结点除外），每个结点都含有R条链接，其中R为字母表的大小。每个键所关联的值保存在该键的最后一个字母所对应的结点中。值为空的结点在符号表中没有对应的键，它们的存在是为了简化单词查找树中的查找操作。</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-16-tries-node.jpg" alt="image" /></p>
+
+<h3>1.1 查找操作</h3>
+
+<p>单词查找树的查找操作非常简单，从首字母开始延着树结点查找就可以：</p>
 
 <ul>
-<li>使用的空间和V+E成正比；</li>
-<li>添加一条边所需的时间为常数；</li>
-<li>遍历顶点v的所有相邻顶点所需的时间和v的度数成正比。</li>
+<li>键的尾字符所对应的结点中的值非空，命中！</li>
+<li>键的尾字符所对应的结点中的值为空，未命中！</li>
+<li>查找结束于一条空链接，未命中！</li>
 </ul>
 
 
-<p>代码实现示意如下：</p>
+<h3>1.2 插入操作</h3>
+
+<p>和二叉查找树一样，在插入之前要进行一次查找。</p>
+
+<ul>
+<li>在到达键的尾字符之前就遇到了一个空链接。证明不存在匹配的结点，为键中还未被检查的每个字符创建一个对应的结点，并将键对应的值保存到最后一个字符的结点中。</li>
+<li>在遇到空链接之前就到达了键的尾字符。将该结点的值设为键对应的值（无论该值是否为空）。</li>
+</ul>
+
+
+<h3>1.3 删除操作</h3>
+
+<p>删除的第一步是找到键所对应的结点并将它的值设为空null. 如果该结点含有一个非空的链接指向某个子结点，那么就不需要再进行其他操作了。如果它的所有链接均为空，那就需要从数据结构中删除这个结点。如果删除它使得它的父结点的所有链接也均为空，就要继续删除它的父结点，依此类推。</p>
+
+<h3>1.4 实现</h3>
 
 <p>```java
-public class Graph {</p>
+public class TrieST<Value> {</p>
 
-<pre><code>private final int V;        //顶点数目
-private int E;              //边的数目
-private Bag&lt;Integer&gt;[] adj; //邻接表
+<pre><code>private static final int R = 256;        // extended ASCII
 
-public void addEdge(int v, int w) {
-    adj[v].add(w);
-    adj[w].add(v);
+
+private Node root;      // root of trie
+private int N;          // number of keys in trie
+
+// R-way trie node
+private static class Node {
+    private Object val;
+    private Node[] next = new Node[R];
+}
+
+public TrieST() {
+}
+</code></pre>
+
+<p>   /**</p>
+
+<pre><code> * Initializes an empty string symbol table.
+ */
+
+/**
+ * Returns the value associated with the given key.
+ * @param key the key
+ * @return the value associated with the given key if the key is in the symbol table
+ *     and &lt;tt&gt;null&lt;/tt&gt; if the key is not in the symbol table
+ * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
+ */
+public Value get(String key) {
+    Node x = get(root, key, 0);
+    if (x == null) return null;
+    return (Value) x.val;
+}
+
+/**
+ * Does this symbol table contain the given key?
+ * @param key the key
+ * @return &lt;tt&gt;true&lt;/tt&gt; if this symbol table contains &lt;tt&gt;key&lt;/tt&gt; and
+ *     &lt;tt&gt;false&lt;/tt&gt; otherwise
+ * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
+ */
+public boolean contains(String key) {
+    return get(key) != null;
+}
+
+private Node get(Node x, String key, int d) {
+    if (x == null) return null;
+    if (d == key.length()) return x;
+    char c = key.charAt(d);
+    return get(x.next[c], key, d+1);
+}
+
+/**
+ * Inserts the key-value pair into the symbol table, overwriting the old value
+ * with the new value if the key is already in the symbol table.
+ * If the value is &lt;tt&gt;null&lt;/tt&gt;, this effectively deletes the key from the symbol table.
+ * @param key the key
+ * @param val the value
+ * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
+ */
+public void put(String key, Value val) {
+    if (val == null) delete(key);
+    else root = put(root, key, val, 0);
+}
+
+private Node put(Node x, String key, Value val, int d) {
+    if (x == null) x = new Node();
+    if (d == key.length()) {
+        if (x.val == null) N++;
+        x.val = val;
+        return x;
+    }
+    char c = key.charAt(d);
+    x.next[c] = put(x.next[c], key, val, d+1);
+    return x;
+}
+
+/**
+ * Returns the number of key-value pairs in this symbol table.
+ * @return the number of key-value pairs in this symbol table
+ */
+public int size() {
+    return N;
+}
+
+/**
+ * Is this symbol table empty?
+ * @return &lt;tt&gt;true&lt;/tt&gt; if this symbol table is empty and &lt;tt&gt;false&lt;/tt&gt; otherwise
+ */
+public boolean isEmpty() {
+    return size() == 0;
+}
+
+/**
+ * Returns all keys in the symbol table as an &lt;tt&gt;Iterable&lt;/tt&gt;.
+ * To iterate over all of the keys in the symbol table named &lt;tt&gt;st&lt;/tt&gt;,
+ * use the foreach notation: &lt;tt&gt;for (Key key : st.keys())&lt;/tt&gt;.
+ * @return all keys in the sybol table as an &lt;tt&gt;Iterable&lt;/tt&gt;
+ */
+public Iterable&lt;String&gt; keys() {
+    return keysWithPrefix("");
+}
+
+/**
+ * Returns all of the keys in the set that start with &lt;tt&gt;prefix&lt;/tt&gt;.
+ * @param prefix the prefix
+ * @return all of the keys in the set that start with &lt;tt&gt;prefix&lt;/tt&gt;,
+ *     as an iterable
+ */
+public Iterable&lt;String&gt; keysWithPrefix(String prefix) {
+    Queue&lt;String&gt; results = new Queue&lt;String&gt;();
+    Node x = get(root, prefix, 0);
+    collect(x, new StringBuilder(prefix), results);
+    return results;
+}
+
+private void collect(Node x, StringBuilder prefix, Queue&lt;String&gt; results) {
+    if (x == null) return;
+    if (x.val != null) results.enqueue(prefix.toString());  //有值才是键
+    for (char c = 0; c &lt; R; c++) {
+        prefix.append(c);
+        collect(x.next[c], prefix, results);
+        prefix.deleteCharAt(prefix.length() - 1);
+    }
+}
+
+/**
+ * Returns all of the keys in the symbol table that match &lt;tt&gt;pattern&lt;/tt&gt;,
+ * where . symbol is treated as a wildcard character.
+ * @param pattern the pattern
+ * @return all of the keys in the symbol table that match &lt;tt&gt;pattern&lt;/tt&gt;,
+ *     as an iterable, where . is treated as a wildcard character.
+ */
+public Iterable&lt;String&gt; keysThatMatch(String pattern) {
+    Queue&lt;String&gt; results = new Queue&lt;String&gt;();
+    collect(root, new StringBuilder(), pattern, results);
+    return results;
+}
+
+private void collect(Node x, StringBuilder prefix, String pattern, Queue&lt;String&gt; results) {
+    if (x == null) return;
+    int d = prefix.length();
+    if (d == pattern.length() &amp;&amp; x.val != null)
+        results.enqueue(prefix.toString());
+    if (d == pattern.length())
+        return;
+    char c = pattern.charAt(d);
+    if (c == '.') {
+        for (char ch = 0; ch &lt; R; ch++) {
+            prefix.append(ch);
+            collect(x.next[ch], prefix, pattern, results);
+            prefix.deleteCharAt(prefix.length() - 1);
+        }
+    }
+    else {
+        prefix.append(c);
+        collect(x.next[c], prefix, pattern, results);
+        prefix.deleteCharAt(prefix.length() - 1);
+    }
+}
+
+/**
+ * Returns the string in the symbol table that is the longest prefix of &lt;tt&gt;query&lt;/tt&gt;,
+ * or &lt;tt&gt;null&lt;/tt&gt;, if no such string.
+ * @param query the query string
+ * @throws NullPointerException if &lt;tt&gt;query&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
+ * @return the string in the symbol table that is the longest prefix of &lt;tt&gt;query&lt;/tt&gt;,
+ *     or &lt;tt&gt;null&lt;/tt&gt; if no such string
+ */
+public String longestPrefixOf(String query) {
+    int length = longestPrefixOf(root, query, 0, 0);
+    return query.substring(0, length);
+}
+
+// returns the length of the longest string key in the subtrie
+// rooted at x that is a prefix of the query string,
+// assuming the first d character match and we have already
+// found a prefix match of length length
+private int longestPrefixOf(Node x, String query, int d, int length) {
+    if (x == null) return length;
+    if (x.val != null) length = d;
+    if (d == query.length()) return length;
+    char c = query.charAt(d);
+    return longestPrefixOf(x.next[c], query, d+1, length);
+}
+
+/**
+ * Removes the key from the set if the key is present.
+ * @param key the key
+ * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
+ */
+public void delete(String key) {
+    root = delete(root, key, 0);
+}
+
+private Node delete(Node x, String key, int d) {
+    if (x == null) return null;
+    if (d == key.length()) {
+        if (x.val != null) N--;
+        x.val = null;
+    }
+    else {
+        char c = key.charAt(d);
+        x.next[c] = delete(x.next[c], key, d+1);
+    }
+
+    // remove subtrie rooted at x if it is completely empty
+    if (x.val != null) return x;
+    for (int c = 0; c &lt; R; c++)
+        if (x.next[c] != null)
+            return x;
+    return null;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面的代码可以处理扩展ASCII码，但很容易就可以修改为能够处理由任意字母表得到的键：</p>
+
+<ol>
+<li>实现一个构造函数，接受Alphabet，将R设置为字母表大小。</li>
+<li>在get()、put()中使用Alphabet的toIndex()，将字符串中的字符转化为0到R-1的索引值。</li>
+<li>在keys()、keysWithPrefix()和keysThatMatch()方法中，使用Alphabet的toChar()方法，将0到R-1之间的索引值转化为字符型(char)值。</li>
+</ol>
+
+
+<h3>1.5 单词查找树的性质</h3>
+
+<p>单词查找树的链表结构（形状）和键的插入或删除顺序无关，对于任意给定的一组键，其单词查找树都是唯一的。</p>
+
+<p>在单词查找树中查找一个键或是插入一个键时，访问数组的次数最多为键的长度加1！</p>
+
+<p>字母表的大小为R，在一棵由N个随机键构造的单词树中，未命中查找平均所需检查的结点数量为~log<sub>R</sub><sup>N</sup>。</p>
+
+<p>一棵单词查找树中的链接总数在RN到RNw之间，其中w为键的平均长度。因此单词查找树的空间消耗非常大。长键也可能占用大量空间，因为它通常有一条长长的尾巴。单词查找树的内部也可能存在单向的分支。例如两个长键可能只有最后一个字符不同。</p>
+
+<p>如果能够负担得起R向单词查找树的庞大空间，它的性能是无可匹敌的。</p>
+
+<h2>2. 三向单词查找树</h2>
+
+<p>三向单词查找树可以避免R向单词查找树过度的空间消耗。它的每个结点都含有一个字符、三条链接和一个值。三条链接分别对应当前字母小于、等于和大于结点字母的所有键。</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-16-tst.jpg" alt="image" /></p>
+
+<h3>2.1 查找、插入和删除操作</h3>
+
+<p>在查找时，首先比较键的首字母和根结点的字母。如果键的首字母较小，就选择左链接；如果较大，就选择右链接；如果相等则选择中链接。然后递归地使用相同的算法。如果遇到一个空链接或者当键结束时结点的值为空，那么查找未命中。如果键结束时结点的值非空则查找命中。</p>
+
+<p>插入一个新键时，首先进行查找，然后和单词查找树一样，在树中补全键末尾的所有结点。</p>
+
+<p>在三向单词查找树中，需要使用在二叉查找树中删除结点的方法来删去与该字符对应的结点。</p>
+
+<h3>2.2 实现</h3>
+
+<p>```java
+public class TST<Value> {</p>
+
+<pre><code>private int N;       // size
+private Node root;   // root of TST
+
+private class Node {
+    private char c;                 // character
+    private Node left, mid, right;  // left, middle, and right subtries
+    private Value val;              // value associated with string
+}
+
+// return number of key-value pairs
+public int size() {
+    return N;
+}
+</code></pre>
+
+<p>   /**************************************************************</p>
+
+<pre><code>* Is string key in the symbol table?
+**************************************************************/
+public boolean contains(String key) {
+    return get(key) != null;
+}
+
+public Value get(String key) {
+    if (key == null) throw new NullPointerException();
+    if (key.length() == 0) throw new IllegalArgumentException("key must have length &gt;= 1");
+    Node x = get(root, key, 0);
+    if (x == null) return null;
+    return x.val;
+}
+
+// return subtrie corresponding to given key
+private Node get(Node x, String key, int d) {
+    if (key == null) throw new NullPointerException();
+    if (key.length() == 0) throw new IllegalArgumentException("key must have length &gt;= 1");
+    if (x == null) return null;
+    char c = key.charAt(d);
+    if      (c &lt; x.c)              return get(x.left,  key, d);
+    else if (c &gt; x.c)              return get(x.right, key, d);
+    else if (d &lt; key.length() - 1) return get(x.mid,   key, d+1);
+    else                           return x;
+}
+</code></pre>
+
+<p>   /**************************************************************</p>
+
+<pre><code>* Insert string s into the symbol table.
+**************************************************************/
+public void put(String s, Value val) {
+    if (!contains(s)) N++;
+    root = put(root, s, val, 0);
+}
+
+private Node put(Node x, String s, Value val, int d) {
+    char c = s.charAt(d);
+    if (x == null) {
+        x = new Node();
+        x.c = c;
+    }
+    if      (c &lt; x.c)             x.left  = put(x.left,  s, val, d);
+    else if (c &gt; x.c)             x.right = put(x.right, s, val, d);
+    else if (d &lt; s.length() - 1)  x.mid   = put(x.mid,   s, val, d+1);
+    else                          x.val   = val;
+    return x;
+}
+</code></pre>
+
+<p>   /**************************************************************</p>
+
+<pre><code>* Find and return longest prefix of s in TST
+**************************************************************/
+public String longestPrefixOf(String s) {
+    if (s == null || s.length() == 0) return null;
+    int length = 0;
+    Node x = root;
+    int i = 0;
+    while (x != null &amp;&amp; i &lt; s.length()) {
+        char c = s.charAt(i);
+        if      (c &lt; x.c) x = x.left;
+        else if (c &gt; x.c) x = x.right;
+        else {
+            i++;
+            if (x.val != null) length = i;
+            x = x.mid;
+        }
+    }
+    return s.substring(0, length);
+}
+
+// all keys in symbol table
+public Iterable&lt;String&gt; keys() {
+    Queue&lt;String&gt; queue = new Queue&lt;String&gt;();
+    collect(root, "", queue);
+    return queue;
+}
+
+// all keys starting with given prefix
+public Iterable&lt;String&gt; prefixMatch(String prefix) {
+    Queue&lt;String&gt; queue = new Queue&lt;String&gt;();
+    Node x = get(root, prefix, 0);
+    if (x == null) return queue;
+    if (x.val != null) queue.enqueue(prefix);
+    collect(x.mid, prefix, queue);
+    return queue;
+}
+
+// all keys in subtrie rooted at x with given prefix
+private void collect(Node x, String prefix, Queue&lt;String&gt; queue) {
+    if (x == null) return;
+    collect(x.left,  prefix,       queue);
+    if (x.val != null) queue.enqueue(prefix + x.c);
+    collect(x.mid,   prefix + x.c, queue);
+    collect(x.right, prefix,       queue);
+}
+
+
+// return all keys matching given wildcard pattern
+public Iterable&lt;String&gt; wildcardMatch(String pat) {
+    Queue&lt;String&gt; queue = new Queue&lt;String&gt;();
+    collect(root, "", 0, pat, queue);
+    return queue;
+}
+
+private void collect(Node x, String prefix, int i, String pat, Queue&lt;String&gt; q) {
+    if (x == null) return;
+    char c = pat.charAt(i);
+    if (c == '.' || c &lt; x.c) collect(x.left, prefix, i, pat, q);
+    if (c == '.' || c == x.c) {
+        if (i == pat.length() - 1 &amp;&amp; x.val != null) q.enqueue(prefix + x.c);
+        if (i &lt; pat.length() - 1) collect(x.mid, prefix + x.c, i+1, pat, q);
+    }
+    if (c == '.' || c &gt; x.c) collect(x.right, prefix, i, pat, q);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>2.3 三向单词查找树的性质</h3>
+
+<p>三向单词查找树与R向单词查找树的数据结构性质截然不同。它和其他所有二叉查找树一样，每个单词查找树结点的二叉查找树表示也取决于键的插入顺序。</p>
+
+<p>它的每个结点只含有三个链接，因此所需空间远小于对应的单词查找树。由N个平均长度为w的字符串构造的三向单词查找树中的链接总数在3N到3Nw之间。</p>
+
+<p>在一棵由N个随机字符串构造的三向单词查找树中，查找未命中平均需要比较字符~lnN次。除~lnN次外，一次插入或命中的查找会比较一次被查找的键中的每个字符。</p>
+
+<p>使用三向单词查找树的最大好处是它能够很好地适应实际应用中可能出现的被查找键的不规则性。它可以使用256个字符的ASCII编码或者65536个字符的Unicode编码，而不必担心分支带来的巨大开销。</p>
+
+<h2>3. 总结</h2>
+
+<p><img src="/myresource/images/image_blog_2014-11-16-wordsfind-conclude.jpg" alt="image" /></p>
+
+<p>参考：<a href="http://algs4.cs.princeton.edu/52trie/">http://algs4.cs.princeton.edu/52trie/</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[字符串排序]]></title>
+    <link href="http://blog.ubone.com/blog/2014/11/15/zi-fu-chuan-pai-xu/"/>
+    <updated>2014-11-15T09:49:02+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/11/15/zi-fu-chuan-pai-xu</id>
+    <content type="html"><![CDATA[<p>字符串是最常用的数据类型，因此它的排序算法非常重要。虽然Java的字符串排序已经非常快，但了解一些字符串的排序算法仍然很必要，也是进一步了解字符串其它应用的基础。</p>
+
+<!--more-->
+
+
+<p>在Java中表示字符串的两种方法：</p>
+
+<table>
+<thead>
+<tr>
+<th>操作 </th>
+<th> 字符数组 </th>
+<th> Java字符串</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>声明</td>
+<td> char[] a</td>
+<td> String s</td>
+</tr>
+<tr>
+<td>根据索引访问字符</td>
+<td> a[i] </td>
+<td> s.charAt(i)</td>
+</tr>
+<tr>
+<td>获取字符串长度</td>
+<td> a.length </td>
+<td> s.length()</td>
+</tr>
+<tr>
+<td>表示方法转换</td>
+<td> a = s.toCharArray(); </td>
+<td> s= new String(a);</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>1. 字母表</h2>
+
+<p>字母表是字符串相关算法的基础，表示字符串由哪些字母组成。字符索引的数组能够提高算法的效率。在这个数组中，用字符作为索引来获取与之相关联的信息。在一些算法中会产生大量的这类数组。如果使用Java的String类，就必须使用大小为65536的数组。有了字母表，则只需要使用一个字母表大小的数组即可。</p>
+
+<p>字母表(Alphabet)API定义如下：</p>
+
+<table>
+<thead>
+<tr>
+<th>方法 </th>
+<th>  说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alphabet(String s) </td>
+<td> 构造方法，根据s中的字符创建一张新的字母表</td>
+</tr>
+<tr>
+<td>char toChar(int index) </td>
+<td> 获取字母表中索引位置的字符</td>
+</tr>
+<tr>
+<td>int toIndex(char c)  </td>
+<td> 获取c的索引，在0到R-1之间</td>
+</tr>
+<tr>
+<td>boolean contains(char c) </td>
+<td> c在字母表中吗</td>
+</tr>
+<tr>
+<td>int R() </td>
+<td> 基数（字母表中的字符数量）</td>
+</tr>
+<tr>
+<td>int lgR() </td>
+<td> 表示一个索引所需的比特数</td>
+</tr>
+<tr>
+<td>int[] toIndices(String s) </td>
+<td> 将s转换为R进制的整数数组</td>
+</tr>
+<tr>
+<td>String toChars(int[] indices) </td>
+<td> 将R进制的整数数组转换为基于该字母表的字符串</td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>标准字母表</h3>
+
+<table>
+<thead>
+<tr>
+<th>名称 </th>
+<th> R() </th>
+<th> lgR() </th>
+<th> 字符集</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BINARY </td>
+<td> 2 </td>
+<td> 1 </td>
+<td> 01</td>
+</tr>
+<tr>
+<td>DNA </td>
+<td> 4 </td>
+<td> 2 </td>
+<td> ACTG</td>
+</tr>
+<tr>
+<td>OCTAL </td>
+<td> 8 </td>
+<td> 3 </td>
+<td> 0..7</td>
+</tr>
+<tr>
+<td>DECIMAL </td>
+<td> 10 </td>
+<td> 4 </td>
+<td> 0..9</td>
+</tr>
+<tr>
+<td>HEXADECIMAL </td>
+<td> 16 </td>
+<td> 4 </td>
+<td> 0..9ABCDEF</td>
+</tr>
+<tr>
+<td>PROTEIN </td>
+<td> 20 </td>
+<td> 5 </td>
+<td> ACDEFGHIKLMNPQRSTVWY</td>
+</tr>
+<tr>
+<td>LOWERCASE </td>
+<td> 26 </td>
+<td> 5 </td>
+<td> a..z</td>
+</tr>
+<tr>
+<td>UPPERCASE </td>
+<td> 26 </td>
+<td> 5 </td>
+<td> A..Z</td>
+</tr>
+<tr>
+<td>BASE64 </td>
+<td> 64 </td>
+<td> 6 </td>
+<td> A..Za..z0..9+/</td>
+</tr>
+<tr>
+<td>ASCII </td>
+<td> 128 </td>
+<td> 7 </td>
+<td> ASCII字符集</td>
+</tr>
+<tr>
+<td>EXTENDED_ASCII </td>
+<td> 256 </td>
+<td> 8 </td>
+<td> 扩展ASCII字符集</td>
+</tr>
+<tr>
+<td>UNICODE16 </td>
+<td> 65536 </td>
+<td> 16 </td>
+<td> Unicode字符集</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>2. 键索引计数法</h2>
+
+<p>假设老师在统计学生分数时，学生被分为若干组，标号为0、1、2、3等。老师希望将全班同学按组分类，也就是按组排序。因为组的编号是较小的整数，使用键索引计数法来排序非常合适。</p>
+
+<p>我们用一个数组a[]来保存数据。每个元素都保存了一个姓名和一个组号。组号在0到R-1之间，a[i].key()会返回指定学生的组号。键索引计数法通过四个步骤来完成排序。</p>
+
+<p><strong>第一步，频率统计</strong>
+使用一个int数组count[]来计算每个键（组号）出现的频率。遍历一遍数组，如果键为r，则将count[r+1]加1。因此对第1组的学生，将会把count[2]++。（在第二步的代码中可以看到为什么是r+1）</p>
+
+<p>```java
+for (int i = 0; i &lt; N; i++) {</p>
+
+<pre><code>count[a[i].key() + 1]++;
+</code></pre>
+
+<p>}
+```</p>
+
+<p><strong>第二步，将频率转换为索引</strong>
+有了count[]中每个键出现的次数，就可以得到每个键在排序结果中的起始索引位置。假如第1组3个人，第2组5个人，那么第三种的同学在排序结果中的起始位置就是8. 因此可以将count[]转化为一张索引表。</p>
+
+<p>```java
+for (int r= 0; r &lt; R; r++) {</p>
+
+<pre><code>count[r+1] += count[r];
+</code></pre>
+
+<p>}
+```</p>
+
+<p><strong>第三步，数据分类</strong>
+在第二步中，得到了每个键的起始序号。我们就可以将所有元素（学生）移动到一个辅助数组aux[]。元素在aux[]中的位置由count[]值决定，在移动的过程中将count[]中对应的元素值加1。这个过程只需要遍历一遍数据就可以产生排序结果。并且这种方式是稳定的！键相同的元素在排序后会被聚集到一起，而且相对顺序没有变化。</p>
+
+<p>```java
+for (int i = 0; i &lt; N; i++) {</p>
+
+<pre><code>aux[count[a[i].key()]++]  = a[i];
+</code></pre>
+
+<p>}
+```</p>
+
+<p><strong>第四步，回写</strong>
+在第三步已经完成了排序，只需要将排序结果复制回原数组。</p>
+
+<p>```java
+for(int i = 0; i &lt; N; i++) {</p>
+
+<pre><code>a[i] = aux[i];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>键索引计数法是一种对于小整数键排序非常有效却常常被忽略的排序方法。它排序N个键为0到R-1之间的整数的元素需要访问数组11N+4R+1次。也就是说<strong>它突破了NlogN的排序算法运行时间下限（<a href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">快速排序算法</a>）。原因是什么？因为它是不需要比较的，它只通过key()方法访问数据。只要当R在N的一个常数因子范围之内，它都是一个线性时间级别的排序方法。</strong></p>
+
+<p>理解键索引计数法的工作原理非常重要。学生的组号对应字母表中的元素，利用字母表大小的数组count[]来统计每个字母出现的次数，计算出每个字母在最终数组的起始序号，从而完成排序。</p>
+
+<p>有了键索引计数法，我们来看如何实现两种字符串排序算法。</p>
+
+<h2>3. 低位优先(Least-Significant-DigitFirst, LSD)的字符串排序</h2>
+
+<p>这种算法适用于<strong>键的长度相等</strong>的字符串排序应用。例如对车牌号进行排序。它会从右往左检查键中的字符，所以称为低位优先。</p>
+
+<p>如果字符串的长度均为W，在排序的过程中，从右向左，将每个位置的字符作为键，用键索引计数法将字符串排序W遍。理解了键索引计数法，实现低位优先的字符串排序就很容易了：</p>
+
+<p>```java
+public class LSD {</p>
+
+<pre><code>public static void sort(String[] a, int W) {
+    int N = a.length;
+    int R = 256;   // extend ASCII alphabet size
+    String[] aux = new String[N];
+
+    for (int d = W-1; d &gt;= 0; d--) {
+        //将第d个字符用键索引计数法排序
+        // 计算出现次数
+        int[] count = new int[R+1];
+        for (int i = 0; i &lt; N; i++)
+            count[a[i].charAt(d) + 1]++;
+
+        // 将次数转换为索引
+        for (int r = 0; r &lt; R; r++)
+            count[r+1] += count[r];
+
+        // 移到辅助数组，进行排序
+        for (int i = 0; i &lt; N; i++)
+            aux[count[a[i].charAt(d)]++] = a[i];
+
+        // 回写数据
+        for (int i = 0; i &lt; N; i++)
+            a[i] = aux[i];
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>低位优先的字符串排序算法能够将定长字符串排序，其中的键索引计数法的稳定性起了关键作用。</p>
+
+<p>对于基于R个字符的字母表的N个以长为W的字符串为键的元素，低位优先的字符串排序需要访问~7WN+3WR次数组，使用的额外空间与N+R成正比。</p>
+
+<h2>4. 高位优先(MSD)的字符串排序</h2>
+
+<p>这种算法从左往右检查键中的字符，所以称为高位优先。它不一定要检查所有的输入才能完成排序。它是更通用的字符串排序算法，字符串的长度不一定相同。</p>
+
+<p>和快速排序一样，高位优先的字符串排序会将数组切分为能够独立排序的子数组来完成排序任务，但它的切分会为每个首字母得到一个子数组，而不是像快速排序中那样产生固定的两个或三个切分。首先用键索引计数法将所有字符串按照首字母排序，然后（递归地）再将每个首字母所对应的子数组排序（忽略首字母，因为每个子数组中的首字母是相同的）。</p>
+
+<p>由于高位优先字符串排序算法要处理不等长的字符串，因此要处理字符串已经结束的情况。因此约定charAt方法中，如果指定位置超出字符串长度则返回-1. 其它情况则加1后返回。因此字符串中的每个字符都可能产生R+1种不同的值，0表示结束，1表示字母表的第一个字符。而键索引计数法还需要一个额外的位置，所以count[]的长度应为R+2。</p>
+
+<p>对于很小的子数组（15个以内），采用插入排序更快。</p>
+
+<p>```java
+public class MSD {</p>
+
+<pre><code>private static final int R             = 256;   // 基数 extended ASCII alphabet size
+private static final int CUTOFF        =  15;   // 小数组的切换阈值 cutoff to insertion sort
+
+// sort array of strings
+public static void sort(String[] a) {
+    int N = a.length;
+    String[] aux = new String[N];
+    sort(a, 0, N-1, 0, aux);
+}
+
+// return dth character of s, -1 if d = length of string
+private static int charAt(String s, int d) {
+    assert d &gt;= 0 &amp;&amp; d &lt;= s.length();
+    if (d == s.length()) return -1;
+    return s.charAt(d);
+}
+
+// sort from a[lo] to a[hi], starting at the dth character
+private static void sort(String[] a, int lo, int hi, int d, String[] aux) {
+
+    // cutoff to insertion sort for small subarrays
+    if (hi &lt;= lo + CUTOFF) {
+        insertion(a, lo, hi, d);
+        return;
+    }
+
+    // 计算次数
+    int[] count = new int[R+2];
+    for (int i = lo; i &lt;= hi; i++) {
+        int c = charAt(a[i], d);
+        count[c+2]++;
+    }
+
+    // 将次数转换为索引
+    for (int r = 0; r &lt; R+1; r++)
+        count[r+1] += count[r];
+
+    // 生成辅助数据内容，完成排序。
+    for (int i = lo; i &lt;= hi; i++) {
+        int c = charAt(a[i], d);
+        aux[count[c+1]++] = a[i];
+    }
+
+    // 回写
+    for (int i = lo; i &lt;= hi; i++) 
+        a[i] = aux[i - lo];
+
+
+    // 递归地以每个字符为键进行排序。
+    for (int r = 0; r &lt; R; r++)
+        sort(a, lo + count[r], lo + count[r+1] - 1, d+1, aux);
+}
+
+
+// 插入排序算法insertion sort a[lo..hi], starting at dth character
+private static void insertion(String[] a, int lo, int hi, int d) {
+    for (int i = lo; i &lt;= hi; i++)
+        for (int j = i; j &gt; lo &amp;&amp; less(a[j], a[j-1], d); j--)
+            exch(a, j, j-1);
+}
+
+// exchange a[i] and a[j]
+private static void exch(String[] a, int i, int j) {
+    String temp = a[i];
+    a[i] = a[j];
+    a[j] = temp;
+}
+
+// is v less than w, starting at character d
+private static boolean less(String v, String w, int d) {
+    // assert v.substring(0, d).equals(w.substring(0, d));
+    for (int i = d; i &lt; Math.min(v.length(), w.length()); i++) {
+        if (v.charAt(i) &lt; w.charAt(i)) return true;
+        if (v.charAt(i) &gt; w.charAt(i)) return false;
+    }
+    return v.length() &lt; w.length();
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>4.1 三个必须解决的问题</h3>
+
+<h4>4.1.1 小型子数组</h4>
+
+<p>高位优先的字符串排序算法能够快速地将需要排序的数组切分小的数组，但这肯定会需要处理大量的微型数组，因此必须快速处理它们。<strong>小型子数组对于高位优先的字符串排序性能至关重要！</strong>假设要将数百万个不同的ASCII字符串排序，每个字符串最终都会产生一个只含有它自己的子数组，因此你需要将数百万个大小为1的子数组排序。每次排序还需要将count[]r 258个元素初始化为0并转化为索引。这个代价比排序其他部分高得多。如果使用Unicode(R=65536)则可能会慢上千倍！</p>
+
+<p>所以对小型子数组要切换到插入排序。在一个典型应用中，当长度小于等于10时切换到插入排序能够将运行时间降低到原来的十分之一。</p>
+
+<h4>4.1.2 等值键</h4>
+
+<p>如果字符串有大量重复的前缀，排序会较慢。高位优先字符串排序算法的最坏情况就是所有的键均相同。</p>
+
+<h4>4.1.3 额外空间</h4>
+
+<p>为了进行切分，高位优先的算法使用了两个辅助数组：aux[]和count[]. aux可以在递归方法sort()外创建。而count[]所需的空间是主要问题，它在内循环中创建。</p>
+
+<p>解决这三个问题需要新算法。</p>
+
+<h2>5. 三向字符串快速排序</h2>
+
+<p>在高位优先的字符串排序算法上改进快速排序。根据键的首字母进行三向切分，分成三个数组：首字母小于、等于和大于切分字符的三个数组。仅在中间子数组中的下一个字符（因为首字母就是切分字符）继续递归排序。这是一种将高位优先字符串排序与快速排序结合的算法。</p>
+
+<p>这种算法不会像高位优先算法那样创建大量（空）子数组，它的切分总是只有三个。能解决所有高位优先字符串排序算法不擅长的各种情况。并且它也不需要额外的空间。</p>
+
+<p>对于所有递归算法都可以通过对小型子数组进行特殊处理高效率，所以它同样使用到了插入排序。</p>
+
+<p>和快速排序一样，最好在排序之前将数组打乱，或者将第一个元素和一个随机位置的元素交换以得到一个随机的切分元素。这么做主要是预防数组已经有序或者接近有序的最坏情况。</p>
+
+<p>```java
+public class Quick3string {</p>
+
+<pre><code>private static final int CUTOFF =  15;   // cutoff to insertion sort
+
+// sort the array a[] of strings
+public static void sort(String[] a) {
+    StdRandom.shuffle(a);
+    sort(a, 0, a.length-1, 0);
+    assert isSorted(a);
+}
+
+// return the dth character of s, -1 if d = length of s
+private static int charAt(String s, int d) { 
+    assert d &gt;= 0 &amp;&amp; d &lt;= s.length();
+    if (d == s.length()) return -1;
+    return s.charAt(d);
+}
+
+
+// 3-way string quicksort a[lo..hi] starting at dth character
+private static void sort(String[] a, int lo, int hi, int d) { 
+
+    // cutoff to insertion sort for small subarrays
+    if (hi &lt;= lo + CUTOFF) {
+        insertion(a, lo, hi, d);
+        return;
+    }
+
+    int lt = lo, gt = hi;
+    int v = charAt(a[lo], d);
+    int i = lo + 1;
+    while (i &lt;= gt) {
+        int t = charAt(a[i], d);
+        if      (t &lt; v) exch(a, lt++, i++);
+        else if (t &gt; v) exch(a, i, gt--);
+        else              i++;
+    }
+
+    // a[lo..lt-1] &lt; v = a[lt..gt] &lt; a[gt+1..hi]. 
+    sort(a, lo, lt-1, d);
+    if (v &gt;= 0) sort(a, lt, gt, d+1);
+    sort(a, gt+1, hi, d);
+}
+
+// sort from a[lo] to a[hi], starting at the dth character
+private static void insertion(String[] a, int lo, int hi, int d) {
+    for (int i = lo; i &lt;= hi; i++)
+        for (int j = i; j &gt; lo &amp;&amp; less(a[j], a[j-1], d); j--)
+            exch(a, j, j-1);
+}
+
+// exchange a[i] and a[j]
+private static void exch(String[] a, int i, int j) {
+    String temp = a[i];
+    a[i] = a[j];
+    a[j] = temp;
+}
+
+// is v less than w, starting at character d
+// DEPRECATED BECAUSE OF SLOW SUBSTRING EXTRACTION IN JAVA 7
+// private static boolean less(String v, String w, int d) {
+//    assert v.substring(0, d).equals(w.substring(0, d));
+//    return v.substring(d).compareTo(w.substring(d)) &lt; 0; 
+// }
+
+// is v less than w, starting at character d
+private static boolean less(String v, String w, int d) {
+    assert v.substring(0, d).equals(w.substring(0, d));
+    for (int i = d; i &lt; Math.min(v.length(), w.length()); i++) {
+        if (v.charAt(i) &lt; w.charAt(i)) return true;
+        if (v.charAt(i) &gt; w.charAt(i)) return false;
+    }
+    return v.length() &lt; w.length();
+}
+
+// is the array sorted
+private static boolean isSorted(String[] a) {
+    for (int i = 1; i &lt; a.length; i++)
+        if (a[i].compareTo(a[i-1]) &lt; 0) return false;
+    return true;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>要将含有N个随机字符串的数组排序，三向字符串快速排序平均需要比较字符~2NlnN次。</p>
+
+<p>Java系统的标准实现中的字符串比较非常快，因此它的排序性能与上面的算法不相上下。</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-15-string-sort.jpg" alt="image" /></p>
+
+<p>参考：<a href="http://algs4.cs.princeton.edu/51radix/">http://algs4.cs.princeton.edu/51radix/</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[最短路径]]></title>
+    <link href="http://blog.ubone.com/blog/2014/11/03/zui-duan-lu-jing/"/>
+    <updated>2014-11-03T20:22:31+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/11/03/zui-duan-lu-jing</id>
+    <content type="html"><![CDATA[<p>最短路径算法可以解决很多问题，例如地图导航、任务调度和网络路由等。本章的主题就是找到从一个顶点到达另一个顶点的成本最小的路径。</p>
+
+<blockquote><p>在一幅加权有向图中，从顶点s到顶点t的最短路径是所有从s到t的路径中的权重最小者。</p></blockquote>
+
+<p>本章要涉及以下问题：</p>
+
+<ul>
+<li>加权有向图的API、单点最短路径的API及它们的实现；</li>
+<li>解决边的权重非负的最短路径问题的经典Dijkstra算法；</li>
+<li>在无环加权有向图中解决该问题的一种快速算法，边的权重甚至可以是负值；</li>
+<li>适用于一般情况的经典Bellman-Ford算法，其中图可以含有环，边的权重也可以是负值。</li>
+</ul>
+
+
+<!--more-->
+
+
+<h2>1. 最短路径的性质</h2>
+
+<ul>
+<li>路径是有向的；</li>
+<li>权重不一定等价于距离，但示例图会用距离代表权重；</li>
+<li>并不是所有顶点都是可达的；</li>
+<li>负权重会使问题更复杂，暂时假定边的权重是非负的；</li>
+<li>算法会忽略构成环的零权重边，找到的最短路径都不会含有环；</li>
+<li>最短路径不一定是唯一的，只找到其中一条即可；</li>
+<li>可能存在平行边和自环，为避免歧义假设不存在平行边，但代码处理它们并没有困难。</li>
+</ul>
+
+
+<p>单点最短路径的计算结果是一棵最短路径树（SPT），它包含了顶点s到达所有可达的顶点的最短路径。</p>
+
+<blockquote><p>给定一幅加权有向图和一个顶点s，以s为起点的一棵最短路径树是图的一幅子图，它包含s和从s可达的所有顶点。这棵有向树的根结点是s，树的每条路径都是有向图中的一条最短路径。</p></blockquote>
+
+<h2>2. 加权有向图的数据结构</h2>
+
+<p>有向边的数据结构比无向边更简单，因为有向边只有一个方向。其API定义如下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-04-directed-edge-api.png" alt="image" /></p>
+
+<p>```java
+public class DirectedEdge {</p>
+
+<pre><code>private final int v;                //边的起点
+private final int w;                //边的终点
+private final double weight;        //边的权重
+
+public DirectedEdge(int v, int w, double weight) {
+    if (v &lt; 0) throw new IndexOutOfBoundsException("Vertex names must be nonnegative integers");
+    if (w &lt; 0) throw new IndexOutOfBoundsException("Vertex names must be nonnegative integers");
+    if (Double.isNaN(weight)) throw new IllegalArgumentException("Weight is NaN");
+    this.v = v;
+    this.w = w;
+    this.weight = weight;
+}
+
+public int from() {return v;}
+public int to() {return w;}
+public double weight() {return weight;}
+
+public String toString() {
+    return v + "-&gt;" + w + " " + String.format("%5.2f", weight);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>加权有向图的API也与无向图类似：</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-04-edge-weighted-digraph-api.png" alt="image" /></p>
+
+<p>```java
+public class EdgeWeightedDigraph {</p>
+
+<pre><code>private final int V;                    //顶点总数
+private int E;                          //边的总数
+private Bag&lt;DirectedEdge&gt;[] adj;        //邻接表
+
+public EdgeWeightedDigraph(int V) {
+    if (V &lt; 0) throw new IllegalArgumentException("Number of vertices in a Digraph must be nonnegative");
+    this.V = V;
+    this.E = 0;
+    adj = (Bag&lt;DirectedEdge&gt;[]) new Bag[V];
+    for (int v = 0; v &lt; V; v++)
+        adj[v] = new Bag&lt;DirectedEdge&gt;();
+}
+
+public int V() {return V;}
+public int E() {return E;}
+
+//将e添加到有向图中
+public void addEdge(DirectedEdge e) {
+    adj[e.from()].add(e);
     E++;
 }
 
-public Iterable&lt;Integer&gt; adj(int v) {
+//从v指出的边
+public Iterable&lt;DirectedEdge&gt; adj(int v) {
     return adj[v];
 }
+
+//有向图中的所有边
+public Iterable&lt;DirectedEdge&gt; edges() {
+    Bag&lt;DirectedEdge&gt; list = new Bag&lt;DirectedEdge&gt;();
+    for (int v = 0; v &lt; V; v++) {
+        for (DirectedEdge e : adj(v)) {
+            list.add(e);
+        }
+    }
+    return list;
+} 
 </code></pre>
 
 <p>}
 ```</p>
 
-<h3>2.2 图的处理算法API</h3>
+<p>加权有向图的表示：</p>
 
-<p><img src="/myresource/images/image_blog_2014-10-04_search-api.png" alt="image" /></p>
+<p><img src="/myresource/images/image_blog_2014-11-04-edge-weighted-digraph-representation.png" alt="image" /></p>
 
-<h2>3. 深度优先搜索(DFS)</h2>
+<h3>2.1 最短路径</h3>
 
-<p>深度优先搜索一幅图，只需要一个递归方法来遍历所有顶点。在访问其中一个顶点时：</p>
+<p>最短路径的API：</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-04-sp-api.png" alt="image" /></p>
+
+<p>在实现时，分别用两个数组来表示最短路径：</p>
 
 <ul>
-<li>将它标记为已访问；</li>
-<li>递归地访问它的所有没有被标记过的邻居顶点。</li>
+<li>最短路径树中的边：DirectedEdge[] edgeTo，edgeTo[v]的值为树中连接v和它的父结点的边。</li>
+<li>到达起点的距离：Double[] distTo，distTo[v]为从起点s到v的已知最短路径的长度。</li>
 </ul>
 
 
-<p>```java
-//深度优先搜索
-public class DepthFirstSearch {</p>
+<p>同时约定edgeTo[s] == null, distTo[s] == 0; 不可达的顶点的距离为Double.POSITIVE_INFINITY。</p>
 
-<pre><code>private boolean[] marked;
-private int count;
+<h3>2.2 松弛操作</h3>
 
-public DepthFirstSearch(Graph G, int s) {
-    marked = new boolean[G.V()];
-    dfs(G, s);
+<p>松弛（Relaxation）操作是最短路径实现中使用的关键操作。对边v->w松弛意味着检查从s到w的最短路径是否是先从s到v，然后再由v到w。如果是，则由v到达w的最短路径是distTo[v] + e.weight()。如果这个值不小于distTo[w]，则证明刚才的边失效可忽略，否则证明现在的值更小，需要更新数据。</p>
+
+<p>下图演示了这种情况，左侧的v->w不满足条件，被忽略。而右侧的图v->满足条件，替换为新的最短路径。</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-04-relaxation-edge.png" alt="image" /></p>
+
+<p>对顶点的松弛操作就是对该顶点指出的所有边进行松弛操作。每次顶点的松弛操作都能得出到达某个顶点的更短的路径。算法就这样最终找出到达每个顶点的最短路径。</p>
+
+<h2>3. 最短路径算法的理论基础</h2>
+
+<p>最短路径的最优性条件：</p>
+
+<blockquote><p>令G为一幅加权有向图，顶点s是G中的起点，distTo[]是一个由顶点索引的数组，保存的是G中路径的长度。对于从s可达的所有顶点v，distTo[v]的值是从s到v的某条路径的长度，对于从s不可达的所有顶点v，该值为无穷大。当且仅当对于从v到w的任意一条边e, 这些值都满足distTo[w] &lt;= distTo[v] + e.weight()时，它们是最短路径的长度。</p></blockquote>
+
+<p>根据最优性条件，我们可以得到一个通用算法，暂时只考虑非负权重的情况：</p>
+
+<blockquote><p>将distTo[s]初始化为0，其它distTo[]元素初始化为无穷大，继续如下操作：放松G中的任意边，直到不存在有效边为止。对于任意从s可达的顶点w，进行这些操作后，distTo[w]的值即为从s到w的最短路径的长度。</p></blockquote>
+
+<h2>4. Dijkstra算法</h2>
+
+<p>Dijkstra算法能够解决边权重非负的加权有向图的单起点最短路径问题。它与无向图的最小生成树的Prim算法（每一步都向最小生成树中添加一条新的边）非常相似。首先将distTo[s]初始华为0，distTo[]的其他元素初始化为正无穷。然后<strong>将distTo[]最小的非树顶点放松并加入树中，如此这般，直到所有的顶点都在树中或者所有的非树顶点的distTo[]值均为无穷大。</strong></p>
+
+<p>Dijkstra算法实现时，除了要distTo[]和edgeTo[]之外，还需要一条索引优先队列pa，以保存需要被放松的顶点并确认下一个被放松的顶点。只要将v和distTo[v]关联起来放入队列就可以立即实现Dijkstra算法。Prim算法每次添加的都是离树最近的非树顶点，而Dijkstra算法每次添加的都是离起点最近的非树顶点。如果将加权无向图看成加权有向图，对无向图中的每条边都相应地创建方向相反的有向边，最短路径的问题是等价的。Dijkstra算法实现实现如下：</p>
+
+<p>```
+public class DijkstraSP {</p>
+
+<pre><code>private double[] distTo;          // distTo[v] = distance  of shortest s-&gt;v path
+private DirectedEdge[] edgeTo;    // edgeTo[v] = last edge on shortest s-&gt;v path
+private IndexMinPQ&lt;Double&gt; pq;    // priority queue of vertices
+
+/**
+ * Computes a shortest paths tree from &lt;tt&gt;s&lt;/tt&gt; to every other vertex in
+ * the edge-weighted digraph &lt;tt&gt;G&lt;/tt&gt;.
+ * @param G the edge-weighted digraph
+ * @param s the source vertex
+ * @throws IllegalArgumentException if an edge weight is negative
+ * @throws IllegalArgumentException unless 0 &amp;le; &lt;tt&gt;s&lt;/tt&gt; &amp;le; &lt;tt&gt;V&lt;/tt&gt; - 1
+ */
+public DijkstraSP(EdgeWeightedDigraph G, int s) {
+    for (DirectedEdge e : G.edges()) {
+        if (e.weight() &lt; 0)
+            throw new IllegalArgumentException("edge " + e + " has negative weight");
+    }
+
+    distTo = new double[G.V()];
+    edgeTo = new DirectedEdge[G.V()];
+    for (int v = 0; v &lt; G.V(); v++)
+        distTo[v] = Double.POSITIVE_INFINITY;
+    distTo[s] = 0.0;
+
+    // relax vertices in order of distance from s
+    pq = new IndexMinPQ&lt;Double&gt;(G.V());
+    pq.insert(s, distTo[s]);
+    while (!pq.isEmpty()) {
+        int v = pq.delMin();
+        for (DirectedEdge e : G.adj(v))
+            relax(e);
+    }
 }
 
-private void dfs(Graph G, int v) {
-    marked[v] = true;
-    count++;
-    for(int w : G.adj(v))
-        if (!marked[w]) dfs(G, w);
+// relax edge e and update pq if changed
+private void relax(DirectedEdge e) {
+    int v = e.from(), w = e.to();
+    if (distTo[w] &gt; distTo[v] + e.weight()) {
+        distTo[w] = distTo[v] + e.weight();
+        edgeTo[w] = e;
+        if (pq.contains(w)) pq.decreaseKey(w, distTo[w]);
+        else                pq.insert(w, distTo[w]);
+    }
 }
 
-public boolean marked(int w) {return marked[w];}
-
-public int count() {return count;}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>利用深度优先搜索很容易找到一些问题的答案。例如“两个给定的顶点是否连通？有多少个连通子图？从s到给定目的顶点v是否存在一条路径？如果有，找到这条路径。”</p>
-
-<h2>4. 寻找路径</h2>
-
-<p>路径的API:</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-04_paths-api.png" alt="image" /></p>
-
-<p>```java
-//使用深度优先搜索查找图的路径
-public class DepthFirstPaths {</p>
-
-<pre><code>private boolean[] marked;   //这个顶点上调用过dfs()吗？
-private int[] edgeTo;       //从起点到一个顶点的已知路径上的最后一个顶点
-private final int s;        //起点
-
-public DepthFirstPaths(Graph G, int s) {
-    marked = new boolean[G.V()];
-    edgeTo = new int[G.V()];
-    this.s = s;
-    dfs(G, s);
+/**
+ * Returns the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+ * @param v the destination vertex
+ * @return the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;;
+ *    &lt;tt&gt;Double.POSITIVE_INFINITY&lt;/tt&gt; if no such path
+ */
+public double distTo(int v) {
+    return distTo[v];
 }
 
-private void dfs(Graph G, int v) {
-    marked[v] = true;
-    for(int w : G.adj(v))
-        if (!marked[w]) {
-            edgeTo[w] = v;
-            dfs(G, w);
-        }
+/**
+ * Is there a path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;?
+ * @param v the destination vertex
+ * @return &lt;tt&gt;true&lt;/tt&gt; if there is a path from the source vertex
+ *    &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;, and &lt;tt&gt;false&lt;/tt&gt; otherwise
+ */
+public boolean hasPathTo(int v) {
+    return distTo[v] &lt; Double.POSITIVE_INFINITY;
 }
 
-public boolean hasPathTo(int v) {return marked[v];}
-
-public Iterable&lt;Integer&gt; pathTo(int v) {
+/**
+ * Returns a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+ * @param v the destination vertex
+ * @return a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;
+ *    as an iterable of edges, and &lt;tt&gt;null&lt;/tt&gt; if no such path
+ */
+public Iterable&lt;DirectedEdge&gt; pathTo(int v) {
     if (!hasPathTo(v)) return null;
-    Stack&lt;Integer&gt; path = new Stack&lt;Integer&gt;();
-    for(int x = v; x != s; x = edgeTo[x])
-        path.push(x);
-    path.push(s);
+    Stack&lt;DirectedEdge&gt; path = new Stack&lt;DirectedEdge&gt;();
+    for (DirectedEdge e = edgeTo[v]; e != null; e = edgeTo[e.from()]) {
+        path.push(e);
+    }
     return path;
 }
 </code></pre>
@@ -226,941 +1452,851 @@ public Iterable&lt;Integer&gt; pathTo(int v) {
 <p>}
 ```</p>
 
-<h2>5. 广度优先搜索(BFS)</h2>
+<p>要解决<strong>加权有向图中给定两点（从s到t）的最短路径</strong>这个问题，只要使用Dijkstra算法并从优先队列中取到t之后终止搜索。</p>
 
-<p>广度优先搜索可以解决单点最短路径的问题，即“从s到给定目的顶点v是否存在一条路径？如果有，找出其中最短的那条。”要找到从s到v的最短路径，从s开始，在所有由一条边就可以到达的顶点中寻找v，如果找不到就继续在与s距离两条边的所有顶点中找v，如此一直进行。实现广度优先搜索时，可以使用先进先出（FIFO）队列。代码示意如下：</p>
+<h2>5. 无环加权有向图中的最短路径算法</h2>
 
-<p>```java
-public class BreadthFirstPaths {</p>
+<p>如果加权有向图是不含有有向环的，那么可以采用一种比Dijkstra更快、更简单的最短路径算法。它能够在线性时间内解决单点最短路径问题，能够处理负权重的边，还能解决一些其它问题，如找出最长的路径。</p>
 
-<pre><code>private boolean[] marked;  //到达该顶点的最短路径已知吗？
-private int[] edgeTo;      //到达该顶点的已知路径上的最后一个顶点
-private final int s;       //起点
+<p>根据在<a href="/blog/2014/10/30/you-xiang-tu/">有向图</a>中学习的拓扑顺序知识，我们知道一幅有向无环图的拓扑顺序就是所有顶点的逆后序排列。如果我们按照拓扑顺序放松顶点，就能在E+V成正比的时间内解决无环加权有向图的单点最短路径问题。代码实现如下：</p>
 
-public BreadthFirstPaths(Graph G, int s) {
-    marked = new boolean[G.V()];
-    edgeTo = new int[G.v()];
-    this.s = s;
-    bfs(G, s);
-}
+<p>```
+public class AcyclicSP {</p>
 
-private void bfs(Grapth G, int s) {
-    Queue&lt;Integer&gt; queue = new Queue&lt;Integer&gt;();
-    marked[s] = true;  //标记起点
-    queue.enqueue(s);  //入列
-    while (!queue.isEmpty()) {
-        int v = queue.dequeue();
-        for(int w : G.adj(v))
-            if (!marked[w]) {
-                edgeTo[w] = v;
-                marked[w] = true;
-                queue.enqueue(w);
-            }
+<pre><code>private double[] distTo;         // distTo[v] = distance  of shortest s-&gt;v path
+private DirectedEdge[] edgeTo;   // edgeTo[v] = last edge on shortest s-&gt;v path
+
+
+/**
+ * Computes a shortest paths tree from &lt;tt&gt;s&lt;/tt&gt; to every other vertex in
+ * the directed acyclic graph &lt;tt&gt;G&lt;/tt&gt;.
+ * @param G the acyclic digraph
+ * @param s the source vertex
+ * @throws IllegalArgumentException if the digraph is not acyclic
+ * @throws IllegalArgumentException unless 0 &amp;le; &lt;tt&gt;s&lt;/tt&gt; &amp;le; &lt;tt&gt;V&lt;/tt&gt; - 1
+ */
+public AcyclicSP(EdgeWeightedDigraph G, int s) {
+    distTo = new double[G.V()];
+    edgeTo = new DirectedEdge[G.V()];
+    for (int v = 0; v &lt; G.V(); v++)
+        distTo[v] = Double.POSITIVE_INFINITY;
+    distTo[s] = 0.0;
+
+    // visit vertices in toplogical order
+    Topological topological = new Topological(G);
+    if (!topological.hasOrder())
+        throw new IllegalArgumentException("Digraph is not acyclic.");
+    for (int v : topological.order()) {
+        for (DirectedEdge e : G.adj(v))
+            relax(e);
     }
 }
 
-public boolean hasPathTo(int v) {return marked[v];}
+// relax edge e
+private void relax(DirectedEdge e) {
+    int v = e.from(), w = e.to();
+    if (distTo[w] &gt; distTo[v] + e.weight()) {
+        distTo[w] = distTo[v] + e.weight();
+        edgeTo[w] = e;
+    }       
+}
 
-public Iterable&lt;Integer&gt; pathTo(int v) {//与深度优先实现相同}
+/**
+ * Returns the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+ * @param v the destination vertex
+ * @return the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;;
+ *    &lt;tt&gt;Double.POSITIVE_INFINITY&lt;/tt&gt; if no such path
+ */
+public double distTo(int v) {
+    return distTo[v];
+}
+
+/**
+ * Is there a path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;?
+ * @param v the destination vertex
+ * @return &lt;tt&gt;true&lt;/tt&gt; if there is a path from the source vertex
+ *    &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;, and &lt;tt&gt;false&lt;/tt&gt; otherwise
+ */
+public boolean hasPathTo(int v) {
+    return distTo[v] &lt; Double.POSITIVE_INFINITY;
+}
+
+/**
+ * Returns a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+ * @param v the destination vertex
+ * @return a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;
+ *    as an iterable of edges, and &lt;tt&gt;null&lt;/tt&gt; if no such path
+ */
+public Iterable&lt;DirectedEdge&gt; pathTo(int v) {
+    if (!hasPathTo(v)) return null;
+    Stack&lt;DirectedEdge&gt; path = new Stack&lt;DirectedEdge&gt;();
+    for (DirectedEdge e = edgeTo[v]; e != null; e = edgeTo[e.from()]) {
+        path.push(e);
+    }
+    return path;
+}
 </code></pre>
 
 <p>}
 ```</p>
 
-<h2>6. 连通分量</h2>
+<p>上面这个算法的效率几乎已经没有提高的空间。<strong>在已知加权图是无环的情况下，它是找出最短路径的最好方法。</strong>而且它与边的权重是否非负无关，因此无环加权有向图不会受到任何限制。</p>
 
-<p>所谓连通分量就是连通子图，深度优先搜索可用于找出一幅图的所有连通分量。其API定义如下：</p>
+<h3>5.1 最长路径</h3>
 
-<p><img src="/myresource/images/image_blog_2014-10-04_cc-api.png" alt="image" /></p>
+<p><strong>无环加权有向图中的单点最长路径。</strong>给定一幅无环加权有向图（边的权重可能为负）和一个起点s，回答“是否存在一条从s到达给定的顶点v的路径？如果有，找出最长（总权重最大）的那条路径。”</p>
 
-<p>递归的深度优先搜索第一次调用的参数是顶点0，它会标记所有与0连通的顶点。然后构造函数中的for循环会查找每个没有被标记的顶点并递归调用dfs()来标记和它相邻的所有顶点。代码如下：</p>
-
-<p>```java
-public class CC {</p>
-
-<pre><code>private boolean[] marked;
-private int[] id;
-private int count = 0;
-
-public CC(Graph G) {
-    marked = new boolean[G.V()];
-    id = new int[G.V()];
-    for(int s = 0; s &lt; G.V(); s++)
-        if (!marked[s]) {
-            dfs(G, s);
-            count++;
-        }
-}
-
-private void dfs(Graph G, int v) {
-    marked[v] = true;
-    id[v] = count;
-    for(int w : G.adj(v))
-        if (!marked[w])
-            dfs(G, w);
-}
-
-public boolean connected(int v, int w) { return id[v] == id[w]; }
-
-public int id(int v) {return id[v]; }
-
-public int count() {return count;}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>深度优先搜索还可用于解决两个问题：1. 给定的图是无环图吗（假定不存在自环和平行边）？<a href="http://algs4.cs.princeton.edu/41undirected/Cycle.java.html">代码实现</a> 2. 这是一幅二分图吗？也就是说能够用两种颜色将图的所有顶点着色，使得任意一条边的两个端点的颜色都不相同。<a href="http://baike.baidu.com/view/501081.htm">二分图</a>，<a href="http://algs4.cs.princeton.edu/41undirected/Bipartite.java.html">代码实现</a></p>
-
-<h2>7. 符号图</h2>
-
-<p>在典型应用中，通常使用字符串而非整数来表示和指代顶点。为了适应这样的应用，需要符号图。符号图使用字符串代替整数索引。其API定义如下：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-04_symbol-graph-api.png" alt="image" /></p>
-
-<p>符号图的实现可以在无向图的基础上增加一个符号表和反向索引。符号表完成符号到邻接表索引的映射，键为String(顶点名)，值的类型为int(邻接表的索引)。反向索引是一个数组keys[]，保存每个顶点索引所对应的顶点名。结构如下图：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-04_symbol-graph.png" alt="image" /></p>
-
-<p>其实现较为简单，<a href="http://algs4.cs.princeton.edu/41undirected/SymbolGraph.java.html">查看代码</a>。</p>
-
-<p>利用符号图可以处理一个经典问题，找到一个社交网络中两个人间隔的度数。这其实就是用符号图+广度优先求最短路径的用例。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[散列表(HashTable)]]></title>
-    <link href="http://blog.ubone.com/blog/2014/10/03/san-lie-biao/"/>
-    <updated>2014-10-03T10:03:40+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/10/03/san-lie-biao</id>
-    <content type="html"><![CDATA[<p>散列表也是一种符号表，它通过算法将键转化为数组的索引来访问数组中的键值对。散列表查找的第一步是用散列函数将被查找的键转化为一数组索引，第二步是处理碰撞冲突。解决碰撞冲突的方法有拉链法和线性探测法。</p>
-
-<!--more-->
-
-
-<h2>1. 散列函数</h2>
-
-<p>散列函数用于将键转化为数组的索引，它应该易于计算并且能够均匀分布所有的键。散列函数和键的类型有关，对于每种类型的键都需要一个与之对应的散列函数。</p>
-
-<p>Java对正整数采用除留余数法计算散列值。选择大小为素数M的数组，对于任意正整数k，计算余数：<code>k%M</code>，能够有效地将键散布在0到M-1的范围内。素数又称为质数，是一个大于1的自然数，除了1和它本身外，不能被其他自然数整除（除0以外）的数。Java对浮点数会将键表示为二进制数然后再使用除留余数法。对字符串采用类似Homer方法，用N次乘法、加法和取余来计算散列值。</p>
-
-<p>对Java程序，<code>hashCode()</code>和<code>equals()</code>方法必须一致。如果<code>equals()</code>返回<code>true</code>那么<code>hashCode()</code>返回值必须一致，反过来则可以不同。</p>
-
-<h2>2. 基于拉链法的散列表</h2>
-
-<p>当<code>hashCode()</code>返回值相同，但<code>equals()</code>为false时，就发生了碰撞。解决碰撞的一种方法是拉链法。拉链法是指数组中的每个元素都指向一个链表，链表中的每个结点都存储了散列值为该元素的索引的键值对。因此这样的散列表由数组+链表构成。查找时先根据散列值找到对应的链表，然后沿着链表顺序查找相应的键。</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-03_separate-chaining.png" alt="image" /></p>
-
-<p>可以看出，散列表的查找性能与散列表的大小有很大关系，对N个元素来说，当散列表的大小M过小时，碰撞机率就会增加，链表的长度必然增加，从而降低了查找效率。因此在内存不紧张时，可以选择一个足够大的M，内存紧张时，选择尽量大的M。另一种方法是动态调整数据的大小以保持短小的链表。</p>
-
-<p>执行删除操作时，先用散列值找到索引及对应的链表，然后调用链表的删除方法即可。</p>
-
-<p>对于有序性相关的符号表操作，散列表都不是合适的选择，因为这些操作的运行时间都是线性的。</p>
-
-<p>Java的TreeMap和HashMap分别是基于红黑树和拉链法的散列表的符号表实现。</p>
-
-<h2>3. 基于线性探测法的散列表</h2>
-
-<p>实现散列表的另一种方式是用大小为M的数组保存N个键值对，其中M>N。依靠数据中的空位解决碰撞冲突。基于这种策略的所有方法都统称为开放地址散列表。其中最简单的方法叫做线性探测法：当碰撞发生时，直接检查散列表的下一个位置（索引加1），可能产生三种结果：</p>
+<p>最短路径的算法可以稍加改动就可以用于最长路径的计算。</p>
 
 <ul>
-<li>命中，该位置的键和被查找的键相同；</li>
-<li>未命中，键为空（该位置没有键）；</li>
-<li>继续查找，该位置的键和被查找的键不同。</li>
+<li>方法一：将无环加权有向图复制一份，将副本的所有边的权重取反数。这样副本中的最短路径即为原图中的最长路径。</li>
+<li>方法二：改变AcyclicLP类中relax()方法中的不等式方向。这种方法更加简单。</li>
 </ul>
 
 
-<p>其核心思想是与其将内存用作链表，不如将它们作为散列表的空元素。即用散列函数找到索引，检查其中的键和被查找的键是否相同。如果不同则继续查找（增加索引，到达数组结尾后再折回数组开头），直到找到该键或者遇到一个空元素。过程如下图所示：</p>
+<p>最长路径有什么意义？例如并行任务调度中的关键路径问题。关键路径是最长的任务序列，是任务调度中的关键手段。如何利用无环加权有向图计算关键路径？</p>
 
-<p><img src="/myresource/images/image_blog_2014-10-03_linear-probing.png" alt="image" /></p>
+<blockquote><p>解决并行任务调度问题的关键路径方法的步骤如下：创建一幅无环加权有向图，其中包含一个起点s和一个终点t且每个任务都对应两个顶点（一个起点和一个结点顶点）。对于每个任务都有一条从它的起始顶点指向结束顶点的边，边的权重为任务所需的时间。对于每条优先级限制v->w，添加一条从v的结束顶点指向w的起始顶点的权重为零的边。为每个任务添加一条从起点指向该任务的起始顶点的权重为零的边以及一条从该任务的结束顶点到终点的权重为零的边。这样，每个任务预计的开始时间即为从起点到它的起始顶点的最长距离。</p></blockquote>
 
-<p>在基于线性探测法的散列表中执行删除操作比较复杂，如果将该键所在位置为为null是不行的。需要将簇中被删除键的右侧的所有键重新插入散列表。</p>
+<p>下图展示了一个任务调度的无环加权有向图表示。共有0-9个任务，红线表示任务依赖关系（如任务1、7和9依赖于任务0）其权重为0，图形表示如下：</p>
 
-<p>这种散列表的性能也依赖于N/M，但在这里表示散列表的利用率。如果利用率达到1，即散列表满了，会造成未命中的查找无限循环。为了保证性能，要动态调整数组的大小来保证利用率在1/8到1/2之间。</p>
+<p><img src="/myresource/images/image_blog_2014-11-05-scheduling-reduction.png" alt="image" /></p>
 
-<h2>4. 数组的大小和内存使用</h2>
+<p>通过计算最长路径，得到任务的关键路径：</p>
 
-<p>对于线性探测法，调整数组的大小是必需的。对于拉链法，如果你能准确估计所需的散列表大小N，调整数据的工作不是必需的，只需要根据查找耗时和<code>(1+N/M)</code>成正比来选取一个适当的M即可。</p>
+<p><img src="/myresource/images/image_blog_2014-11-05-scheduling-critical-path.png" alt="image" /></p>
 
-<p>符号表的内存使用：</p>
+<p>最后期限是任务调度中常见的问题，即某个任务必须在指定的时间点之前开始，这种类型的问题如何解决？相对最后期限限制下的并行任务调度问题是一个加权有向图中的最短路径问题（可能存在环和负权重边）。这时可以为每条最后期限限制添加一条边：如果任务v必须在任务w启动后的d个时间单位内开始，则添加一条从v指向w的负权重为d的边。将所有边的权重取反即可将该问题转化为一个最短路径问题。</p>
+
+<p>因此，负权重的边具有实际作用，但前面的算法Dijkstra只适用于非负权重的边，AcyclicSP要求有向图是无环的。它们都无法完成任务，因此需要一种更通用的方法。</p>
+
+<h2>6. 一般加权有向图中的最短路径问题</h2>
+
+<p>所谓一般加权有向图的最短路径问题，就是能够处理有环、负权重边的加权有向图最短路径问题。一幅加权有向图中包含环并不可怕，可怕的是这个环的总权重为负，这时候最短路径就会失去意义。因为无论何时绕这个环一圈都能得到权重更小的路径。<strong>负权重环</strong>就是这样一个总权重（环上的所有边的权重之和）为负的有向环。</p>
+
+<blockquote><p>当且仅当加权有向图中至少存在一条从s到v的有向路径且所有从s到v的有向路径上的任意顶点都不存在于任何负权重环中时，s到v的最短路径才是存在的。</p></blockquote>
+
+<p>Bellman-Ford算法，在任意含有V个顶点的加权有向图中给定起点s，从s无法到达任何负权重环，以下算法能够解决其中的单点最短路径问题：将distTo[s]初始化为0，其他distTo[]元素初始化为无穷大。以任意顺序放松有向图的所有边，重复V轮。</p>
+
+<p>Bellman-Ford算法所需的时间和EV成正比，空间和V成正比。因为每一轮算法都会放松E条边，共重复了V轮。把这个算法稍加改进可以提高效率。每一轮放松所有边的过程中，许多边的放松都不会成功。只有上一轮中的distTo[]值发生变化的顶点指出的边才能够改变其他distTo[]元素的值。因此可以用FIFO队列记录这样的顶点，不需要放松所有边。代码实现如下（先忽略负权重环的代码）：</p>
+
+<p>```
+public class BellmanFordSP {</p>
+
+<pre><code>private double[] distTo;               // distTo[v] = 从起点到某个顶点的路径长度
+private DirectedEdge[] edgeTo;         // edgeTo[v] = 从起点到某个顶点的最后一条边
+private boolean[] onQueue;             // onQueue[v] = 该顶点是否存在于队列中
+private Queue&lt;Integer&gt; queue;          // 正在被放松的顶点
+private int cost;                      // relax()的调用次数
+private Iterable&lt;DirectedEdge&gt; cycle;  // edgeTo[]是否有负权重环
+
+/**
+ * Computes a shortest paths tree from &lt;tt&gt;s&lt;/tt&gt; to every other vertex in
+ * the edge-weighted digraph &lt;tt&gt;G&lt;/tt&gt;.
+ * @param G the acyclic digraph
+ * @param s the source vertex
+ * @throws IllegalArgumentException unless 0 &amp;le; &lt;tt&gt;s&lt;/tt&gt; &amp;le; &lt;tt&gt;V&lt;/tt&gt; - 1
+ */
+public BellmanFordSP(EdgeWeightedDigraph G, int s) {
+    distTo  = new double[G.V()];
+    edgeTo  = new DirectedEdge[G.V()];
+    onQueue = new boolean[G.V()];
+    for (int v = 0; v &lt; G.V(); v++)
+        distTo[v] = Double.POSITIVE_INFINITY;
+    distTo[s] = 0.0;
+
+    // Bellman-Ford algorithm
+    queue = new Queue&lt;Integer&gt;();
+    queue.enqueue(s);
+    onQueue[s] = true;
+    while (!queue.isEmpty() &amp;&amp; !hasNegativeCycle()) {
+        int v = queue.dequeue();
+        onQueue[v] = false;
+        relax(G, v);
+    }
+}
+
+// relax vertex v and put other endpoints on queue if changed
+private void relax(EdgeWeightedDigraph G, int v) {
+    for (DirectedEdge e : G.adj(v)) {
+        int w = e.to();
+        if (distTo[w] &gt; distTo[v] + e.weight()) {
+            //成功放松的边指向的所有顶点加入到FIFO队列
+            distTo[w] = distTo[v] + e.weight();
+            edgeTo[w] = e;
+            if (!onQueue[w]) {
+                queue.enqueue(w);
+                onQueue[w] = true;
+            }
+        }
+        //周期性地检查是否有负权重环，避免无限循环
+        if (cost++ % G.V() == 0) 
+            findNegativeCycle();
+    }
+}
+
+/**
+ * Is there a negative cycle reachable from the source vertex &lt;tt&gt;s&lt;/tt&gt;?
+ * @return &lt;tt&gt;true&lt;/tt&gt; if there is a negative cycle reachable from the
+ *    source vertex &lt;tt&gt;s&lt;/tt&gt;, and &lt;tt&gt;false&lt;/tt&gt; otherwise
+ */
+public boolean hasNegativeCycle() {
+    return cycle != null;
+}
+
+/**
+ * Returns a negative cycle reachable from the source vertex &lt;tt&gt;s&lt;/tt&gt;, or &lt;tt&gt;null&lt;/tt&gt;
+ * if there is no such cycle.
+ * @return a negative cycle reachable from the soruce vertex &lt;tt&gt;s&lt;/tt&gt; 
+ *    as an iterable of edges, and &lt;tt&gt;null&lt;/tt&gt; if there is no such cycle
+ */
+public Iterable&lt;DirectedEdge&gt; negativeCycle() {
+    return cycle;
+}
+
+// by finding a cycle in predecessor graph
+private void findNegativeCycle() {
+    int V = edgeTo.length;
+    EdgeWeightedDigraph spt = new EdgeWeightedDigraph(V);
+    for (int v = 0; v &lt; V; v++)
+        if (edgeTo[v] != null)
+            spt.addEdge(edgeTo[v]);
+
+    EdgeWeightedDirectedCycle finder = new EdgeWeightedDirectedCycle(spt);
+    cycle = finder.cycle();
+}
+
+/**
+ * Returns the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+ * @param v the destination vertex
+ * @return the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;;
+ *    &lt;tt&gt;Double.POSITIVE_INFINITY&lt;/tt&gt; if no such path
+ * @throws UnsupportedOperationException if there is a negative cost cycle reachable
+ *    from the source vertex &lt;tt&gt;s&lt;/tt&gt;
+ */
+public double distTo(int v) {
+    if (hasNegativeCycle())
+        throw new UnsupportedOperationException("Negative cost cycle exists");
+    return distTo[v];
+}
+
+/**
+ * Is there a path from the source &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;?
+ * @param v the destination vertex
+ * @return &lt;tt&gt;true&lt;/tt&gt; if there is a path from the source vertex
+ *    &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;, and &lt;tt&gt;false&lt;/tt&gt; otherwise
+ */
+public boolean hasPathTo(int v) {
+    return distTo[v] &lt; Double.POSITIVE_INFINITY;
+}
+
+/**
+ * Returns a shortest path from the source &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+ * @param v the destination vertex
+ * @return a shortest path from the source &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;
+ *    as an iterable of edges, and &lt;tt&gt;null&lt;/tt&gt; if no such path
+ * @throws UnsupportedOperationException if there is a negative cost cycle reachable
+ *    from the source vertex &lt;tt&gt;s&lt;/tt&gt;
+ */
+public Iterable&lt;DirectedEdge&gt; pathTo(int v) {
+    if (hasNegativeCycle())
+        throw new UnsupportedOperationException("Negative cost cycle exists");
+    if (!hasPathTo(v)) return null;
+    Stack&lt;DirectedEdge&gt; path = new Stack&lt;DirectedEdge&gt;();
+    for (DirectedEdge e = edgeTo[v]; e != null; e = edgeTo[e.from()]) {
+        path.push(e);
+    }
+    return path;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>6.1 负权重环的检测</h3>
+
+<p>BellmanFordSP的实现会检测负权重环来避免陷入无限循环。当BellmanFordSP构造函数运行之后，将所有边放松V轮之后当且仅当队列非空时有向图中才存在从起点可达的负权重环。如果是这样，edgeTo[]数组中所表示的子图必然含有这个负权重环。因此nagativeCycle()的实现中，会根据edgeTo[]中的边构造一幅加权有向图并在该图中检测环。我们修改DirectedCycle类来在加权有向图中寻找环：</p>
+
+<p>```
+public class EdgeWeightedDirectedCycle {</p>
+
+<pre><code>private boolean[] marked;             // marked[v] = has vertex v been marked?
+private DirectedEdge[] edgeTo;        // edgeTo[v] = previous edge on path to v
+private boolean[] onStack;            // onStack[v] = is vertex on the stack?
+private Stack&lt;DirectedEdge&gt; cycle;    // directed cycle (or null if no such cycle)
+
+/**
+ * Determines whether the edge-weighted digraph &lt;tt&gt;G&lt;/tt&gt; has a directed cycle and,
+ * if so, finds such a cycle.
+ * @param G the edge-weighted digraph
+ */
+public EdgeWeightedDirectedCycle(EdgeWeightedDigraph G) {
+    marked  = new boolean[G.V()];
+    onStack = new boolean[G.V()];
+    edgeTo  = new DirectedEdge[G.V()];
+    for (int v = 0; v &lt; G.V(); v++)
+        if (!marked[v]) dfs(G, v);
+}
+
+// check that algorithm computes either the topological order or finds a directed cycle
+private void dfs(EdgeWeightedDigraph G, int v) {
+    onStack[v] = true;
+    marked[v] = true;
+    for (DirectedEdge e : G.adj(v)) {
+        int w = e.to();
+
+        // short circuit if directed cycle found
+        if (cycle != null) return;
+
+        //found new vertex, so recur
+        else if (!marked[w]) {
+            edgeTo[w] = e;
+            dfs(G, w);
+        }
+
+        // trace back directed cycle
+        else if (onStack[w]) {
+            cycle = new Stack&lt;DirectedEdge&gt;();
+            while (e.from() != w) {
+                cycle.push(e);
+                e = edgeTo[e.from()];
+            }
+            cycle.push(e);
+        }
+    }
+
+    onStack[v] = false;
+}
+
+/**
+ * Does the edge-weighted digraph have a directed cycle?
+ * @return &lt;tt&gt;true&lt;/tt&gt; if the edge-weighted digraph has a directed cycle,
+ * &lt;tt&gt;false&lt;/tt&gt; otherwise
+ */
+public boolean hasCycle() {
+    return cycle != null;
+}
+
+/**
+ * Returns a directed cycle if the edge-weighted digraph has a directed cycle,
+ * and &lt;tt&gt;null&lt;/tt&gt; otherwise.
+ * @return a directed cycle (as an iterable) if the edge-weighted digraph
+ *    has a directed cycle, and &lt;tt&gt;null&lt;/tt&gt; otherwise
+ */
+public Iterable&lt;DirectedEdge&gt; cycle() {
+    return cycle;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>6.2 套汇</h3>
+
+<p>前面的问题都是权重之和，而套汇问题演示了另一种方式。套汇是通过不同货币间进行兑换赚取利润。这也是一个加权有向图的应用。顶点是货币，s->t表示货币s到t的汇率。如何交易使得利润最大，就是找到各权重之<strong>积</strong>最大者。但我们之前所学的都是权重之和，那么如何解决这个问题呢？</p>
+
+<p>套汇问题等价于加权有向图中的负权重环的检测问题：</p>
+
+<blockquote><p>取每条边权重的自然对数并取反，这样在原始问题中所有边的权重之积的计算就转化为新图中所有边的权重之和的计算。任意权重之积 w<sub>1</sub>w<sub>2</sub>&hellip;w<sub>k</sub>即对应-ln(w<sub>1</sub>)-ln(w<sub>2</sub>)&ndash;&hellip;-ln(w<sub>k</sub>)之和。转换后边的权重可能为正也可能为负。一条从v到w的路径表示将货币v兑换为货币w，任意负权重环都是一次套汇的好机会。</p></blockquote>
+
+<h2>7. 总结</h2>
+
+<p>最短路径算法的性能特点如下表：</p>
 
 <table>
 <thead>
 <tr>
-<th>方法 </th>
-<th> N个元素所需的内存（引用类型）</th>
+<th>算法</th>
+<th>局限</th>
+<th>一般情况</th>
+<th>最坏情况</th>
+<th>所需空间</th>
+<th> 优势</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>基于拉链法的散列表 </td>
-<td> ~48N + 32M</td>
+<td>Dijkstra算法（即时版本） </td>
+<td> 边的权重必须为正 </td>
+<td> ElogV </td>
+<td> ElogV </td>
+<td> V </td>
+<td> 最坏情况下仍有较好的性能</td>
 </tr>
 <tr>
-<td>基于线性探测的散列表 </td>
-<td> 在~32N和~128N之间</td>
+<td>拓扑排序</td>
+<td> 只适用于无环加权有向图</td>
+<td> E + V </td>
+<td> E + V </td>
+<td> V </td>
+<td> 是无环图中的最优算法</td>
 </tr>
 <tr>
-<td>各种二叉查找树 </td>
-<td> ~56N</td>
+<td>Bellman-Ford算法（基于队列）</td>
+<td>不能存在负权重环</td>
+<td> E+V </td>
+<td> EV </td>
+<td> V</td>
+<td> 适用领域广泛</td>
 </tr>
 </tbody>
 </table>
 
 
-<h2>Q&amp;A</h2>
-
-<p>Q: Java的Integer, Double和Long类型的hashCode()是如何实现的？</p>
-
-<blockquote><p>Integer类型直接返回该整数的32位值。对Double和Long返回机器表示的前32位和后32位异或的结果。</p></blockquote>
-
-<p>Q: 为什么不将<code>hash(x)</code>实现为<code>x.hashCode() % M</code>?</p>
-
-<blockquote><p>Java中，取余的结果可能是负数。</p></blockquote>
-
-<p>Q: 为什么不将<code>hash(x)</code>实现为<code>Math.abs(x.hashCode()) % M</code>?</p>
-
-<blockquote><p>对于最大的整数<code>Math.abs()</code>会返回一个负值，这种溢出可能使程序崩溃。</p></blockquote>
-
-<p>Q: 在拉链法中，链表是否可以使用二叉查找树或者红黑树？</p>
-
-<blockquote><p>一般来说，散列表碰撞机率越少越好，因此链表越短越好。所以链表的初级实现的性能一般会更好，特殊情况下最好由专家进行这种调优。</p></blockquote>
-
-<p>Q: 散列表的查找比红黑树更快吗？</p>
-
-<blockquote><p>取决于键的类型，也就是hashCode()的计算成本是否大于compareTo()的比较成本。但通常散列表会比红黑树快得多。但散列表无法高效支持有序性相关的操作。</p></blockquote>
+<p>参考：<a href="http://algs4.cs.princeton.edu/44sp/">http://algs4.cs.princeton.edu/44sp/</a></p>
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[符号表]]></title>
-    <link href="http://blog.ubone.com/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/"/>
-    <updated>2014-10-02T11:26:20+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao</id>
-    <content type="html"><![CDATA[<p>符号表就是用键和值的方式来存储和检索数据。其关键点在于如何快速检索和高效插入。本章介绍了符号表的简单实现、二叉查找树、红黑树的实现。</p>
+    <title type="html"><![CDATA[最小生成树]]></title>
+    <link href="http://blog.ubone.com/blog/2014/10/31/zui-xiao-sheng-cheng-shu/"/>
+    <updated>2014-10-31T22:38:49+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/10/31/zui-xiao-sheng-cheng-shu</id>
+    <content type="html"><![CDATA[<p>加权图是一种为每条边关联一个权值或成本的图模型。这种图最令人感兴趣的是将成本最小化。本节学习加权无向图模型并找到它的一棵最小生成树。</p>
+
+<p>图的生成树是它的一棵含有其所有顶点的无环连通子图。一幅加权图的最小生成树（MST）是它的一棵权值（树中所有边的权值之和）最小的生成树。</p>
 
 <!--more-->
 
 
-<p>首先还是来定义一下简单的符号表API：</p>
+<h2>1. 一些约定</h2>
 
-<p><img src="/myresource/images/image_blog_20141002_170641.jpg" alt="image" /></p>
-
-<h2>1. API定义</h2>
-
-<p>符号表遵循以下规则：</p>
+<p>为了方便说明，有以下这些约定：</p>
 
 <ul>
-<li>每个键只对应一个值；</li>
-<li>当存入的键值对和表中已有的键冲突时，新的值会替代旧的值；</li>
-<li>键不能为空；</li>
-<li>值不允许为空；</li>
+<li>只考虑连通图。如果图是非连通的，只能计算它的所有连通分量的最小生成树，合并起来称为最小生成森林。</li>
+<li>边的权重不一定表示距离。但为了看起来方便，示意图会用距离来表示权重。</li>
+<li>边的权重可能是0或者负数。</li>
+<li>所有边的权重都各不相同。如果权重可以相同，最小生成树就不一定唯一，算法证明会更复杂。但实际上算法也适用于存在权重相等的情况。</li>
 </ul>
 
 
-<p>在简单的符号表中，键的等价性由equals()方法保证。而很多典型应用中，键都是Comparable对象，因此有序符号表可以保持键的有序并扩展其API：</p>
+<h2>2. 原理</h2>
 
-<p><img src="/myresource/images/image_blog_20141002_170651.jpg" alt="image" /></p>
+<p>图的一种<strong>切分</strong>是将图的所有顶点分为两个非空且不重叠的两个集合。<strong>横切边</strong>是一条连接两个属于不同集合的顶点的边。</p>
 
-<ul>
-<li>floor：向下取整，找出小于等于该键的最大键；</li>
-<li>ceiling：向上取整，找出大于等于该键的最小键；</li>
-<li>rank：小于key的键的数量；</li>
-<li>select：获得排名为第k的键。</li>
-</ul>
+<blockquote><p>切分定理：在一幅加权图中，给定任意的切分，它的横切边中的权重最小者必然属于图的最小生成树。</p></blockquote>
 
+<p>切分定理会把加权图中的所有顶点分为两个集合，检查横跨两个集合的所有边并识别哪边边应属于图的最小生成树。</p>
 
-<p>对于0到size()-1的所有i都有：i == rank(select(i))，且所有键都满足：key == select(rank(key))。</p>
+<h2>3. 加权无向图的数据结构</h2>
 
-<h2>2. 实现</h2>
+<p>通过扩展无向图的邻接矩阵来表示加权无向图。在无向图的邻接表表示中，第v个顶点的列表中每个元素都是和顶点v相邻的顶点。在加权无向图中，我们将其替换为一个加权边Edge：</p>
 
-<h3>2.1 无序链表的顺序查找</h3>
+<p><img src="/myresource/images/image_blog_2014-11-02-edge-api.png" alt="image" /></p>
 
-<p>可以用链表来实现符号表，每个结点存储一个键值对，并保持一个链接指向下一个结点。这种方式非常简单，但是效率非常低。不论是get方法还是put方法，都需要从首节点开始一个一个地遍历。</p>
+<p>上图中，eaither()表示边的两个顶点中的某一个，而other()则返回另一个顶点。有了加权边Edge，加权无向图的API就与无向图非常接近，在实现上，只是在邻接表中用Edge对象替代了无向图Graph中的整数作为链表的结点：</p>
 
-<h3>2.2 有序数组中的二分查找</h3>
+<p><img src="/myresource/images/image_blog_2014-11-02-edge-weighted-graph-api.png" alt="image" /></p>
 
-<p>另一种实现方法是通过两个平行的数组来存储符号表。一个储存键，一个存储值。二分法可以用于保证数组中Comparable类型的键有序，并高效地实现get和其他操作(如select)。</p>
+<p>加权无向图的表示如下：</p>
 
-<p>对N个键的有序数组进行二分查找最多需要（lgN + 1）次比较。然而put方法却仍然很慢，向大小为N的有序数组插入一个新的元素，在最坏的情况下需要访问约2N次数组。因此向一个空的符号表插入N个元素时，最坏的情况下需要访问约N<sup>2</sup>次数组。</p>
+<p><img src="/myresource/images/image_blog_2014-11-02-edge-weighted-graph-representation.png" alt="image" /></p>
 
-<p>因此，我们需要一种结构，能够同时拥有二分法的查找效率和链表的插入效率。这就是二叉查找树。</p>
-
-<h3>2.3 二叉查找树(BST)</h3>
-
-<p>二叉查找树的定义：它是一棵二叉树，其中每个结点都含有一个Comparable的键以及相关联的值，每个结点的键都大于其左子树任意结点的键，同时小于右子树任意结点的键。</p>
-
-<h4>2.3.1 基本实现</h4>
-
-<p>如果将一棵二叉查找树的所有键投影到一条直线上，我们可以得到一条有序的键列，如下图所示：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_15.10.37.png" alt="image" /></p>
-
-<p>树结点的实现：</p>
-
-<p>```java</p>
-
-<pre><code>private class Node {
-    private Key key;           // sorted by key
-    private Value val;         // associated data
-    private Node left, right;  // left and right subtrees
-    private int N;             // number of nodes in subtree
-
-    public Node(Key key, Value val, int N) {
-        this.key = key;
-        this.val = val;
-        this.N = N;
-    }
-}
-</code></pre>
-
-<p>```</p>
-
-<h5>查找</h5>
-
-<p>可以使用递归算法在二叉查找树中查找一个键：如果树是空的，则查找未命中；如果被查找的键和根结点的键相等，查找命中；否则就（递归地）在某个子树中继续查找。如果被查找的键较小就选择左子树，较大则选择右子树。查找过程与二分查找一样简单，代码实现如下：</p>
-
-<p>```java</p>
-
-<pre><code>public Value get(Key key) {
-    return get(root, key);
-}
-
-private Value get(Node x, Key key) {
-    if (x == null) return null;
-    int cmp = key.compareTo(x.key);
-    if      (cmp &lt; 0) return get(x.left, key);
-    else if (cmp &gt; 0) return get(x.right, key);
-    else              return x.val;
-}
-</code></pre>
-
-<p>```</p>
-
-<h5>插入</h5>
-
-<p>二叉查找树的插入实现难度和查找差不多。当查找到一个不存在于树中的结点并结束于一条空链接时，我们需要做的就是将链接指向一个含有被查找的键的新结点。代码实现如下：</p>
-
-<p>```java</p>
-
-<pre><code>public void put(Key key, Value val) {
-    if (val == null) { delete(key); return; }
-    root = put(root, key, val);
-}
-
-private Node put(Node x, Key key, Value val) {
-    if (x == null) return new Node(key, val, 1);
-    int cmp = key.compareTo(x.key);
-    if      (cmp &lt; 0) x.left  = put(x.left,  key, val);
-    else if (cmp &gt; 0) x.right = put(x.right, key, val);
-    else              x.val   = val;
-    x.N = 1 + size(x.left) + size(x.right);
-    return x;
-}
-</code></pre>
-
-<p>```</p>
-
-<h5>分析</h5>
-
-<p>二叉查找树的算法效率取决于树的形状。在最好的情况下，树是完全平衡的，此时查找和插入的效率都非常高。</p>
-
-<p>但是，树的结构与结点插入的顺序是相关的。在最坏的情况下（例如升序队列中的元素按顺序插入）可能形成一条单边的树，就变成了链表的结构。这种不平衡的树完全失去了二分查找的效率。</p>
-
-<p>因此，如何保持树的平衡是一个重要问题。要在二叉树动态插入中保证树的完美平衡，代价太高了。因此需要对结构进行一些调整，这就是平衡查找树。</p>
-
-<h3>2.4 2-3查找树</h3>
-
-<p>所谓2-3查找树，是指它或者为一棵空树，或者由以下结点组成：</p>
-
-<ul>
-<li>2-结点，含有一个键（及其对应的值）和两条链接，左链接指向的树的所有键都小于该结点，右链接指向的树的所有键都大于该结点。</li>
-<li>3-结点，含有两个键（及其对应的值）和两条链接，左链接指向的树的所有键都小于该结点，中链接指向的树的所有键都位于该结点的两个键之间，右链接指向的树的所有键都大于该结点。</li>
-</ul>
-
-
-<p>利用2-3查找树，可以方便地实现完美平衡的查找树，2-3查找树示意图如下：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_17_49.png" alt="image" /></p>
-
-<h4>2.4.1 查找</h4>
-
-<p>查找的过程与二叉查找树类似，区别仅在于3-结点树多了一个中链接。</p>
-
-<h4>2.4.2 插入</h4>
-
-<p>2-3查找树实现平衡的关键是插入过程，插入时先进行查找，如果未命中，将根据结束位置的多种情况，采用不同的方法。详细说明如下：</p>
-
-<h5>向2-结点插入新键</h5>
-
-<p>如果查找结束于一个2-结点，只要把这个2-结点替换为一个3-结点，将要插入的键保存在其中即可。如下图所示：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_23tree-insert2.png" alt="image" /></p>
-
-<h5>向一棵只含有一个3-结点的树中插入新键</h5>
-
-<p>向3-结点的树中插入新键，也有多种情况，先看最简单的这种。如下图所示，先将3-结点变成4-结点，然后再分解为2-3树。</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_23tree-insert3a.png" alt="image" /></p>
-
-<h5>向一个父结点为2-结点的3-结点插入新键</h5>
-
-<p>如果父结点为2-结点，则先把3-结点变成4-结点，然后将2-结点变成3-结点，如下图所示：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_23tree-insert3b.png" alt="image" /></p>
-
-<h5>向一个父结点为3-结点的3-结点插入新键</h5>
-
-<p>跟前一步一样，先变成4-结点并分解它，然后再将它的中键插入它的父结点中。但其父结点也是3-结点，因此再用这个中键构造一个临时的4-结点，进行相同的变化，直到遇到一个2-结点将它变成3-结点。如果一直到根结点都是3-结点，则需要分解根结点。插入新键的过程如下图所示：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10_02_23tree-insert3c.png" alt="image" /></p>
-
-<h5>分解根结点</h5>
-
-<p>在上一步中，根结点变成了一个临时的4-结点，此时我们按照向一棵只有一个3-结点的树中插入新键的方法处理此问题。将4-结点分解成3个2-结点，树高加1。如下图所示：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_23tree-split.png" alt="image" /></p>
-
-<h4>2.4.3 性能分析</h4>
-
-<p>从上面这些情况可以看出，插入过程都是进行局部变换，除了相关的结点和链接之外不必修改或检查树的其他部分，因此效率非常高。经过变换后，保持了树的有序性和平衡性。因此在一棵大小为N的2-3树中，查找和插入操作访问的结点必然不超过lgN个！例如含有10亿个结点的一棵2-3树的高度仅在19-30之间，最多只需要访问30个结点就能够在10亿个键中进行任意查找和插入操作，这是多么惊人！这也是<a href="/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/">程序员的数学</a>中提到的利用指数爆炸解决问题。</p>
-
-<h3>2.5 红黑二叉查找树</h3>
-
-<p>2-3查找树很容易理解，现在我们通过红黑二叉树来表达并实现它。其关键是3-结点如何实现。我们将树中的链接分为两种类型：红链接将两个2-结点连接起来构成一个3-结点，黑链接则是普通链接。如下图所示：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_redblack-encoding.png" alt="image" /></p>
-
-<p>红黑树是含有红黑链接并满足以下条件的二叉查找树：</p>
-
-<ul>
-<li>红链接均为左链接；</li>
-<li>没有任何一个结点同时和两条红链接相连；</li>
-<li>该树是完美黑色平衡的，即任意空链接到根结点的路径上的黑链接数量相同。</li>
-</ul>
-
-
-<p>因此在节点类（Node）中，增加一个属性color表示从父结点指向自己的链接是否为红链接：</p>
-
-<p>```java</p>
-
-<pre><code>private class Node {
-    private Key key;           // sorted by key
-    private Value val;         // associated data
-    private Node left, right;  // left and right subtrees
-    private int N;             // number of nodes in subtree
-    boolean color;             //是否红链接    
-
-    public Node(Key key, Value val, int N, boolean color) {
-        this.key = key;
-        this.val = val;
-        this.N = N;
-        this.color = color;
-    }
-}
-</code></pre>
-
-<p>```</p>
-
-<p>在进一步实现红黑树之前，要了解几个基本的动作：左旋转、右旋转和颜色转换。</p>
-
-<h4>2.5.1 旋转</h4>
-
-<p>左旋转是将一条红色的右链接转化为左链接。转换的过程为：将两个键中的较小者作为根结点变为将较大者作为根结点。如下图所示：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_redblack-left-rotate.png" alt="image" /></p>
-
-<p>右旋转是将一条红色的左链接转化为右链接，实现过程与左旋转相似，只需要将left和right互换即可：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_redblack-right-rotate.png" alt="image" /></p>
-
-<h4>2.5.2 颜色转换</h4>
-
-<p>颜色转换是对一个结点的两个红色子结点的颜色进行转换。除了将子结点的颜色由红变黑外，还要同时将父结点的颜色由黑变红。如下图所示：</p>
-
-<p><img src="/myresource/images/image_blog_2014-10-02_color-flip.png" alt="image" /></p>
-
-<h4>2.5.3 插入处理过程</h4>
-
-<p>插入新键时，都使用红链接与父结点相连，然后谨慎地使用左旋转、右旋转和颜色转换这三个简单的操作，就能够保证操作后的红黑树与2-3树一一对应的关系。在沿着插入点到根结点的路径向上移动时在所经过的每个结点中顺序完成以下操作，我们就能完成插入操作：</p>
-
-<ol>
-<li>如果右子结点是红色，而左子结点是黑色，进行左旋转；</li>
-<li>如果左子结点是红色，且它的左子结点也是红色，进行右旋转；</li>
-<li>如果左右子结点都是红色，进行颜色转换。</li>
-</ol>
-
-
-<p>下面是各种情况的示例：</p>
-
-<p><img src="/myresource/images/IMG_20141002_222628.jpg" alt="image" /></p>
-
-<p><img src="/myresource/images/IMG_20141002_222714.jpg" alt="image" /></p>
-
-<h4>2.5.4 插入算法的实现</h4>
-
-<p>以下为红黑树的插入算法：</p>
+<p>代码实现如下：</p>
 
 <p>```java
-public class RedBlackBST<Key extends Comparable<Key>, Value> {</p>
+public class Edge implements Comparable<Edge> {</p>
 
-<pre><code>private static final boolean RED   = true;
-private static final boolean BLACK = false;
+<pre><code>private final int v;
+private final int w;
+private final double weight;
 
-private Node root;     // root of the BST
+public Edge(int v, int w, double weight) {
+    if (v &lt; 0) throw new IndexOutOfBoundsException("Vertex name must be a nonnegative integer");
+    if (w &lt; 0) throw new IndexOutOfBoundsException("Vertex name must be a nonnegative integer");
+    if (Double.isNaN(weight)) throw new IllegalArgumentException("Weight is NaN");
+    this.v = v;
+    this.w = w;
+    this.weight = weight;
+}
 
-// BST helper node data type
-private class Node {
-    private Key key;           // key
-    private Value val;         // associated data
-    private Node left, right;  // links to left and right subtrees
-    private boolean color;     // color of parent link
-    private int N;             // subtree count
+public double weight() {
+    return weight;
+}
 
-    public Node(Key key, Value val, boolean color, int N) {
-        this.key = key;
-        this.val = val;
-        this.color = color;
-        this.N = N;
+public int either() {
+    return v;
+}
+
+public int other(int vertex) {
+    if      (vertex == v) return w;
+    else if (vertex == w) return v;
+    else throw new IllegalArgumentException("Illegal endpoint");
+}
+
+public int compareTo(Edge that) {
+    if      (this.weight() &lt; that.weight()) return -1;
+    else if (this.weight() &gt; that.weight()) return +1;
+    else                                    return  0;
+}
+
+public String toString() {
+    return String.format("%d-%d %.5f", v, w, weight);
+}
+</code></pre>
+
+<p>}  <br/>
+```</p>
+
+<p>```java
+public class EdgeWeightedGraph {</p>
+
+<pre><code>private final int V;
+private int E;
+private Bag&lt;Edge&gt;[] adj;
+
+/**
+ * Initializes an empty edge-weighted graph with &lt;tt&gt;V&lt;/tt&gt; vertices and 0 edges.
+ * param V the number of vertices
+ * @throws java.lang.IllegalArgumentException if &lt;tt&gt;V&lt;/tt&gt; &lt; 0
+ */
+public EdgeWeightedGraph(int V) {
+    if (V &lt; 0) throw new IllegalArgumentException("Number of vertices must be nonnegative");
+    this.V = V;
+    this.E = 0;
+    adj = (Bag&lt;Edge&gt;[]) new Bag[V];
+    for (int v = 0; v &lt; V; v++) {
+        adj[v] = new Bag&lt;Edge&gt;();
     }
 }
 
-// insert the key-value pair; overwrite the old value with the new value
-// if the key is already present
-public void put(Key key, Value val) {
-    root = put(root, key, val);
-    root.color = BLACK;
+/**
+ * Initializes a random edge-weighted graph with &lt;tt&gt;V&lt;/tt&gt; vertices and &lt;em&gt;E&lt;/em&gt; edges.
+ * param V the number of vertices
+ * param E the number of edges
+ * @throws java.lang.IllegalArgumentException if &lt;tt&gt;V&lt;/tt&gt; &lt; 0
+ * @throws java.lang.IllegalArgumentException if &lt;tt&gt;E&lt;/tt&gt; &lt; 0
+ */
+public EdgeWeightedGraph(int V, int E) {
+    this(V);
+    if (E &lt; 0) throw new IllegalArgumentException("Number of edges must be nonnegative");
+    for (int i = 0; i &lt; E; i++) {
+        int v = (int) (Math.random() * V);
+        int w = (int) (Math.random() * V);
+        double weight = Math.round(100 * Math.random()) / 100.0;
+        Edge e = new Edge(v, w, weight);
+        addEdge(e);
+    }
 }
 
-// insert the key-value pair in the subtree rooted at h
-private Node put(Node h, Key key, Value val) { 
-    if (h == null) return new Node(key, val, RED, 1);
+/**  
+ * Initializes an edge-weighted graph from an input stream.
+ * The format is the number of vertices &lt;em&gt;V&lt;/em&gt;,
+ * followed by the number of edges &lt;em&gt;E&lt;/em&gt;,
+ * followed by &lt;em&gt;E&lt;/em&gt; pairs of vertices and edge weights,
+ * with each entry separated by whitespace.
+ * @param in the input stream
+ * @throws java.lang.IndexOutOfBoundsException if the endpoints of any edge are not in prescribed range
+ * @throws java.lang.IllegalArgumentException if the number of vertices or edges is negative
+ */
+public EdgeWeightedGraph(In in) {
+    this(in.readInt());
+    int E = in.readInt();
+    if (E &lt; 0) throw new IllegalArgumentException("Number of edges must be nonnegative");
+    for (int i = 0; i &lt; E; i++) {
+        int v = in.readInt();
+        int w = in.readInt();
+        double weight = in.readDouble();
+        Edge e = new Edge(v, w, weight);
+        addEdge(e);
+    }
+}
 
-    int cmp = key.compareTo(h.key);
-    if      (cmp &lt; 0) h.left  = put(h.left,  key, val); 
-    else if (cmp &gt; 0) h.right = put(h.right, key, val); 
-    else              h.val   = val;
+/**
+ * Initializes a new edge-weighted graph that is a deep copy of &lt;tt&gt;G&lt;/tt&gt;.
+ * @param G the edge-weighted graph to copy
+ */
+public EdgeWeightedGraph(EdgeWeightedGraph G) {
+    this(G.V());
+    this.E = G.E();
+    for (int v = 0; v &lt; G.V(); v++) {
+        // reverse so that adjacency list is in same order as original
+        Stack&lt;Edge&gt; reverse = new Stack&lt;Edge&gt;();
+        for (Edge e : G.adj[v]) {
+            reverse.push(e);
+        }
+        for (Edge e : reverse) {
+            adj[v].add(e);
+        }
+    }
+}
 
-    // fix-up any right-leaning links
-    if (isRed(h.right) &amp;&amp; !isRed(h.left))      h = rotateLeft(h);
-    if (isRed(h.left)  &amp;&amp;  isRed(h.left.left)) h = rotateRight(h);
-    if (isRed(h.left)  &amp;&amp;  isRed(h.right))     flipColors(h);
-    h.N = size(h.left) + size(h.right) + 1;
+//图的顶点数
+public int V() {
+    return V;
+}
 
-    return h;
+//图的边数
+public int E() {
+    return E;
+}
+
+//向图中添加一条边e
+public void addEdge(Edge e) {
+    int v = e.either();
+    int w = e.other(v);
+    if (v &lt; 0 || v &gt;= V) throw new IndexOutOfBoundsException("vertex " + v + " is not between 0 and " + (V-1));
+    if (w &lt; 0 || w &gt;= V) throw new IndexOutOfBoundsException("vertex " + w + " is not between 0 and " + (V-1));
+    adj[v].add(e);
+    adj[w].add(e);
+    E++;
+}
+
+//与v相关联的所有边
+public Iterable&lt;Edge&gt; adj(int v) {
+    if (v &lt; 0 || v &gt;= V) throw new IndexOutOfBoundsException("vertex " + v + " is not between 0 and " + (V-1));
+    return adj[v];
+}
+
+//图中的所有边
+public Iterable&lt;Edge&gt; edges() {
+    Bag&lt;Edge&gt; list = new Bag&lt;Edge&gt;();
+    for (int v = 0; v &lt; V; v++) {
+        int selfLoops = 0;
+        for (Edge e : adj(v)) {
+            if (e.other(v) &gt; v) {
+                list.add(e);
+            }
+            // only add one copy of each self loop (self loops will be consecutive)
+            else if (e.other(v) == v) {
+                if (selfLoops % 2 == 0) list.add(e);
+                selfLoops++;
+            }
+        }
+    }
+    return list;
+}
+
+public String toString() {
+    String NEWLINE = System.getProperty("line.separator");
+    StringBuilder s = new StringBuilder();
+    s.append(V + " " + E + NEWLINE);
+    for (int v = 0; v &lt; V; v++) {
+        s.append(v + ": ");
+        for (Edge e : adj[v]) {
+            s.append(e + "  ");
+        }
+        s.append(NEWLINE);
+    }
+    return s.toString();
 }
 </code></pre>
 
 <p>}
 ```</p>
 
-<h4>2.5.5 删除操作</h4>
+<h2>4. 最小生成树的API及实现</h2>
 
-<h5>删除最小键</h5>
+<p>下面API定义的构造函数接受加权无向图作为参数，并返回最小生成树和其权重。</p>
 
-<p>先来看删除最小键。从树底部的3-结点删除键很简单，但2-结点则不然。为了保证我们不会删除一个2-结点，我们沿着左链接向下进行变换，确保当前结点不是2-结点。在沿着左链接向下的过程中，保证以下情况之一成立：</p>
+<p><img src="/myresource/images/image_blog_2014-11-02-mst-api.png" alt="image" /></p>
+
+<p>Prim算法和Kruskal算法都可以实现最小生成树，它们都基于贪心算法，区别在于保存切分和判定权重最小的横切边的方式。</p>
+
+<blockquote><p>贪心算法：初始状态下所有边均为灰色，找到一种切分，它产生的横切边均不为黑色。将权重最小的横切边标记为黑色。反复这个步骤直到标记了V-1条黑色边为止。</p></blockquote>
+
+<h3>4.1 Prim算法</h3>
+
+<p>Prim算法每一步都会为一棵生长中的树添加一条边。一开始这棵树只有一个顶点，然后会向它添加V-1条边，每次总是找到这样一条边并将其加入树中：这条边的一端在树中，另一端不在树中，并且权值最小。</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-02-prim-eager.png" alt="image" /></p>
+
+<p>每当向树中添加一条边后，也向树中添加了一个顶点。要维护一个包含所有横切边的集合，可以将连接这个顶点和其他所有不在树中的顶点的边加入优先队列。这样就可以得到符合条件的权值最小的边。当一个顶点加入树中后，连接这个顶点与树中其它顶点的所有边就失效了，因为这些边的两个顶点都已经在树中，这些边不再是横切边。那么何时删除这些边就形成了Prim算法的两种实现：</p>
 
 <ul>
-<li>如果当前结点的左子结点不是2-结点，完成；</li>
-<li>如果当前结点的左子结点是2-结点而它的亲兄弟结点不是2-结点，将左子结点的兄弟结点中的一个键移到左子结点；</li>
-<li>如果当前结点的左子结点和它的亲兄弟结点都是2-结点，将左子结点、父结点中的最小键和左子结点最近的兄弟结点合并为一个4-结点，使父结点由3-结点变为2-结点或者4-结点变为3-结点。</li>
+<li>延时(Lazy)实现会先把它们留在队列中，等要删除时再检查边的有效性；</li>
+<li>即时实现可以将它们从优先队列中删除。</li>
 </ul>
 
 
-<p>在遍历的过程中执行这个过程，最后能够得到一个含有最小键的3-结点或者4-结点，然后我们就可以直接从中将其删除，将3-结点变为2-结点，或者将4-结点变为3-结点。然后我们再回头向上分解所有临时的4-结点。</p>
-
-<p><img src="/myresource/images/IMG_20141002_232607.jpg" alt="image" /></p>
-
-<h5>删除操作</h5>
-
-<p>在查找路径上进行和删除最小键相同的变换同样可以保证在查找过程中任意当前结点均不是2-结点。如果被查找的键在树的底部，我们可以直接删除它。如果不在，我们需要将它和它的后续结点交换，就和二叉查找树一样。因为当前结点必然不是2-结点，问题已经转化为在一棵根结点不是2-结点的子树中删除最小键，我们可以在这棵子树中使用上面的算法。删除之后，同样需要向上回溯并分解余下的4-结点。</p>
-
-<p><a href="/myresource/code/RedBlackBST.java">红黑树完整代码</a></p>
-
-<h4>2.5.6 红黑树的性能</h4>
-
-<p>一棵大小为N的红黑树的高度不会超过2lgN，根结点到任意结点的平均路径长度为1.00lgN，以下操作在最坏的情况下所需的时间是对数级别的：get, put, min, max, floor, ceiling, rank, select, deleteMin, deleteMax, delete, range。</p>
-
-<h2>总结</h2>
-
-<p>各种符号表实现的性能总结：</p>
-
-<p><img src="/myresource/images/IMG_20141002_233353.jpg" alt="image" /></p>
-
-<p>在信息世界的汪洋大海中，表的大小可能是上千亿，但我们仍然能够确保在几十次比较之内就完成这些操作！</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[优先队列]]></title>
-    <link href="http://blog.ubone.com/blog/2014/09/27/you-xian-dui-lie/"/>
-    <updated>2014-09-27T23:08:56+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/09/27/you-xian-dui-lie</id>
-    <content type="html"><![CDATA[<p>优先队列是广泛使用的一种抽象数据类型。例如如果你需要从10亿个元素中选出最大的十个，你不可能对10亿规模的数组排序。对于这些类似的场景，我们不一定要求它们全部有序，或者不一定要一次就将它们排序。我们会收集一些元素，处理当前键值最大的元素，然后再收集更多的元素，再处理当前键值最大的元素。例如应用程序的事件优先级，模拟系统，任务调度等。在这种情况下，优先队列应该支持两种操作：<strong>删除最大元素和插入元素。</strong></p>
-
-<!--more-->
-
-
-<h2>1. API</h2>
-
-<p>先定义优先队列的API框架：</p>
+<p>这两种实现所需的时间都与ElogE成正比（最坏情况下），延时实现所需的空间与E成正比，瓶颈在于优先队列的insert()和delMin()中比较边的权重次数。而即时实现所需空间的上限与V成正比，比延时实现有优势。两种实现代码如下：</p>
 
 <p>```java
-public interface IMaxPQ<T extends Comparable<T>> {</p>
+public class LazyPrimMST {</p>
 
-<pre><code>public void insert(T v);
-public T max();
-public T delMax();
-public boolean isEmpty();
-public int size();
-</code></pre>
+<pre><code>private double weight;       // total weight of MST
+private Queue&lt;Edge&gt; mst;     // edges in the MST
+private boolean[] marked;    // marked[v] = true if v on tree
+private MinPQ&lt;Edge&gt; pq;      // edges with one endpoint in tree
 
-<p>}
-```</p>
-
-<h2>2. 实现方法</h2>
-
-<p>优先队列可以使用有序或无序的数组或链表来实现。其思路非常简单，插入时，向数组或链表增加元素。如果数组或链表是有序的，新元素就应该在适当的位置。而删除时，找出最大的元素进行删除。</p>
-
-<p>上面的实现方法性能非常差，在最坏的情况下，需要线性时间来完成。而基于堆的实现则能够保证更好的性能。</p>
-
-<h3>2.1 堆的定义</h3>
-
-<p>在二叉堆的数组中，每个元素都要保证大于等于另外两个特定位置的元素。如果把所有元素画成一棵二叉树，就是父结点要大于等于子结点，此时表示<strong>堆有序</strong>。</p>
-
-<p>完全二叉树只用数组就可以表示。根结点在位置1，其子结点在位置2和3。位置k的结点的父结点的位置为k/2, 它的两个子结点的位置分别为2k和2k+1。</p>
-
-<h3>2.2 堆的算法</h3>
-
-<p>堆的有序化过程涉及上浮和下沉。当某个结点的优先级上升时，我们需要由下至上恢复堆的顺序（上浮）。当某个结点的优先级下降时，我们需要由上至下恢复堆的顺序（下沉）。</p>
-
-<h4>2.2.1 上浮</h4>
-
-<p>如果某个结点的优先级上升，比它的父结点更大，那么就需要交换它和它的父结点。交换后，还要继续判断是否比现在的父结点更大，一直到遇到更大的父结点。</p>
-
-<h4>2.2.2 下沉</h4>
-
-<p>下沉与上浮正好相反，当某个结点的优先级下降时，需要<strong>与它的两个结点中的较大者比较</strong>，如果比子结点小，就进行交换。交换后继续与子结点比较，直到比它的两个子结点都大。</p>
-
-<h4>2.2.3 算法实现</h4>
-
-<p>```java
-public class MaxPQ<T extends Comparable<T>> implements IMaxPQ<T>{</p>
-
-<pre><code>private T[] pq;
-private int n = 0;
-
-public MaxPQ(int maxN) {
-    pq = (T[]) new Comparable[maxN + 1];
+/**
+ * Compute a minimum spanning tree (or forest) of an edge-weighted graph.
+ * @param G the edge-weighted graph
+ */
+public LazyPrimMST(EdgeWeightedGraph G) {
+    mst = new Queue&lt;Edge&gt;();
+    pq = new MinPQ&lt;Edge&gt;();
+    marked = new boolean[G.V()];
+    for (int v = 0; v &lt; G.V(); v++)     // run Prim from all vertices to
+        if (!marked[v]) prim(G, v);     // get a minimum spanning forest
 }
 
-@Override
-public void insert(T v) {
-    pq[++n] = v;
-    swim(n);
-}
-
-@Override
-public T max() {
-    if (n &gt; 0) {
-        return pq[1];
-    }
-
-    return null;
-}
-
-@Override
-public T delMax() {
-    T max = pq[1];    //根结点最大
-    exchange(1, n--); //与最后一个结点交换
-    pq[n + 1] = null; //防止对象游离
-    sink(1);          //恢复堆的有序性
-
-    return max;
-}
-
-@Override
-public boolean isEmpty() {
-    return n == 0;
-}
-
-@Override
-public int size() {
-    return n;
-}
-
-private boolean less(int i, int j) {
-    return pq[i].compareTo(pq[j]) &lt; 0;
-}
-
-private void exchange(int i, int j) {
-    T t = pq[i]; pq[i] = pq[j]; pq[j] = t;
-}
-
-//上浮
-private void swim(int k) {
-    while (k &gt; 1 &amp;&amp; less(k / 2, k)) {
-        exchange(k / 2, k);
-        k = k / 2;
+// run Prim's algorithm
+private void prim(EdgeWeightedGraph G, int s) {
+    scan(G, s);
+    while (!pq.isEmpty()) {                        // better to stop when mst has V-1 edges
+        Edge e = pq.delMin();                      // smallest edge on pq
+        int v = e.either(), w = e.other(v);        // two endpoints
+        assert marked[v] || marked[w];
+        if (marked[v] &amp;&amp; marked[w]) continue;      // lazy, both v and w already scanned
+        mst.enqueue(e);                            // add e to MST
+        weight += e.weight();
+        if (!marked[v]) scan(G, v);               // v becomes part of tree
+        if (!marked[w]) scan(G, w);               // w becomes part of tree
     }
 }
 
-//下沉
-private void sink(int k) {
-    while (2 * k &lt;= n) {
-        int j = 2 * k;
-        if (j &lt; n &amp;&amp; less(j, j + 1)) {
-            j++;
-        }
+//标记顶点v并将所有连接v和未被标记顶点的边加入pq
+private void scan(EdgeWeightedGraph G, int v) {
+    assert !marked[v];
+    marked[v] = true;
+    for (Edge e : G.adj(v))
+        if (!marked[e.other(v)]) pq.insert(e);
+}
 
-        if (!less(k, j)) {
-            break;
-        }
+//树的所有边
+public Iterable&lt;Edge&gt; edges() {
+    return mst;
+}
 
-        exchange(k, j);
-        k = j;
-    }
+//树的权重
+public double weight() {
+    return weight;
 }
 </code></pre>
 
 <p>}
 ```</p>
 
-<p><strong>对于含有N个元素的基于堆的优先队列，插入元素操作只需不超过(lgN + 1)次比较，删除最大元素的操作需要不超过2lgN次比较！</strong></p>
-
-<h4>2.2.4 多叉堆</h4>
-
-<p>用数组表示的完全三叉树构造堆也很容易。位置k的结点大于等于3k-1, 3k, 3k+1的结点，小于等于位于(k+1)/3的结点。甚至任意的d叉树也不困难，只是需要平衡在树高和每个结点的d个子结点中找到最大值的代价。</p>
-
-<h4>2.2.5 动态数组大小</h4>
-
-<p>上面代码中的数组大小是固定的，如果要实现动态数组大小，只需要根据情况在insert中增加数组长度，在delMax中减少数组长度。</p>
-
-<h2>3. 堆排序</h2>
-
-<p>使用优先队列，我们有了一种新的排序方法：堆排序。把所有元素插入一个查找最小元素的优先队列，然后重复调用删除最小元素的操作来将它们按顺序删除。</p>
-
-<p>堆排序分为两个阶段：构造堆和下沉排序。</p>
-
-<h3>3.1 堆的构造</h3>
-
-<p>对于N个给定元素的数组，最简单的堆构造方法是从左至右遍历数组，用swim()保证指针左侧的所有元素已经是一棵堆有序的完全树。但一个更聪明更高效的办法是从右至左用sink()函数构造子堆。如果一个结点的两个子结点都已经是堆了，那么在该结点上调用sink可以将它们变成一个堆。这个过程会递归地建立起堆的秩序。开始时我们只需要扫描数据中的一半元素，最后在位置1上调用sink方法，扫描结束。</p>
-
-<h3>3.2 下沉排序</h3>
-
-<p>当堆构造完成后，将堆中的最大元素删除，然后放到堆缩小后数组中空出的位置。</p>
-
-<h3>3.3 算法实现</h3>
-
 <p>```java
-public class PQSort {</p>
+public class PrimMST {</p>
 
-<pre><code>public void sort(Comparable[] a) {
-    int n = a.length;
-    //构造堆
-    for(int k = n/2; k &gt;= 1; k--) {
-        sink(a, k, n);
-    }
+<pre><code>private Edge[] edgeTo;        // 距离树最近的边，edgeTo[v] = shortest edge from tree vertex to non-tree vertex
+private double[] distTo;      // distTo[v] = weight of shortest such edge
+private boolean[] marked;     // marked[v] = true if v on tree, false otherwise
+private IndexMinPQ&lt;Double&gt; pq;  //有效的横切边
 
-    //下沉排序
-    while (n &gt; 1) {
-        exchange(a, 1, n--);
-        sink(a, 1, n);
+/**
+ * Compute a minimum spanning tree (or forest) of an edge-weighted graph.
+ * @param G the edge-weighted graph
+ */
+public PrimMST(EdgeWeightedGraph G) {
+    edgeTo = new Edge[G.V()];
+    distTo = new double[G.V()];
+    marked = new boolean[G.V()];
+    pq = new IndexMinPQ&lt;Double&gt;(G.V());
+    for (int v = 0; v &lt; G.V(); v++) distTo[v] = Double.POSITIVE_INFINITY;
+
+    for (int v = 0; v &lt; G.V(); v++)      // run from each vertex to find
+        if (!marked[v]) prim(G, v);      // minimum spanning forest
+}
+
+// run Prim's algorithm in graph G, starting from vertex s
+private void prim(EdgeWeightedGraph G, int s) {
+    distTo[s] = 0.0;
+    pq.insert(s, distTo[s]); //用顶点0和权重0初始化pq
+    while (!pq.isEmpty()) {
+        int v = pq.delMin();  
+        scan(G, v);          //将最近的顶点添加到树中
     }
 }
 
-private void sink(Comparable[] a, int k, int n) {
-    while (2 * k &lt;= n) {
-        int j = 2 * k;
-        if (j &lt; n &amp;&amp; less(a, j, j+1)) {
-            j++;
+// scan vertex v
+private void scan(EdgeWeightedGraph G, int v) {
+        //将顶点v添加到树中，更新数据
+    marked[v] = true;
+    for (Edge e : G.adj(v)) {
+        int w = e.other(v);
+        if (marked[w]) continue;         // v-w 已经失效
+        if (e.weight() &lt; distTo[w]) {
+                //连接w和树的最佳边Edge变为e
+            distTo[w] = e.weight();
+            edgeTo[w] = e;
+            if (pq.contains(w)) pq.decreaseKey(w, distTo[w]);
+            else                pq.insert(w, distTo[w]);
         }
-
-        if (!less(a, k, j)) {
-            break;
-        }
-
-        exchange(a, k, j);
-        k = j;
     }
 }
 
-private static boolean less(Comparable[] a, int i, int j) {
-    //要减1
-    return a[i - 1].compareTo(a[j - 1]) &lt; 0;
+//所有边
+public Iterable&lt;Edge&gt; edges() {
+    Queue&lt;Edge&gt; mst = new Queue&lt;Edge&gt;();
+    for (int v = 0; v &lt; edgeTo.length; v++) {
+        Edge e = edgeTo[v];
+        if (e != null) {
+            mst.enqueue(e);
+        }
+    }
+    return mst;
 }
 
-private static void exchange(Comparable[] a, int i, int j) {
-    //要减1
-    Comparable t = a[i - 1];
-    a[i - 1] = a[j - 1];
-    a[j - 1] = t;
+//权重
+public double weight() {
+    double weight = 0.0;
+    for (Edge e : edges())
+        weight += e.weight();
+    return weight;
 }
 </code></pre>
 
 <p>}
-```
-对于一百万随机整数，排序时间大约在750ms。</p>
-
-<p>用堆实现的优先队列在现代应用程序中越来越重要，因为它能在<strong>插入操作和删除最大元素操作</strong>混合的动态场景中保证对数级别的运行时间。</p>
-
-<h2>小结</h2>
-
-<p>学完了常用的算法，总结一下。各种算法的性能特点如下表：</p>
-
-<p><img src="/myresource/images/IMG_20140928_224145.jpg" alt="image" /></p>
-
-<p>快速排序是最快的通用排序算法。</p>
-
-<p>Java中，java.util.Arrays.sort()方法会根据不同的参数类型选择排序方法。对于原始数据类型使用（三向切分）快速排序，对引用类型使用归并排序。这种选择实际上暗示着用速度和空间（对于原始数据类型）来换取稳定性（对于引用类型）。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[快速排序算法]]></title>
-    <link href="http://blog.ubone.com/blog/2014/09/27/kuai-su-pai-xu-suan-fa/"/>
-    <updated>2014-09-27T10:38:32+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/09/27/kuai-su-pai-xu-suan-fa</id>
-    <content type="html"><![CDATA[<p>快速排序可能是应用最广泛的算法，原因是它实现简单、速度快。它完美地实现了原地排序（只需要一个很小的辅助栈），并且时间与NlgN成正比。它的内循环比大多数排序算法都要短小，因此理论上要更快。但它的主要缺点是非常脆弱，实现时要非常小心才能避免低劣的性能。</p>
-
-<!--more-->
-
-
-<h2>1. 算法理论</h2>
-
-<p>快速算法也是一种分治的排序算法，它将一个数组分成两个子数组，将两部份独立地排序。但与归并排序将两个子数组分别排序再归并到整个数组排序不同，快速排序时，当两个子数组都有序时整个数组也就自然有序了。</p>
-
-<p>快速排序算法的关键是切分，通过切分使数组满足下面三个条件：</p>
-
-<ol>
-<li>对于某个j, a[j]已经排定;</li>
-<li>a[lo]到a[j-1]中的所有元素都不大于a[j];</li>
-<li>a[j+1]到a[hi]中的所有元素都不小于a[j];</li>
-</ol>
-
-
-<p>因为切分过程总能排定一个元素，因此递归调用切分过程就能够正确地将数组排序。切分实现方法如下：先随意取a[lo]作为切分元素，然后从数组的左端开始向右扫描直到找到一个大于等于它的元素，再从数组右端向左扫描直到找到一个小于等于它的元素，交换它俩的位置。如此继续，当两个指针相遇时，只需要将切分元素和左子数组最右侧的元素a[j]交换然后返回j即可。j即满足上述三个条件。</p>
-
-<h2>2. 算法实现</h2>
-
-<p>下面是排序算法的实现。需要注意的是还有几个细节需要完善，它们可能导致错误或影响性能。</p>
-
-<p>```java
-public class Quick extends AbstractSort {</p>
-
-<pre><code>@Override
-public void sort(Comparable[] a) {
-    StdRandom.shuffle(a); //打乱数组，消除对输入的依赖
-    sort(a, 0, a.length - 1);
-}
-
-private static void sort(Comparable[] a, int lo, int hi) {
-    if (hi &lt;= lo) return;
-
-    int j = partition(a, lo, hi);
-    sort(a, lo, j - 1);
-    sort(a, j + 1, hi);
-}
-
-private static int partition(Comparable[] a, int lo, int hi) {
-    //i, j分别代表左右扫描指针
-    int i = lo, j = hi + 1;
-    Comparable v = a[lo]; //选择切分元素
-
-    while(true) {
-        //从左往右扫描
-        while (less(a[++i], v)) {
-            if (i == hi) break; //冗余，可以去除。
-        }
-
-        //从右往左扫描
-        while (less(v, a[--j])) {
-            if (j == lo) break; //冗余，可以去除。
-        }
-
-        //检查两指针是否相遇
-        if (i &gt;= j) break; 
-
-        exchange(a, i, j);
-    }
-
-    //与切分元素交换
-    exchange(a, lo, j);
-
-    //现在满足：a[lo .. j-1] &lt;= a[j] &lt;= a[j+1 .. hi]
-    return j;
-}
-</code></pre>
-
-<p>}
-//对一百万个随机整数排序，时间大致在350ms，但加上shuffle后，时间在600多ms.
 ```</p>
 
-<h2>3. 性能特点</h2>
+<h3>4.2 Kruskal算法</h3>
 
-<p>快速排序算法的内循环用一个递增的索引将数组元素和一个定值比较，因此内循环非常短。归并和希尔排序需要在内循环中移动数据，所以它们通常比快速排序要慢一些。</p>
+<p>Kruskal算法构造最小生成树时也是一条边一条边地构造，但它寻找的边会连接一片森林中的两棵树。我们从一片由V棵单顶点的树构成的森林开始并不断将两棵树合并（用可以找到的最短边）直到只剩下一棵树。其主要思想是按边的权重顺序处理它们，将边加入最小生成树中，加入的边不会与已经加入的边构成环，直到树中含有V-1条边为止。</p>
 
-<p>快速排序算法的另一个优势是比较的次数很少。其效率最终还是依赖切分数组的效果。最好的情况下，每次都正好能将数组对半分。尽管事情并不总会这么顺利，但平均而言切分元素都能落在数组的中间。如果将切分位置的概率考虑到算法中，将使递归更复杂，而结果还是类似的。</p>
+<p><img src="/myresource/images/image_blog_2014-11-02-kruskal.png" alt="image" /></p>
 
-<p>它有一个潜在的缺点，切分不平衡时效率会相当低效。例如第一次从最小的元素切分，第二次从第二小的元素切分。。。这样每次调用只会移除一个元素。这也是快速排序前先随机排序(shuffle)的主要原因。</p>
-
-<h2>4. 算法改进</h2>
-
-<p>如果排序代码会执行很多次或者将用在大型数组上，那么就需要进行一些改进。</p>
-
-<h3>4.1 切换到插入排序</h3>
-
-<p>由于小数组的快速排序比插入排序慢，并且小数组时的递归调用也会消耗资源，因此在排序小数组时应该切换到插入排序。</p>
-
-<p>可以在sort方法中，将<code>if (hi &lt;= lo) return;</code>替换为：<code>if (hi &lt;= lo + M) {Insertion.sort(a, lo, hi); return;}</code>。M的最佳值和系统相关，但一般在5~15之间在大多数情况下都能令人满意。</p>
-
-<h3>4.2 三取样切分</h3>
-
-<p>第二个改进的方法是使用子数组的一小部分元素的中位数来切分数组。人们发现将取样大小设为3并用大小居中的元素切分效果最好。</p>
-
-<h3>4.3 熵最优的排序</h3>
-
-<p>对于有大量重复元素的数组，快速排序算法仍然会递归调用，而三向切分的快速排序算法可以更好地处理这种情况。</p>
+<p>实现时，采用优先队列将边按照权重排序，用一个union-find数据结构识别会形成环的边，以及一个队列来保存最小生成树的所有边。代码实现如下：</p>
 
 <p>```
-public class Quick3way extends AbstractSort {</p>
+public class KruskalMST {</p>
 
-<pre><code>@Override
-public void sort(Comparable[] a) {
-    StdRandom.shuffle(a); //打乱数组，消除对输入的依赖
-    sort(a, 0, a.length - 1);
+<pre><code>private double weight;  // weight of MST
+private Queue&lt;Edge&gt; mst = new Queue&lt;Edge&gt;();  // edges in MST
+
+public KruskalMST(EdgeWeightedGraph G) {
+    // more efficient to build heap by passing array of edges
+    MinPQ&lt;Edge&gt; pq = new MinPQ&lt;Edge&gt;();
+    for (Edge e : G.edges()) {
+        pq.insert(e);
+    }
+
+    // run greedy algorithm
+    UF uf = new UF(G.V());
+    while (!pq.isEmpty() &amp;&amp; mst.size() &lt; G.V() - 1) {
+        Edge e = pq.delMin();  //从pq得到权重最小的边和它的顶点
+        int v = e.either();
+        int w = e.other(v);
+        if (!uf.connected(v, w)) { // v-w does not create a cycle
+            uf.union(v, w);  // merge v and w components
+            mst.enqueue(e);  // add edge e to mst
+            weight += e.weight();
+        }
+    }
 }
 
-private static void sort(Comparable[] a, int lo, int hi) {
-    if (hi &lt;= lo) return;
+//树的所有边
+public Iterable&lt;Edge&gt; edges() {
+    return mst;
+}
 
-    int lt = lo, i = lo + 1, gt = hi;
-    Comparable v = a[lo];
-    while (i &lt;= gt) {
-        int cmp = a[i].compareTo(v);
-        if (cmp &lt; 0) {
-            exchange(a, lt++, i++);
-        } else if (cmp &gt; 0) {
-            exchange(a, i, gt--);
-        } else {
-            i++;
-        }
-    }//现在a[lo..lt-1] &lt; v = a[lt..gt] &lt; a[gt+1..hi]
-
-    sort(a, lo, lt - 1);
-    sort(a, gt + 1, hi);
+//树的权重
+public double weight() {
+    return weight;
 }
 </code></pre>
 
-<p>}</p>
-
-<p>//（不含shuffle的时间）对于一百万随机整数，排序时间也在350ms左右。但如果存在大量重复时，时间将降到250ms左右。
+<p>}
 ```</p>
 
-<p>对有大量重复元素的数组排序时，三向切分算法具有更高的效率。而在最差的情况下，也就是没有重复元素时，它的效率与标准快速排序算法相当。因此，三向切分的快速排序成为排序函数的最佳算法选择。</p>
+<p>Kruskal算法所需的空间与E成正比，所需时间与ElogE成正比（最坏情况下）。</p>
 
-<p>在基于比较的排序算法中，经过精心调优的快速排序算法性能最好。但它不是终点，还有完全不需要比较的排序算法！</p>
+<p>Prim和Kruskal算法不能处理有向图。</p>
+
+<p>参考：<a href="http://algs4.cs.princeton.edu/43mst/">http://algs4.cs.princeton.edu/43mst</a></p>
 ]]></content>
   </entry>
   

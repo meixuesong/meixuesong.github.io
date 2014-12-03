@@ -1,0 +1,676 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Java并发编程(四) - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="在学习了《Java编程思想》中关于并发编程的内容后，继续学习Java并发编程。 1. 常用的并发构件 为什么是synchronized? 这个单词的意思是同步，那么Java中synchronized表示什么意思呢？其实就是同步被锁定对象的主内存块。 当进入一个synchronized代码块时， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/12/01/javabing-fa-bian-cheng-si">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Java并发编程(四)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-01T22:43:50+08:00" pubdate data-updated="true">2014-12-01</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>在学习了《Java编程思想》中关于<a href="/blog/2014/09/02/javabing-fa-bian-cheng-san/">并发编程</a>的内容后，继续学习Java并发编程。</p>
+
+<!--more-->
+
+
+<h2>1. 常用的并发构件</h2>
+
+<h3>为什么是synchronized?</h3>
+
+<p>这个单词的意思是同步，那么Java中synchronized表示什么意思呢？其实就是同步被锁定对象的主内存块。</p>
+
+<ul>
+<li>当进入一个synchronized代码块时，持有锁的线程和被锁定对象主内存中的视图会进行同步。</li>
+<li>当synchronized代码块执行完之后，被锁定对象所做的任何修改会在线程锁释放之前刷回到主内存中。</li>
+</ul>
+
+
+<p>而volatile变量，在使用之前总是会从主内存中再读出来。线程所写的值总会在指令完成之前被刷回到主内存中。volatile变量不会引入线程锁，是真正线程安全的。<strong>但只有写入时不依赖当前状态（读取的状态）的变量才应该声明为volatile变量。对于要关注当前状态的变量，只能借助线程锁保证绝对安全性。</strong></p>
+
+<h3>Lock有什么好处？</h3>
+
+<ul>
+<li>添加不同类型的锁，比如读取锁和写入锁。</li>
+<li>对锁的阻塞没有限制，即允许在一个方法中上锁，在另一个方法中解锁。</li>
+<li>如果线程得不到锁，比如锁由另外一个线程持有，就允许该线程后退或继续执行，或者做点别的事情——运用tryLock()方法。</li>
+<li>允许线程尝试取锁，并可以在超过等待时间后放弃。</li>
+</ul>
+
+
+<p>Lock接口的两个实现类：</p>
+
+<ul>
+<li>ReentranLock: 本质上与同步块一样，但更灵活些。</li>
+<li>ReentranReadWriteLock: 在读多写入的时候，性能更好。</li>
+</ul>
+
+
+<h3>ConcurrentHashMap</h3>
+
+<p>ConcurrentHashMap是HashMap的并发版本，改进了Collections.synchronizedMap()功能。它是concurrent包中最有用的类之一，不仅提供了多线程的安全性，而且性能更优。它提供了原子操作的新方法：</p>
+
+<ul>
+<li>putIfAbsent(): 如果没有对应键，则将键值对添加到HashMap中。</li>
+<li>remove(): 如果键存在，且值与当前状态相等，则用原子方式移除键值对。</li>
+<li>replace(): 当键存在时，进行原子替换。</li>
+</ul>
+
+
+<h3>CopyOnWriteArrayList</h3>
+
+<p>它是标准ArrayList的替代品，通过copy-on-write来实现线程安全性，对修改列表的任何操作都会创建一个新复本。当快速、一致的数据快照（不同的读取器读到的数据偶尔可能会不一样）比完美的同步以及性能上的突破更重要时，这种共享数据的方法非常理想，经常出现在非关键任务中。</p>
+
+<h3>Queue</h3>
+
+<p>Java有些多线程编程模型在很大程度上依赖于Queue实现线程安全性。BlockingQueue是最简单的实现。向队列put()时，如果队列满则放入线程会等待。从队列take()时，如果队列空，则取出线程阻塞。</p>
+
+<p>Queue接口全是泛型<code>Queue&lt;E&gt;</code>，利用这一点把工作项封装到一个人工容器中会更方便。例如工作单元MyAwesomeClass，与其用<code>BlockingQueue&lt;MyAwesomeClass&gt;</code>不如使用<code>BlockingQueue&lt;WorkUnit&lt;MyAwesomeClass&gt;&gt;</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">WorkUnit</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">final</span> <span class="n">T</span> <span class="n">workUnit</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">T</span> <span class="nf">getWork</span><span class="o">()</span> <span class="o">{</span><span class="k">return</span> <span class="n">workUnit</span><span class="o">;}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">WorkUnit</span><span class="o">(</span><span class="n">T</span> <span class="n">workUnit</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">workUnit</span> <span class="o">=</span> <span class="n">workUnit</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有了这层间接引用，可以添加额外的元数据而不用牺牲MyAwesomeClass的完整性。例如在WorkUnit中添加用于测试、性能指标和运行时系统信息等。</p>
+
+<p>除了基本的put()和take()方法，BlockingQueue还提供了还超时的放入和取出方法：offer(E e, long timeout, TimeUnit unit)和poll(long timeout, TimeUnit unit)。</p>
+
+<p>Java 7还引入了TransferQueue，本质上是多了transfer()操作的BlockingQueue。在BlockingQueue中，当上游线程池比下游快时，可能会引发一些问题，导致LinkedBlockingQueue溢出。反之，如果下游比上游快，则可能队列经常空着。TransferQueue可以优化这种情况，调控上/下游的速度。当消费线程在等待时，transfer()操作会马上把工作项传给它，否则就会阻塞直到取走工作项的线程出现。可以把这看做“挂号信”选项，即正在处理工作项的线程在交付当前工作项之前不会开始其他工作项的工作。</p>
+
+<p>用TransferQueue取代BlockingQueue的代码性能可能会更好，因为前者的实现考虑了现代编译器和处理器的特性，执行效率更高。</p>
+
+<h2>2. 控制执行</h2>
+
+<p>如果每个工作单元都启动一个新线程执行，效率会太低。因此可以利用线程池来执行工作单元/任务。</p>
+
+<h3>任务建模</h3>
+
+<p>任务建模可以采用三种办法：Callable, Future接口和FutureTask类。</p>
+
+<h4>Callable接口</h4>
+
+<p>Callable接口代表一段可以调用并返回结果的代码，典型用法是匿名实现类：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">final</span> <span class="n">MyObject</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyObject</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Callable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">cb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">call</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="na">someMethod</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">String</span> <span class="n">s</span> <span class="o">=</span> <span class="n">cb</span><span class="o">.</span><span class="na">call</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Future接口</h4>
+
+<p>Future接口用来表示异步任务。主要有三个方法：</p>
+
+<ul>
+<li>get()，获取结果，如果没执行完会阻塞，直到能取得结果。</li>
+<li>cancel()，在结束前取消。</li>
+<li>isDonw()，判断是否结束。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">interface</span> <span class="nc">ArchiveSearcher</span> <span class="o">{</span> <span class="n">String</span> <span class="n">search</span><span class="o">(</span><span class="n">String</span> <span class="n">target</span><span class="o">);</span> <span class="o">}</span>
+</span><span class='line'> <span class="kd">class</span> <span class="nc">App</span> <span class="o">{</span>
+</span><span class='line'>   <span class="n">ExecutorService</span> <span class="n">executor</span> <span class="o">=</span> <span class="o">...</span>
+</span><span class='line'>   <span class="n">ArchiveSearcher</span> <span class="n">searcher</span> <span class="o">=</span> <span class="o">...</span>
+</span><span class='line'>   <span class="kt">void</span> <span class="nf">showSearch</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">target</span><span class="o">)</span>
+</span><span class='line'>       <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'>     <span class="n">Future</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">future</span>
+</span><span class='line'>       <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="na">submit</span><span class="o">(</span><span class="k">new</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span><span class='line'>         <span class="kd">public</span> <span class="n">String</span> <span class="nf">call</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>             <span class="k">return</span> <span class="n">searcher</span><span class="o">.</span><span class="na">search</span><span class="o">(</span><span class="n">target</span><span class="o">);</span>
+</span><span class='line'>         <span class="o">}});</span>
+</span><span class='line'>     <span class="n">displayOtherThings</span><span class="o">();</span> <span class="c1">// do other things while searching</span>
+</span><span class='line'>     <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>       <span class="n">displayText</span><span class="o">(</span><span class="n">future</span><span class="o">.</span><span class="na">get</span><span class="o">());</span> <span class="c1">// use future</span>
+</span><span class='line'>     <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ExecutionException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span> <span class="n">cleanup</span><span class="o">();</span> <span class="k">return</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>FutureTask类</h4>
+
+<p>FutureTask类是Future接口的常用实现类，实现了Runnable接口，因此可以由执行者调度。它提供的方法基本是Future和Runnable接口的组合：get(), cancel(), isDone(), isCancelled()和run()。它还提供了两个很方便的构造器：一个以Callable为参数，另一个以Runnable为参数。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">FutureTask</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">future</span> <span class="o">=</span>
+</span><span class='line'>       <span class="k">new</span> <span class="n">FutureTask</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;(</span><span class="k">new</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span><span class='line'>         <span class="kd">public</span> <span class="n">String</span> <span class="nf">call</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>           <span class="k">return</span> <span class="n">searcher</span><span class="o">.</span><span class="na">search</span><span class="o">(</span><span class="n">target</span><span class="o">);</span>
+</span><span class='line'>       <span class="o">}});</span>
+</span><span class='line'><span class="n">executor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">future</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>ScheduledThreadPoolExecutor(STPE)</h3>
+
+<p>STPE是Executors类工厂方法的众多执行者之一。它有以下特点：</p>
+
+<ul>
+<li>可以预定线程池大小，也可自适应</li>
+<li>所安排的任务可以定期执行，也可只运行一次。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">ScheduledExecutorService</span> <span class="n">stpe</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newScheduledThreadPool</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">final</span> <span class="n">Runnable</span> <span class="n">msgReader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">//...</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//每10毫秒唤醒一个线程。该线程可以尝试poll一个队列...</span>
+</span><span class='line'><span class="n">ScheduledFuture</span><span class="o">&lt;?&gt;</span> <span class="n">hndl</span> <span class="o">=</span> <span class="n">stpe</span><span class="o">.</span><span class="na">scheduleAtFixedRate</span><span class="o">(</span><span class="n">msgReader</span><span class="o">,</span> <span class="mi">10</span><span class="o">,</span> <span class="mi">10</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>3.分支/合并框架</h2>
+
+<p>这是Java 7重点突出的框架之一，用于轻量级并发，实现线程池中任务的自动调度。</p>
+
+<p>先来看看之前的并发算法可能存在的问题。如果某个线程的运行队列都是小任务，而另一个全是大任务。那么小任务的线程可能会空闲很多。而基于Work-Stealing（工作窃取）算法的ForkJoin则可以很好地解决此问题。</p>
+
+<p><img src="/myresource/images/image_blog_2014-12-02-fork-join.GIF" alt="image" /></p>
+
+<ul>
+<li>分支/合并框架引入一种新的执行者服务，称为ForkJoinPool</li>
+<li>ForkJoinPool处理比线程更小的并发单元ForkJoinTask</li>
+<li>ForkJoinTask是一种由ForkJoinPool以更轻量化的方式所调度的抽象</li>
+<li>通常使用两种任务（尽管都表示为ForkJoinTask实例）：“小型”任务是无需耗费太多时间就可以直接执行的任务；“大型”任务是需要分解（可能多次分解）后再执行的任务。</li>
+</ul>
+
+
+<p>这个框架的关键特性之一就是这些轻量的任务都能生成新的ForkJoinTask实例，而这些实例将仍由执行它们父任务的线程池来安排调度。这就是分而治之。例如在归并算法中，就可以将左侧、右侧的排序任务视为一个ForkJoinTask，在递归过程中，不断产生小型任务执行。下面的示例是一个对微博按时间归并排序的例子：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//RecursiveAction继承自ForkJoinTask&lt;Void&gt;</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MicroBlogUpdateSorter</span> <span class="kd">extends</span> <span class="n">RecursiveAction</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">SMALL_ENOUGH</span> <span class="o">=</span> <span class="mi">32</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">final</span> <span class="n">Update</span><span class="o">[]</span> <span class="n">updates</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">start</span><span class="o">,</span> <span class="n">end</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">final</span> <span class="n">Update</span><span class="o">[]</span> <span class="n">result</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">MicroBlogUpdateSorter</span><span class="o">(</span><span class="n">Update</span><span class="o">[]</span> <span class="n">updates_</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">(</span><span class="n">updates_</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">updates_</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">MicroBlogUpdateSorter</span><span class="o">(</span><span class="n">Update</span><span class="o">[]</span> <span class="n">upds_</span><span class="o">,</span> <span class="kt">int</span> <span class="n">startPos_</span><span class="o">,</span> <span class="kt">int</span> <span class="n">endPos_</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">start</span> <span class="o">=</span> <span class="n">startPos_</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">end</span> <span class="o">=</span> <span class="n">endPos_</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">updates</span> <span class="o">=</span> <span class="n">upds_</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Update</span><span class="o">[</span><span class="n">updates</span><span class="o">.</span><span class="na">length</span><span class="o">];</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">merge</span><span class="o">(</span><span class="n">MicroBlogUpdateSorter</span> <span class="n">left_</span><span class="o">,</span> <span class="n">MicroBlogUpdateSorter</span> <span class="n">right_</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">lCt</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">rCt</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">while</span> <span class="o">(</span><span class="n">lCt</span> <span class="o">&lt;</span> <span class="n">left_</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">rCt</span> <span class="o">&lt;</span> <span class="n">right_</span><span class="o">.</span><span class="na">size</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">result</span><span class="o">[</span><span class="n">i</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="n">left_</span><span class="o">.</span><span class="na">result</span><span class="o">[</span><span class="n">lCt</span><span class="o">].</span><span class="na">compareTo</span><span class="o">(</span><span class="n">right_</span><span class="o">.</span><span class="na">result</span><span class="o">[</span><span class="n">rCt</span><span class="o">])</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">?</span> <span class="n">left_</span><span class="o">.</span><span class="na">result</span><span class="o">[</span><span class="n">lCt</span><span class="o">++]</span>
+</span><span class='line'>          <span class="o">:</span> <span class="n">right_</span><span class="o">.</span><span class="na">result</span><span class="o">[</span><span class="n">rCt</span><span class="o">++];</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">while</span> <span class="o">(</span><span class="n">lCt</span> <span class="o">&lt;</span> <span class="n">left_</span><span class="o">.</span><span class="na">size</span><span class="o">())</span>
+</span><span class='line'>      <span class="n">result</span><span class="o">[</span><span class="n">i</span><span class="o">++]</span> <span class="o">=</span> <span class="n">left_</span><span class="o">.</span><span class="na">result</span><span class="o">[</span><span class="n">lCt</span><span class="o">++];</span>
+</span><span class='line'>    <span class="k">while</span> <span class="o">(</span><span class="n">rCt</span> <span class="o">&lt;</span> <span class="n">right_</span><span class="o">.</span><span class="na">size</span><span class="o">())</span>
+</span><span class='line'>      <span class="n">result</span><span class="o">[</span><span class="n">i</span><span class="o">++]</span> <span class="o">=</span> <span class="n">right_</span><span class="o">.</span><span class="na">result</span><span class="o">[</span><span class="n">rCt</span><span class="o">++];</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">size</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Update</span><span class="o">[]</span> <span class="nf">getResult</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">compute</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">//如果数组太小，就用系统排序</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">size</span><span class="o">()</span> <span class="o">&lt;</span> <span class="n">SMALL_ENOUGH</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">updates</span><span class="o">,</span> <span class="n">start</span><span class="o">,</span> <span class="n">result</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">size</span><span class="o">());</span>
+</span><span class='line'>      <span class="n">Arrays</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">result</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">size</span><span class="o">());</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">mid</span> <span class="o">=</span> <span class="n">size</span><span class="o">()</span> <span class="o">/</span> <span class="mi">2</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">MicroBlogUpdateSorter</span> <span class="n">left</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MicroBlogUpdateSorter</span><span class="o">(</span><span class="n">updates</span><span class="o">,</span> <span class="n">start</span><span class="o">,</span>
+</span><span class='line'>          <span class="n">start</span> <span class="o">+</span> <span class="n">mid</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">MicroBlogUpdateSorter</span> <span class="n">right</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MicroBlogUpdateSorter</span><span class="o">(</span><span class="n">updates</span><span class="o">,</span> <span class="n">start</span>
+</span><span class='line'>          <span class="o">+</span> <span class="n">mid</span><span class="o">,</span> <span class="n">end</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">invokeAll</span><span class="o">(</span><span class="n">left</span><span class="o">,</span> <span class="n">right</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">merge</span><span class="o">(</span><span class="n">left</span><span class="o">,</span> <span class="n">right</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">List</span><span class="o">&lt;</span><span class="n">Update</span><span class="o">&gt;</span> <span class="n">lu</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Update</span><span class="o">&gt;();</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">text</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">final</span> <span class="n">Update</span><span class="o">.</span><span class="na">Builder</span> <span class="n">ub</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Update</span><span class="o">.</span><span class="na">Builder</span><span class="o">();</span>
+</span><span class='line'>    <span class="kd">final</span> <span class="n">Author</span> <span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Author</span><span class="o">(</span><span class="s">&quot;Tallulah&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">256</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">text</span> <span class="o">=</span> <span class="n">text</span> <span class="o">+</span> <span class="s">&quot;X&quot;</span><span class="o">;</span>
+</span><span class='line'>      <span class="kt">long</span> <span class="n">now</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">lu</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">ub</span><span class="o">.</span><span class="na">author</span><span class="o">(</span><span class="n">a</span><span class="o">).</span><span class="na">updateText</span><span class="o">(</span><span class="n">text</span><span class="o">).</span><span class="na">createTime</span><span class="o">(</span><span class="n">now</span><span class="o">).</span><span class="na">build</span><span class="o">());</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">Collections</span><span class="o">.</span><span class="na">shuffle</span><span class="o">(</span><span class="n">lu</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Update</span><span class="o">[]</span> <span class="n">updates</span> <span class="o">=</span> <span class="n">lu</span><span class="o">.</span><span class="na">toArray</span><span class="o">(</span><span class="k">new</span> <span class="n">Update</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span> <span class="c1">// Avoid allocation by passing</span>
+</span><span class='line'>                                                  <span class="c1">// zero-sized array</span>
+</span><span class='line'>    <span class="n">MicroBlogUpdateSorter</span> <span class="n">sorter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MicroBlogUpdateSorter</span><span class="o">(</span><span class="n">updates</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">ForkJoinPool</span> <span class="n">pool</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ForkJoinPool</span><span class="o">(</span><span class="mi">4</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">pool</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="n">sorter</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">Update</span> <span class="n">u</span> <span class="o">:</span> <span class="n">sorter</span><span class="o">.</span><span class="na">getResult</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">u</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果下面这些问题答案是肯定的，那么就适合于使用分支/合并框架：</p>
+
+<ul>
+<li>问题的子任务是否无需与其他子任务有显式的协作或同步也可以工作？</li>
+<li>子任务是不是不会对数据进行修改，只是经过计算得出结果？</li>
+<li>对于子任务来说，分而治之是不是很自然的事？子任务是不是会创建更多的子任务，而且它们要比派生出它们的任务粒度更细？</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-01T22:43:50+08:00" pubdate data-updated="true">2014-12-01</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/11/23/java-nio-dot-2/" title="Previous Post: Java NIO.2">&laquo; Java NIO.2</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/12/03/hello/" title="Next Post: hello">hello &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (21)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/hello/">Hello</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/01/javabing-fa-bian-cheng-si/">Java并发编程(四)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/23/java-nio-dot-2/">Java NIO.2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/18/java-7de-6ge-xin-te-xing/">Java 7的6个新特性</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/17/bshu/">B树</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fb4e47bf6950f9d2496daf84fe62cec59' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/12/01/javabing-fa-bian-cheng-si/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/12/01/javabing-fa-bian-cheng-si/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

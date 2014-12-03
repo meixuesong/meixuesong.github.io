@@ -1,0 +1,419 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>基于Jekyll(Octopress)将博客生成EPUB和Mobi电子书 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="采用Octopress，基于Jekyll，在GitHub上写博客已经快一年了。随着博客的增多，有了一个想法，如果能将这些博客整理成册，变成电子书放入Kindle，有空时温习一下，那该多好。今天进行了尝试，效果还不错。 Kindle默认支持的电子书格式是Mobi，但开源软件很少支持这种格式。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/10/05/ji-yu-jekyll-sheng-cheng-dian-zi-shu">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">基于Jekyll(Octopress)将博客生成EPUB和Mobi电子书</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-05T21:03:50+08:00" pubdate data-updated="true">2014-10-05</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>采用Octopress，基于Jekyll，<a href="/blog/2014/06/25/zai-githubshang-xie-bo-ke/">在GitHub上写博客</a>已经快一年了。随着博客的增多，有了一个想法，如果能将这些博客整理成册，变成电子书放入Kindle，有空时温习一下，那该多好。今天进行了尝试，效果还不错。</p>
+
+<!--more-->
+
+
+<p>Kindle默认支持的电子书格式是Mobi，但开源软件很少支持这种格式。电子书格式最普及的还是EPUB，而Amazon提供了从EPUB转为Mobi的支持。因此我们的第一步是将博客转换成EPUB格式的电子书。</p>
+
+<h2>1. 准备工作</h2>
+
+<p>在Github上找到了一个项目<a href="https://github.com/lmullen/jekyll-ebook">Jekyll E-book</a>，支持将Jekyll博客转换成EPUB电子书。按照其说明，以管理员身份安装：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>gem install jekyll-ebook
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后安装Pandoc，打开<a href="https://github.com/jgm/pandoc/releases">下载页面</a>，下载相应系统的安装包，安装完成后，确保命令能够识别：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pandoc --version
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在就可以开始准备生成EPUB电子书了。需要先定义这本书的标题等信息，以及书中包括哪些博客。这些信息都保存在manifest.yml中，这是一个YAML格式的文件。分两部分说明这个文件的内容，我们先看第一部分：文件的定义。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">title</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">meixuesong blog</span>
+</span><span class='line'><span class="l-Scalar-Plain">author</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Jason Mei</span>
+</span><span class='line'><span class="l-Scalar-Plain">date</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">October 2014</span>
+</span><span class='line'><span class="l-Scalar-Plain">epub-filename</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">/Users/mxs/Documents/jasonblog.epub</span>
+</span><span class='line'><span class="l-Scalar-Plain">epub-cover-image</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myresource/epub/cover.jpg</span>
+</span><span class='line'><span class="l-Scalar-Plain">epub-stylesheet</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myresource/epub/stylesheet.css</span>
+</span><span class='line'><span class="l-Scalar-Plain">epub-metadata</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myresource/epub/metadata.xml</span>
+</span><span class='line'><span class="l-Scalar-Plain">epub-dir</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">/Users/mxs/Documents/blog/</span>
+</span><span class='line'><span class="l-Scalar-Plain">header-items</span><span class="p-Indicator">:</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">title</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">meixuesong blog</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">author</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">meixuesong</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">author-note</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">na</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">citation</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">na</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中要注意的是路径，<code>epub-dir</code>是博客资源的根路径，其中文件夹如<code>epub-cover-image</code>, <code>epub-stylesheet</code>和<code>epub-metadata</code>都是相对根路径的相对路径。<code>metadata.xml</code>是EPUB文件所需的文件，可以是个空文件。为了美观，我们稍微修改了stylesheet.css：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="c">/*stylesheet.css*/</span>
+</span><span class='line'><span class="nt">body</span> <span class="p">{</span> <span class="k">margin</span><span class="o">:</span> <span class="m">5</span><span class="o">%</span><span class="p">;</span> <span class="k">text-align</span><span class="o">:</span> <span class="k">justify</span><span class="p">;</span> <span class="k">font-size</span><span class="o">:</span> <span class="k">medium</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="nt">code</span> <span class="p">{</span> <span class="k">font-family</span><span class="o">:</span> <span class="k">monospace</span><span class="p">;</span> <span class="k">font-size</span><span class="o">:</span><span class="m">0.75em</span><span class="p">;}</span>
+</span><span class='line'><span class="nt">h1</span> <span class="p">{</span> <span class="k">text-align</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span> <span class="k">margin</span><span class="o">:</span><span class="m">0px</span><span class="p">;</span> <span class="k">padding</span><span class="o">:</span><span class="m">0px</span><span class="p">;</span><span class="k">font-size</span><span class="o">:</span><span class="m">1.5em</span><span class="p">;</span> <span class="k">border-bottom</span><span class="o">:</span> <span class="nb">black</span> <span class="k">solid</span> <span class="m">1px</span><span class="p">;}</span>
+</span><span class='line'><span class="nt">h2</span> <span class="p">{</span> <span class="k">text-align</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span> <span class="k">margin</span><span class="o">:</span><span class="m">0px</span><span class="p">;</span> <span class="k">padding</span><span class="o">:</span><span class="m">0px</span><span class="p">;</span><span class="k">font-size</span><span class="o">:</span><span class="m">1.2em</span><span class="p">;}</span>
+</span><span class='line'><span class="nt">h3</span> <span class="p">{</span> <span class="k">text-align</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span> <span class="k">margin</span><span class="o">:</span><span class="m">0px</span><span class="p">;</span> <span class="k">padding</span><span class="o">:</span><span class="m">0px</span><span class="p">;</span><span class="k">font-size</span><span class="o">:</span><span class="m">1.1em</span><span class="p">;}</span>
+</span><span class='line'><span class="nt">h4</span> <span class="p">{</span> <span class="k">text-align</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span> <span class="k">margin</span><span class="o">:</span><span class="m">0px</span><span class="p">;</span> <span class="k">padding</span><span class="o">:</span><span class="m">0px</span><span class="p">;</span> <span class="k">font-size</span><span class="o">:</span><span class="m">1em</span><span class="p">;}</span>
+</span><span class='line'><span class="nt">h5</span> <span class="p">{</span> <span class="k">text-align</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="nt">h6</span> <span class="p">{</span> <span class="k">text-align</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="nt">h1</span><span class="nc">.title</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class='line'><span class="nt">h2</span><span class="nc">.author</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class='line'><span class="nt">h3</span><span class="nc">.date</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class='line'><span class="nt">ol</span><span class="nc">.toc</span> <span class="p">{</span> <span class="k">padding</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span> <span class="k">margin-left</span><span class="o">:</span> <span class="m">1em</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="nt">ol</span><span class="nc">.toc</span> <span class="nt">li</span> <span class="p">{</span> <span class="k">list-style-type</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span> <span class="k">margin</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span> <span class="k">padding</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>开始定义第二部分，章节定义。这部分比较简单，就是定义书中包含哪几章，名字是什么，每章包括哪些博客。示例如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nt">content-dir</span><span class="o">:</span> <span class="nt">_posts</span><span class="o">/</span>   <span class="err">#博客所在的相对路径</span>
+</span><span class='line'><span class="nt">contents</span><span class="o">:</span>
+</span><span class='line'>  <span class="nt">-</span> <span class="nt">section-title</span><span class="o">:</span> <span class="nt">Articles</span>   <span class="err">#章节名称</span>
+</span><span class='line'>    <span class="nt">files</span><span class="o">:</span>                    <span class="err">#该章以下包括哪些内容</span>
+</span><span class='line'>    <span class="nt">-</span> <span class="nt">article1</span><span class="nc">.markdown</span>
+</span><span class='line'>    <span class="nt">-</span> <span class="nt">article2</span><span class="nc">.markdown</span>
+</span><span class='line'>  <span class="nt">-</span> <span class="nt">section-title</span><span class="o">:</span> <span class="nt">Reviews</span>
+</span><span class='line'>    <span class="nt">files</span><span class="o">:</span>
+</span><span class='line'>    <span class="nt">-</span> <span class="nt">review</span><span class="nc">.markdown</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>2. 生成EPUB电子书</h2>
+
+<p>完成<code>manifest.yml</code>的定义之后，就可以开始生成电子书了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>jekyll-ebook manifest.yml
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>EPUB电子书就这样生成了，字体完美，甚至还有代码高亮显示功能，电子书的目录默认显示到第三级，在Kindle上看显得多了，需要改为只显示第1级，即目录只显示文章标题，而不用详细到每章的<code>h3</code>级内容。另外图片显示不正常，应该是路径不正确。</p>
+
+<p>先来解决第一个问题，将目录级别改为只显示第1级标题。可以修改文件<code>ebook.rb</code>，在Mac OSX下，这个文件位于：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#文件路径：</span>
+</span><span class='line'><span class="sr">/Library/</span><span class="no">Ruby</span><span class="o">/</span><span class="no">Gems</span><span class="o">/</span><span class="mi">2</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">/</span><span class="n">gems</span><span class="o">/</span><span class="n">jekyll</span><span class="o">-</span><span class="n">ebook</span><span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">2</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jekyll</span><span class="o">-</span><span class="n">ebook</span><span class="o">/</span><span class="n">ebook</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 修改代码，加上：&#39;toc-depth&#39; =&gt; 1,</span>
+</span><span class='line'><span class="no">PandocRuby</span><span class="o">.</span><span class="n">new</span><span class="p">(</span> <span class="nb">self</span><span class="o">.</span><span class="n">generate_content</span> <span class="p">,</span>
+</span><span class='line'>                   <span class="p">{</span><span class="ss">:f</span> <span class="o">=&gt;</span> <span class="ss">:markdown</span><span class="p">,</span> <span class="ss">:to</span> <span class="o">=&gt;</span> <span class="ss">:epub</span><span class="p">},</span>
+</span><span class='line'>                   <span class="s1">&#39;smart&#39;</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span> <span class="o">=&gt;</span> <span class="nb">self</span><span class="o">.</span><span class="n">manifest</span><span class="o">[</span><span class="s1">&#39;epub-filename&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>                   <span class="s1">&#39;toc-depth&#39;</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>再来解决图片不显示的问题。该问题主要是因为写博客时，图片的地址为<code>/myresource/images/</code>，因此在生成电子书无法找到这个绝对路径。解决办法使用<code>ln</code>命令在根文件夹下建立一个符号连接myresource，Windows下好像是<code>mklink</code>命令。重新生成电子书，问题解决。</p>
+
+<p>现在，我们的EPUB电子书通过Kindle多看系统阅读已经非常完美了。接下来我们尝试一下Mobi格式的电子书。</p>
+
+<h2>3. 生成Mobi电子书</h2>
+
+<p>Amazon提供了一个工具包<a href="http://www.amazon.com/gp/feature.html?docId=1000765211">KindleGen</a>。该工具可以将html、EPUB等转换成Mobi格式。下载解压缩后，就可以执行命令转换了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./kindlegen -locale zh aaa.epub
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>分别在原生Kindle和多看系统下查看这个mobi电子书，整体效果还是不错的，但是相比EPUB来说，还是差了那么一点点。例如h1到h3的标题下方空白的内容太多，也就是CSS中的margin-bottom值太大，但不论怎么修改，Mobi格式的显示效果好像都没有变化。最后还是选择继续使用多看系统，阅读EPUB格式的电子书。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-05T21:03:50+08:00" pubdate data-updated="true">2014-10-05</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/others/'>others</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/10/03/wu-xiang-tu/" title="Previous Post: 无向图">&laquo; 无向图</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/10/18/zhong-yu-wan-cheng-rss2epubde-xiang-mu/" title="Next Post: 终于完成RSS2EPUB的项目">终于完成RSS2EPUB的项目 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (21)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/hello/">Hello</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/01/javabing-fa-bian-cheng-si/">Java并发编程(四)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/23/java-nio-dot-2/">Java NIO.2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/18/java-7de-6ge-xin-te-xing/">Java 7的6个新特性</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/17/bshu/">B树</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fb4e47bf6950f9d2496daf84fe62cec59' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/10/05/ji-yu-jekyll-sheng-cheng-dian-zi-shu/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/10/05/ji-yu-jekyll-sheng-cheng-dian-zi-shu/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

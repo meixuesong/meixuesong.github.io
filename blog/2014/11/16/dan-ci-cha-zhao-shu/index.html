@@ -1,0 +1,1111 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>单词查找树 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="在符号表中学习了二叉树、红黑树等，单词查找树比这些通用算法更加有效。它查找命中所需的时间与被查找的键的长度成正比，查找未命中只需检查若干个字符。这样的性能是相当惊人的，它们是算法研究的最高成就之一。 我们扩展符号表的API，增加基于字符的用于处理字符串类型的键的操作。 以字符串为键的符号表的API &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/11/16/dan-ci-cha-zhao-shu">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">单词查找树</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-16T22:37:38+08:00" pubdate data-updated="true">2014-11-16</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>在<a href="/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/">符号表</a>中学习了二叉树、红黑树等，单词查找树比这些通用算法更加有效。它查找命中所需的时间与被查找的键的长度成正比，查找未命中只需检查若干个字符。这样的性能是相当惊人的，它们是算法研究的最高成就之一。</p>
+
+<!--more-->
+
+
+<p>我们扩展符号表的API，增加基于字符的用于处理字符串类型的键的操作。</p>
+
+<p>以字符串为键的符号表的API(<code>StringST&lt;Value&gt;</code>)</p>
+
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>StringST()</code> </td>
+<td> 创建一个符号表</td>
+</tr>
+<tr>
+<td><code>void put(String key, Value val)</code> </td>
+<td> 向表中插入键值对（如果值为null则删除键key）</td>
+</tr>
+<tr>
+<td><code>Value get(String key)</code> </td>
+<td> 键key所对应的值，如果不存在则返回null</td>
+</tr>
+<tr>
+<td><code>void delete(String key)</code> </td>
+<td> 删除键key（和它的值）</td>
+</tr>
+<tr>
+<td><code>boolean contains(String key)</code> </td>
+<td> 表中是否存在key的值</td>
+</tr>
+<tr>
+<td><code>boolean isEmpty()</code> </td>
+<td> 符号表是否为空</td>
+</tr>
+<tr>
+<td><strong><code>String longestPrefixOf(String s)</code></strong> </td>
+<td> s的前缀中最长的键 </td>
+</tr>
+<tr>
+<td><strong><code>Iterable&lt;String&gt; keysWithPrefix(String s)</code></strong> </td>
+<td> 所有以s为前缀的键</td>
+</tr>
+<tr>
+<td><strong><code>Iterable&lt;String&gt; keysThatMatch(String s)</code></strong> </td>
+<td> 所有和s匹配的键（其中“.”能够匹配任意字符）</td>
+</tr>
+<tr>
+<td><code>int size()</code>  </td>
+<td> 键值对的数量 </td>
+</tr>
+<tr>
+<td><code>Iterable&lt;String&gt; keys()</code> </td>
+<td> 符号表中的所有键 </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>上面的API与符号表API的不同之处在于Key换成了String, 增加了粗体显示的三个方法。</p>
+
+<h2>1. R向单词查找树</h2>
+
+<p>与各种查找树一样，单词查找树也是由链接的结点所组成的数据结构。每个结点只有一个父结点（根结点除外），每个结点都含有R条链接，其中R为字母表的大小。每个键所关联的值保存在该键的最后一个字母所对应的结点中。值为空的结点在符号表中没有对应的键，它们的存在是为了简化单词查找树中的查找操作。</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-16-tries-node.jpg" alt="image" /></p>
+
+<h3>1.1 查找操作</h3>
+
+<p>单词查找树的查找操作非常简单，从首字母开始延着树结点查找就可以：</p>
+
+<ul>
+<li>键的尾字符所对应的结点中的值非空，命中！</li>
+<li>键的尾字符所对应的结点中的值为空，未命中！</li>
+<li>查找结束于一条空链接，未命中！</li>
+</ul>
+
+
+<h3>1.2 插入操作</h3>
+
+<p>和二叉查找树一样，在插入之前要进行一次查找。</p>
+
+<ul>
+<li>在到达键的尾字符之前就遇到了一个空链接。证明不存在匹配的结点，为键中还未被检查的每个字符创建一个对应的结点，并将键对应的值保存到最后一个字符的结点中。</li>
+<li>在遇到空链接之前就到达了键的尾字符。将该结点的值设为键对应的值（无论该值是否为空）。</li>
+</ul>
+
+
+<h3>1.3 删除操作</h3>
+
+<p>删除的第一步是找到键所对应的结点并将它的值设为空null. 如果该结点含有一个非空的链接指向某个子结点，那么就不需要再进行其他操作了。如果它的所有链接均为空，那就需要从数据结构中删除这个结点。如果删除它使得它的父结点的所有链接也均为空，就要继续删除它的父结点，依此类推。</p>
+
+<h3>1.4 实现</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TrieST</span><span class="o">&lt;</span><span class="n">Value</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">R</span> <span class="o">=</span> <span class="mi">256</span><span class="o">;</span>        <span class="c1">// extended ASCII</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="n">root</span><span class="o">;</span>      <span class="c1">// root of trie</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">int</span> <span class="n">N</span><span class="o">;</span>          <span class="c1">// number of keys in trie</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// R-way trie node</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Node</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">private</span> <span class="n">Object</span> <span class="n">val</span><span class="o">;</span>
+</span><span class='line'>        <span class="kd">private</span> <span class="n">Node</span><span class="o">[]</span> <span class="n">next</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Node</span><span class="o">[</span><span class="n">R</span><span class="o">];</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">TrieST</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Initializes an empty string symbol table.</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Returns the value associated with the given key.</span>
+</span><span class='line'><span class="cm">     * @param key the key</span>
+</span><span class='line'><span class="cm">     * @return the value associated with the given key if the key is in the symbol table</span>
+</span><span class='line'><span class="cm">     *     and &lt;tt&gt;null&lt;/tt&gt; if the key is not in the symbol table</span>
+</span><span class='line'><span class="cm">     * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Value</span> <span class="nf">get</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Node</span> <span class="n">x</span> <span class="o">=</span> <span class="n">get</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="o">(</span><span class="n">Value</span><span class="o">)</span> <span class="n">x</span><span class="o">.</span><span class="na">val</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Does this symbol table contain the given key?</span>
+</span><span class='line'><span class="cm">     * @param key the key</span>
+</span><span class='line'><span class="cm">     * @return &lt;tt&gt;true&lt;/tt&gt; if this symbol table contains &lt;tt&gt;key&lt;/tt&gt; and</span>
+</span><span class='line'><span class="cm">     *     &lt;tt&gt;false&lt;/tt&gt; otherwise</span>
+</span><span class='line'><span class="cm">     * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">contains</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nf">get</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="nf">get</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="k">return</span> <span class="n">x</span><span class="o">;</span>
+</span><span class='line'>        <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nf">get</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">],</span> <span class="n">key</span><span class="o">,</span> <span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Inserts the key-value pair into the symbol table, overwriting the old value</span>
+</span><span class='line'><span class="cm">     * with the new value if the key is already in the symbol table.</span>
+</span><span class='line'><span class="cm">     * If the value is &lt;tt&gt;null&lt;/tt&gt;, this effectively deletes the key from the symbol table.</span>
+</span><span class='line'><span class="cm">     * @param key the key</span>
+</span><span class='line'><span class="cm">     * @param val the value</span>
+</span><span class='line'><span class="cm">     * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">put</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="n">Value</span> <span class="n">val</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">val</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="n">delete</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">else</span> <span class="n">root</span> <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">val</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="nf">put</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="n">Value</span> <span class="n">val</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="n">x</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Node</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="n">N</span><span class="o">++;</span>
+</span><span class='line'>            <span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">x</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">]</span> <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">],</span> <span class="n">key</span><span class="o">,</span> <span class="n">val</span><span class="o">,</span> <span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">x</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Returns the number of key-value pairs in this symbol table.</span>
+</span><span class='line'><span class="cm">     * @return the number of key-value pairs in this symbol table</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">size</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">N</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Is this symbol table empty?</span>
+</span><span class='line'><span class="cm">     * @return &lt;tt&gt;true&lt;/tt&gt; if this symbol table is empty and &lt;tt&gt;false&lt;/tt&gt; otherwise</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isEmpty</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nf">size</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Returns all keys in the symbol table as an &lt;tt&gt;Iterable&lt;/tt&gt;.</span>
+</span><span class='line'><span class="cm">     * To iterate over all of the keys in the symbol table named &lt;tt&gt;st&lt;/tt&gt;,</span>
+</span><span class='line'><span class="cm">     * use the foreach notation: &lt;tt&gt;for (Key key : st.keys())&lt;/tt&gt;.</span>
+</span><span class='line'><span class="cm">     * @return all keys in the sybol table as an &lt;tt&gt;Iterable&lt;/tt&gt;</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">keys</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nf">keysWithPrefix</span><span class="o">(</span><span class="s">&quot;&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Returns all of the keys in the set that start with &lt;tt&gt;prefix&lt;/tt&gt;.</span>
+</span><span class='line'><span class="cm">     * @param prefix the prefix</span>
+</span><span class='line'><span class="cm">     * @return all of the keys in the set that start with &lt;tt&gt;prefix&lt;/tt&gt;,</span>
+</span><span class='line'><span class="cm">     *     as an iterable</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">keysWithPrefix</span><span class="o">(</span><span class="n">String</span> <span class="n">prefix</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">results</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
+</span><span class='line'>        <span class="n">Node</span> <span class="n">x</span> <span class="o">=</span> <span class="n">get</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">prefix</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">(</span><span class="n">prefix</span><span class="o">),</span> <span class="n">results</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">results</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">collect</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">StringBuilder</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">results</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">results</span><span class="o">.</span><span class="na">enqueue</span><span class="o">(</span><span class="n">prefix</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>  <span class="c1">//有值才是键</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="n">R</span><span class="o">;</span> <span class="n">c</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">prefix</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">],</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">results</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">prefix</span><span class="o">.</span><span class="na">deleteCharAt</span><span class="o">(</span><span class="n">prefix</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Returns all of the keys in the symbol table that match &lt;tt&gt;pattern&lt;/tt&gt;,</span>
+</span><span class='line'><span class="cm">     * where . symbol is treated as a wildcard character.</span>
+</span><span class='line'><span class="cm">     * @param pattern the pattern</span>
+</span><span class='line'><span class="cm">     * @return all of the keys in the symbol table that match &lt;tt&gt;pattern&lt;/tt&gt;,</span>
+</span><span class='line'><span class="cm">     *     as an iterable, where . is treated as a wildcard character.</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">keysThatMatch</span><span class="o">(</span><span class="n">String</span> <span class="n">pattern</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">results</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
+</span><span class='line'>        <span class="n">collect</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">(),</span> <span class="n">pattern</span><span class="o">,</span> <span class="n">results</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">results</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">collect</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">StringBuilder</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">String</span> <span class="n">pattern</span><span class="o">,</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">results</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">d</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">pattern</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+</span><span class='line'>            <span class="n">results</span><span class="o">.</span><span class="na">enqueue</span><span class="o">(</span><span class="n">prefix</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">pattern</span><span class="o">.</span><span class="na">length</span><span class="o">())</span>
+</span><span class='line'>            <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>        <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;.&#39;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">for</span> <span class="o">(</span><span class="kt">char</span> <span class="n">ch</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">ch</span> <span class="o">&lt;</span> <span class="n">R</span><span class="o">;</span> <span class="n">ch</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">prefix</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">ch</span><span class="o">);</span>
+</span><span class='line'>                <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">ch</span><span class="o">],</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">pattern</span><span class="o">,</span> <span class="n">results</span><span class="o">);</span>
+</span><span class='line'>                <span class="n">prefix</span><span class="o">.</span><span class="na">deleteCharAt</span><span class="o">(</span><span class="n">prefix</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">prefix</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">],</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">pattern</span><span class="o">,</span> <span class="n">results</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">prefix</span><span class="o">.</span><span class="na">deleteCharAt</span><span class="o">(</span><span class="n">prefix</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Returns the string in the symbol table that is the longest prefix of &lt;tt&gt;query&lt;/tt&gt;,</span>
+</span><span class='line'><span class="cm">     * or &lt;tt&gt;null&lt;/tt&gt;, if no such string.</span>
+</span><span class='line'><span class="cm">     * @param query the query string</span>
+</span><span class='line'><span class="cm">     * @throws NullPointerException if &lt;tt&gt;query&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;</span>
+</span><span class='line'><span class="cm">     * @return the string in the symbol table that is the longest prefix of &lt;tt&gt;query&lt;/tt&gt;,</span>
+</span><span class='line'><span class="cm">     *     or &lt;tt&gt;null&lt;/tt&gt; if no such string</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">longestPrefixOf</span><span class="o">(</span><span class="n">String</span> <span class="n">query</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">longestPrefixOf</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">query</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">query</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">length</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// returns the length of the longest string key in the subtrie</span>
+</span><span class='line'>    <span class="c1">// rooted at x that is a prefix of the query string,</span>
+</span><span class='line'>    <span class="c1">// assuming the first d character match and we have already</span>
+</span><span class='line'>    <span class="c1">// found a prefix match of length length</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">int</span> <span class="nf">longestPrefixOf</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">String</span> <span class="n">query</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">,</span> <span class="kt">int</span> <span class="n">length</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="n">length</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">length</span> <span class="o">=</span> <span class="n">d</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">query</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="k">return</span> <span class="n">length</span><span class="o">;</span>
+</span><span class='line'>        <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nf">longestPrefixOf</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">],</span> <span class="n">query</span><span class="o">,</span> <span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">length</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Removes the key from the set if the key is present.</span>
+</span><span class='line'><span class="cm">     * @param key the key</span>
+</span><span class='line'><span class="cm">     * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">delete</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">root</span> <span class="o">=</span> <span class="n">delete</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="nf">delete</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">N</span><span class="o">--;</span>
+</span><span class='line'>            <span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">]</span> <span class="o">=</span> <span class="n">delete</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">],</span> <span class="n">key</span><span class="o">,</span> <span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// remove subtrie rooted at x if it is completely empty</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="n">x</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="n">R</span><span class="o">;</span> <span class="n">c</span><span class="o">++)</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">]</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+</span><span class='line'>                <span class="k">return</span> <span class="n">x</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码可以处理扩展ASCII码，但很容易就可以修改为能够处理由任意字母表得到的键：</p>
+
+<ol>
+<li>实现一个构造函数，接受Alphabet，将R设置为字母表大小。</li>
+<li>在get()、put()中使用Alphabet的toIndex()，将字符串中的字符转化为0到R-1的索引值。</li>
+<li>在keys()、keysWithPrefix()和keysThatMatch()方法中，使用Alphabet的toChar()方法，将0到R-1之间的索引值转化为字符型(char)值。</li>
+</ol>
+
+
+<h3>1.5 单词查找树的性质</h3>
+
+<p>单词查找树的链表结构（形状）和键的插入或删除顺序无关，对于任意给定的一组键，其单词查找树都是唯一的。</p>
+
+<p>在单词查找树中查找一个键或是插入一个键时，访问数组的次数最多为键的长度加1！</p>
+
+<p>字母表的大小为R，在一棵由N个随机键构造的单词树中，未命中查找平均所需检查的结点数量为~log<sub>R</sub><sup>N</sup>。</p>
+
+<p>一棵单词查找树中的链接总数在RN到RNw之间，其中w为键的平均长度。因此单词查找树的空间消耗非常大。长键也可能占用大量空间，因为它通常有一条长长的尾巴。单词查找树的内部也可能存在单向的分支。例如两个长键可能只有最后一个字符不同。</p>
+
+<p>如果能够负担得起R向单词查找树的庞大空间，它的性能是无可匹敌的。</p>
+
+<h2>2. 三向单词查找树</h2>
+
+<p>三向单词查找树可以避免R向单词查找树过度的空间消耗。它的每个结点都含有一个字符、三条链接和一个值。三条链接分别对应当前字母小于、等于和大于结点字母的所有键。</p>
+
+<p><img src="/myresource/images/image_blog_2014-11-16-tst.jpg" alt="image" /></p>
+
+<h3>2.1 查找、插入和删除操作</h3>
+
+<p>在查找时，首先比较键的首字母和根结点的字母。如果键的首字母较小，就选择左链接；如果较大，就选择右链接；如果相等则选择中链接。然后递归地使用相同的算法。如果遇到一个空链接或者当键结束时结点的值为空，那么查找未命中。如果键结束时结点的值非空则查找命中。</p>
+
+<p>插入一个新键时，首先进行查找，然后和单词查找树一样，在树中补全键末尾的所有结点。</p>
+
+<p>在三向单词查找树中，需要使用在二叉查找树中删除结点的方法来删去与该字符对应的结点。</p>
+
+<h3>2.2 实现</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TST</span><span class="o">&lt;</span><span class="n">Value</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">int</span> <span class="n">N</span><span class="o">;</span>       <span class="c1">// size</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="n">root</span><span class="o">;</span>   <span class="c1">// root of TST</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">class</span> <span class="nc">Node</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">private</span> <span class="kt">char</span> <span class="n">c</span><span class="o">;</span>                 <span class="c1">// character</span>
+</span><span class='line'>        <span class="kd">private</span> <span class="n">Node</span> <span class="n">left</span><span class="o">,</span> <span class="n">mid</span><span class="o">,</span> <span class="n">right</span><span class="o">;</span>  <span class="c1">// left, middle, and right subtries</span>
+</span><span class='line'>        <span class="kd">private</span> <span class="n">Value</span> <span class="n">val</span><span class="o">;</span>              <span class="c1">// value associated with string</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// return number of key-value pairs</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">size</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">N</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="cm">/**************************************************************</span>
+</span><span class='line'><span class="cm">    * Is string key in the symbol table?</span>
+</span><span class='line'><span class="cm">    **************************************************************/</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">contains</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nf">get</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Value</span> <span class="nf">get</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">key</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">NullPointerException</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;key must have length &gt;= 1&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Node</span> <span class="n">x</span> <span class="o">=</span> <span class="n">get</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="na">val</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// return subtrie corresponding to given key</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="nf">get</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">key</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">NullPointerException</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;key must have length &gt;= 1&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>        <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span>      <span class="o">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span>              <span class="k">return</span> <span class="n">get</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">left</span><span class="o">,</span>  <span class="n">key</span><span class="o">,</span> <span class="n">d</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span>              <span class="k">return</span> <span class="n">get</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">right</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">d</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">&lt;</span> <span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="k">return</span> <span class="n">get</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">mid</span><span class="o">,</span>   <span class="n">key</span><span class="o">,</span> <span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">else</span>                           <span class="k">return</span> <span class="n">x</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>   <span class="cm">/**************************************************************</span>
+</span><span class='line'><span class="cm">    * Insert string s into the symbol table.</span>
+</span><span class='line'><span class="cm">    **************************************************************/</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">put</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">,</span> <span class="n">Value</span> <span class="n">val</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(!</span><span class="n">contains</span><span class="o">(</span><span class="n">s</span><span class="o">))</span> <span class="n">N</span><span class="o">++;</span>
+</span><span class='line'>        <span class="n">root</span> <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">s</span><span class="o">,</span> <span class="n">val</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="nf">put</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">String</span> <span class="n">s</span><span class="o">,</span> <span class="n">Value</span> <span class="n">val</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">x</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Node</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">x</span><span class="o">.</span><span class="na">c</span> <span class="o">=</span> <span class="n">c</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">if</span>      <span class="o">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span>             <span class="n">x</span><span class="o">.</span><span class="na">left</span>  <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">left</span><span class="o">,</span>  <span class="n">s</span><span class="o">,</span> <span class="n">val</span><span class="o">,</span> <span class="n">d</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span>             <span class="n">x</span><span class="o">.</span><span class="na">right</span> <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">right</span><span class="o">,</span> <span class="n">s</span><span class="o">,</span> <span class="n">val</span><span class="o">,</span> <span class="n">d</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">&lt;</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span>  <span class="n">x</span><span class="o">.</span><span class="na">mid</span>   <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">mid</span><span class="o">,</span>   <span class="n">s</span><span class="o">,</span> <span class="n">val</span><span class="o">,</span> <span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">else</span>                          <span class="n">x</span><span class="o">.</span><span class="na">val</span>   <span class="o">=</span> <span class="n">val</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">x</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>   <span class="cm">/**************************************************************</span>
+</span><span class='line'><span class="cm">    * Find and return longest prefix of s in TST</span>
+</span><span class='line'><span class="cm">    **************************************************************/</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">longestPrefixOf</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">s</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">Node</span> <span class="n">x</span> <span class="o">=</span> <span class="n">root</span><span class="o">;</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">while</span> <span class="o">(</span><span class="n">x</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">if</span>      <span class="o">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="na">left</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="na">right</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">i</span><span class="o">++;</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">length</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span>
+</span><span class='line'>                <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="na">mid</span><span class="o">;</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">length</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// all keys in symbol table</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">keys</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">queue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
+</span><span class='line'>        <span class="n">collect</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="s">&quot;&quot;</span><span class="o">,</span> <span class="n">queue</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">queue</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// all keys starting with given prefix</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">prefixMatch</span><span class="o">(</span><span class="n">String</span> <span class="n">prefix</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">queue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
+</span><span class='line'>        <span class="n">Node</span> <span class="n">x</span> <span class="o">=</span> <span class="n">get</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">prefix</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="n">queue</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">queue</span><span class="o">.</span><span class="na">enqueue</span><span class="o">(</span><span class="n">prefix</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">mid</span><span class="o">,</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">queue</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">queue</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// all keys in subtrie rooted at x with given prefix</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">collect</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">String</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">queue</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">left</span><span class="o">,</span>  <span class="n">prefix</span><span class="o">,</span>       <span class="n">queue</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">queue</span><span class="o">.</span><span class="na">enqueue</span><span class="o">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">mid</span><span class="o">,</span>   <span class="n">prefix</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">,</span> <span class="n">queue</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">right</span><span class="o">,</span> <span class="n">prefix</span><span class="o">,</span>       <span class="n">queue</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// return all keys matching given wildcard pattern</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">wildcardMatch</span><span class="o">(</span><span class="n">String</span> <span class="n">pat</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">queue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
+</span><span class='line'>        <span class="n">collect</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="s">&quot;&quot;</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">pat</span><span class="o">,</span> <span class="n">queue</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">queue</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">collect</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">String</span> <span class="n">prefix</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i</span><span class="o">,</span> <span class="n">String</span> <span class="n">pat</span><span class="o">,</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">q</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>        <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">pat</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;.&#39;</span> <span class="o">||</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span> <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">left</span><span class="o">,</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">pat</span><span class="o">,</span> <span class="n">q</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;.&#39;</span> <span class="o">||</span> <span class="n">c</span> <span class="o">==</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">pat</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">q</span><span class="o">.</span><span class="na">enqueue</span><span class="o">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">pat</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">mid</span><span class="o">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">pat</span><span class="o">,</span> <span class="n">q</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;.&#39;</span> <span class="o">||</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span> <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">right</span><span class="o">,</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">pat</span><span class="o">,</span> <span class="n">q</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2.3 三向单词查找树的性质</h3>
+
+<p>三向单词查找树与R向单词查找树的数据结构性质截然不同。它和其他所有二叉查找树一样，每个单词查找树结点的二叉查找树表示也取决于键的插入顺序。</p>
+
+<p>它的每个结点只含有三个链接，因此所需空间远小于对应的单词查找树。由N个平均长度为w的字符串构造的三向单词查找树中的链接总数在3N到3Nw之间。</p>
+
+<p>在一棵由N个随机字符串构造的三向单词查找树中，查找未命中平均需要比较字符~lnN次。除~lnN次外，一次插入或命中的查找会比较一次被查找的键中的每个字符。</p>
+
+<p>使用三向单词查找树的最大好处是它能够很好地适应实际应用中可能出现的被查找键的不规则性。它可以使用256个字符的ASCII编码或者65536个字符的Unicode编码，而不必担心分支带来的巨大开销。</p>
+
+<h2>3. 总结</h2>
+
+<p><img src="/myresource/images/image_blog_2014-11-16-wordsfind-conclude.jpg" alt="image" /></p>
+
+<p>参考：<a href="http://algs4.cs.princeton.edu/52trie/">http://algs4.cs.princeton.edu/52trie/</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-16T22:37:38+08:00" pubdate data-updated="true">2014-11-16</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/suan-fa/'>算法</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/11/15/zi-fu-chuan-pai-xu/" title="Previous Post: 字符串排序">&laquo; 字符串排序</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/11/17/bshu/" title="Next Post: B树">B树 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (21)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/hello/">Hello</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/01/javabing-fa-bian-cheng-si/">Java并发编程(四)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/23/java-nio-dot-2/">Java NIO.2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/18/java-7de-6ge-xin-te-xing/">Java 7的6个新特性</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/17/bshu/">B树</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fb4e47bf6950f9d2496daf84fe62cec59' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/11/16/dan-ci-cha-zhao-shu/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/11/16/dan-ci-cha-zhao-shu/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

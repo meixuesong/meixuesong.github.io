@@ -9,7 +9,15 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="本文是《Java编程思想》第21章并发的读书笔记。Java并发编程（一） ">
+  <meta name="description" content="有向图也就是有方向性的图，是由一组顶点和一组有方向的边组成，每条有方向的边都连接着有序的一对顶点。本文要解决的有向图问题： 单点和多点的可达性
+单点有向路径
+单点最短有向路径
+有向环检测
+深度优先的顶点排序
+优先级限制下的调度问题
+拓扑排序
+强连通性
+顶点对的可达性 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,7 +81,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/09/02/javabing-fa-er/">Java并发编程（二）</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/10/30/you-xiang-tu/">有向图</a></h1>
     
     
       <p class="meta">
@@ -89,116 +97,28 @@
   
 
 
-<time datetime="2014-09-02T21:03:49+08:00" pubdate data-updated="true">2014-09-02</time>
+<time datetime="2014-10-30T20:10:54+08:00" pubdate data-updated="true">2014-10-30</time>
         
-           | <a href="/blog/2014/09/02/javabing-fa-er/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/09/02/javabing-fa-er/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本文是《Java编程思想》第21章并发的读书笔记。<a href="/blog/2014/08/30/javabing-fa-bian-cheng/">Java并发编程（一）</a></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/02/javabing-fa-er/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/30/javabing-fa-bian-cheng/">Java并发编程（一）</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-30T21:58:15+08:00" pubdate data-updated="true">2014-08-30</time>
-        
-           | <a href="/blog/2014/08/30/javabing-fa-bian-cheng/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/30/javabing-fa-bian-cheng/">Comments</a>
+           | <a href="/blog/2014/10/30/you-xiang-tu/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/10/30/you-xiang-tu/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>本文是《Java编程思想》第21章并发的读书笔记。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/08/30/javabing-fa-bian-cheng/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/28/effective-java-yi-chang/">Effective Java - 异常</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-28T23:15:18+08:00" pubdate data-updated="true">2014-08-28</time>
-        
-           | <a href="/blog/2014/08/28/effective-java-yi-chang/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/28/effective-java-yi-chang/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Effective Java 通用程序设计，读书笔记：</p>
+  <div class="entry-content"><p>有向图也就是有方向性的图，是由一组顶点和一组有方向的边组成，每条有方向的边都连接着有序的一对顶点。本文要解决的有向图问题：</p>
 
 <ol>
-<li>只对异常情况才使用异常</li>
-<li>对可恢复的情况使用受检异常，对编程错误使用运行时异常</li>
-<li>避免不必要地使用受检的异常</li>
-<li>优先使用标准的异常</li>
-<li>抛出与抽象相对应的异常</li>
-<li>每个方法抛出的异常都要有文档</li>
-<li>在细节消息中包含能捕获失败的消息</li>
-<li>努力使失败保持原子性</li>
-<li>不要忽略异常</li>
+<li>单点和多点的可达性</li>
+<li>单点有向路径</li>
+<li>单点最短有向路径</li>
+<li>有向环检测</li>
+<li>深度优先的顶点排序</li>
+<li>优先级限制下的调度问题</li>
+<li>拓扑排序</li>
+<li>强连通性</li>
+<li>顶点对的可达性</li>
 </ol>
 
 
@@ -206,7 +126,7 @@
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/08/28/effective-java-yi-chang/">继续阅读 &rarr;</a>
+      <a rel="full-article" href="/blog/2014/10/30/you-xiang-tu/">继续阅读 &rarr;</a>
     </footer>
   
 
@@ -218,7 +138,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/">程序员的数学</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/10/27/fa-bu-liang-kuan-zi-yong-de-gaeying-yong/">发布两款自用的GAE应用</a></h1>
     
     
       <p class="meta">
@@ -234,23 +154,23 @@
   
 
 
-<time datetime="2014-08-25T22:22:26+08:00" pubdate data-updated="true">2014-08-25</time>
+<time datetime="2014-10-27T22:58:19+08:00" pubdate data-updated="true">2014-10-27</time>
         
-           | <a href="/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/">Comments</a>
+           | <a href="/blog/2014/10/27/fa-bu-liang-kuan-zi-yong-de-gaeying-yong/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/10/27/fa-bu-liang-kuan-zi-yong-de-gaeying-yong/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>这是一篇《程序员的数学》读书笔记。这本书没有讲高深的数学理论，而是用浅显易懂的道理推导出一些数学知识。整本书浅显易懂，学不了太多东西，但对启发数学思维有一点用处。</p>
+  <div class="entry-content"><p>今天正式公开我的两款GAE(Google App Engine)应用：RSS2EPUB和背单词应用。供有需要的朋友使用。</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/">继续阅读 &rarr;</a>
+      <a rel="full-article" href="/blog/2014/10/27/fa-bu-liang-kuan-zi-yong-de-gaeying-yong/">继续阅读 &rarr;</a>
     </footer>
   
 
@@ -262,7 +182,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/">Effective Java-通用程序设计</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/10/18/zhong-yu-wan-cheng-rss2epubde-xiang-mu/">终于完成RSS2EPUB的项目</a></h1>
     
     
       <p class="meta">
@@ -278,31 +198,116 @@
   
 
 
-<time datetime="2014-08-22T20:06:07+08:00" pubdate data-updated="true">2014-08-22</time>
+<time datetime="2014-10-18T22:37:33+08:00" pubdate data-updated="true">2014-10-18</time>
         
-           | <a href="/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/">Comments</a>
+           | <a href="/blog/2014/10/18/zhong-yu-wan-cheng-rss2epubde-xiang-mu/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/10/18/zhong-yu-wan-cheng-rss2epubde-xiang-mu/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>Effective Java 通用程序设计，读书笔记：</p>
+  <div class="entry-content"><p>国庆期间，自从10月5日完成博客转EPUB电子书后，脑子突然短路，是不是可以把RSS订阅的内容也自动转成EPUB电子书呢？然后就没停下来，利用业余时间终于完成了，各项功能基本完善！</p>
+
+<p>这个项目运行于GAE平台，接受用户订阅，然后每天把最新内容生成电子书发邮件给用户。</p>
+
+<p>运行于GAE平台的好处是直接使用Google的云服务，特别是邮件服务和图片服务非常棒！但坏处是Google被墙，国内无法直接访问。所以又开发了邮件订阅的方法。总体来说效果不错！</p>
+
+<p>项目地址：<a href="http://rss2epub.appspot.com/">http://rss2epub.appspot.com</a></p>
+
+<p>使用方法参考：<a href="https://github.com/meixuesong/rss2epub">RSS2EPUB</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/05/ji-yu-jekyll-sheng-cheng-dian-zi-shu/">基于Jekyll(Octopress)将博客生成EPUB和Mobi电子书</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-05T21:03:50+08:00" pubdate data-updated="true">2014-10-05</time>
+        
+           | <a href="/blog/2014/10/05/ji-yu-jekyll-sheng-cheng-dian-zi-shu/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/10/05/ji-yu-jekyll-sheng-cheng-dian-zi-shu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>采用Octopress，基于Jekyll，<a href="/blog/2014/06/25/zai-githubshang-xie-bo-ke/">在GitHub上写博客</a>已经快一年了。随着博客的增多，有了一个想法，如果能将这些博客整理成册，变成电子书放入Kindle，有空时温习一下，那该多好。今天进行了尝试，效果还不错。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/10/05/ji-yu-jekyll-sheng-cheng-dian-zi-shu/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/03/wu-xiang-tu/">无向图</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-03T18:18:44+08:00" pubdate data-updated="true">2014-10-03</time>
+        
+           | <a href="/blog/2014/10/03/wu-xiang-tu/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/10/03/wu-xiang-tu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>无向图由一组顶点(Vertex)和一组能够将两个顶点相连的边(Edge)组成。本章学习无向图的邻接表实现，以及相关的搜索和应用，例如深度优先和广度优先搜索，路径查找和最短路径计算，连通分量和符号图。本文要解决的无向图问题包括：</p>
 
 <ol>
-<li>将局部变量的作用域最小化</li>
-<li>for-each循环优先于传统的for循环</li>
-<li>使用类库</li>
-<li>如果需要精确值，就避免使用float和double</li>
-<li>基本类型优先于装箱基本类型</li>
-<li>如果其它类型更合适，则尽量避免使用字符串</li>
-<li>小心字符串拼接的性能问题</li>
-<li>通过接口引用对象</li>
-<li>接口优先于反射机制</li>
-<li>谨慎使用本地方法</li>
-<li>谨慎进行优化</li>
-<li>遵守普遍接受的命名惯例</li>
+<li>单点连通性</li>
+<li>单点路径</li>
+<li>单点最短路径</li>
+<li>连通性</li>
+<li>检测环</li>
+<li>双色问题（图的二分性）</li>
 </ol>
 
 
@@ -310,7 +315,7 @@
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/">继续阅读 &rarr;</a>
+      <a rel="full-article" href="/blog/2014/10/03/wu-xiang-tu/">继续阅读 &rarr;</a>
     </footer>
   
 
@@ -322,7 +327,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/">设计模式:解释器模式与调停者模式</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/10/03/san-lie-biao/">散列表(HashTable)</a></h1>
     
     
       <p class="meta">
@@ -338,81 +343,23 @@
   
 
 
-<time datetime="2014-08-20T22:31:36+08:00" pubdate data-updated="true">2014-08-20</time>
+<time datetime="2014-10-03T10:03:40+08:00" pubdate data-updated="true">2014-10-03</time>
         
-           | <a href="/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/20/she-ji-mo-shi-jie-shi-qi-mo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>之所以将这两个模式放在一起，是因为它们很少用得到。</p>
-
-<h3>解释器(Interpreter)模式</h3>
-
-<p>给定一个语言之后，解释器模式可以定义出其文法的一种表示，并同时提供一个解释器。客户端可以使用这个解释器来解释这个语言中的句子。例如对于数学运算表达式（a + b + c），如果a, b和c的值已知，如何得到结果？一种办法是使用直接计算值的方法写一个算法，但是如果有很多个表达式呢？不可能为每一个表达式写一个算法。这时候解释器模式就能派上用场了。</p>
-
-<h3>调停者(Mediator)模式</h3>
-
-<p>当对象之间的关系成网状时，就会耦合得过于紧密。通过调停者模式转换成星状结构，调停者在中心，所有对象都只与调停者打交道，实现对象间的解耦。</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/20/effective-java-fang-fa/">Effective Java-方法</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-20T19:32:51+08:00" pubdate data-updated="true">2014-08-20</time>
-        
-           | <a href="/blog/2014/08/20/effective-java-fang-fa/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/20/effective-java-fang-fa/">Comments</a>
+           | <a href="/blog/2014/10/03/san-lie-biao/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/10/03/san-lie-biao/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>读书笔记：</p>
-
-<ol>
-<li>检查参数的有效性</li>
-<li>必要时进行保护性拷贝</li>
-<li>谨慎设计方法签名</li>
-<li>慎用重载</li>
-<li>慎用可变参数</li>
-<li>返回零长度的数组或者集合，而不是null
-44. 为所有导出的API元素编写文档注释</li>
-</ol>
-
+  <div class="entry-content"><p>散列表也是一种符号表，它通过算法将键转化为数组的索引来访问数组中的键值对。散列表查找的第一步是用散列函数将被查找的键转化为一数组索引，第二步是处理碰撞冲突。解决碰撞冲突的方法有拉链法和线性探测法。</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/08/20/effective-java-fang-fa/">继续阅读 &rarr;</a>
+      <a rel="full-article" href="/blog/2014/10/03/san-lie-biao/">继续阅读 &rarr;</a>
     </footer>
   
 
@@ -424,7 +371,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/08/19/she-ji-mo-shi-fang-wen-zhe-mo-shi/">设计模式:访问者模式</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/">符号表</a></h1>
     
     
       <p class="meta">
@@ -440,25 +387,23 @@
   
 
 
-<time datetime="2014-08-19T22:17:28+08:00" pubdate data-updated="true">2014-08-19</time>
+<time datetime="2014-10-02T11:26:20+08:00" pubdate data-updated="true">2014-10-02</time>
         
-           | <a href="/blog/2014/08/19/she-ji-mo-shi-fang-wen-zhe-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/19/she-ji-mo-shi-fang-wen-zhe-mo-shi/">Comments</a>
+           | <a href="/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>访问者(Visitor)模式的目的是封装一些施加于某种数据结构元素之上的操作，一旦这些操作需要修改的话，接受这个操作的数据结构则可以保持不变。假如要对一个不同类型的聚集进行遍历，为了判断不同的类型对象，需要写很多的if else，而访问者模式可以解决此问题。示意类图如下：</p>
-
-<p><img src="/myresource/images/image_blog_20140819_232009.jpg" alt="image" /></p>
+  <div class="entry-content"><p>符号表就是用键和值的方式来存储和检索数据。其关键点在于如何快速检索和高效插入。本章介绍了符号表的简单实现、二叉查找树、红黑树的实现。</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/08/19/she-ji-mo-shi-fang-wen-zhe-mo-shi/">继续阅读 &rarr;</a>
+      <a rel="full-article" href="/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/">继续阅读 &rarr;</a>
     </footer>
   
 
@@ -470,7 +415,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/">设计模式:状态模式</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/09/27/you-xian-dui-lie/">优先队列</a></h1>
     
     
       <p class="meta">
@@ -486,25 +431,23 @@
   
 
 
-<time datetime="2014-08-18T20:22:06+08:00" pubdate data-updated="true">2014-08-18</time>
+<time datetime="2014-09-27T23:08:56+08:00" pubdate data-updated="true">2014-09-27</time>
         
-           | <a href="/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/">Comments</a>
+           | <a href="/blog/2014/09/27/you-xian-dui-lie/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/09/27/you-xian-dui-lie/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>状态模式把对象的行为包装在不同的状态对象里，所有状态对象都属于抽象状态类的子类。状态模式的意图是让一个对象在其内部状态改变的时候，其行为也随之改变。类图示意如下：</p>
-
-<p><img src="/myresource/images/image_blog_20140818_224041.jpg" alt="image" /></p>
+  <div class="entry-content"><p>优先队列是广泛使用的一种抽象数据类型。例如如果你需要从10亿个元素中选出最大的十个，你不可能对10亿规模的数组排序。对于这些类似的场景，我们不一定要求它们全部有序，或者不一定要一次就将它们排序。我们会收集一些元素，处理当前键值最大的元素，然后再收集更多的元素，再处理当前键值最大的元素。例如应用程序的事件优先级，模拟系统，任务调度等。在这种情况下，优先队列应该支持两种操作：<strong>删除最大元素和插入元素。</strong></p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi/">继续阅读 &rarr;</a>
+      <a rel="full-article" href="/blog/2014/09/27/you-xian-dui-lie/">继续阅读 &rarr;</a>
     </footer>
   
 
@@ -516,7 +459,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/08/13/she-ji-mo-shi-bei-wang-lu-mo-shi/">设计模式:备忘录模式</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">快速排序算法</a></h1>
     
     
       <p class="meta">
@@ -532,25 +475,67 @@
   
 
 
-<time datetime="2014-08-13T23:00:58+08:00" pubdate data-updated="true">2014-08-13</time>
+<time datetime="2014-09-27T10:38:32+08:00" pubdate data-updated="true">2014-09-27</time>
         
-           | <a href="/blog/2014/08/13/she-ji-mo-shi-bei-wang-lu-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/13/she-ji-mo-shi-bei-wang-lu-mo-shi/">Comments</a>
+           | <a href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>备忘录(Memento)模式又叫做快照模式。备忘录对象是一个用来存储另外一个对象内部状态快照的对象。备忘录模式的用意是在不破坏封装的条件下，将一个对象的状态存储在外部，从而在合适的时候把这个对象还原到原来的状态。通常系统不止存储一个状态，而是存储多个状态（快照）。每一个快照所处的位置就是Check Point。其结构如下图：</p>
-
-<p><img src="/myresource/images/image_blog_20140813_231854.jpg" alt="image" /></p>
+  <div class="entry-content"><p>快速排序可能是应用最广泛的算法，原因是它实现简单、速度快。它完美地实现了原地排序（只需要一个很小的辅助栈），并且时间与NlgN成正比。它的内循环比大多数排序算法都要短小，因此理论上要更快。但它的主要缺点是非常脆弱，实现时要非常小心才能避免低劣的性能。</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/08/13/she-ji-mo-shi-bei-wang-lu-mo-shi/">继续阅读 &rarr;</a>
+      <a rel="full-article" href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/25/gui-bing-pai-xu/">归并排序算法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-25T21:07:58+08:00" pubdate data-updated="true">2014-09-25</time>
+        
+           | <a href="/blog/2014/09/25/gui-bing-pai-xu/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/09/25/gui-bing-pai-xu/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>所谓归并排序，是先把待排序数组分成两半，分别排序，然后将结果归并起来。归并排序最吸引人的地方是它能够保证将任意长度为N的数组排序所需时间和NlogN成正比。但其缺点是所需的额外空间和N成正比。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/09/25/gui-bing-pai-xu/">继续阅读 &rarr;</a>
     </footer>
   
 
@@ -578,29 +563,29 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (8)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (21)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2014/10/03/wu-xiang-tu/">无向图</a>
+        <a href="/blog/2014/12/03/hello/">Hello</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2014/10/03/san-lie-biao/">散列表(HashTable)</a>
+        <a href="/blog/2014/12/01/javabing-fa-bian-cheng-si/">Java并发编程(四)</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/">符号表</a>
+        <a href="/blog/2014/11/23/java-nio-dot-2/">Java NIO.2</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2014/09/27/you-xian-dui-lie/">优先队列</a>
+        <a href="/blog/2014/11/18/java-7de-6ge-xin-te-xing/">Java 7的6个新特性</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">快速排序算法</a>
+        <a href="/blog/2014/11/17/bshu/">B树</a>
       </li>
     
   </ul>

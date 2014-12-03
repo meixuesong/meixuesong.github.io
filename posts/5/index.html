@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="前文说到简单工厂方法的工厂类，对“开－闭”原则支持不够，当有新产品时，需要修改工厂类。而工厂方法模式可以解决这个问题。工厂方法模式的用意是定义一个创建产品对象的工厂接口，将实际创建工作推迟到子类中。其结构可表示为： ">
+  <meta name="description" content="从这个模式开始学习行为模式。行为模式是对在不同的对象之间划分责任和算法的抽象化。行为模式不仅仅是关于类和对象的，而且是关于它们之间的相互作用的。行为模式分为类的行为模式（使用继承在几个类之间分配行为）和对象的行为模式（使用对象的聚合来分配行为）。 不变（Immutable）模式是指一个对象创建之后 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,7 +73,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">设计模式:工厂方法模式</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/">设计模式:不变模式</a></h1>
     
     
       <p class="meta">
@@ -89,25 +89,27 @@
   
 
 
-<time datetime="2014-07-27T22:11:04+08:00" pubdate data-updated="true">2014-07-27</time>
+<time datetime="2014-08-09T18:08:28+08:00" pubdate data-updated="true">2014-08-09</time>
         
-           | <a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">Comments</a>
+           | <a href="/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>前文说到简单工厂方法的工厂类，对“开－闭”原则支持不够，当有新产品时，需要修改工厂类。而工厂方法模式可以解决这个问题。工厂方法模式的用意是定义一个创建产品对象的工厂接口，将实际创建工作推迟到子类中。其结构可表示为：</p>
+  <div class="entry-content"><p>从这个模式开始学习行为模式。行为模式是对在不同的对象之间划分责任和算法的抽象化。行为模式不仅仅是关于类和对象的，而且是关于它们之间的相互作用的。行为模式分为类的行为模式（使用继承在几个类之间分配行为）和对象的行为模式（使用对象的聚合来分配行为）。</p>
 
-<p><img src="/myresource/images/image_blog_2014-07-27_22.10.30.png" alt="image" /></p>
+<p>不变（Immutable）模式是指一个对象创建之后，它的状态将不再变化。不变模式不需要类图描述，它分为弱不变模式和强不变模式。</p>
+
+<p>不变与只读的区别：只读表示值不能直接修改，但可能随其它变量改变而发生改变。例如出生日期是不变的，但年龄是只读的，因为它会随着时间而改变。</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">继续阅读 &rarr;</a>
+      <a rel="full-article" href="/blog/2014/08/09/she-ji-mo-shi-bu-bian-mo-shi/">继续阅读 &rarr;</a>
     </footer>
   
 
@@ -119,7 +121,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/07/27/titanium-vs-worklight/">Titanium vs Worklight</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/08/07/ha-er-bin-yin-xiang/">哈尔滨印象</a></h1>
     
     
       <p class="meta">
@@ -135,23 +137,27 @@
   
 
 
-<time datetime="2014-07-27T13:52:25+08:00" pubdate data-updated="true">2014-07-27</time>
+<time datetime="2014-08-07T20:16:24+08:00" pubdate data-updated="true">2014-08-07</time>
         
-           | <a href="/blog/2014/07/27/titanium-vs-worklight/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/27/titanium-vs-worklight/">Comments</a>
+           | <a href="/blog/2014/08/07/ha-er-bin-yin-xiang/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/07/ha-er-bin-yin-xiang/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>因工作需要，对两个跨平台移动开发工具（Titanium，Worklight）进行比较的。本文主要从跨平台特性、性能、社区等进行比较。实际上，本文同样适用于Titanium VS Phonegap。</p>
+  <div class="entry-content"><p>8月初，恰逢有机会去哈尔滨出差，来到这个古老、精致的城市，印象还不错。街道很干净，建筑很有特色。</p>
+
+<p>街边一景</p>
+
+<p><img src="/myresource/images/haerbin201408/HA_ER_BIN_IMG_1304.jpg" alt="image" /></p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/07/27/titanium-vs-worklight/">继续阅读 &rarr;</a>
+      <a rel="full-article" href="/blog/2014/08/07/ha-er-bin-yin-xiang/">继续阅读 &rarr;</a>
     </footer>
   
 
@@ -163,7 +169,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/">设计模式:简单工厂模式</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/">设计模式:桥梁模式</a></h1>
     
     
       <p class="meta">
@@ -179,25 +185,25 @@
   
 
 
-<time datetime="2014-07-27T09:44:35+08:00" pubdate data-updated="true">2014-07-27</time>
+<time datetime="2014-08-03T22:09:23+08:00" pubdate data-updated="true">2014-08-03</time>
         
-           | <a href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/">Comments</a>
+           | <a href="/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>简单工厂模式其实就是静态工厂方法模式，即通过静态工厂方法来创建对象。其结构可表示为：</p>
+  <div class="entry-content"><p>桥梁模式的用意是“将抽象化与实现化解耦，使二者可以独立变化。”这里的解耦就是将它们之间的强关联改变成弱关联。所谓强关联就是继承关系，在编译期就已经确定。而弱关联就是动态确定并且可以在运行期动态改变的关联。因此对于Java，继承是强关联，而聚合关系是弱关联。因此桥梁模式中的解耦，就是指将抽象化与实现化之间的继承关系换成组合/聚合关系，使两者可以独立变化。桥梁模式的结构图如下：</p>
 
-<p><img src="/myresource/images/image_blog_2014-07-27_1.png" alt="image" /></p>
+<p><img src="/myresource/images/image_blog_20140803_233716.jpg" alt="image" /></p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/">继续阅读 &rarr;</a>
+      <a rel="full-article" href="/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/">继续阅读 &rarr;</a>
     </footer>
   
 
@@ -209,7 +215,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/07/25/yi-xie-she-ji-yuan-ze/">一些设计原则</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi/">设计模式:门面模式</a></h1>
     
     
       <p class="meta">
@@ -225,35 +231,257 @@
   
 
 
-<time datetime="2014-07-25T21:01:51+08:00" pubdate data-updated="true">2014-07-25</time>
+<time datetime="2014-08-03T21:59:42+08:00" pubdate data-updated="true">2014-08-03</time>
         
-           | <a href="/blog/2014/07/25/yi-xie-she-ji-yuan-ze/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/25/yi-xie-she-ji-yuan-ze/">Comments</a>
+           | <a href="/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>关于设计，有一些原则。本文总结一些常见的原则。包括：</p>
+  <div class="entry-content"><p>门面(Facade)模式的作用是屏蔽众多子系统的复杂性，为客户端提供一个统一的门面(Facade)对象，方便客户端调用。门面模式没有统一的结构。一般是一个子系统提供一个门面。要注意的是门面只负责协调子系统去服务客户端的请求，不能在门面类中增加功能和职责。</p>
+
+<p>什么情况下使用门面模式？如果子系统演化得越来越复杂，客户端的调用变得很复杂，产生很大的依赖性，则可以引入门面模式将一个子系统与它的客户端以及其他子系统分离。</p>
+
+<p>这与迪米特法则也是相符的，该法则要求不要与陌生人说话，只与你直接朋友通信。采用门面模式，客户端只要与门面打交道，不需要去协调多个子系统。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/">设计模式:享元模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-03T19:10:40+08:00" pubdate data-updated="true">2014-08-03</time>
+        
+           | <a href="/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>享元模式以共享的方式支持大量的细粒度对象。Java的String类型其实就使用了享元模式。享元对象具有内部状态(Internal State)和外部状态(External State)。内部状态是享元对象内部的，一旦创建就不会再改变，因此具有内部状态的享元对象可以进行共享。外部状态是随环境改变而改变的，是不可以共享的状态。享元对象的外部状态必须由客户端保存，通常以方法参数的方式传给享元对象，以改变方法的行为，但不会改变内在状态。享元模式可以分为单纯享元模式和复合享元模式。结构图如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140803_193842.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/">设计模式:代理模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-03T11:56:48+08:00" pubdate data-updated="true">2014-08-03</time>
+        
+           | <a href="/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>代理模式是对象的结构模式。代理模式给某一个对象提供一个代理对象，并由代理对象控制对原对象的引用。代理模式的结构如下图：</p>
+
+<p><img src="/myresource/images/image_blog_20140803_120304.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/">设计模式:装饰模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-01T20:00:16+08:00" pubdate data-updated="true">2014-08-01</time>
+        
+           | <a href="/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>装饰模式以对客户端透明的方式扩展对象的功能。客户端并不会觉得对象在装饰前和装饰后有什么不同。装饰模式可以在不使用创造更多子类的情况下，将对象的功能加以扩展。其类图所下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-08-01_20.13.33.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/01/she-ji-mo-shi-zhuang-shi-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/">设计模式:组合（Composite）模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-31T21:08:30+08:00" pubdate data-updated="true">2014-07-31</time>
+        
+           | <a href="/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>组合模式将对象以树状结构组织起来，达成“部分－整体”的层次结构，使得客户端对单个对象和组合对象的使用具有一致性。结构示意图：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-31_21.14.15.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/31/she-ji-mo-shi-que-sheng-gua-pei-mo-shi/">设计模式:缺省适配模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-31T20:31:57+08:00" pubdate data-updated="true">2014-07-31</time>
+        
+           | <a href="/blog/2014/07/31/she-ji-mo-shi-que-sheng-gua-pei-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/31/she-ji-mo-shi-que-sheng-gua-pei-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>缺省适配模式其实很简单，就是一个接口有很多方法，通过一个抽象类为这些方法提供默认实现，而具体的类继承这个抽象类，实现自己关心的方法即可。其结构如下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-31_20.37.12.jpg" alt="image" /></p>
+
+<p>什么情况下用缺省适配模式？如果不准备实现一个接口的所有方法时，可以通过一个抽象类，给出所有方法的实现。有用的方法要有实现，没用的方法也要有空的、平庸的实现。这样子类就不必实现所有方法了。对应适配器模式的三个角色：</p>
 
 <ul>
-<li>(S)单一职责原则</li>
-<li>(O)开闭原则</li>
-<li>(L)里氏替换原则</li>
-<li>(I)接口隔离原则</li>
-<li>(D)依赖反转原则</li>
-<li>迪米特法则</li>
-<li>组合/聚合复用原则</li>
+<li>Adapter：子类</li>
+<li>Adaptee：抽象类</li>
+<li>Target：接口</li>
 </ul>
 
-
 </div>
   
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/25/yi-xie-she-ji-yuan-ze/">继续阅读 &rarr;</a>
-    </footer>
   
 
 
@@ -264,7 +492,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/07/23/yi-zhang-tu-kan-dong/">一张图看懂UML类图的关系</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/07/30/she-ji-mo-shi-gua-pei-qi-mo-shi/">设计模式:适配器模式</a></h1>
     
     
       <p class="meta">
@@ -280,247 +508,25 @@
   
 
 
-<time datetime="2014-07-23T23:37:18+08:00" pubdate data-updated="true">2014-07-23</time>
+<time datetime="2014-07-30T22:31:42+08:00" pubdate data-updated="true">2014-07-30</time>
         
-           | <a href="/blog/2014/07/23/yi-zhang-tu-kan-dong/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/23/yi-zhang-tu-kan-dong/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在UML类图中，类之间的关系包括：继承、关联、聚合、组合和依赖关系。如何分辨这些关系呢？每种关系使用什么样的连线呢？</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/23/yi-zhang-tu-kan-dong/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/">分布式系统的基础知识</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-22T20:04:40+08:00" pubdate data-updated="true">2014-07-22</time>
-        
-           | <a href="/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/">Comments</a>
+           | <a href="/blog/2014/07/30/she-ji-mo-shi-gua-pei-qi-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/30/she-ji-mo-shi-gua-pei-qi-mo-shi/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>这是一篇学习笔记，内容为《大型网站系统与Java中间件实践》的第一章。</p>
+  <div class="entry-content"><p>适配器模式分为类的适配器和对象的适配器。它们都是把被适配类的API转换成目标类的API。但前者使用继承关系，而后者使用委派关系。它们的结构如下图：</p>
 
-<p>组成计算机的5要素为：输入、输出、运算器、控制器、存储器（内存、外存）。分布式系统也一样，可以分为这5个要素。因此这本书会对分布式系统中，这5个要素的变化进行说明。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/">Macbook Pro，送给自己的生日礼物</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-21T23:08:33+08:00" pubdate data-updated="true">2014-07-21</time>
-        
-           | <a href="/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>这台Macbook Pro配置还不错，8G RAM ＋ 256G SSD，用个5、6年应该没问题吧。</p>
+<p><img src="/myresource/images/image_blog_2014-07-30_22.38.26.jpg" alt="image" /> <img src="/myresource/images/image_blog_2014-07-30_22.40.21.jpg" alt="image" /></p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/07/21/xin-mai-zi-ji-de-sheng-ri-li-wu/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/19/archsummit-2014shen-zhen/">ArchSummit 2014深圳</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-19T21:10:46+08:00" pubdate data-updated="true">2014-07-19</time>
-        
-           | <a href="/blog/2014/07/19/archsummit-2014shen-zhen/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/19/archsummit-2014shen-zhen/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>InfoQ举办的全球架构师会议(ArchSummit 2014)18、19号在深圳万科国际会议中心举办。万科国际会议中心也是万科的总部所在地，建筑风格独特，在可持续发展和绿色节能方面具有很多尝试。参见<a href="http://baike.baidu.com/view/6272136.htm">百度百科</a>。</p>
-
-<p><img src="/myresource/images/archsummit201407/archsummit201407_IMG_1153.jpg" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/19/archsummit-2014shen-zhen/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/09/javazhu-jie/">Java注解</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-09T22:22:10+08:00" pubdate data-updated="true">2014-07-09</time>
-        
-           | <a href="/blog/2014/07/09/javazhu-jie/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/09/javazhu-jie/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本文记录Java注解的基本用法。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/09/javazhu-jie/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/08/effective-java-lei-he-jie-kou/">Effective Java-类和接口</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-08T18:58:31+08:00" pubdate data-updated="true">2014-07-08</time>
-        
-           | <a href="/blog/2014/07/08/effective-java-lei-he-jie-kou/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/08/effective-java-lei-he-jie-kou/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本文总结《Effective Java》中“类和接口”的论述。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/08/effective-java-lei-he-jie-kou/">继续阅读 &rarr;</a>
+      <a rel="full-article" href="/blog/2014/07/30/she-ji-mo-shi-gua-pei-qi-mo-shi/">继续阅读 &rarr;</a>
     </footer>
   
 
@@ -548,29 +554,29 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (8)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (21)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2014/10/03/wu-xiang-tu/">无向图</a>
+        <a href="/blog/2014/12/03/hello/">Hello</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2014/10/03/san-lie-biao/">散列表(HashTable)</a>
+        <a href="/blog/2014/12/01/javabing-fa-bian-cheng-si/">Java并发编程(四)</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/">符号表</a>
+        <a href="/blog/2014/11/23/java-nio-dot-2/">Java NIO.2</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2014/09/27/you-xian-dui-lie/">优先队列</a>
+        <a href="/blog/2014/11/18/java-7de-6ge-xin-te-xing/">Java 7的6个新特性</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">快速排序算法</a>
+        <a href="/blog/2014/11/17/bshu/">B树</a>
       </li>
     
   </ul>

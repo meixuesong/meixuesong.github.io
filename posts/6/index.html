@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="Java泛型功能强大，用起来也很简单。看到一些代码，有时候用?号，有时候又可以直接使用&lt;T&gt;，都有哪些区别呢？系统地了解一下吧。 ">
+  <meta name="description" content="原型（Prototype）模式的用处是：对于给定的原型对象，用复制的方法创建出更多的同类型对象。之前学习的工厂方法模式常常需要有一个与产品等级相同的等级结构，而原型模式则不需要这样。Java语言天生就支持原型模式。原型模式的结构图如下： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,7 +73,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/07/02/javafan-xing/">Java泛型</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/">设计模式: 原型（Prototype）模式</a></h1>
     
     
       <p class="meta">
@@ -89,23 +89,25 @@
   
 
 
-<time datetime="2014-07-02T22:24:37+08:00" pubdate data-updated="true">2014-07-02</time>
+<time datetime="2014-07-30T20:58:15+08:00" pubdate data-updated="true">2014-07-30</time>
         
-           | <a href="/blog/2014/07/02/javafan-xing/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/02/javafan-xing/">Comments</a>
+           | <a href="/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>Java泛型功能强大，用起来也很简单。看到一些代码，有时候用?号，有时候又可以直接使用<code>&lt;T&gt;</code>，都有哪些区别呢？系统地了解一下吧。</p>
+  <div class="entry-content"><p>原型（Prototype）模式的用处是：对于给定的原型对象，用复制的方法创建出更多的同类型对象。之前学习的工厂方法模式常常需要有一个与产品等级相同的等级结构，而原型模式则不需要这样。Java语言天生就支持原型模式。原型模式的结构图如下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-30_21.10.50.jpg" alt="image" /></p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/07/02/javafan-xing/">继续阅读 &rarr;</a>
+      <a rel="full-article" href="/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/">继续阅读 &rarr;</a>
     </footer>
   
 
@@ -117,7 +119,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/07/02/an-quan-http,sslzheng-shu-ji-shen-qing/">安全HTTP，SSL证书及申请</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/07/29/she-ji-mo-shi-buildermo-shi/">设计模式:Builder模式</a></h1>
     
     
       <p class="meta">
@@ -133,24 +135,25 @@
   
 
 
-<time datetime="2014-07-02T08:34:08+08:00" pubdate data-updated="true">2014-07-02</time>
+<time datetime="2014-07-29T22:28:54+08:00" pubdate data-updated="true">2014-07-29</time>
         
-           | <a href="/blog/2014/07/02/an-quan-http,sslzheng-shu-ji-shen-qing/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/02/an-quan-http,sslzheng-shu-ji-shen-qing/">Comments</a>
+           | <a href="/blog/2014/07/29/she-ji-mo-shi-buildermo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/29/she-ji-mo-shi-buildermo-shi/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>由于iOS 7.1无法安装企业应用的原因是url必须是https，因此需要将原Tomcat服务器增加SSL支持。总结一下基础知识和配置过程。</p>
+  <div class="entry-content"><p>Builder模式感觉没什么特别的，甚至都不值得称为一种模式。无非就是由Director构建部分，然后再使用一个方法完成构建过程。但Builder模式对于参数太多的构造器却非常有用。先看Builder模式的类图：</p>
 
+<p><img src="/myresource/images/image_blog_2014-07-29_22.38.17.png" alt="image" /></p>
+
+<p><a href="/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">这篇博客</a>建议当构造器参数比较多时，考虑使用Builder模式。这是一种非常优雅的方式。</p>
+
+<p>我觉得Builder模式的好处一是使客户端的代码很清晰，不需要那么多的set方法；二是实现了产品构建的原子性，也就是可以在build时，确保产品构建是有效的，如果某些部分或者参数有问题、冲突，就能够在build时失败，避免残次的半成品出现。</p>
 </div>
   
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/02/an-quan-http,sslzheng-shu-ji-shen-qing/">继续阅读 &rarr;</a>
-    </footer>
   
 
 
@@ -161,7 +164,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/06/30/xu-qiu-yu-yong-li/">采用界面原型和系统用例描述需求</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong/">设计模式在序列生成器的应用</a></h1>
     
     
       <p class="meta">
@@ -177,114 +180,24 @@
   
 
 
-<time datetime="2014-06-30T20:26:24+08:00" pubdate data-updated="true">2014-06-30</time>
+<time datetime="2014-07-28T22:21:23+08:00" pubdate data-updated="true">2014-07-28</time>
         
-           | <a href="/blog/2014/06/30/xu-qiu-yu-yong-li/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/06/30/xu-qiu-yu-yong-li/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>需求、文档是软件开发过程中两个最头疼的问题。什么是需求？软件没开发出来时，看不见摸不着。文档化是一种办法，但各种各样的文档、标准和格式。还没开始写就已经让人望而却步了。文档并不是越少越好，也不是越多越好，应该根据项目的的特点决定采用何种方式去描述需求。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/06/30/xu-qiu-yu-yong-li/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/28/li-yong-fan-zhang-hao/">利用反射和代理创建简单的安全账号</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-28T11:42:34+08:00" pubdate data-updated="true">2014-06-28</time>
-        
-           | <a href="/blog/2014/06/28/li-yong-fan-zhang-hao/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/06/28/li-yong-fan-zhang-hao/">Comments</a>
+           | <a href="/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>在实际业务中，总是会遇到权限管理和安全方面的需求。以一个帐户类（Account）为例，它实现了帐户的基本信息和余额管理。新的需求是余额修改相关的方法只能由授权用户调用。那么是不是直接修改Account类，在相关方法中加入权限验证代码呢？这样势必会让原来的代码变得混乱，破坏单一职责原则。应该怎么办呢？</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/06/28/li-yong-fan-zhang-hao/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">Effective Java-创建和销毁对象</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-27T09:20:04+08:00" pubdate data-updated="true">2014-06-27</time>
-        
-           | <a href="/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>《Effective Java》是Java语言的经典著作，本文总结书中“创建和销毁对象”的论述。主要包括：</p>
+  <div class="entry-content"><p>序列生成器是常见的一个应用组件。Oracle数据库有Sequence，但不是所有数据库都有序列。本文尝试将单例模式、多例模式应用于序列生成器。采用了以下方式实现：</p>
 
 <ol>
-<li>用静态工厂方法代替构造器</li>
-<li>构造器参数比较多时，考虑使用Builder</li>
-<li>用私有构造方法或枚举强化单例属性</li>
-<li>通过private构造器强化不可实例化的能力</li>
-<li>避免创建不必要的对象</li>
-<li>消除过期的对象引用</li>
-<li>避免使用finalize方法</li>
+<li>没有数据库的单例实现</li>
+<li>有数据库的单例实现</li>
+<li>有缓存的单例实现</li>
+<li>有缓存的多序列实现</li>
+<li>多序列的多例实现。</li>
 </ol>
 
 
@@ -292,7 +205,7 @@
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">继续阅读 &rarr;</a>
+      <a rel="full-article" href="/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong/">继续阅读 &rarr;</a>
     </footer>
   
 
@@ -304,7 +217,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/06/26/javasui-ji-cun-qu-wen-jian/">Java随机存取文件</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/">设计模式:抽象工厂方法模式</a></h1>
     
     
       <p class="meta">
@@ -320,23 +233,25 @@
   
 
 
-<time datetime="2014-06-26T21:56:12+08:00" pubdate data-updated="true">2014-06-26</time>
+<time datetime="2014-07-28T19:45:29+08:00" pubdate data-updated="true">2014-07-28</time>
         
-           | <a href="/blog/2014/06/26/javasui-ji-cun-qu-wen-jian/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/06/26/javasui-ji-cun-qu-wen-jian/">Comments</a>
+           | <a href="/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>RandomAccessFile提供了随机存取文件的支持，但是如何将对象持久化到文件中，并随机存取呢？</p>
+  <div class="entry-content"><p>简单工厂方法模式采用静态方法创建产品，工厂方式模式通过多层级的工厂方法创建一种产品等级结构。而抽象工厂方法模式则可以用于创建多个产品等级结构。因此，其类图示意如下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-28_20.03.46.png" alt="image" /></p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/06/26/javasui-ji-cun-qu-wen-jian/">继续阅读 &rarr;</a>
+      <a rel="full-article" href="/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/">继续阅读 &rarr;</a>
     </footer>
   
 
@@ -348,7 +263,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/06/26/mou-xiang-mu-kai-fa-guo-cheng-zong-jie/">某移动客户端项目开发</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">设计模式:工厂方法模式</a></h1>
     
     
       <p class="meta">
@@ -364,23 +279,25 @@
   
 
 
-<time datetime="2014-06-26T15:20:21+08:00" pubdate data-updated="true">2014-06-26</time>
+<time datetime="2014-07-27T22:11:04+08:00" pubdate data-updated="true">2014-07-27</time>
         
-           | <a href="/blog/2014/06/26/mou-xiang-mu-kai-fa-guo-cheng-zong-jie/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/06/26/mou-xiang-mu-kai-fa-guo-cheng-zong-jie/">Comments</a>
+           | <a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>新到一家公司，抽调去支援移动客户端团队，经历了一个移动客户端项目的开发过程。按以往的经验看，项目规模不大、业务也比较简单，3、5个人，2－3个月就应该能搞定。但整个项目却历时半年，最多时项目组有10几个人。简单记录一下吧。</p>
+  <div class="entry-content"><p>前文说到简单工厂方法的工厂类，对“开－闭”原则支持不够，当有新产品时，需要修改工厂类。而工厂方法模式可以解决这个问题。工厂方法模式的用意是定义一个创建产品对象的工厂接口，将实际创建工作推迟到子类中。其结构可表示为：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-27_22.10.30.png" alt="image" /></p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/06/26/mou-xiang-mu-kai-fa-guo-cheng-zong-jie/">继续阅读 &rarr;</a>
+      <a rel="full-article" href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">继续阅读 &rarr;</a>
     </footer>
   
 
@@ -392,7 +309,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/06/25/zai-githubshang-xie-bo-ke/">在GitHub上写博客</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/07/27/titanium-vs-worklight/">Titanium vs Worklight</a></h1>
     
     
       <p class="meta">
@@ -408,65 +325,23 @@
   
 
 
-<time datetime="2014-06-25T22:54:07+08:00" pubdate data-updated="true">2014-06-25</time>
+<time datetime="2014-07-27T13:52:25+08:00" pubdate data-updated="true">2014-07-27</time>
         
-           | <a href="/blog/2014/06/25/zai-githubshang-xie-bo-ke/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/06/25/zai-githubshang-xie-bo-ke/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>一直想找个能支持Markdown的博客平台。在尝试了包括CSDN、Loft、点点等博客平台之后，均觉不太满意。CSDN太业余，一个IT业最大的社区网站，竟然不支持Markdown。Loft偏文艺，不适合技术。点点还不错，支持Markdown，本来准备最终选择它了，但不爽有二：</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/06/25/zai-githubshang-xie-bo-ke/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/25/extjs-bei-wang-lu/">Extjs 备忘录</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-25T12:13:29+08:00" pubdate data-updated="true">2014-06-25</time>
-        
-           | <a href="/blog/2014/06/25/extjs-bei-wang-lu/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/06/25/extjs-bei-wang-lu/">Comments</a>
+           | <a href="/blog/2014/07/27/titanium-vs-worklight/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/27/titanium-vs-worklight/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>今天改点老程序，用到了Extjs，记录一下遇到的问题和解决办法。</p>
+  <div class="entry-content"><p>因工作需要，对两个跨平台移动开发工具（Titanium，Worklight）进行比较的。本文主要从跨平台特性、性能、社区等进行比较。实际上，本文同样适用于Titanium VS Phonegap。</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/06/25/extjs-bei-wang-lu/">继续阅读 &rarr;</a>
+      <a rel="full-article" href="/blog/2014/07/27/titanium-vs-worklight/">继续阅读 &rarr;</a>
     </footer>
   
 
@@ -478,7 +353,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/06/25/titaniumzi-dong-gou-jian/">Titanium移动开发之每日自动构建</a></h1>
+      <h1 class="entry-title"><a href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/">设计模式:简单工厂模式</a></h1>
     
     
       <p class="meta">
@@ -494,23 +369,170 @@
   
 
 
-<time datetime="2014-06-25T11:19:18+08:00" pubdate data-updated="true">2014-06-25</time>
+<time datetime="2014-07-27T09:44:35+08:00" pubdate data-updated="true">2014-07-27</time>
         
-           | <a href="/blog/2014/06/25/titaniumzi-dong-gou-jian/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/06/25/titaniumzi-dong-gou-jian/">Comments</a>
+           | <a href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>以下脚本用于构建Android 和 iOS版本的Titanium应用。可以将脚本加入cron中，每日定时构建。脚本还实现了自动获取svn日志，生成一个发布网页，直接上传到ftp的功能。</p>
+  <div class="entry-content"><p>简单工厂模式其实就是静态工厂方法模式，即通过静态工厂方法来创建对象。其结构可表示为：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-27_1.png" alt="image" /></p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/06/25/titaniumzi-dong-gou-jian/">继续阅读 &rarr;</a>
+      <a rel="full-article" href="/blog/2014/07/27/she-ji-mo-shi-jian-dan-gong-han-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/25/yi-xie-she-ji-yuan-ze/">一些设计原则</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-25T21:01:51+08:00" pubdate data-updated="true">2014-07-25</time>
+        
+           | <a href="/blog/2014/07/25/yi-xie-she-ji-yuan-ze/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/25/yi-xie-she-ji-yuan-ze/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>关于设计，有一些原则。本文总结一些常见的原则。包括：</p>
+
+<ul>
+<li>(S)单一职责原则</li>
+<li>(O)开闭原则</li>
+<li>(L)里氏替换原则</li>
+<li>(I)接口隔离原则</li>
+<li>(D)依赖反转原则</li>
+<li>迪米特法则</li>
+<li>组合/聚合复用原则</li>
+</ul>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/25/yi-xie-she-ji-yuan-ze/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/23/yi-zhang-tu-kan-dong/">一张图看懂UML类图的关系</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-23T23:37:18+08:00" pubdate data-updated="true">2014-07-23</time>
+        
+           | <a href="/blog/2014/07/23/yi-zhang-tu-kan-dong/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/23/yi-zhang-tu-kan-dong/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在UML类图中，类之间的关系包括：继承、关联、聚合、组合和依赖关系。如何分辨这些关系呢？每种关系使用什么样的连线呢？</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/23/yi-zhang-tu-kan-dong/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/">分布式系统的基础知识</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-22T20:04:40+08:00" pubdate data-updated="true">2014-07-22</time>
+        
+           | <a href="/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>这是一篇学习笔记，内容为《大型网站系统与Java中间件实践》的第一章。</p>
+
+<p>组成计算机的5要素为：输入、输出、运算器、控制器、存储器（内存、外存）。分布式系统也一样，可以分为这5个要素。因此这本书会对分布式系统中，这5个要素的变化进行说明。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/">继续阅读 &rarr;</a>
     </footer>
   
 
@@ -538,29 +560,29 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (17)</a></li><li><a href='/blog/categories/others/'>others (1)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (2)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (8)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (21)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2014/10/03/wu-xiang-tu/">无向图</a>
+        <a href="/blog/2014/12/03/hello/">Hello</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2014/10/03/san-lie-biao/">散列表(HashTable)</a>
+        <a href="/blog/2014/12/01/javabing-fa-bian-cheng-si/">Java并发编程(四)</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/">符号表</a>
+        <a href="/blog/2014/11/23/java-nio-dot-2/">Java NIO.2</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2014/09/27/you-xian-dui-lie/">优先队列</a>
+        <a href="/blog/2014/11/18/java-7de-6ge-xin-te-xing/">Java 7的6个新特性</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">快速排序算法</a>
+        <a href="/blog/2014/11/17/bshu/">B树</a>
       </li>
     
   </ul>

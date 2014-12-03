@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-10-04T12:17:39+08:00</updated>
+  <updated>2014-12-03T21:34:49+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,874 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Hello]]></title>
+    <link href="http://blog.ubone.com/blog/2014/12/03/hello/"/>
+    <updated>2014-12-03T21:16:44+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/12/03/hello</id>
+    <content type="html"><![CDATA[<p>just a test!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Java并发编程(四)]]></title>
+    <link href="http://blog.ubone.com/blog/2014/12/01/javabing-fa-bian-cheng-si/"/>
+    <updated>2014-12-01T22:43:50+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/12/01/javabing-fa-bian-cheng-si</id>
+    <content type="html"><![CDATA[<p>在学习了《Java编程思想》中关于<a href="/blog/2014/09/02/javabing-fa-bian-cheng-san/">并发编程</a>的内容后，继续学习Java并发编程。</p>
+
+<!--more-->
+
+
+<h2>1. 常用的并发构件</h2>
+
+<h3>为什么是synchronized?</h3>
+
+<p>这个单词的意思是同步，那么Java中synchronized表示什么意思呢？其实就是同步被锁定对象的主内存块。</p>
+
+<ul>
+<li>当进入一个synchronized代码块时，持有锁的线程和被锁定对象主内存中的视图会进行同步。</li>
+<li>当synchronized代码块执行完之后，被锁定对象所做的任何修改会在线程锁释放之前刷回到主内存中。</li>
+</ul>
+
+
+<p>而volatile变量，在使用之前总是会从主内存中再读出来。线程所写的值总会在指令完成之前被刷回到主内存中。volatile变量不会引入线程锁，是真正线程安全的。<strong>但只有写入时不依赖当前状态（读取的状态）的变量才应该声明为volatile变量。对于要关注当前状态的变量，只能借助线程锁保证绝对安全性。</strong></p>
+
+<h3>Lock有什么好处？</h3>
+
+<ul>
+<li>添加不同类型的锁，比如读取锁和写入锁。</li>
+<li>对锁的阻塞没有限制，即允许在一个方法中上锁，在另一个方法中解锁。</li>
+<li>如果线程得不到锁，比如锁由另外一个线程持有，就允许该线程后退或继续执行，或者做点别的事情——运用tryLock()方法。</li>
+<li>允许线程尝试取锁，并可以在超过等待时间后放弃。</li>
+</ul>
+
+
+<p>Lock接口的两个实现类：</p>
+
+<ul>
+<li>ReentranLock: 本质上与同步块一样，但更灵活些。</li>
+<li>ReentranReadWriteLock: 在读多写入的时候，性能更好。</li>
+</ul>
+
+
+<h3>ConcurrentHashMap</h3>
+
+<p>ConcurrentHashMap是HashMap的并发版本，改进了Collections.synchronizedMap()功能。它是concurrent包中最有用的类之一，不仅提供了多线程的安全性，而且性能更优。它提供了原子操作的新方法：</p>
+
+<ul>
+<li>putIfAbsent(): 如果没有对应键，则将键值对添加到HashMap中。</li>
+<li>remove(): 如果键存在，且值与当前状态相等，则用原子方式移除键值对。</li>
+<li>replace(): 当键存在时，进行原子替换。</li>
+</ul>
+
+
+<h3>CopyOnWriteArrayList</h3>
+
+<p>它是标准ArrayList的替代品，通过copy-on-write来实现线程安全性，对修改列表的任何操作都会创建一个新复本。当快速、一致的数据快照（不同的读取器读到的数据偶尔可能会不一样）比完美的同步以及性能上的突破更重要时，这种共享数据的方法非常理想，经常出现在非关键任务中。</p>
+
+<h3>Queue</h3>
+
+<p>Java有些多线程编程模型在很大程度上依赖于Queue实现线程安全性。BlockingQueue是最简单的实现。向队列put()时，如果队列满则放入线程会等待。从队列take()时，如果队列空，则取出线程阻塞。</p>
+
+<p>Queue接口全是泛型<code>Queue&lt;E&gt;</code>，利用这一点把工作项封装到一个人工容器中会更方便。例如工作单元MyAwesomeClass，与其用<code>BlockingQueue&lt;MyAwesomeClass&gt;</code>不如使用<code>BlockingQueue&lt;WorkUnit&lt;MyAwesomeClass&gt;&gt;</code>：</p>
+
+<p>```java
+public class WorkUnit<T> {</p>
+
+<pre><code>private final T workUnit;
+public T getWork() {return workUnit;}
+public WorkUnit(T workUnit) {
+    this.workUnit = workUnit;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>有了这层间接引用，可以添加额外的元数据而不用牺牲MyAwesomeClass的完整性。例如在WorkUnit中添加用于测试、性能指标和运行时系统信息等。</p>
+
+<p>除了基本的put()和take()方法，BlockingQueue还提供了还超时的放入和取出方法：offer(E e, long timeout, TimeUnit unit)和poll(long timeout, TimeUnit unit)。</p>
+
+<p>Java 7还引入了TransferQueue，本质上是多了transfer()操作的BlockingQueue。在BlockingQueue中，当上游线程池比下游快时，可能会引发一些问题，导致LinkedBlockingQueue溢出。反之，如果下游比上游快，则可能队列经常空着。TransferQueue可以优化这种情况，调控上/下游的速度。当消费线程在等待时，transfer()操作会马上把工作项传给它，否则就会阻塞直到取走工作项的线程出现。可以把这看做“挂号信”选项，即正在处理工作项的线程在交付当前工作项之前不会开始其他工作项的工作。</p>
+
+<p>用TransferQueue取代BlockingQueue的代码性能可能会更好，因为前者的实现考虑了现代编译器和处理器的特性，执行效率更高。</p>
+
+<h2>2. 控制执行</h2>
+
+<p>如果每个工作单元都启动一个新线程执行，效率会太低。因此可以利用线程池来执行工作单元/任务。</p>
+
+<h3>任务建模</h3>
+
+<p>任务建模可以采用三种办法：Callable, Future接口和FutureTask类。</p>
+
+<h4>Callable接口</h4>
+
+<p>Callable接口代表一段可以调用并返回结果的代码，典型用法是匿名实现类：</p>
+
+<p>```java
+final MyObject obj = new MyObject();</p>
+
+<p>Callable<String> cb = new Callable<String>() {</p>
+
+<pre><code>public String call() throws Exception {
+    return obj.someMethod();
+}
+</code></pre>
+
+<p>};</p>
+
+<p>String s = cb.call();
+```</p>
+
+<h4>Future接口</h4>
+
+<p>Future接口用来表示异步任务。主要有三个方法：</p>
+
+<ul>
+<li>get()，获取结果，如果没执行完会阻塞，直到能取得结果。</li>
+<li>cancel()，在结束前取消。</li>
+<li>isDonw()，判断是否结束。</li>
+</ul>
+
+
+<p>```java
+interface ArchiveSearcher { String search(String target); }
+ class App {
+   ExecutorService executor = &hellip;
+   ArchiveSearcher searcher = &hellip;
+   void showSearch(final String target)</p>
+
+<pre><code>   throws InterruptedException {
+ Future&lt;String&gt; future
+   = executor.submit(new Callable&lt;String&gt;() {
+     public String call() {
+         return searcher.search(target);
+     }});
+ displayOtherThings(); // do other things while searching
+ try {
+   displayText(future.get()); // use future
+ } catch (ExecutionException ex) { cleanup(); return; }
+</code></pre>
+
+<p>   }
+ }
+```</p>
+
+<h4>FutureTask类</h4>
+
+<p>FutureTask类是Future接口的常用实现类，实现了Runnable接口，因此可以由执行者调度。它提供的方法基本是Future和Runnable接口的组合：get(), cancel(), isDone(), isCancelled()和run()。它还提供了两个很方便的构造器：一个以Callable为参数，另一个以Runnable为参数。</p>
+
+<p>```java
+FutureTask<String> future =</p>
+
+<pre><code>   new FutureTask&lt;String&gt;(new Callable&lt;String&gt;() {
+     public String call() {
+       return searcher.search(target);
+   }});
+</code></pre>
+
+<p>executor.execute(future);
+```</p>
+
+<h3>ScheduledThreadPoolExecutor(STPE)</h3>
+
+<p>STPE是Executors类工厂方法的众多执行者之一。它有以下特点：</p>
+
+<ul>
+<li>可以预定线程池大小，也可自适应</li>
+<li>所安排的任务可以定期执行，也可只运行一次。</li>
+</ul>
+
+
+<p>```java
+ScheduledExecutorService stpe = Executors.newScheduledThreadPool(2);</p>
+
+<p>final Runnable msgReader = new Runnable() {</p>
+
+<pre><code>public void run() {
+    //...
+}
+</code></pre>
+
+<p>};</p>
+
+<p>//每10毫秒唤醒一个线程。该线程可以尝试poll一个队列&hellip;
+ScheduledFuture&lt;?> hndl = stpe.scheduleAtFixedRate(msgReader, 10, 10, TimeUnit.MILLISECONDS);
+```</p>
+
+<h2>3.分支/合并框架</h2>
+
+<p>这是Java 7重点突出的框架之一，用于轻量级并发，实现线程池中任务的自动调度。</p>
+
+<p>先来看看之前的并发算法可能存在的问题。如果某个线程的运行队列都是小任务，而另一个全是大任务。那么小任务的线程可能会空闲很多。而基于Work-Stealing（工作窃取）算法的ForkJoin则可以很好地解决此问题。</p>
+
+<p><img src="/myresource/images/image_blog_2014-12-02-fork-join.GIF" alt="image" /></p>
+
+<ul>
+<li>分支/合并框架引入一种新的执行者服务，称为ForkJoinPool</li>
+<li>ForkJoinPool处理比线程更小的并发单元ForkJoinTask</li>
+<li>ForkJoinTask是一种由ForkJoinPool以更轻量化的方式所调度的抽象</li>
+<li>通常使用两种任务（尽管都表示为ForkJoinTask实例）：“小型”任务是无需耗费太多时间就可以直接执行的任务；“大型”任务是需要分解（可能多次分解）后再执行的任务。</li>
+</ul>
+
+
+<p>这个框架的关键特性之一就是这些轻量的任务都能生成新的ForkJoinTask实例，而这些实例将仍由执行它们父任务的线程池来安排调度。这就是分而治之。例如在归并算法中，就可以将左侧、右侧的排序任务视为一个ForkJoinTask，在递归过程中，不断产生小型任务执行。下面的示例是一个对微博按时间归并排序的例子：</p>
+
+<p>```java
+//RecursiveAction继承自ForkJoinTask<Void>
+public class MicroBlogUpdateSorter extends RecursiveAction {
+  private static final int SMALL_ENOUGH = 32;
+  private final Update[] updates;
+  private final int start, end;
+  private final Update[] result;</p>
+
+<p>  public MicroBlogUpdateSorter(Update[] updates_) {</p>
+
+<pre><code>this(updates_, 0, updates_.length);
+</code></pre>
+
+<p>  }</p>
+
+<p>  public MicroBlogUpdateSorter(Update[] upds<em>, int startPos</em>, int endPos_) {</p>
+
+<pre><code>start = startPos_;
+end = endPos_;
+updates = upds_;
+result = new Update[updates.length];
+</code></pre>
+
+<p>  }</p>
+
+<p>  private void merge(MicroBlogUpdateSorter left<em>, MicroBlogUpdateSorter right</em>) {</p>
+
+<pre><code>int i = 0;
+int lCt = 0;
+int rCt = 0;
+while (lCt &lt; left_.size() &amp;&amp; rCt &lt; right_.size()) {
+  result[i++] = (left_.result[lCt].compareTo(right_.result[rCt]) &lt; 0) ? left_.result[lCt++]
+      : right_.result[rCt++];
+}
+while (lCt &lt; left_.size())
+  result[i++] = left_.result[lCt++];
+while (rCt &lt; right_.size())
+  result[i++] = right_.result[rCt++];
+</code></pre>
+
+<p>  }</p>
+
+<p>  public int size() {</p>
+
+<pre><code>return end - start;
+</code></pre>
+
+<p>  }</p>
+
+<p>  public Update[] getResult() {</p>
+
+<pre><code>return result;
+</code></pre>
+
+<p>  }</p>
+
+<p>  @Override
+  protected void compute() {</p>
+
+<pre><code>  //如果数组太小，就用系统排序
+if (size() &lt; SMALL_ENOUGH) {
+  System.arraycopy(updates, start, result, 0, size());
+  Arrays.sort(result, 0, size());
+} else {
+  int mid = size() / 2;
+  MicroBlogUpdateSorter left = new MicroBlogUpdateSorter(updates, start,
+      start + mid);
+  MicroBlogUpdateSorter right = new MicroBlogUpdateSorter(updates, start
+      + mid, end);
+  invokeAll(left, right);
+  merge(left, right);
+}
+</code></pre>
+
+<p>  }</p>
+
+<pre><code>public static void main() {
+List&lt;Update&gt; lu = new ArrayList&lt;Update&gt;();
+String text = "";
+final Update.Builder ub = new Update.Builder();
+final Author a = new Author("Tallulah");
+
+for (int i = 0; i &lt; 256; i++) {
+  text = text + "X";
+  long now = System.currentTimeMillis();
+  lu.add(ub.author(a).updateText(text).createTime(now).build());
+  try {
+    Thread.sleep(1);
+  } catch (InterruptedException e) {
+  }
+}
+Collections.shuffle(lu);
+Update[] updates = lu.toArray(new Update[0]); // Avoid allocation by passing
+                                              // zero-sized array
+MicroBlogUpdateSorter sorter = new MicroBlogUpdateSorter(updates);
+ForkJoinPool pool = new ForkJoinPool(4);
+pool.invoke(sorter);
+
+for (Update u : sorter.getResult()) {
+  System.out.println(u);
+}
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>如果下面这些问题答案是肯定的，那么就适合于使用分支/合并框架：</p>
+
+<ul>
+<li>问题的子任务是否无需与其他子任务有显式的协作或同步也可以工作？</li>
+<li>子任务是不是不会对数据进行修改，只是经过计算得出结果？</li>
+<li>对于子任务来说，分而治之是不是很自然的事？子任务是不是会创建更多的子任务，而且它们要比派生出它们的任务粒度更细？</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Java NIO.2]]></title>
+    <link href="http://blog.ubone.com/blog/2014/11/23/java-nio-dot-2/"/>
+    <updated>2014-11-23T10:59:37+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/11/23/java-nio-dot-2</id>
+    <content type="html"><![CDATA[<p>Java 7提供了新的NIO(或称为NIO.2, JSR-203)，这是一组新的类和方法，用于取代File类与文件系统的交互，提供新的异步处理类并简化Socket与通道的编码工作。</p>
+
+<!--more-->
+
+
+<p>在Java 1.4之前，Java缺乏对非阻塞I/O的支持，1.4引入了非阻塞I/O，为I/O操作抽象出缓冲区和通道层；提供字符集的编码和解码能力；能够将文件映射为内存数据；实现正则表达式。Java 7进一步扩展了NIO的能力。</p>
+
+<h2>1. PATH</h2>
+
+<p>Path相关的类包括：</p>
+
+<ul>
+<li>Path：获取路径信息</li>
+<li>Paths：工具类，提供返回一个路径的辅助方法</li>
+<li>FileSystem：与文件系统交互的类</li>
+<li>FileSystems：工具类，提供各种方法。</li>
+</ul>
+
+
+<p>Path不仅用于传统的文件系统，也能表示zip或jar这样的文件系统。</p>
+
+<p>```java
+//创建Path
+Path listing = Paths.get(&ldquo;/user/bin/zip&rdquo;)；
+//相当于
+Path listing = FileSystems.getDefault().getPath(&ldquo;/user/bin/zip&rdquo;);</p>
+
+<p>//获取Path信息：
+listing.getFileName(): zip
+listing.getNameCount(): 3
+listing.subpath(0, 2): /user/bin
+listing.getParent(): /user/bin
+listing.getRoot(): /
+```</p>
+
+<p>如果Path是一个文件的路径，有时需要去除冗余信息。例如去除表示当前路径的<code>./</code>，或者该文件只是个符号链接，指向了另一个真正的位置，此时需要得到真实路径。</p>
+
+<p>```java
+//移除冗余
+Path testPath = Paths.get(&ldquo;./test.java&rdquo;);
+Path normalizedPath = testPath.normalize();</p>
+
+<p>//获取绝对路径
+Path absolutePath = testPath.toAbsolutePath();
+//获取绝对路径并去除冗余信息，或者获取符号连接的真实路径
+Path realPath = testPath.toRealPath();
+```</p>
+
+<p>合并路径与路径比较。</p>
+
+<p>```java
+//合并
+Path prefix = Paths.get(&ldquo;/usr&rdquo;);
+Path completePath = prefix.resolve(&ldquo;mxs&rdquo;);
+//completePath: /usr/mxs</p>
+
+<p>//比较
+Path path1 = Paths.get(&ldquo;/Users/mxs/Documents/Blog/&rdquo;);
+Path path2 = Paths.get(&ldquo;/Users/mxs&rdquo;);
+path1.relativize(path2): ../..
+path2.relativize(path1): Documents/Blog
+```</p>
+
+<p>新的API完全替换了java.io.File类，在处理遗留代码时，可能将其进行互换：</p>
+
+<p><code>java
+File file = new File("../abcd.txt");
+Path listing = file.toPath();
+file = listing.toFile();
+</code></p>
+
+<h2>2. 处理目录与目录树</h2>
+
+<p>新的DirectoryStream<T>接口实现了目录相关的操作：</p>
+
+<ul>
+<li>循环遍历目录中的子项</li>
+<li>用glob表达式（如<code>*Foobar*</code>）进行目录子项的匹配和MIME内容检测（如text/xml文件）</li>
+<li>用walkFileTree实现递归移动、复制和删除操作</li>
+</ul>
+
+
+<p><strong>在目录中查找文件：</strong></p>
+
+<p>```java
+Path dir = Paths.get(&ldquo;/user/mxs/Documents&rdquo;);</p>
+
+<p>try(DirectoryStream<Path> stream = Files.newDirectoryStream(dir, &ldquo;*.properties&rdquo;)) {</p>
+
+<pre><code>for(Path entry : stream){
+    System.out.println(entry.getFileName());    
+}
+</code></pre>
+
+<p>} catch(IOException e) {</p>
+
+<pre><code>//...
+</code></pre>
+
+<p>}
+```</p>
+
+<p><strong>遍历目录树。</strong>Files.walkFileTree方法是遍历目录树的关键，该方法定义如下：</p>
+
+<p><code>Files.walkFileTree(Path startingDir, FileVisitor&lt;? super Path&gt; visitor);
+</code></p>
+
+<p>其中Visitor是一个接口，包括5个方法，但一般使用Java的默认实现SimpleFileVisitor就可以了。</p>
+
+<p>```java
+public void walk() {</p>
+
+<pre><code>Path dir = Paths.get("/code/src");
+Files.walkFileTree(dir, new FindJavaVisitor());
+</code></pre>
+
+<p>}</p>
+
+<p>private static class FindJavaVisitor extends SimpleFileVisitor<Path> {</p>
+
+<pre><code>@Override
+public FileVisitresult visitFile(Path file, BasicFileAttributes attrs) {
+    if (file.toString().endsWith(".java")) {
+        //...
+    }
+
+    return FileVisitResult.CONTINUE;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>需要注意的是，walkFileTree方法不会自动跟随符号链接（为了确保递归等操作的安全性）。因此如果你需要跟随符号链接，就需要检查相应属性并执行相应操作。</p>
+
+<h2>3. 文件系统I/O</h2>
+
+<p>在NIO.2中，Files和WatchService是两个重要的基础类。前者用于复制、移动、删除或处理文件，后者用于监视文件或目录，发出定制通知等。</p>
+
+<h3>3.1 创建和删除文件</h3>
+
+<p><code>java
+Path target = Paths.get("/Users/mxs/Document/mystuff.txt");
+Path file = Files.createFile(target);
+</code></p>
+
+<p>如果需要设置文件属性，如读、写和执行的权限，则需要设置FileAttribute，但文件属性与操作系统相关，因此要使用与操作系统相关的文件权限类。以下是POSIX文件系统的示例(其它文件系统参考java.nio.file.attribute.*FilePermission类)：</p>
+
+<p><code>java
+Set&lt;PosixFilePermission&gt; perms = PosixFilePermissions.fromString("rw-rw-rw-");
+FileAttribute&lt;Set&lt;PosixFilePermission&gt;&gt; attr = PosixFilePermissions.asFileAttribute(perms);
+Files.createFile(target, attr);
+</code></p>
+
+<p>删除文件只需要调用<code>Files.delete(target)</code>方法。</p>
+
+<h3>3.2 文件复制与移动</h3>
+
+<p>```java
+Path source = Paths.get(&ldquo;c:\My Documents\stuff.txt&rdquo;);
+Path target = Paths.get(&ldquo;D:\backup\stuff.txt&rdquo;);
+Files.copy(source, target);</p>
+
+<p>//复制时还可以设置CopyOptions选项（变参，可多个。ATOMIC_MOVE确保两边都成功，否则回滚）
+import static java.nio.file.StandardCopyOption.*;
+Files.copy(source, target, REPLACE_EXISTING, COPY_ATTRIBUTES, ATOMIC_MOVE);</p>
+
+<p>//移动
+Files.move(source, target);
+Files.move(source, target, CopyOptions);
+```</p>
+
+<h3>3.3 文件属性</h3>
+
+<p>由于不同的文件系统属性不同，因此Java中的文件属性分为基本文件属性、特定文件属性。前者是各文件系统通用的文件属性。</p>
+
+<p><code>java
+Path zip = Paths.get("/usr/bin/zip");
+Files.getLastModifiedTime(zip);
+Files.size(zip);
+Files.isSymbolicLink(zip);
+Files.isDirectory(zip);
+Files.readAttributes(zip, "*"); //批量读取属性
+</code></p>
+
+<p>特定文件属性独立于某个操作系统。以POSIX文件系统为例：</p>
+
+<p>```java
+//获取文件属性
+PosixFileAttributes attrs = Files.readAttributes(zip, PosixFileAttributes.class);</p>
+
+<p>//修改属性
+Set<PosixFilePermission> permissions = attrs.permissions();
+permissions.clear;
+permissions.add(GROUP_READ);
+//&hellip;
+Files.setPosixFilePermissions(zip, permissions);
+```</p>
+
+<p>符号链接的处理：</p>
+
+<p>```java
+Path file = Paths.get(&ldquo;/opt/platform/java&rdquo;);
+if (Files.isSymbolicLink(file)) {</p>
+
+<pre><code>file = Files.readSymbolicLink(file);
+</code></pre>
+
+<p>}
+//继续处理文件相关操作
+Files.readAttributes(file, BasicFileAttributes.class);
+```</p>
+
+<h3>3.4. 快速读写数据</h3>
+
+<p>Files工具类提供了更方便的方法来读写数据：</p>
+
+<p>```java
+Path logFile = Paths.get(&ldquo;/tmp/app.log&rdquo;);
+try(BufferedReader reader =</p>
+
+<pre><code>Files.newBufferedReader(logFile, StandardCharsets.UTF_8)) {
+String line;
+while((line = reader.readLine()) != null) {
+    //...
+}
+</code></pre>
+
+<p>}</p>
+
+<p>//写入
+try(BufferedWriter writer =</p>
+
+<pre><code>Files.newBufferedWrite(logFile, StandardCharsets.UTF_8, StandardOpenOption.WRITE)) //变参，可多个
+</code></pre>
+
+<p>{</p>
+
+<pre><code>writer.write("Hello!");
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Files工具类提供的方法还有<code>newInputStream()</code>, <code>newOutputStream()</code>等方法，用于配合现有IO类。还有更方便的方式：</p>
+
+<p><code>java
+List&lt;String&gt; lines = Files.readAllLines(logFile, StandardCharsets.UTF_8);
+byte[] bytes = Files.readAllBytes(logFile);
+</code></p>
+
+<h3>3.5. 文件修改通知</h3>
+
+<p>WatchService可用于监测文件或目录的变化，可监测的事件包括：ENTRY_CREATE, ENTRY_DELETE, OVERFLOW(事件已经丢弃或丢失)。</p>
+
+<p>```java
+import static java.nio.file.StandardWatchEventKinds.*;</p>
+
+<p>try {</p>
+
+<pre><code>WatchService watcher = FileSystems.getDefault().newWatchService();
+Path dir = FileSystems.getDefault().getPath("/usr/mxs");
+WatchKey key = dir.register(watcher, ENTRY_MODIFY);
+
+while(!shutdown ) { //一个标志，判断循环是否该结束
+    key = watcher.take();
+    for (WatchEvent&lt;?&gt; event: key.pollEvents()) {
+        if (event.kind() == ENTRY_MODIFY) {
+            //dir changed
+        }
+    }
+    key.reset(); 
+}
+</code></pre>
+
+<p>} catch(IOException | InterruptedException e) {</p>
+
+<pre><code>//...
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>3.6 SeekableByteChannel</h3>
+
+<p>这是Java 7引入的新接口，用于改变字节通道的位置和大小。例如用多个线程去分析一个大型日志文件的字节通道。FileChannel是这个接口的一种实现，下面的示例读取日志文件的最后1000个字符：</p>
+
+<p><code>java
+Path logFile = Paths.get("c:\\temp.log");
+ByteBuffer buffer = ByteBuffer.allocate(1024);
+FileChannel channel = FileChannel.open(logFile, StandardOpenOption.READ);
+channel.read(buffer, channel.size() - 1000);
+</code></p>
+
+<h2>4. 异步I/O操作</h2>
+
+<p>异步I/O操作主要有两种方式：Future和回调。Java 7提供了三个新的异步通道：</p>
+
+<ul>
+<li>AsynchronousFileChannel 用于文件I/O</li>
+<li>AsynchronousSocketChannel 用于Socket I/O, 支持超时</li>
+<li>AsynchronousServerSocketChannel 用于Socket接受异步连接</li>
+</ul>
+
+
+<h3>4.1 Future方式</h3>
+
+<p>```java
+try {</p>
+
+<pre><code>Path file = Paths.get("/usr/mxs/foobar.txt");
+AsynchronousFileChannel channel = AsynchronousFileChannel.open(file);
+
+//读取100 000字节
+ByteBuffer buffer = ByteBuffer.allocate(100_1000); 
+Future&lt;Integer&gt; result = channel.read(buffer, 0);//返回值为Integer
+
+//如果未结束
+while(! result.isDone()) {
+    //...干点别的事。
+}
+
+//获取结果
+Integer byteRead = result.get();
+</code></pre>
+
+<p>} catch(IOException | ExecutionException | InterruptedException e) {</p>
+
+<pre><code>//...
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>4.2 回调方式</h3>
+
+<p>CompletionHandler&lt;V, A>是回调的接口。V表示结果类型，A是提供结果的附着对象。</p>
+
+<p>```
+try {</p>
+
+<pre><code>Path file = Paths.get("/usr/mxs/foobar.txt");
+AsynchronousFileChannel channel = AsynchronousFileChannel.open(file);
+//读取100 000字节
+ByteBuffer buffer = ByteBuffer.allocate(100_1000); 
+
+channel.read(buffer, 0, buffer, new CompletionHandler&lt;Integer, ByteBuffer&gt;(){
+    public void completed(Integer result, ByteBuffer attachment) {
+        //完成时的回调方法
+    }
+
+    public void failed(Throwable exception, ByteBuffer attachment) {
+        //失败时的回调方法
+    }
+});
+</code></pre>
+
+<p>} catch(IOException e) {</p>
+
+<pre><code>//...
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>5. Socket与Channel整合</h2>
+
+<p>NetworkChannel把Socket和Channel结合起来，更好地应对网络编程。而MulticastChannel则可以用于像BitTorrent这样的多播编程。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Java 7的6个新特性]]></title>
+    <link href="http://blog.ubone.com/blog/2014/11/18/java-7de-6ge-xin-te-xing/"/>
+    <updated>2014-11-18T22:20:52+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/11/18/java-7de-6ge-xin-te-xing</id>
+    <content type="html"><![CDATA[<p>Java 8早都出来了，现在来了解一下Java 7语言上的几个新特性。 :) switch语句支持String、数字常量的新形式、改进的异常处理、TWR语句、钻石语法和变参警告位置的修改。</p>
+
+<!--more-->
+
+
+<h2>1. switch语句支持String</h2>
+
+<p>```java
+public void printDay(String dayOfWeek) {</p>
+
+<pre><code>switch(dayOfWeek) {
+    case "Sunday": System.out.println("周日"); break;
+    case "Saturday": System.out.println("周六"); break;
+    ...
+    default: System.out.println("不知道"); break;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>2. 更强的数值文本表示法</h2>
+
+<p><code>java
+int x = 0b1100110; //0b表示二进制
+int bitPattern = 0b0001_1100_0011; //也可以加下划线
+long longValue = 2_111_000_888L; //加下划线便于阅读
+</code></p>
+
+<h2>3. 改善的异常处理</h2>
+
+<p>```java
+try {</p>
+
+<pre><code>String fileText = getFile(fileName);
+cfg = verifyConfig(parseConfig(fileText));
+</code></pre>
+
+<p>} catch(FileNotFoundException | ParseException | ConfigurationException e) {</p>
+
+<pre><code>//可以用或来表示可能的异常
+...
+</code></pre>
+
+<p>} catch(IOException iox) {</p>
+
+<pre><code>...
+</code></pre>
+
+<p>}
+```
+另一个新语法对需要重新抛出异常时很有用：</p>
+
+<p>```java
+try {</p>
+
+<pre><code>doSomethingWhichMightThrowIOException();
+doSomethingElseWhichMightThrowSQLException();
+</code></pre>
+
+<p>} catch (final Exception e) {</p>
+
+<pre><code>...
+//不再是抛出笼统的Exception，而是抛出实际的异常。
+//final不是必须的，但留着提个醒有好处。
+throw e;
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>4. TWR(try-with-resources)</h2>
+
+<p>这个很有用，特别是io操作时，可以抛掉大串丑陋的代码了。</p>
+
+<p>```java
+try (</p>
+
+<pre><code>OutputStream out = new FileOutputStream(file);
+InputStream is = url.openStream()
+</code></pre>
+
+<p>) {</p>
+
+<pre><code>byte[] buf = new byte[4096];
+int len;
+while (len = is.read(buf)) &gt; 0)
+    out.write(buf, 0, len);
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面的代码将资源放在try的圆括号内，当处理完后会自动关闭！但一定要注意不要嵌套创建，否则可能无法正确关闭。一定要声明变量。例如下面的代码就应该修改：</p>
+
+<p>```java
+try (ObjectInputStream in =</p>
+
+<pre><code>new ObjectInputStream(
+    new FileInputStream("someFile.bin"))) {
+...
+</code></pre>
+
+<p>}</p>
+
+<p>//要改为：
+try (</p>
+
+<pre><code>FileInputStream fin = new FileInputStream("someFile.bin");
+ObjectInputStream in = new ObjectInputStream(fin)) {
+...
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<p>TWR特性依赖于try从句中的资源类实现新接口AutoCloseable。Java 7平台的大多数资源都已经修改过了。</p>
+
+<h2>5. 钻石语法</h2>
+
+<p>```java
+//不用这么麻烦了：
+Map&lt;Integer, Map&lt;String, String>> userList = new HashMap&lt;Integer, Map&lt;String, String>>();</p>
+
+<p>//可以直接写成：
+Map&lt;Integer, Map&lt;String, String>> userList = new HashMap&lt;>();
+```</p>
+
+<h2>6. 简化变参方法调用</h2>
+
+<p>在Java 7之前，如果泛型和变参结合起来会怎么样？</p>
+
+<p>```java
+public static <T> Collection<T> doSomething(T&hellip; entries) {</p>
+
+<pre><code>...
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Java处理变参实际上是把它放到一个编译器自动创建的数组中。但我们知道泛型的实现其实是通过<a href="/blog/2014/07/02/javafan-xing/">擦拭法</a>实现的。所以Java数组不支持泛型:</p>
+
+<p>```java
+HashMap&lt;String, String>[] a = new HashMap&lt;String, String>[3]; //编译错误</p>
+
+<p>HashMap&lt;String, String>[] a = new HashMap[3]; //编译可通过，但会有警告：
+//Type safety: The expression of type HashMap[] needs unchecked conversion to conform to HashMap&lt;String,String>[]
+```</p>
+
+<p>因此，当泛型遇到变参时，编译器只好给你个警告。但这个问题更应该由API的设计者去关注，而不是API使用者。所以Java 7把警告信息挪到了定义API的地方。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[再读《重构》]]></title>
@@ -1008,1848 +1876,6 @@ balance -= amount;
 <h3>8.12 Replace Delegation with Inheritance</h3>
 
 <p>与上一个正好相反。如果你发现自己需要使用受托类中的所有函数，并且费了很大力气编写所有极简的委托函数，那么你可以考虑回头使用继承。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java I/O]]></title>
-    <link href="http://blog.ubone.com/blog/2014/09/14/java-i-slash-o/"/>
-    <updated>2014-09-14T21:22:58+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/09/14/java-i-slash-o</id>
-    <content type="html"><![CDATA[<p>本文是《Java编程思想》第18章Java I/O系统的读书笔记。涉及Java I/O, NIO和压缩等内容。</p>
-
-<!--more-->
-
-
-<h2>1. File类</h2>
-
-<h3>1.1 目录列表器</h3>
-
-<p>下面的代码示例，通过正则表达式过滤并返回指定文件的下级列表：</p>
-
-<p>```java</p>
-
-<pre><code>public static String[] dirList(String path, final String ptn) {
-    File file = new File(path);
-    if (ptn == null || "".equals(ptn.trim())) {
-        return file.list();
-    }
-
-    FilenameFilter fnf = new FilenameFilter() {
-        private Pattern pattern = Pattern.compile(ptn);
-        @Override
-        public boolean accept(File dir, String name) {
-            return pattern.matcher(name).matches();
-        }
-    };
-
-    return file.list(fnf);
-}
-</code></pre>
-
-<p>```</p>
-
-<h3>1.2 目录实用工具</h3>
-
-<p>```java</p>
-
-<pre><code>public static File[] local(File dir, final String regex) {
-    return dir.listFiles(new FilenameFilter() {
-        private Pattern pattern = Pattern.compile(regex);
-
-        public boolean accept(File dir, String name) {
-            return pattern.matcher(new File(name).getName()).matches();
-        }
-    });
-}
-</code></pre>
-
-<p>以及File类的exists(), isDirectory(), isFile(), mkdirs(), delete(), renameTo()等方法。
-```</p>
-
-<h2>2. I/O流的典型使用方式</h2>
-
-<h3>2.1 缓冲输入文件</h3>
-
-<p>下面的例子适用于字符输入：</p>
-
-<p>```java
-public class BufferedInputFile {</p>
-
-<pre><code>// Throw exceptions to console:
-public static String read(String filename) throws IOException {
-    // Reading input by lines:
-    BufferedReader in = new BufferedReader(new FileReader(filename));
-    String s;
-    StringBuilder sb = new StringBuilder();
-    while ((s = in.readLine()) != null)
-        sb.append(s + "\n");
-    in.close();
-    return sb.toString();
-}
-
-public static void main(String[] args) throws IOException {
-    System.out.print(read("BufferedInputFile.java"));
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>2.2 从内存输入</h3>
-
-<p>在下面的示例中，从BufferedInputFile.read()读入的String结果被用来创建一个StringReader。然后调用read()每次读取一个字符：</p>
-
-<p>```java
-public static class MemoryInput {</p>
-
-<pre><code>public static void main(String[] args) throws IOException {
-    StringReader in = new StringReader(
-            BufferedInputFile.read("MemoryInput.java"));
-    int c;
-    while ((c = in.read()) != -1)
-        System.out.print((char) c);
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>2.3 格式化的内存输入</h3>
-
-<p>```java
-DataInputStream in = new DataInputStream(</p>
-
-<pre><code>    new ByteArrayInputStream(
-            BufferedInputFile.read("FormattedMemoryInput.java")
-            .getBytes()));
-</code></pre>
-
-<p>in.readInt();
-in.readChar();</p>
-
-<p>DataInputStream in2 = new DataInputStream(</p>
-
-<pre><code>    new BufferedInputStream(
-            new FileInputStream("TestEOF.java")));                          
-</code></pre>
-
-<p>while (in.available() != 0)</p>
-
-<pre><code>System.out.print((char) in.readByte());
-</code></pre>
-
-<p>/<em>注意available()的工作方式会随着媒介类型的不同而不同。
-  表示“在没有阻塞的情况下所能读取的字节数”，
-  对于文件，这意味着整个文件，但不同类型的流可能不是这样。
-</em>/
-```</p>
-
-<h3>2.4 基本的文件输出</h3>
-
-<p>FileWriter可用于向文件写入数据，通常会用BufferedWriter将其包装。下例写入文本文件：</p>
-
-<p>```java
-PrintWriter out = new PrintWriter(</p>
-
-<pre><code>    new BufferedWriter(
-            new FileWriter("something.out")));
-</code></pre>
-
-<p>out.println(&ldquo;Hello!&rdquo;);
-out.close();</p>
-
-<p>//对于文本文件有快捷方式：
-PrintWriter out = new PrintWriter(file);
-out.println(&ldquo;Hello!&rdquo;);
-out.close();
-```</p>
-
-<h3>2.5 存储和恢复数据</h3>
-
-<p>```java
-public class StoringAndRecoveringData {
-  public static void main(String[] args)
-  throws IOException {</p>
-
-<pre><code>DataOutputStream out = new DataOutputStream(
-  new BufferedOutputStream(
-    new FileOutputStream("Data.txt")));
-out.writeDouble(3.14159);
-out.writeUTF("That was pi");
-out.writeDouble(1.41413);
-out.writeUTF("Square root of 2"); 
-out.close();
-DataInputStream in = new DataInputStream(
-  new BufferedInputStream(
-    new FileInputStream("Data.txt")));
-System.out.println(in.readDouble());
-// Only readUTF() will recover the
-// Java-UTF String properly:
-System.out.println(in.readUTF());
-System.out.println(in.readDouble());
-System.out.println(in.readUTF());
-</code></pre>
-
-<p>  }
-}
-```</p>
-
-<h3>2.6 读写随机访问文件</h3>
-
-<p>使用RandomAccessFile，类似于组合使用DataInputStream和DataOutputStream。它不支持装饰，所以不能与InputStream和OutputStream子类的任何部分组合起来。可以假定其已经被正确地缓冲。</p>
-
-<p>```java
-public class UsingRandomAccessFile {
-  static String file = &ldquo;rtest.dat&rdquo;;
-  static void display() throws IOException {</p>
-
-<pre><code>RandomAccessFile rf = new RandomAccessFile(file, "r");
-for(int i = 0; i &lt; 7; i++)
-  System.out.println(
-    "Value " + i + ": " + rf.readDouble());
-System.out.println(rf.readUTF());
-rf.close();
-</code></pre>
-
-<p>  }
-  public static void main(String[] args)
-  throws IOException {</p>
-
-<pre><code>RandomAccessFile rf = new RandomAccessFile(file, "rw");
-for(int i = 0; i &lt; 7; i++)
-  rf.writeDouble(i*1.414);
-rf.writeUTF("The end of the file");
-rf.close();
-display();
-rf = new RandomAccessFile(file, "rw");
-rf.seek(5*8);
-rf.writeDouble(47.0001);
-rf.close();
-display();
-</code></pre>
-
-<p>  }
-}
-```</p>
-
-<h2>3. NIO</h2>
-
-<p>新的I/O速度提升来自于所使用的结构更接近于操作系统执行I/O的方式：通道和缓冲器。我们只和缓冲器交互，并把缓冲器派送到通道。通道要么从缓冲器获得数据，要么向缓冲器发送数据。以下示例演示了三种类型的流，用以产生可写、可读可写以及可读的通道。</p>
-
-<p>```java
-public class GetChannel {</p>
-
-<pre><code>private static final int BSIZE = 1024;
-
-public static void main(String[] args) throws Exception {
-    // Write a file:
-    FileChannel fc = new FileOutputStream("/Users/mxs/Desktop/data.txt")
-            .getChannel();
-    fc.write(ByteBuffer.wrap("Some text ".getBytes()));
-    fc.close();
-    // Add to the end of the file:
-    fc = new RandomAccessFile("/Users/mxs/Desktop/data.txt", "rw")
-            .getChannel();
-    fc.position(fc.size()); // Move to the end
-    fc.write(ByteBuffer.wrap("Some more".getBytes()));
-    fc.close();
-    // Read the file:
-    fc = new FileInputStream("/Users/mxs/Desktop/data.txt").getChannel();
-    ByteBuffer buff = ByteBuffer.allocate(BSIZE);
-    fc.read(buff);
-    buff.flip();
-    while (buff.hasRemaining())
-        System.out.print((char) buff.get());
-}
-</code></pre>
-
-<p>} /<em>
- * Output: Some text Some more
- </em>/// :~</p>
-
-<p>```</p>
-
-<h3>3.1 转换数据</h3>
-
-<p>```java
-public class BufferToText {</p>
-
-<pre><code>private static final int BSIZE = 1024;
-
-public static void main(String[] args) throws Exception {
-    FileChannel fc = new FileOutputStream("/Users/mxs/Desktop/data2.txt").getChannel();
-    fc.write(ByteBuffer.wrap("Some text".getBytes()));
-    fc.close();
-    fc = new FileInputStream("/Users/mxs/Desktop/data2.txt").getChannel();
-    ByteBuffer buff = ByteBuffer.allocate(BSIZE);
-    fc.read(buff);
-    buff.flip();
-    // Doesn't work:
-    System.out.println(buff.asCharBuffer());
-    // Decode using this system's default Charset:
-    buff.rewind();
-    String encoding = System.getProperty("file.encoding");
-    System.out.println("Decoded using " + encoding + ": "
-            + Charset.forName(encoding).decode(buff));
-    // Or, we could encode with something that will print:
-    fc = new FileOutputStream("/Users/mxs/Desktop/data2.txt").getChannel();
-    fc.write(ByteBuffer.wrap("Some text".getBytes("UTF-16BE")));
-    fc.close();
-    // Now try reading again:
-    fc = new FileInputStream("/Users/mxs/Desktop/data2.txt").getChannel();
-    buff.clear();
-    fc.read(buff);
-    buff.flip();
-    System.out.println(buff.asCharBuffer());
-    // Use a CharBuffer to write through:
-    fc = new FileOutputStream("/Users/mxs/Desktop/data2.txt").getChannel();
-    buff = ByteBuffer.allocate(24); // More than needed
-    buff.asCharBuffer().put("Some text");
-    fc.write(buff);
-    fc.close();
-    // Read and display:
-    fc = new FileInputStream("/Users/mxs/Desktop/data2.txt").getChannel();
-    buff.clear();
-    fc.read(buff);
-    buff.flip();
-    System.out.println(buff.asCharBuffer());
-}
-</code></pre>
-
-<p>}
-/<em>
- * Output: ???? Decoded using Cp1252: Some text Some text Some text
- </em>/// :~
-```</p>
-
-<h3>3.2 获取基本类型</h3>
-
-<p>下面的示例演示了怎样插入和抽取各种数值：</p>
-
-<p>```java
-public class GetData {</p>
-
-<pre><code>private static final int BSIZE = 1024;
-
-public static void main(String[] args) {
-    ByteBuffer bb = ByteBuffer.allocate(BSIZE);
-    // Allocation automatically zeroes the ByteBuffer:
-    int i = 0;
-    while (i++ &lt; bb.limit())
-        if (bb.get() != 0)
-            print("nonzero");
-    print("i = " + i);
-    bb.rewind();
-    // Store and read a char array:
-    bb.asCharBuffer().put("Howdy!");
-    char c;
-    while ((c = bb.getChar()) != 0)
-        printnb(c + " ");
-    print();
-    bb.rewind();
-    // Store and read a short:
-    bb.asShortBuffer().put((short) 471142);
-    print(bb.getShort());
-    bb.rewind();
-    // Store and read an int:
-    bb.asIntBuffer().put(99471142);
-    print(bb.getInt());
-    bb.rewind();
-    // Store and read a long:
-    bb.asLongBuffer().put(99471142);
-    print(bb.getLong());
-    bb.rewind();
-    // Store and read a float:
-    bb.asFloatBuffer().put(99471142);
-    print(bb.getFloat());
-    bb.rewind();
-    // Store and read a double:
-    bb.asDoubleBuffer().put(99471142);
-    print(bb.getDouble());
-    bb.rewind();
-}
-</code></pre>
-
-<p>}</p>
-
-<p>/<em> Output:
-i = 1025
-H o w d y !
-12390
-99471142
-99471142
-9.9471144E7
-9.9471142E7
-</em>///:~
-```</p>
-
-<h3>3.3 视图缓冲器</h3>
-
-<p>视图缓冲器（View buffer）可以让我们通过某个特定的基本数据类型的视窗查看其底层的ByteBuffer。</p>
-
-<p>```java
-public class IntBufferDemo {
-  private static final int BSIZE = 1024;
-  public static void main(String[] args) {</p>
-
-<pre><code>ByteBuffer bb = ByteBuffer.allocate(BSIZE);
-IntBuffer ib = bb.asIntBuffer();
-// Store an array of int:
-ib.put(new int[]{ 11, 42, 47, 99, 143, 811, 1016 });
-// Absolute location read and write:
-System.out.println(ib.get(3));
-ib.put(3, 1811);
-// Setting a new limit before rewinding the buffer.
-ib.flip();
-while(ib.hasRemaining()) {
-  int i = ib.get();
-  System.out.println(i);
-}
-</code></pre>
-
-<p>  }
-} /<em> Output:
-99
-11
-42
-47
-1811
-143
-811
-1016
-</em>///:~
-```</p>
-
-<p>```java
-public class ViewBuffers {
-  public static void main(String[] args) {</p>
-
-<pre><code>ByteBuffer bb = ByteBuffer.wrap(
-  new byte[]{ 0, 0, 0, 0, 0, 0, 0, 'a' });
-bb.rewind();
-printnb("Byte Buffer ");
-while(bb.hasRemaining())
-  printnb(bb.position()+ " -&gt; " + bb.get() + ", ");
-print();
-CharBuffer cb =
-  ((ByteBuffer)bb.rewind()).asCharBuffer();
-printnb("Char Buffer ");
-while(cb.hasRemaining())
-  printnb(cb.position() + " -&gt; " + cb.get() + ", ");
-print();
-FloatBuffer fb =
-  ((ByteBuffer)bb.rewind()).asFloatBuffer();
-printnb("Float Buffer ");
-while(fb.hasRemaining())
-  printnb(fb.position()+ " -&gt; " + fb.get() + ", ");
-print();
-IntBuffer ib =
-  ((ByteBuffer)bb.rewind()).asIntBuffer();
-printnb("Int Buffer ");
-while(ib.hasRemaining())
-  printnb(ib.position()+ " -&gt; " + ib.get() + ", ");
-print();
-LongBuffer lb =
-  ((ByteBuffer)bb.rewind()).asLongBuffer();
-printnb("Long Buffer ");
-while(lb.hasRemaining())
-  printnb(lb.position()+ " -&gt; " + lb.get() + ", ");
-print();
-ShortBuffer sb =
-  ((ByteBuffer)bb.rewind()).asShortBuffer();
-printnb("Short Buffer ");
-while(sb.hasRemaining())
-  printnb(sb.position()+ " -&gt; " + sb.get() + ", ");
-print();
-DoubleBuffer db =
-  ((ByteBuffer)bb.rewind()).asDoubleBuffer();
-printnb("Double Buffer ");
-while(db.hasRemaining())
-  printnb(db.position()+ " -&gt; " + db.get() + ", ");
-</code></pre>
-
-<p>  }
-}
-/<em> Output:
-Byte Buffer 0 &ndash;> 0, 1 &ndash;> 0, 2 &ndash;> 0, 3 &ndash;> 0, 4 &ndash;> 0, 5 &ndash;> 0, 6 &ndash;> 0, 7 &ndash;> 97,
-Char Buffer 0 &ndash;>  , 1 &ndash;>  , 2 &ndash;>  , 3 &ndash;> a,
-Float Buffer 0 &ndash;> 0.0, 1 &ndash;> 1.36E-43,
-Int Buffer 0 &ndash;> 0, 1 &ndash;> 97,
-Long Buffer 0 &ndash;> 97,
-Short Buffer 0 &ndash;> 0, 1 &ndash;> 0, 2 &ndash;> 0, 3 &ndash;> 97,
-Double Buffer 0 &ndash;> 4.8E-322,
-</em>///:~
-```</p>
-
-<h3>3.4 用缓冲器操纵数据</h3>
-
-<p><img src="/myresource/images/image_blog_20140916_001220.jpg" alt="image" /></p>
-
-<h3>3.5 缓冲器的细节</h3>
-
-<p>Buffer由数据和四个索引组成：mark, position, limit, capacity。相关的方法：</p>
-
-<ul>
-<li>capacity() 返回缓冲区容量。</li>
-<li>clear() 清空缓冲区，position设置为0，limit设置为容量。</li>
-<li>flip() 将limit设置为position, position设置为0.用于准备从缓冲区读取已经写入的数据。</li>
-<li>limit() 返回limit值。</li>
-<li>limit(int lim) 设置limit值。</li>
-<li>mark() 将mark设置为position。</li>
-<li>position() 返回position值。</li>
-<li>position(int pos) 设置position值。</li>
-<li>remaining() 返回（limit &ndash; position）。</li>
-<li>hasRemaining() 若有介于position和limit之间的元素，则返回true。</li>
-</ul>
-
-
-<h3>3.6 内存映射文件</h3>
-
-<p>它帮助我们创建和修改那些因为太大而不能放入内存的文件。以了它，我们可以假定整个文件都放在内存中，而且可以完全把它当作非常大的数组来访问。映射文件访问往往可以显著地加快速度。</p>
-
-<p>```java
-public class LargeMappedFiles {
-  static int length = 0x8FFFFFF; // 128 MB
-  public static void main(String[] args) throws Exception {</p>
-
-<pre><code>MappedByteBuffer out =
-  new RandomAccessFile("test.dat", "rw").getChannel()
-  .map(FileChannel.MapMode.READ_WRITE, 0, length);
-for(int i = 0; i &lt; length; i++)
-  out.put((byte)'x');
-print("Finished writing");
-for(int i = length/2; i &lt; length/2 + 6; i++)
-  printnb((char)out.get(i));
-</code></pre>
-
-<p>  }
-}
-```</p>
-
-<h3>3.7 文件加锁</h3>
-
-<p>```java
-public class FileLocking {
-  public static void main(String[] args) throws Exception {</p>
-
-<pre><code>FileOutputStream fos= new FileOutputStream("file.txt");
-FileLock fl = fos.getChannel().tryLock(); //获得锁
-if(fl != null) {
-  System.out.println("Locked File");
-  TimeUnit.MILLISECONDS.sleep(100);
-  fl.release();  //释放锁
-  System.out.println("Released Lock");
-}
-fos.close();
-</code></pre>
-
-<p>  }
-} /<em> Output:
-Locked File
-Released Lock
-</em>///:~
-```</p>
-
-<p>FileChannel调用tryLock()或lock()，可以获得整个文件的FileLock。（SocketChannel, DatagramChannel和ServerSocketChannel不需要加锁）。tryLock()是非阻塞式的，如果不能获得锁将直接返回。lock()是阻塞式的，它将阻塞进程直到获得锁。</p>
-
-<p>也可以锁一部分：</p>
-
-<p>```java
-tryLock(long position, long size, boolean shared)
-或
-lock(long position, long size, boolean shared)</p>
-
-<p>加锁的区域由size &ndash; position决定。shared表示是否是共享锁
-```</p>
-
-<h2>4. 压缩</h2>
-
-<h3>4.1 Zip压缩和解压缩</h3>
-
-<p>```java
-public static class ZipCompress {</p>
-
-<pre><code>public static void main(String[] args) throws IOException {
-    FileOutputStream f = new FileOutputStream("test.zip");
-    CheckedOutputStream csum = new CheckedOutputStream(f, new Adler32());
-    ZipOutputStream zos = new ZipOutputStream(csum);
-    BufferedOutputStream out = new BufferedOutputStream(zos);
-    zos.setComment("A test of Java Zipping");
-    // No corresponding getComment(), though.
-    for (String arg : args) {
-        print("Writing file " + arg);
-        BufferedReader in = new BufferedReader(new FileReader(arg));
-        zos.putNextEntry(new ZipEntry(arg));
-        int c;
-        while ((c = in.read()) != -1)
-            out.write(c);
-        in.close();
-        out.flush();
-    }
-    out.close();
-    // Checksum valid only after the file has been closed!
-    print("Checksum: " + csum.getChecksum().getValue());
-    // Now extract the files:
-    print("Reading file");
-    FileInputStream fi = new FileInputStream("test.zip");
-    CheckedInputStream csumi = new CheckedInputStream(fi, new Adler32());
-    ZipInputStream in2 = new ZipInputStream(csumi);
-    BufferedInputStream bis = new BufferedInputStream(in2);
-    ZipEntry ze;
-    while ((ze = in2.getNextEntry()) != null) {
-        print("Reading file " + ze);
-        int x;
-        while ((x = bis.read()) != -1)
-            System.out.write(x);
-    }
-    if (args.length == 1)
-        print("Checksum: " + csumi.getChecksum().getValue());
-    bis.close();
-    // Alternative way to open and read Zip files:
-    ZipFile zf = new ZipFile("test.zip");
-    Enumeration e = zf.entries();
-    while (e.hasMoreElements()) {
-        ZipEntry ze2 = (ZipEntry) e.nextElement();
-        print("File: " + ze2);
-        // ... and extract the data as before
-    }
-    /* if(args.length == 1) */
-}
-</code></pre>
-
-<p>} /<em> (Execute to see output) </em>/// :~
-```</p>
-
-<h3>4.2 Java档案文件</h3>
-
-<p>Jar文件也是zip格式，jar命令如下：</p>
-
-<blockquote><p>jar [options] destination [manifest] inputfile(s)</p></blockquote>
-
-<p>options:
-* c 创建一个新的或空的压缩文档
-* t 列出目录表
-* x 解压所有文件
-* x file 解压该文件
-* f 意指“我打算指定一个文件名”
-* m 表示第一个参数将是用户自建的清单文件的名字
-* O 只储存文件，不压缩文件
-* M 不自动创建文件清单</p>
-
-<p>常用命令：</p>
-
-<blockquote><p>jar cf myJarFile.jar *.class 创建jar文件，包含当前目录中的所有类文件，以及自动产生的清单文件</p>
-
-<p>jar cvf myApp.jar audio classes image 将三个子目录合并到myApp.jar中。</p></blockquote>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java并发编程（三）]]></title>
-    <link href="http://blog.ubone.com/blog/2014/09/02/javabing-fa-bian-cheng-san/"/>
-    <updated>2014-09-02T23:13:06+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/09/02/javabing-fa-bian-cheng-san</id>
-    <content type="html"><![CDATA[<p>本文是《Java编程思想》第21章并发的读书笔记。<a href="/blog/2014/08/30/javabing-fa-bian-cheng/">Java并发编程（一）</a>、<a href="/blog/2014/09/02/javabing-fa-er/">Java并发编程（二）</a></p>
-
-<!--more-->
-
-
-<h2>6. 新类库中的构件</h2>
-
-<p>java.util.concurrent引入的新类库，有助于编写更简单和健壮的并发程序。</p>
-
-<h2>6.1 CountDownLatch</h2>
-
-<p>用于同步一个或多个任务，强制它们等待由其他任务执行的一组操作完成。可以向CountDownLatch对象设置一初始值，任务在这个对象上调用wait()方法都将阻塞，直到计数值为0。其它任务结束工作时，可以调用countDown()来减少这个计数值。</p>
-
-<p>示例代码：</p>
-
-<p>```java
-public class LatchDemo {</p>
-
-<pre><code>private static class Latch implements Runnable {
-    private CountDownLatch latch;
-    Latch(CountDownLatch latch) {
-        this.latch = latch;
-    }
-
-    @Override
-    public void run() {
-        try {
-            doSomething();
-            System.out.println("Latch runing...");
-            TimeUnit.SECONDS.sleep(3);
-            System.out.println("Latch sleeped 3 seconds.");
-            //2. 当完成后，调用countDown()，将计数减1
-            latch.countDown();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void doSomething() {}
-}
-
-private static class LatchWaiter implements Runnable {
-    private CountDownLatch latch;
-    LatchWaiter(CountDownLatch latch) {
-        this.latch = latch;
-    }
-
-    @Override
-    public void run() {
-        try {
-            System.out.println("LatchWaiter waiting...");
-            //3. 一直等到latch的计数变为0
-            latch.await();
-            System.out.println("LatchWaiter exit wait...");
-        } catch (InterruptedException e) {
-            //todo
-        }
-    }
-
-    private void doOtherthing() {}
-}
-
-public static void main(String[] args) {
-    //1. 先赋一个值，例如1
-    CountDownLatch latch = new CountDownLatch(1);
-    ExecutorService exec = Executors.newCachedThreadPool();
-    exec.execute(new Latch(latch));
-    exec.execute(new LatchWaiter(latch));
-    exec.shutdown();
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>注意：CountDownLatch只会触发一次，计数值不能重置。</p>
-
-<h3>6.2 CyclicBarrier</h3>
-
-<p>CyclicBarrier适用于有一组任务，它们并行工作，直到它们全部完成后，才一起向前移动。与CountDownLatch只会触发一次不同，CyclicBarrier可以多次重用。</p>
-
-<p>```java
-public class CyclicBarrierDemo {</p>
-
-<pre><code>private static class Horse implements Runnable {
-    private CyclicBarrier barrier;
-    private String id;
-    private int stepCount = 0;
-    private static Random rand = new Random(5000);
-
-    Horse(String id, CyclicBarrier barrier) {
-        this.id = id;
-        this.barrier = barrier;
-    }
-
-    @Override
-    public void run() {
-        doSomething();
-        try {
-            while (!Thread.interrupted()) {
-                synchronized (this) {
-                    System.out.println(String.format("Thread %s is doing.",
-                            id));
-                    stepCount++;
-                    TimeUnit.MILLISECONDS.sleep(rand.nextInt(5000));
-                    System.out.println(String.format("Thread %s has done.",
-                            id));
-                }
-                // await：待所有线程都在这一步调用await方法。
-                barrier.await();
-            }
-        } catch (InterruptedException e) {
-            // ...
-        } catch (BrokenBarrierException e) {
-            // ...
-        }
-    }
-
-    private void doSomething() {
-    }
-
-    private int getStepCount() {
-        return stepCount;
-    }
-}
-
-public static void main(String[] args) {
-    final ExecutorService exec = Executors.newCachedThreadPool();
-    int threadCount = 3;
-    final Counter cycleCount = new Counter();
-
-    // 注意构造方法的参数
-    CyclicBarrier barrier = new CyclicBarrier(threadCount, new Runnable() {
-        @Override
-        public void run() {
-            // 当所有threadCount线程结束时，执行到这里。
-            System.out.println("All Thread has done." + cycleCount.count);
-            cycleCount.count++;
-            if (cycleCount.count == 2) {
-                exec.shutdownNow();
-            }
-        }
-    });
-    for (int i = 0; i &lt; threadCount; i++) {
-        exec.execute(new Horse(String.valueOf(i), barrier));
-    }
-}
-
-private static class Counter {
-    int count = 0;
-}
-</code></pre>
-
-<p>}</p>
-
-<p>/<em>output:
-Thread 1 is doing.
-Thread 2 is doing.
-Thread 0 is doing.
-Thread 1 has done.
-Thread 2 has done.
-Thread 0 has done.
-All Thread has done.0
-Thread 0 is doing.
-Thread 1 is doing.
-Thread 2 is doing.
-Thread 2 has done.
-Thread 1 has done.
-Thread 0 has done.
-All Thread has done.1
-</em>/
-```</p>
-
-<h3>6.3 DelayQueue</h3>
-
-<p>DelayQueue是一个无界的BlockingQueue，用于放置实现了Delayed接口的对象，其中的对象只能在其到期时才能从队列中取走。队列是有序的，延迟时间最长的对象最先取出。可以使用多种获取方法：poll(取出并从队列删除，不等待), take(取出并从队列删除，如果队列中还没有则等待), peek(取出但不从队列删除，不等待，可能会返回未过期的)，详细区别见JavaDoc。</p>
-
-<p>DelayQueue适合的场景包括：</p>
-
-<ol>
-<li>关闭空闲连接。服务器中，有很多客户端的连接，空闲一段时间之后需要关闭之。</li>
-<li>缓存。缓存中的对象，超过了空闲时间，需要从缓存中移出。</li>
-<li>任务超时处理。在网络协议滑动窗口请求应答式交互时，处理超时未响应的请求。</li>
-</ol>
-
-
-<h3>6.4 PriorityBlockingQueue</h3>
-
-<p>这是一个很基础的优先级队列，具有可阻塞的读取操作。放入该队列的对象实现Comparable接口就可以轻松实现优先级调度了，优先级越小则优先级越高。代码示例：</p>
-
-<p>```java
-PriorityBlockingQueue<Runnable> queue =</p>
-
-<pre><code>    new PriorityBlockingQueue&lt;Runnable&gt;();
-</code></pre>
-
-<p>ExecutorService exec = Executors.newCachedThreadPool();
-exec.execute(new Producer(queue, exec));
-exec.execute(new Consumer(queue));
-```</p>
-
-<h3>6.5 ScheduledExecutor</h3>
-
-<p>通过使用ScheduledExecutor.schedule()（运行一次任务）或者scheduleAtFixedRate()（每隔规则的时间重复执行任务），你可以将Runnable对象设置为在将来的某个时刻执行。代码示例：</p>
-
-<p>```java
-public class SheduledThreadDemo {</p>
-
-<pre><code>ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(10);
-
-public void repeat(Runnable event, long initialDelay, long period) {
-    scheduler.scheduleAtFixedRate(event, initialDelay, period, TimeUnit.SECONDS);
-}
-
-public void schedule(Runnable event, long delay) {
-    scheduler.schedule(event, delay, TimeUnit.SECONDS);
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>6.6 Semaphore</h3>
-
-<p>普通的锁（concurrent.locks或synchronized锁）在任何时刻都只允许一个任务访问一项资源，而<strong>计数信号量</strong>允许n个任务同时访问这个资源。作为一个示例，Pool是一个对象池，管理者数量有限的对象，要使用对象可以先签出，用完后再签入。</p>
-
-<p>Semaphore 可以很轻松完成信号量控制，Semaphore可以控制某个资源可被同时访问的个数，通过 acquire() 获取一个许可，如果没有就等待，而 release() 释放一个许可。比如在Windows下可以设置共享文件的最大客户端访问个数。</p>
-
-<p>Semaphore实现的功能就类似厕所有5个坑，假如有10个人要上厕所，那么同时只能有多少个人去上厕所呢？同时只能有5个人能够占用，当5个人中 的任何一个人让开后，其中等待的另外5个人中又有一个人可以占用了。另外等待的5个人中可以是随机获得优先机会，也可以是按照先来后到的顺序获得机会，这取决于构造Semaphore对象时传入的参数选项。单个信号量的Semaphore对象可以实现互斥锁的功能，并且可以是由一个线程获得了“锁”，再由另一个线程释放“锁”，这可应用于死锁恢复的一些场合。</p>
-
-<p>```java
-public class Pool<T> {</p>
-
-<pre><code>private int size;
-private List&lt;T&gt; items = new ArrayList&lt;T&gt;();
-private volatile boolean[] checkedOut; //跟踪被签出的对象
-private Semaphore available;
-
-public Pool(Class&lt;T&gt; classObject, int size) {
-    this.size = size;
-    checkedOut = new boolean[size];
-    available = new Semaphore(size, true); //size个许可，先进先出:true
-    for(int i = 0; i &lt; size; ++i) {
-        try {
-            //Assums a default constructor
-            items.add(classObject.newInstance());
-        } catch(Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-}
-
-public T checkOut() throws InterruptedException {
-    available.acquire(); //从Semaphore获取一个许可，如果没有将阻塞
-    return getItem();
-}
-
-public void checkIn(T x) {
-    if (releaseItem(x))
-        //释放一个permit，返回到Semaphore， 可用许可加1
-        available.release();
-}
-
-private synchronized T getItem() {
-    for(int i=0; i &lt; size; ++i) {
-        if (! checkedOut[i]) {
-            checkedOut[i] = true;
-            return items.get(i);
-        }
-    }
-
-    return null;
-}
-
-private synchronized boolean releaseItem(T item) {
-    int index = items.indexOf(item);
-    if (index == -1) return false;
-    if (checkedOut[index]) {
-        checkedOut[index] = false;
-        return true;
-    }
-
-    return false;
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>6.7 Exchanger</h3>
-
-<p>Exchanger用于实现两个人之间的数据交换，每个人在完成一定的事物后想与对方交换数据，第一个先拿出数据的人将一直等待第二个人拿着数据到来时，才能彼此交换数据。</p>
-
-<p>好比两个毒贩要进行交易，一手交money，一手交drug，不管谁先来到接头地点后，就处于等待状态了，当另外一方也到达接头地点时，两者的数据就立即交换了，然后就可以各忙各的了。</p>
-
-<p>示例代码如下和运行结果如下：</p>
-
-<p>```java
-public class ExchangerTest {</p>
-
-<pre><code>public static void main(String[] args) {
-    ExecutorService service = Executors.newCachedThreadPool();
-    final Exchanger&lt;String&gt; exchanger = new Exchanger&lt;String&gt;();
-    service.execute(new Runnable() {
-        public void run() {
-            try {
-                String data1 = "money";
-                System.out.println("线程"
-                        + Thread.currentThread().getName() 
-                        + "正在把数据" + data1 + "换出去");
-                Thread.sleep((long) (Math.random() * 10000));
-                String data2 = (String) exchanger.exchange(data1);
-                System.out.println("线程"
-                        + Thread.currentThread().getName() 
-                        + "换回数据为" + data2);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-    });
-    service.execute(new Runnable() {
-        public void run() {
-            try {
-                String data1 = "drug";
-                System.out.println("线程"
-                        + Thread.currentThread().getName() + "正在把数据"
-                        + data1 + "换出去");
-                Thread.sleep((long) (Math.random() * 10000));
-                String data2 = (String) exchanger.exchange(data1);
-                System.out.println("线程"
-                        + Thread.currentThread().getName() + "换回数据为"
-                        + data2);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-    });
-}
-</code></pre>
-
-<p>}</p>
-
-<p>/<em>* output:
-线程pool-1-thread-1正在把数据money换出去
-线程pool-1-thread-2正在把数据drug换出去
-线程pool-1-thread-2换回数据为money
-线程pool-1-thread-1换回数据为drug
-</em>/
-```</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java并发编程（二）]]></title>
-    <link href="http://blog.ubone.com/blog/2014/09/02/javabing-fa-er/"/>
-    <updated>2014-09-02T21:03:49+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/09/02/javabing-fa-er</id>
-    <content type="html"><![CDATA[<p>本文是《Java编程思想》第21章并发的读书笔记。<a href="/blog/2014/08/30/javabing-fa-bian-cheng/">Java并发编程（一）</a></p>
-
-<!--more-->
-
-
-<h2>3. 终结任务</h2>
-
-<h3>3.1 阻塞</h3>
-
-<p>一个任务进入阻塞状态，可能有如下原因：</p>
-
-<ol>
-<li>调用sleep(milliseconds)</li>
-<li>调用wait()挂起线程，直到线程得到了notify()或notifyAll()（Java5中的signal或signalAll）</li>
-<li>等待某个输入/输出完成</li>
-<li>试图在某个对象上调用同步控制方法，但对象锁不可用。</li>
-</ol>
-
-
-<p>早期代码中还有suspend()和resume()来阻塞和唤醒线程，但现在已经被废止了（可能导致死锁），还有stop()也已经废止了（因为不释放线程获得的锁）。</p>
-
-<h3>3.2 中断</h3>
-
-<p>有几种方法中断线程。</p>
-
-<p>一是声明一个变量canceled，然后正常的run方法中循环检查它的值，从而决定是否跳出循环，退出run方法。</p>
-
-<p>二是调用Thread类的interrupt()方法，该方法提供了离开run()循环而不抛出异常的第二种方式。这种方式必须持有Thread对象。</p>
-
-<p>如果调用Executor的shutdownNow()，那么它将发送一个interrupt()调用给它启动的所有线程。如果想只中断某一个线程，可以使用Future的cancel方法。下面是各种中断的示例：</p>
-
-<h4>中断Sleep Runnable</h4>
-
-<p>```java
-public class ThreadInterrupt {</p>
-
-<pre><code>public static void main(String[] args) {
-    ExecutorService exec = Executors.newCachedThreadPool();
-    Future f = exec.submit(new SleepInterruptThread());
-    try {
-        TimeUnit.SECONDS.sleep(1);
-        f.cancel(true);
-
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-    System.out.println("退出主程序");
-}
-</code></pre>
-
-<p>}</p>
-
-<p>public class SleepInterrupt implements Runnable {</p>
-
-<pre><code>@Override
-public void run() {
-    try {
-        TimeUnit.SECONDS.sleep(10);
-        System.out.println("end sleep 10s");
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-
-    System.out.println("exit SleepInterrupt run");
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>上面的代码可以正常中断Sleep线程，捕获了InterruptedException异常。</p>
-
-<h4>中断Sleep Thread</h4>
-
-<p>```java
-public class ThreadInterrupt {</p>
-
-<pre><code>public static void main(String[] args) {
-    Thread f = new SleepInterruptThread();
-    f.start();
-    try {
-        TimeUnit.SECONDS.sleep(1);
-        f.interrupt();
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-    System.out.println("退出主程序");
-}
-</code></pre>
-
-<p>}</p>
-
-<p>public class SleepInterruptThread extends Thread {</p>
-
-<pre><code>@Override
-public void run() {
-    try {
-        TimeUnit.SECONDS.sleep(5);
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-
-    System.out.println("exit SleepInterrupt run");
-}
-</code></pre>
-
-<p>}</p>
-
-<p>```</p>
-
-<p>上面的代码可以正常中断Sleep线程，捕获了InterruptedException异常。</p>
-
-<h4>中断IO线程</h4>
-
-<p>```java
-public class ThreadInterrupt {</p>
-
-<pre><code>public static void main(String[] args) {
-    ExecutorService exec = Executors.newCachedThreadPool();
-    Future f = exec.submit(new IOInterrupt(System.in));
-    try {
-        TimeUnit.SECONDS.sleep(1);
-        f.cancel(true);
-
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-    System.out.println("退出主程序");
-}
-</code></pre>
-
-<p>}</p>
-
-<p>public class IOInterrupt implements Runnable {</p>
-
-<pre><code>private InputStream in;
-
-public IOInterrupt(InputStream is) {
-    in = is;
-}
-
-@Override
-public void run() {
-    try {
-        in.read();
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-
-    System.out.println("exit run");
-}
-</code></pre>
-
-<p>}</p>
-
-<p>```
-<strong>对于IO阻塞线程，则无法进行中断！从catch语句中没有InterruptedException也可以看出。</strong>同样无法中断的还有SynchronizedBlocked，也就是如果线程进入synchronized方法或临界区中后，将无法中断。</p>
-
-<p>对于网络访问这样的IO阻塞，如果不能中断有时挺烦人的。一个较笨的办法是关闭底层资源（例如关闭连接。）示例如下：</p>
-
-<p><code>java
-InputStream socketInput = new Socket("localhost", 8080).getInputStream();
-exec.execute(new IOBlocked(socketInput));
-//...
-exec.shutdownNow(); //无法中断线程
-//...
-socketInput.close(); //关闭后，解除阻塞。
-</code></p>
-
-<p><strong>Java提供的各种nio类具有更人性化的I/O中断，被阻塞的nio通道会自动地响应中断。</strong></p>
-
-<p><strong>synchronized方法或临界区上的阻塞，存在锁住程序的可能。而ReentrantLock上的阻塞则具备被中断的能力。</strong>例如当线程1 lock后，线程2也请求lock，在等待的过程中将产生阻塞，调用Thread.interrupt或Future.cancel可以将其中断。</p>
-
-<h3>3.3 检查中断</h3>
-
-<p>当你在线程上调用interrupt()时，如何保证安全地退出run方法，释放该释放的资源？</p>
-
-<p>如果类必须响应interrupt()，那么就必须建立一种策略。当创建了需要清理的对象后，就必须紧跟try-finally子句，使得无论run()循环如何退出，都能正常清理。</p>
-
-<h2>4. 线程之间的协作</h2>
-
-<h3>4.1 wait()与notifyAll()</h3>
-
-<p>调用sleep()和yield()时，锁并没有被释放。而调用wait()时，线程的执行被挂起，对象上的锁被释放。wait()表示无限期等待下去，直到notify或notifyAll，它也可以传入参数表示时间到期后恢复。当wait恢复时，会首先重新获取进入wait时释放的锁，在这个锁变为可用之前，是不会被唤醒的。</p>
-
-<p><strong>只能在同步控制方法或者同步控制块里调用wait(), notify()和notifyAll()！</strong>否则虽然能够编译通过，但运行时将报异常：IllegalMonitorStateException。为什么要这样设计？<a href="http://javarevisited.blogspot.sg/2011/05/wait-notify-and-notifyall-in-java.html">这篇博客</a>作了解释。如果不这样做，就没有锁，就可能导致下一节中的“错失的信号”。</p>
-
-<p>当从wait唤醒时，往往需要判断特定条件是否满足，如果不满足就返回到wait中，惯用的方法就是使用while来编写这种代码。下例是一个汽车打蜡抛光的示例，其它两个线程未列出。</p>
-
-<p>```java
-class Car {
-private boolean waxOn = false;
-public synchronized void waxed() {
-waxOn = true;
-notifyAll();
-}
-public synchronized void buffed() {
-waxOn = false;
-notifyAll();
-}
-public synchronized void waitForWaxing() throws InterruptedException {
-while (waxOn == false) {
-wait();
-}
-}
-public synchronized void waitForBuffing() throws InterruptedException {
-while (waxOn == true) {
-wait();
-}
-}
-}</p>
-
-<p>```</p>
-
-<h4>错失的信号</h4>
-
-<p>当两个线程协作时，要特别注意可能会错过某个信号，例如下例T1通知T2，但是有可能T2收不到这个信号：</p>
-
-<p>```java
-T1:
-synchronized(shareMonitor) {</p>
-
-<pre><code> //&lt;setup condition for T2&gt;
- shareMonitor.notify();
-</code></pre>
-
-<p>}</p>
-
-<p>T2:
-while(someCondition) {</p>
-
-<pre><code> //Point 1
- synchronized(shareMonitor) {
-      shareMonitor.wait();
- }
-</code></pre>
-
-<p>}
-```</p>
-
-<p>以上代码运行到Point1时，如果调度到了T1，则T2收不到通知，就会永远在那里等待。T2正确的做法是：</p>
-
-<p>```java
-synchronized(shareMonitor) {</p>
-
-<pre><code> while(someCondition) {
-      shareMonitor.wait();
- }
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>4.2 notify()与notifyAll()</h3>
-
-<p>两者的不同之处在于，前者只唤醒一个线程，而后者唤醒同一锁定的所有线程。当有多个等待线程时，notify唤醒哪一个线程由调度决定。notifyAll唤醒多个线程后，它们将先为锁而战，先取得锁的线程先执行。</p>
-
-<p>什么情况下使用notify或者notifyAll？在多个等待的线程中，如果它们都在等同一个条件，并且当条件变为真时，只有一个线程从中受益，那么用notify比notifyAll更好，因为它避免浪费CPU循环。 notify()只唤醒其中一个。因此当你使用notify时要确保只唤醒正确的那个。</p>
-
-<p>notifyAll并不是唤醒所有等待线程，而是等待某个特定锁的所有线程。</p>
-
-<h3>4.3 生产者和消费者</h3>
-
-<p>除了wait()、notify()和notifyAll()方法用于同步方法或者同步代码块外，也可以使用Lock、Condition、await()、signal()和signalAll()方法。示例如下：</p>
-
-<p>```java
-class Car {</p>
-
-<pre><code>private Lock lock = new ReentrantLock();
-private Condition condition = lock.newCondition();
-private boolean waxOn = false;
-public void waxed() {
-    lock.lock();
-    try {
-        waxOn = true;
-        condition.signalAll();
-    } finally {
-        lock.unlock();
-    }
-}
-
-public void waitForWaxing() throws InterruptedException {
-    lock.lock();
-    try {
-        while (waxOn == false) 
-            condition.await();
-    } finally {
-        lock.unlock();
-    }
-}
-
-//...
-</code></pre>
-
-<p>}
-```</p>
-
-<p>注意，每个lock()的调用都必须紧跟一个try-finally子句，以保证所有情况都可以释放锁。在await()、signal()或signalAll()之前，必须拥有这个锁。</p>
-
-<p>使用wait()和notifyAll()这样的方法来解决任务互操作的问题比较复杂。在典型的生产者-消费者实现中，常使用先进先出队列来存储被生产和消费的对象。BlockingQueue接口提供了这样的同步队列，该接口有多种实现，常见的是LinkedBlockingQueue和ArrayBlockingQueue(固定尺寸)。</p>
-
-<p>如果消费者试图从队列中获取对象，而此时该队列为空，那么消费者将挂起，直到队列中有可消费的内容。阻塞队列可以解决很多问题，比wait()和notifyAll()相比，要简单得多，也更加可靠。示例如下：</p>
-
-<p>```java
-class LiftOffRunner implements Runnable {</p>
-
-<pre><code>private BlockingQueue&lt;LiftOff&gt; rockets;
-public LiftOffRunner(BlockingQueue&lt;LiftOff&gt; queue) {
-    rockets = queue;
-}
-
-public void add(LiftOff lo) {
-    try {
-        rockets.put(lo);
-    } catch(InterruptedException e) {
-        print("Interrupted during put");
-    }
-}
-
-public void run() {
-    try {
-        while(! Thread.interrupted)) {
-            LiftOff rocket = rockets.take(); //阻塞直至rockets中有东西
-            rocket.run();
-        }
-    } catch(InterruptedException e) {
-        print("Exiting LiftOffRunner");
-    }
-}
-</code></pre>
-
-<p>}</p>
-
-<p>//其它线程可以往rockets中添加内容，无需同步方法或者锁。
-```</p>
-
-<h3>4.4 任务间使用管道进行输入/输出</h3>
-
-<p>通过输入/输出在线程间进行通信也很有用。这种管道在Java IO库中的对应物就是PipedWriter类和PipedReader类。这也是“生产者-消费者”的变体。示例如下：</p>
-
-<p>```java
-class Sender implements Runnable {</p>
-
-<pre><code>private PipedWriter out = new PipedWriter();
-public PipedWriter getWriter() { return out;}
-public void run() {
-    try {
-        while (true) {
-            for(char c = 'A'; c &lt;= 'z'; c++) {
-                out.write(c);
-                TimeUnit.MILLISECONDS.sleep(rand.nextInt(500));
-            }
-        }
-    } catch(IOException e) {
-        //...
-    } catch(InterruptedException e ) {
-        //...
-    }
-}
-</code></pre>
-
-<p>}</p>
-
-<p>class Receiver implements Runnable {</p>
-
-<pre><code>private PipedReader in;
-public Receiver(Sender sender) {
-    in = new PipedReader(sender.getWriter());
-}
-
-public void run() {
-    try {
-        while (true) {
-            print("read: " + (char) in.read());
-        }
-    } catch (IOException e) {
-        //...
-    }
-}
-</code></pre>
-
-<p>}</p>
-
-<p>//与普通I/O不能interrupt不同，PipedReader是可以中断的。</p>
-
-<p>```</p>
-
-<p>相比之下，BlockingQueue使用起来更加健壮而容易。</p>
-
-<h2>5. 死锁</h2>
-
-<p>当以下四个条件同时满足时，就会发生死锁：</p>
-
-<ol>
-<li>互斥条件。任务使用的资源中至少有一个是不能共享的。</li>
-<li>至少有一个任务必须持有一个资源且正在等待获取一个当前被别的任务持有的资源。</li>
-<li>资源不能被任务抢占，任务必须把资源释放当作普通事件。</li>
-<li>必须有循环等待。A等待B持有的资源，B又等待C持有的资源，这样一直下去之后，直到X在等待A所持有的资源。</li>
-</ol>
-
-
-<p>要防止死锁，只需破坏上述四条中的任意一条。破坏第4条是最容易的。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java并发编程（一）]]></title>
-    <link href="http://blog.ubone.com/blog/2014/08/30/javabing-fa-bian-cheng/"/>
-    <updated>2014-08-30T21:58:15+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/08/30/javabing-fa-bian-cheng</id>
-    <content type="html"><![CDATA[<p>本文是《Java编程思想》第21章并发的读书笔记。</p>
-
-<!--more-->
-
-
-<p>操作系统：抢占式（调度机制会周期性地中断线程，将上下文切换到另一个线程）、协作式（每个任务自己放弃控制）。</p>
-
-<h2>1. 基本线程机制</h2>
-
-<h3>1.1 定义任务</h3>
-
-<p>```java
-public class LiftOff implements Runnable {</p>
-
-<pre><code> public void run() {
-      //...
-      Thread.yield(); //声明，我已经干完重要的事，可以把CPU让给其他任务了。
- }
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>1.2 Thread类</h3>
-
-<p><code>java
-Thread t = new Thread(new LiftOff());
-t.start();
-</code></p>
-
-<h3>1.3 使用Executor</h3>
-
-<p>```java
-ExecutorService exec = Executors.newCachedThreadPool(); //or newFixedThreadPool, newSingleThreadExecutor
-exec.execute(new LiftOff());</p>
-
-<p>exec.shutdown(); //防止加入新任务。
-```</p>
-
-<h3>1.4 从任务中产生返回值</h3>
-
-<p>Runnable不返回任何值，Callable接口可以返回值。两者的区别只是后者的方法是call()而不是run()。</p>
-
-<p>```java
-class TaskWithResult implements Callable<String> {</p>
-
-<pre><code> public String call() {
-      return "result";
- }
-</code></pre>
-
-<p>}</p>
-
-<p>ExecutorService exec = Executors.newSingleThreadExecutor();
-Future<String> future = exec.submit(new TaskWithResult());
-String result = future.get(); //get方法会一直等线程结束后返回结果。isDone()查询Future是否已经完成。
-```</p>
-
-<h3>1.5 休眠</h3>
-
-<p>```java
-public class SleepingTask extends LiftOff {</p>
-
-<pre><code> public void run() {
-      try {
-           while(countDown-- &gt; 0) {
-                //...
-                TimeUnit.MILLISECONDS.sleep(100);
-           }
-      } catch(InterruptedException e) {
-           //...
-      }
- }
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>1.6 优先级</h3>
-
-<p>```java</p>
-
-<pre><code> public void run() {
-      Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
- }
-</code></pre>
-
-<p>```</p>
-
-<p>Windows有7个优先级， Solaris有2<sup>31</sup>个优先级。各操作系统不一致，因此建议只使用三个优先级：Thread.MAX_PRIORITY, NORM_PRIORITY, MIN_PRIORITY。</p>
-
-<h3>1.7 后台线程</h3>
-
-<p>后台线程指程序运行时在后台提供通用服务的线程，并且不属性程序中不可或缺的部分。<strong>当所有非后台线程结束时，程序就终止了，同时会杀死所有后台线程。</strong>如果有非后台线程还在运行，则程序不会终止。</p>
-
-<p>要设置为后台线程，必须在线程启动之前调用setDaemon()方法。</p>
-
-<p>```java</p>
-
-<pre><code> Thread daemon = new Thread(new LiftOff() );
- daemon.setDaemon(true); //必须在start()方法前调用
- daemon.start(); 
-</code></pre>
-
-<p>```</p>
-
-<p>可以通过定制的ThreadFactory创建后台线程，例如：</p>
-
-<p>```java
-public class DaemonThreadFactory implements ThreadFactory {</p>
-
-<pre><code> public Thread newThread(Runnable r) {
-      Thread t = new Thread(r);
-      t.setDaemon(true);
-      //还可以设置优先级、名称等，这些将成为新线程的默认值。
-
-      return t;
- }
-</code></pre>
-
-<p>}</p>
-
-<p>ExecutorService exec = Executors.newCachedThreadPool(new DaemonThreadFactory()); //这个Factory将用于创建新的线程。
-exec.execute(new LiftOff());
-```</p>
-
-<p><code>isDaemon()</code>方法用于判断是否后台线程。后台线程创建的任何线程都将自动设置为后台线程。</p>
-
-<p>注意！对于后台线程，在不会执行<code>finally</code>子句的情况下就会终止其<code>run()</code>方法：</p>
-
-<p>```java
-class ADaemon implements Runnable {</p>
-
-<pre><code>public void run() {
-    try {
-        //...
-        TimeUnit.SECONDS.sleep(1);
-    } catch(InterruptedException e) {
-        //...
-        //注意，此时已经是false, 因为异常被捕获时将清理这个标志
-        print("isInterrupted(): " + isInterrupted()); 
-    } finally {
-        print("会运行到这吗？")
-    }
-}
-</code></pre>
-
-<p>}</p>
-
-<p>public class DaemonsDontRunFinally {</p>
-
-<pre><code>public static void main(String[] args) {
-    Thread t = new Thread(new ADaemon());
-    t.setDaemon(true);
-    t.start();
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>一旦<code>setDaemon(true)</code>，finally并没有被执行。因为一旦main结束，所有后台线程就立即终止了。</p>
-
-<h3>1.8 编码的变体</h3>
-
-<p>除了实现Runnable，也可以直接继承Thread类。但是由于Java不支持多重继承，所以继承自Thread适应的场景要少一些。</p>
-
-<p>```java
-private class SampleThread extends Thread{</p>
-
-<pre><code>public SampleThread() {
-    super("线程名称");  //线程名称可通过getName()获取。
-}
-
-public void run() {
-    //...
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>自管理的Runnable</p>
-
-<p>```java
-public class SelfManaged implements Runnable {</p>
-
-<pre><code>private Thread t = new Thread(this);
-public SelfManaged() {
-    t.start();  //注，不建议在构造器中启动线程，可能会有问题，建议使用Executor
-}
-
-public void run() {
-    //...
-}
-
-public static void main(String[] args) {
-    new SelfManaged();
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>1.9 加入一个线程</h3>
-
-<p>某个线程在另一个线程t上调用<code>t.join()</code>方法，此线程被挂起，直到t线程结束（即<code>t.isActive() == false</code>）。join方法也可以加超时参数，表示如果时间到期还未结束的话，join()方法总能返回。</p>
-
-<h3>1.10 捕获异常</h3>
-
-<p>线程中的未捕获的异常会导致系统不稳定，但常规方法并不能在外面捕获这些异常，因此需要借助特殊处理。下面的例子创建了一个新类型的ThreadFactory，它将在每个新创建的Thread对象上附着一个Thread.UncaughtExceptionHandler。</p>
-
-<p>```java
-class MyUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {</p>
-
-<pre><code>@Override
-public void uncaughtException(Thread t, Throwable e) {
-    // TODO Auto-generated method stub
-}
-</code></pre>
-
-<p>}</p>
-
-<p>class HandlerThreadFactory implements ThreadFactory {</p>
-
-<pre><code>@Override
-public Thread newThread(Runnable r) {
-    Thread t = new Thread(r);
-    t.setUncaughtExceptionHandler(new MyUncaughtExceptionHandler());
-
-    return t;
-}
-</code></pre>
-
-<p>}</p>
-
-<p>ExecutorService exec = Executors.newCachedThreadPool(new HandlerThreadFactory());
-exec.execute(new SomeThread());
-```</p>
-
-<p>如果你知道将要在代码中处处使用相同的异常处理器，那么更简单的方式是在Thread类中设置一个表态域，示例如下：</p>
-
-<p><code>
-Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler());
-</code></p>
-
-<h2>2. 共享受限资源</h2>
-
-<h3>2.1  解决共享资源竞争</h3>
-
-<p>Java提供了关键字synchronized，为防止资源冲突提供支持。如果某个线程处于一个对synchronized方法的调用中，那么这个线程在从该方法返回之前，其它所有调用类中任何synchronized方法的线程都会被阻塞。也就是说，对于某个特定对象来说，其所有synchronized方法共享同一个锁。</p>
-
-<p>线程可以多次获得对象的锁，例如先调用synchronized方法获得锁后，又调用该类的其它方法获得锁。JVM会跟踪对象加锁的计数，每次调用加1，离开synchronized方法时减1。当计数变为0则锁被完全释放。</p>
-
-<p>synchronized static方法可以在类的范围内防止对static数据的并发访问。</p>
-
-<p>如果你正在写一个变量，它可能接下来被另一个线程读取，或者在读取一个上一次已经被另一个线程写过的变量，那么你必须使用同步，并且，读写线程都必须用相同的监视器锁同步。</p>
-
-<p>Lock对象也用于解决共享资源竞争。它必须被显式地创建、锁定和释放。</p>
-
-<p>```java
-public class MutexEvenGenerator extends IntGenerator {</p>
-
-<pre><code>private Lock lock = new ReentrantLock();
-public int next() {
-    lock.lock();
-    try {
-        //...
-
-        //注意！必须在try中返回值，以避免lock.unlock之后将数据暴露给其它线程。
-        return someValue; 
-    } finally {
-        lock.unlock();
-    }
-
-    //不要在这里返回值
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>Lock提供了更细粒度的控制能力。使用Lock，可以更加自由地控制锁。例如尝试获得锁，如果获取不到，可以先干点别的事：</p>
-
-<p>```java
-boolean captured = lock.tryLock();</p>
-
-<p>//设置超时时间，超时则触发异常。
-try {</p>
-
-<pre><code>boolean captured = lock.tryLock(2, TimeUnit.SECONDS);
-</code></pre>
-
-<p>} catch(InterruptedException e) {
-}</p>
-
-<p>```</p>
-
-<h3>2.2 原子性和易变性</h3>
-
-<p>原子性可用于除long、double之外的所有基本类型上的“简单操作”（读取和写入）。可以保证它们会被当作不可分（原子）的操作来操作内存。但JVM在读取和写入64位（long和double变量）时，可以拆成两个32位操作。因此可能导致“字撕裂”。作为普通开发者，<strong>不要依赖原子操作而移除了同步，那会得不偿失。</strong></p>
-
-<p>关键字<code>volatile</code>可以帮助获得原子性。<code>volatile</code>还确保了数据的可视性。当一个域声明为<code>volatile</code>时，那么只要对它进行了写操作，即使使用了本地缓存，其它读操作也可以看到这个修改。因为<code>volatile</code>域会被立即写入主内存中，而读取操作就发生在主存中。</p>
-
-<p>非<code>volatile</code>域上的原子操作不必刷新到主存，因此其它任务读取该域时可能看不到新值（修改操作的任务可以看到新值）。如果多个任务(线程)在同时访问某个域，那么这个域就应该是<code>volatile</code>的，否则这个域就应该经由同步来访问。同步也会导致向主存刷新。</p>
-
-<h3>2.3 原子类</h3>
-
-<p>Java引入了AtomicInteger, AtomicLong, AtomicReference等特殊的原子性变量类，它们提供机器级别上的原子性。常规编程很少派上用场，但在涉及性能调优时，会有用武之地。</p>
-
-<p>需要强调的是，Atomic类被设计用来构建java.util.concurrent中的类，因此只有在特殊情况下才在自己的代码中使用它们。通常依赖于锁（Lock, synchronized）更安全一些。</p>
-
-<h3>2.4 临界区(Critical section)</h3>
-
-<p>以下同步控制块就是临界区：</p>
-
-<p>```java
-synchronized(synObject) {</p>
-
-<pre><code>//这部分代码一次只能被一个线程访问
-</code></pre>
-
-<p>}
-```</p>
-
-<p>使用同步控制块，可以防止整个方法都同步，显著提高性能。但要注意，上面例子中，只要没有退出同步控制块，那么被同步对象synObject的所有同步方法都无法被其它线程调用。</p>
-
-<h3>2.5 线程本地存储</h3>
-
-<p>去除变量共享，在线程本地存储也是防止共享资源冲突的一种方法。如果你有5个线程都要使用变量x所表示的对象，那么线程本地存储就会生成5个用于x的不同的存储块。ThreadLocal对象用于线程本地存储。</p>
-
-<p>ThreadLocal对象通常当作静态域存储。示例如下：</p>
-
-<p>```java
-public class ThreadLocalVariableHolder {</p>
-
-<pre><code>private static final ThreadLocal&lt;Integer&gt; value = new ThreadLocal&lt;Integer&gt;() {
-    @Override
-    protected synchronized Integer initialValue() {
-        return 10;
-    }
-};
-
-public static int get() {
-    return value.get();
-}
-
-public static void increment() {
-    value.set(value.get() + 1);
-}
-</code></pre>
-
-<p>}</p>
-
-<p>public class Accessor implements Runnable {</p>
-
-<pre><code>@Override
-public void run() {
-    ThreadLocalVariableHolder.increment();
-    //..
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h2>慎用延迟初始化</h2>
-
-<p>在并发编程时，延迟初始化可能导致问题。除非绝对必要，否则就不要使用延迟初始化。</p>
-
-<p><code>java
-//正常的初始化
-private final FieldType field = computeFieldValue();
-</code></p>
-
-<p>如果要使用延迟初始化，就要使用同步方法，例如：</p>
-
-<p>```java
-private FieldType field;</p>
-
-<p>synchronized FieldType getField() {</p>
-
-<pre><code> if (field == null) {
-      field = computeFieldValue();
- }
-
- return field;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>如果出于性能考虑，需要对静态域使用延迟初始化，就使用<strong>Lazy initialization holder class</strong>模式：</p>
-
-<p>```java
-private static Class FieldHolder {</p>
-
-<pre><code> static final FieldType field = computefieldValue();
-</code></pre>
-
-<p>}</p>
-
-<p>static FieldType getField() { return FieldHolder.field; }
-```</p>
-
-<p>如果出于性能考虑，需要对实例域使用延迟初始化，就使用双重检查模式(Double check idiom)：
-<code>java
-private volatile FieldType field;
-FieldType getField() {
-FieldType result = field;
-if (result == null) {
-synchronized(this) {
-result = field;
-if (result == null) {
-field = result = computeFieldValue();
-}
-}
-}
-return result;
-}
-</code></p>
-
-<p>注意上面的代码：</p>
-
-<ol>
-<li>使用volatile很重要；</li>
-<li>使用局域变量result可以提高性能。据称在作者的机器上使用局域变量要快25%。</li>
-<li>对于静态域，没有必要使用双重检查，<strong>Lazy initialization holder class</strong>是更好的选择。</li>
-<li>如果延迟初始化可以接受重复初始化的实例域，则可以省去第二次检查。</li>
-</ol>
-
 ]]></content>
   </entry>
   

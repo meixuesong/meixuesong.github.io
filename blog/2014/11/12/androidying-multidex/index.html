@@ -1,0 +1,372 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Android应用打破65K方法数限制 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="普通Android应用的方法总数不能超过65536，这是开发者长期以来非常头疼的一个问题。最近Google发布了新的Multidex支持库，为方法总数超过65K的Android应用提供官方支持。 本文已经发表在InfoQ。 近日，Android Developers在Google+ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/11/12/androidying-multidex">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Android应用打破65K方法数限制</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-12T16:52:42+08:00" pubdate data-updated="true">2014-11-12</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>普通Android应用的方法总数不能超过65536，这是开发者长期以来非常头疼的一个问题。最近Google发布了新的Multidex支持库，为方法总数超过65K的Android应用提供官方支持。</p>
+
+<p>本文已经发表在<a href="http://www.infoq.com/cn/news/2014/11/android-multidex">InfoQ</a>。</p>
+
+<!--more-->
+
+
+<p>近日，<a href="https://plus.google.com/108967384991768947849">Android Developers</a>在Google+上宣布了<a href="http://developer.android.com/tools/support-library/features.html#multidex">新的Multidex支持库</a>，为方法总数超过65K的Android应用提供官方支持。</p>
+
+<p>如果你是一名幸运的Android应用开发者，正在开发一个前景广阔的应用，不断地加入新功能、添加新的类库，那么终有一天，你会不幸遇到这个错误：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Conversion to Dalvik format failed:
+</span><span class='line'>Unable to execute dex: method ID not in [0, 0xffff]: 65536</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个错误是Android应用的方法总数限制造成的。Android平台的Java虚拟机Dalvik在执行DEX格式的Java应用程序时，使用原生类型short来索引DEX文件中的方法。这意味着单个DEX文件可被引用的方法总数被限制为65536。通常APK包含一个classes.dex文件，因此Android应用的方法总数不能超过这个数量，这包括Android框架、类库和你自己开发的代码。</p>
+
+<p>这个问题可以通过将一个DEX文件分拆成多个DEX文件解决。Facebook介绍了为Android应用开发的<a href="https://www.facebook.com/notes/facebook-engineering/under-the-hood-dalvik-patch-for-facebook-for-android/10151345597798920">Dalvik补丁</a>；Android Developers博客介绍了通过<a href="http://android-developers.blogspot.com/2011/07/custom-class-loading-in-dalvik.html">自定义类加载过程</a>的方法来解决此问题。但这些方法有些复杂而且并不优雅。</p>
+
+<p>随着<a href="http://developer.android.com/tools/support-library/features.html#multidex">新的MultiDex支持库发布</a>，Google正式为解决此问题提供官方支持。<a href="http://developer.android.com/tools/building/multidex.html">构建超过65K方法数的应用</a>介绍了如何使用Gradle构建多DEX应用。</p>
+
+<p>首先使用Android SDK Manager升级到最新的Android SDK Build Tools和Android Support Library R21。然后进行以下两步操作：</p>
+
+<p>1.修改Gradle配置文件，启用MultiDex并包含MultiDex支持：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>android {
+</span><span class='line'>    compileSdkVersion 21
+</span><span class='line'>    buildToolsVersion "21.1.0"
+</span><span class='line'>
+</span><span class='line'>    defaultConfig {
+</span><span class='line'>        ...
+</span><span class='line'>        minSdkVersion 14
+</span><span class='line'>        targetSdkVersion 21
+</span><span class='line'>        ...
+</span><span class='line'>
+</span><span class='line'>        // Enabling multidex support.
+</span><span class='line'>        multiDexEnabled true
+</span><span class='line'>    }
+</span><span class='line'>    ...
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>dependencies {
+</span><span class='line'>  compile 'com.android.support:multidex:1.0.0'
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>2.让应用支持多DEX文件。在<a href="http://developer.android.com/reference/android/support/multidex/MultiDexApplication.html">MultiDexApplication JavaDoc</a>中描述了三种可选方法：</p>
+
+<ul>
+<li>在AndroidManifest.xml的application中声明android.support.multidex.MultiDexApplication；</li>
+<li>如果你已经有自己的Application类，让其继承MultiDexApplication；</li>
+<li>如果你的Application类已经继承自其它类，你不想/能修改它，那么可以重写attachBaseContext()方法：</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>@Override
+</span><span class='line'>protected void attachBaseContext(Context base) {
+</span><span class='line'>    super.attachBaseContext(base);
+</span><span class='line'>    MultiDex.install(this);
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>经过以上步骤，你的应用已经可以实现多个DEX文件了。当应用构建时，构建工具会分析哪些类必须放在第一个DEX文件，哪些类可以放在附加的DEX文件中。当它创建了第一个DEX文件（classes.dex）后，如果必要会继续创建附加的DEX文件，如classes2.dex, classes3.dex。Multidex的支持类库将被包含在应用的第一个DEX文件中，帮助实现对其它DEX文件的访问。</p>
+
+<p>文中还介绍了在开发多DEX应用时，通过设置productFlavors提高开发效率以及多DEX应用的测试方法。</p>
+
+<p>Android 5.0和更高版本使用名为ART的运行时，它原生支持从APK文件加载多个DEX文件。在应用安装时，它会执行预编译，扫描classes(..N).dex文件然后将其编译成单个.oat文件用于执行。<a href="https://source.android.com/devices/tech/dalvik/art.html">了解更多关于ART的信息</a>。</p>
+
+<p>虽然Google解决了应用总方法数限制的问题，但并不意味着开发者可以任意扩大项目规模。Multidex仍有一些限制：</p>
+
+<ol>
+<li>DEX文件安装到设备的过程非常复杂，如果第二个DEX文件太大，可能导致应用无响应。此时应该使用<a href="http://developer.android.com/tools/help/proguard.html">ProGuard</a>减小DEX文件的大小。</li>
+<li>由于Dalvik linearAlloc的<a href="http://b.android.com/22586">Bug</a>，应用可能无法在Android 4.0之前的版本启动，如果你的应用要支持这些版本就要多执行测试。</li>
+<li>同样因为Dalvik linearAlloc的限制，如果请求大量内存可能导致崩溃。Dalvik linearAlloc是一个固定大小的缓冲区。在应用的安装过程中，系统会运行一个名为dexopt的程序为该应用在当前机型中运行做准备。dexopt使用LinearAlloc来存储应用的方法信息。Android 2.2和2.3的缓冲区只有5MB，Android 4.x提高到了8MB或16MB。当方法数量过多导致超出缓冲区大小时，会造成dexopt崩溃。</li>
+<li>Multidex构建工具还不支持指定哪些类必须包含在首个DEX文件中，因此可能会导致某些类库（例如某个类库需要从原生代码访问Java代码）无法使用。</li>
+</ol>
+
+
+<p>避免应用过大、方法过多仍然是Android开发者要注意的问题。Mihai Parparita的开源项目<a href="https://github.com/mihaip/dex-method-counts">dex-method-counts</a>可以用于统计APK中每个包的方法数量。</p>
+
+<p>通常开发者自己的代码很难达到这样的方法数量限制，但随着第三方类库的加入，方法数就会迅速膨胀。因此选择合适的类库对Android开发者来说尤为重要。</p>
+
+<p>开发者应该避免使用Google Guava这样的类库，它包含了13000多个方法。尽量使用专为移动应用设计的Lite/Android版本类库，或者使用小类库替换大类库，例如用<a href="https://code.google.com/p/google-gson/">Google-gson</a>替换Jackson JSON。而对于Google Protocol Buffers这样的数据交换格式，其标准实现会自动生成大量的方法。采用<a href="https://github.com/square/wire">Square Wire</a>的实现则可以很好地解决此问题。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-12T16:52:42+08:00" pubdate data-updated="true">2014-11-12</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/yi-dong-kai-fa/'>移动开发</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/11/03/zui-duan-lu-jing/" title="Previous Post: 最短路径">&laquo; 最短路径</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/11/15/zi-fu-chuan-pai-xu/" title="Next Post: 字符串排序">字符串排序 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (21)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/hello/">Hello</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/01/javabing-fa-bian-cheng-si/">Java并发编程(四)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/23/java-nio-dot-2/">Java NIO.2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/18/java-7de-6ge-xin-te-xing/">Java 7的6个新特性</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/17/bshu/">B树</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fb4e47bf6950f9d2496daf84fe62cec59' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2014/11/12/androidying-multidex/';
+        var disqus_url = 'http://blog.ubone.com/blog/2014/11/12/androidying-multidex/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
