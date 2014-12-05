@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-12-03T21:49:51+08:00</updated>
+  <updated>2014-12-05T23:52:09+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,696 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[类文件与字节码]]></title>
+    <link href="http://blog.ubone.com/blog/2014/12/04/lei-wen-jian-yu-zi-jie-ma/"/>
+    <updated>2014-12-04T20:40:02+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/12/04/lei-wen-jian-yu-zi-jie-ma</id>
+    <content type="html"><![CDATA[<p>本篇学习类加载过程、类文件的分析工具和字节码。</p>
+
+<!--more-->
+
+
+<h2>1. 类加载和类对象</h2>
+
+<p>一个.class文件定义了JVM的一种类型。类加入到JVM当前运行态中，首先要加载并连接，进行大量验证，然后提供一个代表该类型的Class对象给正在运行的系统，用于创建新的实例。</p>
+
+<h4>加载</h4>
+
+<p>加载的过程首先要读取类文件的字节数据流，创建一个字节数组，然后产生对应的Class对象。这个过程会进行一些基本检查。加载结束时，Class对象还不成熟，类也不可用。</p>
+
+<h4>连接</h4>
+
+<p>加载完成后，类必须连接起来。这分为三个步骤：验证、准备和解析。验证类文件符合预期，不会引起系统运行时错误。准备阶段会分配内存，准备好初始化类中的静态变量（但不会现在初始化变量）。解析阶段会检查类中引用的类型是否有未知类型，如果有会加载进来。一旦需要加载的其他类型全部定位并完成解析，VM就可以初始化这个类。这时所有静态变量都可以被初始化，所有静态初始化代码块都会运行。类的加载全部完成，已经可以使用了。</p>
+
+<h4>Class对象</h4>
+
+<p>加载和连接过程的最终结果是一个Class对象，可以使用这个新类型创建实例了。Class对象可以和反射API一起实现对方法、域和构造方法等类成员的间接访问，通过getSuperClass()返回其父类。</p>
+
+<h4>类加载器</h4>
+
+<p>Java平台有几个经典的类加载器：</p>
+
+<ul>
+<li>根（或引导）类加载器：通常在VM启动后不久实例化，一般用本地代码实现。可视为VM的一部分。负责加载系统的基础JAR(主要是rt.jar),而且不做验证工作。</li>
+<li>扩展类加载器：用来加载安装时自带的标准扩展。一般包括安全性扩展。</li>
+<li>应用（或系统）类加载器：应用最广泛的类加载器，负责加载应用类。</li>
+<li>定制类加载器：在更复杂的环境，如EE或比较复杂的SE框架，通常会有些附加（即定制）的类加载器。</li>
+</ul>
+
+
+<h2>2. 方法句柄</h2>
+
+<p>反射代码有很多套路，要捕获各种讨厌的异常，代码看起来也不直观。Java 7为间接调用方法引入了java.lang.invoke包，即方法句柄，可以提高安全性和代码的可读性。</p>
+
+<h4>MethodHandle</h4>
+
+<p>它是对可直接执行的方法（或域、构造方法等）的类型化引用，是一个有能力安全调用方法的对象。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">MethodHandle</span> <span class="n">mh</span> <span class="o">=</span> <span class="n">getTwoArgMH</span><span class="o">();</span>
+</span><span class='line'><span class="n">MyType</span> <span class="n">ret</span><span class="o">;</span>
+</span><span class='line'><span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>  <span class="c1">//调用obj对象的句柄，传入参数arg0, arg1</span>
+</span><span class='line'>  <span class="n">ret</span> <span class="o">=</span> <span class="n">mh</span><span class="o">.</span><span class="na">invokeExact</span><span class="o">(</span><span class="n">obj</span><span class="o">,</span> <span class="n">arg0</span><span class="o">,</span> <span class="n">arg1</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">Throwable</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="c1">//...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>MethodType</h4>
+
+<p>它表示方法签名类型的不可变对象。每个方法句柄都有一个MethodType实例，用来指明方法的返回类型和参数类型。但它没有方法的名称和接收者类型。通过工厂方法可以得到MethodType实例：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//第一个参数为返回类型，随后是方法参数的类型。</span>
+</span><span class='line'><span class="c1">//toString()</span>
+</span><span class='line'><span class="n">MethodType</span> <span class="n">mtToString</span> <span class="o">=</span> <span class="n">MethodType</span><span class="o">.</span><span class="na">methodType</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="c1">//setter方法</span>
+</span><span class='line'><span class="n">MethodType</span> <span class="n">mtSetter</span> <span class="o">=</span> <span class="n">MethodType</span><span class="o">.</span><span class="na">methodType</span><span class="o">(</span><span class="kt">void</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Object</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="c1">//Comparator&lt;String&gt;定义的compareTo()方法</span>
+</span><span class='line'><span class="n">MethodType</span> <span class="n">mtStringComparator</span> <span class="o">=</span> <span class="n">MethodType</span><span class="o">.</span><span class="na">methodType</span><span class="o">(</span><span class="kt">int</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">Class</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>查找方法句柄</h4>
+
+<p>通过lookup对象，你给出持有所需方法的类、方法名称以及你所需方法签名相匹配的MethodType，就可以得到方法句柄：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">MethodHandle</span> <span class="nf">getToStringMH</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">MethodHandle</span> <span class="n">mh</span><span class="o">;</span>
+</span><span class='line'>  <span class="n">MethodType</span> <span class="n">mt</span> <span class="o">=</span> <span class="n">MethodType</span><span class="o">.</span><span class="na">methodType</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">MethodHandles</span><span class="o">.</span><span class="na">Lookup</span> <span class="n">lk</span> <span class="o">=</span> <span class="n">MethodHandles</span><span class="o">.</span><span class="na">lookup</span><span class="o">();</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">mh</span> <span class="o">=</span> <span class="n">lk</span><span class="o">.</span><span class="na">findVirtual</span><span class="o">(</span><span class="n">getClass</span><span class="o">(),</span> <span class="s">&quot;toString&quot;</span><span class="o">,</span> <span class="n">mt</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">NoSuchMethodException</span> <span class="o">|</span> <span class="n">IllegalAccessException</span> <span class="n">mhx</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">//...</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">return</span> <span class="n">mh</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>如果不是从当前类中查找，则只能看到或取得public方法的句柄。方法句柄总是在安全管理之下安全使用。没有反射中setAccessible()那种破解方法。</p></blockquote>
+
+<p>有了方法句柄，就可以执行它了。执行方法有两个：invokeExact()和invoke()。前者要求参数类型完全匹配，后者可以在不太匹配时做些修改后执行（如装箱或拆箱）。</p>
+
+<h4>示例：反射、代理和方法句柄的使用对比</h4>
+
+<p>现在通过一个实例来对比这三种方法。下面的代码演示了如何通过这三种方法来访问私有方法cancel()：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ThreadPoolManager</span> <span class="o">{</span>
+</span><span class='line'>  <span class="c1">//...</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">cancel</span><span class="o">(</span><span class="kd">final</span> <span class="n">ScheduledFuture</span><span class="o">&lt;?&gt;</span> <span class="n">hndl</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">//...</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/* 反射方法</span>
+</span><span class='line'><span class="cm"> * 使用方法简单示例：</span>
+</span><span class='line'><span class="cm"> * Method meth = manager.makeReflective();</span>
+</span><span class='line'><span class="cm"> * meth.invoke(hndl);</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Method</span> <span class="nf">makeReflective</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">Method</span> <span class="n">method</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">argTypes</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]</span> <span class="o">{</span><span class="n">ScheduledFuture</span><span class="o">.</span><span class="na">class</span><span class="o">};</span>
+</span><span class='line'>          <span class="n">method</span> <span class="o">=</span> <span class="n">ThreadPoolManager</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getDeclaredMethod</span><span class="o">(</span><span class="s">&quot;cancel&quot;</span><span class="o">,</span> <span class="n">argTypes</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">method</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">IllegalArgumentException</span> <span class="o">|</span> <span class="n">NoSuchMethodException</span> <span class="o">|</span> <span class="n">SecurityException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="c1">//...</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">return</span> <span class="n">method</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/* 代理方法</span>
+</span><span class='line'><span class="cm"> *  使用方法简单示例：</span>
+</span><span class='line'><span class="cm"> *  CancelProxy proxy = manager.makeProxy();</span>
+</span><span class='line'><span class="cm"> *  proxy.invoke(manager, hndl);</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">CancelProxy</span> <span class="o">{</span>
+</span><span class='line'>      <span class="kd">private</span> <span class="nf">CancelProxy</span><span class="o">()</span> <span class="o">{}</span>
+</span><span class='line'>      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">invoke</span><span class="o">(</span><span class="n">ThreadPoolManager</span> <span class="n">mae</span><span class="o">,</span> <span class="n">ScheduledFuture</span><span class="o">&lt;?&gt;</span> <span class="n">hndl</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">mae</span><span class="o">.</span><span class="na">cancel</span><span class="o">(</span><span class="n">hndl</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="n">CancelProxy</span> <span class="nf">makeProxy</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="k">new</span> <span class="nf">CancelProxy</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/* 方法句柄</span>
+</span><span class='line'><span class="cm"> * 使用方法简单示例：</span>
+</span><span class='line'><span class="cm"> * MethodHandle mh = manager.makeMh();</span>
+</span><span class='line'><span class="cm"> * mh.invokeExact(manager, hndl);</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">MethodHandle</span> <span class="nf">makeMh</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">MethodHandle</span> <span class="n">mh</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">MethodType</span> <span class="n">desc</span> <span class="o">=</span> <span class="n">MethodType</span><span class="o">.</span><span class="na">methodType</span><span class="o">(</span><span class="kt">void</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">ScheduledFuture</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">mh</span> <span class="o">=</span> <span class="n">MethodHandles</span><span class="o">.</span><span class="na">lookup</span><span class="o">().</span><span class="na">findVirtual</span><span class="o">(</span><span class="n">ThreadPoolManager</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">&quot;cancel&quot;</span><span class="o">,</span> <span class="n">desc</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">NoSuchMethodException</span> <span class="o">|</span> <span class="n">IllegalAccessException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="c1">//...</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">return</span> <span class="n">mh</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>三种方法的比较：</p>
+
+<table>
+<thead>
+<tr>
+<th>方法 </th>
+<th> 访问控制 </th>
+<th> 类型纪律 </th>
+<th> 性能  </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>反射 </td>
+<td> 必须使用setAccesible。会被安全管理器禁止 </td>
+<td> 不匹配就抛异常 </td>
+<td> 较慢</td>
+</tr>
+<tr>
+<td>代理 </td>
+<td> 内部类可以访问受限方法 </td>
+<td> 静态，为了代理全部代理类，可能需要更多PermGen </td>
+<td> 跟其他方法一样快</td>
+</tr>
+<tr>
+<td>方法句柄 </td>
+<td> 取决于上下文，与安全管理器没有冲突 </td>
+<td> 运行时是类型安全的，不占用PermGen </td>
+<td> 力求跟其他方法调用一样快</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>方法句柄还有一个特性，可以在静态上下文中确定当前类。例如下面的代码改写了logger的创建方式，可以不用将类名写死：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">MyClass</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="c1">//可改为：</span>
+</span><span class='line'><span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">MethodHandles</span><span class="o">.</span><span class="na">lookup</span><span class="o">().</span><span class="na">lookupClass</span><span class="o">());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>3. 了解类文件</h2>
+
+<p>有时候有必要查看类文件，但它是二进制文件，和它打交道并不容易。Oracle JVM的javap这个工具可以用来探视类文件内部和反编译。</p>
+
+<p>我们以一个简单的Java类作为示例：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Sample</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">byte</span> <span class="n">b</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">char</span> <span class="n">c</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">double</span> <span class="n">d</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">float</span> <span class="n">f</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">i</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Integer</span> <span class="n">Int</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">long</span> <span class="n">l</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">s</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">bl</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">array</span><span class="o">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="c1">//getter, setter</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>查看类文件的方法和属性</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">$</span> <span class="n">javap</span>  <span class="n">Sample</span><span class="o">.</span><span class="na">class</span>
+</span><span class='line'><span class="n">Compiled</span> <span class="n">from</span> <span class="s">&quot;Sample.java&quot;</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">com</span><span class="o">.</span><span class="na">ubone</span><span class="o">.</span><span class="na">tdd</span><span class="o">.</span><span class="na">chapter1</span><span class="o">.</span><span class="na">javaio</span><span class="o">.</span><span class="na">Sample</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">com</span><span class="o">.</span><span class="na">ubone</span><span class="o">.</span><span class="na">tdd</span><span class="o">.</span><span class="na">chapter1</span><span class="o">.</span><span class="na">javaio</span><span class="o">.</span><span class="na">Sample</span><span class="o">();</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">byte</span> <span class="nf">getB</span><span class="o">();</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setB</span><span class="o">(</span><span class="kt">byte</span><span class="o">);</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">char</span> <span class="nf">getC</span><span class="o">();</span>
+</span><span class='line'>  <span class="c1">//其它getter, setter方法...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>javap默认显示public, protected和包级protected级别的方法和属性。加上-p选项后可以显示private方法和属性。</p>
+
+<h3>方法签名的内部形式</h3>
+
+<p>JVM内部用的方法签名使用紧凑形式，例如int用I表示。这称为类型描述符：</p>
+
+<ul>
+<li>B: byte</li>
+<li>C: char(16位Unicode字符)</li>
+<li>D: double</li>
+<li>F: float</li>
+<li>I: int</li>
+<li>J: long</li>
+<li>L&lt;类型名称>: 引用类型，如：Ljava/lang/String</li>
+<li>S: short</li>
+<li>Z: boolean</li>
+<li>[: array-of</li>
+</ul>
+
+
+<p>使用javap -s可以输出签名的类型描述符：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">$</span> <span class="n">javap</span> <span class="o">-</span><span class="n">s</span> <span class="n">Sample</span><span class="o">.</span><span class="na">class</span>
+</span><span class='line'><span class="n">Compiled</span> <span class="n">from</span> <span class="s">&quot;Sample.java&quot;</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">com</span><span class="o">.</span><span class="na">ubone</span><span class="o">.</span><span class="na">tdd</span><span class="o">.</span><span class="na">chapter1</span><span class="o">.</span><span class="na">javaio</span><span class="o">.</span><span class="na">Sample</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">com</span><span class="o">.</span><span class="na">ubone</span><span class="o">.</span><span class="na">tdd</span><span class="o">.</span><span class="na">chapter1</span><span class="o">.</span><span class="na">javaio</span><span class="o">.</span><span class="na">Sample</span><span class="o">();</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">()</span><span class="n">V</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">byte</span> <span class="nf">getB</span><span class="o">();</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">()</span><span class="n">B</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setB</span><span class="o">(</span><span class="kt">byte</span><span class="o">);</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">(</span><span class="n">B</span><span class="o">)</span><span class="n">V</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">char</span> <span class="nf">getC</span><span class="o">();</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">()</span><span class="n">C</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setC</span><span class="o">(</span><span class="kt">char</span><span class="o">);</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">(</span><span class="n">C</span><span class="o">)</span><span class="n">V</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">double</span> <span class="nf">getD</span><span class="o">();</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">()</span><span class="n">D</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setD</span><span class="o">(</span><span class="kt">double</span><span class="o">);</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">(</span><span class="n">D</span><span class="o">)</span><span class="n">V</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">float</span> <span class="nf">getF</span><span class="o">();</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">()</span><span class="n">F</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setF</span><span class="o">(</span><span class="kt">float</span><span class="o">);</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">(</span><span class="n">F</span><span class="o">)</span><span class="n">V</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getI</span><span class="o">();</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">()</span><span class="n">I</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setI</span><span class="o">(</span><span class="kt">int</span><span class="o">);</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">(</span><span class="n">I</span><span class="o">)</span><span class="n">V</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Integer</span> <span class="nf">getInt</span><span class="o">();</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">()</span><span class="n">Ljava</span><span class="o">/</span><span class="n">lang</span><span class="o">/</span><span class="n">Integer</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setInt</span><span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Integer</span><span class="o">);</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">(</span><span class="n">Ljava</span><span class="o">/</span><span class="n">lang</span><span class="o">/</span><span class="n">Integer</span><span class="o">;)</span><span class="n">V</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">long</span> <span class="nf">getL</span><span class="o">();</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">()</span><span class="n">J</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setL</span><span class="o">(</span><span class="kt">long</span><span class="o">);</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">(</span><span class="n">J</span><span class="o">)</span><span class="n">V</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">String</span> <span class="nf">getS</span><span class="o">();</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">()</span><span class="n">Ljava</span><span class="o">/</span><span class="n">lang</span><span class="o">/</span><span class="n">String</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setS</span><span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">String</span><span class="o">);</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">(</span><span class="n">Ljava</span><span class="o">/</span><span class="n">lang</span><span class="o">/</span><span class="n">String</span><span class="o">;)</span><span class="n">V</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isBl</span><span class="o">();</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">()</span><span class="n">Z</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setBl</span><span class="o">(</span><span class="kt">boolean</span><span class="o">);</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">(</span><span class="n">Z</span><span class="o">)</span><span class="n">V</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span><span class="o">[]</span> <span class="nf">getArray</span><span class="o">();</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">()[</span><span class="n">I</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setArray</span><span class="o">(</span><span class="kt">int</span><span class="o">[]);</span>
+</span><span class='line'>    <span class="nl">Signature:</span> <span class="o">([</span><span class="n">I</span><span class="o">)</span><span class="n">V</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>常量池</h3>
+
+<p>常量池是为类文件中的其他（常量）元素提供快捷访问方式的区域。通过javap -v可以查看常量池的信息：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Constant</span> <span class="nl">pool:</span>
+</span><span class='line'>   <span class="err">#</span><span class="mi">1</span> <span class="o">=</span> <span class="n">Class</span>              <span class="err">#</span><span class="mi">2</span>             <span class="c1">//  com/ubone/tdd/chapter1/javaio/Sample</span>
+</span><span class='line'>   <span class="err">#</span><span class="mi">2</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">com</span><span class="o">/</span><span class="n">ubone</span><span class="o">/</span><span class="n">tdd</span><span class="o">/</span><span class="n">chapter1</span><span class="o">/</span><span class="n">javaio</span><span class="o">/</span><span class="n">Sample</span>
+</span><span class='line'>   <span class="err">#</span><span class="mi">3</span> <span class="o">=</span> <span class="n">Class</span>              <span class="err">#</span><span class="mi">4</span>             <span class="c1">//  java/lang/Object</span>
+</span><span class='line'>   <span class="err">#</span><span class="mi">4</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">java</span><span class="o">/</span><span class="n">lang</span><span class="o">/</span><span class="n">Object</span>
+</span><span class='line'>   <span class="err">#</span><span class="mi">5</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">b</span>
+</span><span class='line'>   <span class="err">#</span><span class="mi">6</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">B</span>
+</span><span class='line'>   <span class="err">#</span><span class="mi">7</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">c</span>
+</span><span class='line'>   <span class="err">#</span><span class="mi">8</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">C</span>
+</span><span class='line'>   <span class="err">#</span><span class="mi">9</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">d</span>
+</span><span class='line'>  <span class="err">#</span><span class="mi">10</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">D</span>
+</span><span class='line'>  <span class="err">#</span><span class="mi">11</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">f</span>
+</span><span class='line'>  <span class="err">#</span><span class="mi">12</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">F</span>
+</span><span class='line'>  <span class="err">#</span><span class="mi">13</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">i</span>
+</span><span class='line'>  <span class="err">#</span><span class="mi">14</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">I</span>
+</span><span class='line'>  <span class="err">#</span><span class="mi">15</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">Int</span>
+</span><span class='line'>  <span class="err">#</span><span class="mi">16</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">Ljava</span><span class="o">/</span><span class="n">lang</span><span class="o">/</span><span class="n">Integer</span><span class="o">;</span>
+</span><span class='line'>  <span class="err">#</span><span class="mi">17</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">l</span>
+</span><span class='line'>  <span class="err">#</span><span class="mi">18</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">J</span>
+</span><span class='line'>  <span class="o">...</span>
+</span><span class='line'>  <span class="err">#</span><span class="mi">70</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">getL</span>
+</span><span class='line'>  <span class="err">#</span><span class="mi">71</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="o">()</span><span class="n">J</span>
+</span><span class='line'>  <span class="err">#</span><span class="mi">72</span> <span class="o">=</span> <span class="n">Fieldref</span>           <span class="err">#</span><span class="mi">1</span><span class="o">.</span><span class="err">#</span><span class="mi">73</span>         <span class="c1">//  com/ubone/tdd/chapter1/javaio/Sample.l:J</span>
+</span><span class='line'>  <span class="err">#</span><span class="mi">73</span> <span class="o">=</span> <span class="n">NameAndType</span>        <span class="err">#</span><span class="mi">17</span><span class="o">:</span><span class="err">#</span><span class="mi">18</span>        <span class="c1">//  l:J</span>
+</span><span class='line'>  <span class="err">#</span><span class="mi">74</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="n">setL</span>
+</span><span class='line'>  <span class="err">#</span><span class="mi">75</span> <span class="o">=</span> <span class="n">Utf8</span>               <span class="o">(</span><span class="n">J</span><span class="o">)</span><span class="n">V</span>
+</span><span class='line'>  <span class="o">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如上所示，常量池的条目是带有类型的，它们还会相互引用。例如类型为Class的条目会引用类型为Utf8的条目。后者是个字符串，因此第1行为类的名称。</p>
+
+<p>72行的Fieldref定义了一个域，解析这个域需要名称、类型和它所在的类。<code>#1.#73</code>表示来自类<code>#1</code>,域为<code>#73</code>。<code>#73</code>的NameAndType描述名称和类型，分别来自17和18，即类型J(Long)，名称为<code>l</code>。</p>
+
+<h2>4. 字节码</h2>
+
+<p>字节码的基本特性：</p>
+
+<ul>
+<li>字节码是程序的中间表示形式，介于人类可读的源码和机器码之间。</li>
+<li>字节码由javac产生。</li>
+<li>某些高级语言特性在编译时已经从字节码去掉。例如for语句在字节码中被转换成分支指令。</li>
+<li>每个操作码都由一个字节表示（因此叫做字节码）。</li>
+<li>字节码可以进一步编译成机器码，也就是“即时编译”。</li>
+</ul>
+
+
+<h3>反编译类</h3>
+
+<p>javap可以用于反编译类：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">$</span> <span class="n">javap</span> <span class="o">-</span><span class="n">c</span> <span class="o">-</span><span class="n">p</span> <span class="n">Sample</span><span class="o">.</span><span class="na">class</span>
+</span><span class='line'><span class="n">Compiled</span> <span class="n">from</span> <span class="s">&quot;Sample.java&quot;</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">com</span><span class="o">.</span><span class="na">ubone</span><span class="o">.</span><span class="na">tdd</span><span class="o">.</span><span class="na">chapter1</span><span class="o">.</span><span class="na">javaio</span><span class="o">.</span><span class="na">Sample</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">byte</span> <span class="n">b</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">char</span> <span class="n">c</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">...</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">com</span><span class="o">.</span><span class="na">ubone</span><span class="o">.</span><span class="na">tdd</span><span class="o">.</span><span class="na">chapter1</span><span class="o">.</span><span class="na">javaio</span><span class="o">.</span><span class="na">Sample</span><span class="o">();</span>
+</span><span class='line'>    <span class="nl">Code:</span>
+</span><span class='line'>       <span class="mi">0</span><span class="o">:</span> <span class="n">aload_0</span>
+</span><span class='line'>       <span class="mi">1</span><span class="o">:</span> <span class="n">invokespecial</span> <span class="err">#</span><span class="mi">28</span>                 <span class="c1">// Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</span>
+</span><span class='line'>       <span class="mi">4</span><span class="o">:</span> <span class="k">return</span>
+</span><span class='line'>  <span class="o">...</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">long</span> <span class="nf">getL</span><span class="o">();</span>
+</span><span class='line'>    <span class="nl">Code:</span>
+</span><span class='line'>       <span class="mi">0</span><span class="o">:</span> <span class="n">aload_0</span>
+</span><span class='line'>       <span class="mi">1</span><span class="o">:</span> <span class="n">getfield</span>      <span class="err">#</span><span class="mi">72</span>                 <span class="c1">// Field l:J</span>
+</span><span class='line'>       <span class="mi">4</span><span class="o">:</span> <span class="n">lreturn</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setL</span><span class="o">(</span><span class="kt">long</span><span class="o">);</span>
+</span><span class='line'>    <span class="nl">Code:</span>
+</span><span class='line'>       <span class="mi">0</span><span class="o">:</span> <span class="n">aload_0</span>
+</span><span class='line'>       <span class="mi">1</span><span class="o">:</span> <span class="n">lload_1</span>
+</span><span class='line'>       <span class="mi">2</span><span class="o">:</span> <span class="n">putfield</span>      <span class="err">#</span><span class="mi">72</span>                 <span class="c1">// Field l:J</span>
+</span><span class='line'>       <span class="mi">5</span><span class="o">:</span> <span class="k">return</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>代码前的数字表示从方法开始算起的字节码偏移量。先看构造方法，由于void构造方法总会隐式调用父类的构造方法。因此有invokespecial指令。对于方法getL()和setL()也可以看到相应的操作码和参数。</p>
+
+<p>javac产生的字节码没有经过特别优化，是非常简单的表示形式。大部分优化工作由JIT编译器来完成。</p>
+
+<h3>运行时环境</h3>
+
+<p>JVM没有处理器寄存器，而是使用堆栈机完成所有的计算和操作，所以理解堆栈机的操作对理解字节码至关重要。方法在运行时需要一块内存区域作为计算堆栈来计算新值。另外，每个运行的线程都需要一个调用堆栈来记录当前正在执行的方法。来看下面的代码是如何完成计算的：</p>
+
+<p><code>return 3 + petRecords.getNumberOfPets("Ben");</code></p>
+
+<p>系统首先会把3压入操作数栈，然后把接收对象（petRecords）压入计算堆栈，传入的参数尾随其后。然后invoke操作符会调用方法getNumberOfPets，把控制权移交给被调用的方法。进入新方法后，需要启用不同的操作数栈，所以已经在调用者操作数栈中的值不可能影响被调用方法的计算结果。</p>
+
+<p>当getNumberOfPets完成时，返回结果会被放到调用者的操作数栈中，进程中与getNumberOfPets相关的部分也会从调用堆栈中移走。然后相加运算得到结果。</p>
+
+<h3>操作码</h3>
+
+<p>JVM字节码由操作码（opcode）序列构成，每个指令后可能会跟一些参数。每个操作码由一个单字节值表示，所以最多有255个操作码。目前用了200个左右。大致可以分为以下几类，摘要说明如下：</p>
+
+<blockquote><ul>
+<li>参数：操作码参数。如果参数出现在括号中，表示可选。以i打头的参数用来作为常量池或局部变量中的查询索引的几个字节。如果有多个此类参数，会合并在一直。例如i1,i2表示从这两个字节生成一个16位的索引。</li>
+<li>堆栈布局：展示栈在操作码执行前后的状态。</li>
+<li>表中操作码并不全，只用于示例。</li>
+</ul>
+</blockquote>
+
+<p>加载和储存操作码，这个族系负责将值加载到栈或者检索值。有很多不同形式的变体。如dload操作码把双精度数从局部变量加载到栈上。</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-12-05-5-4.jpg" alt="image" /></p>
+
+<p>数学运算操作码用来执行数学运算。</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-12-05-5-5.jpg" alt="image" /></p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-12-05-5-6.jpg" alt="image" /></p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-12-05-5-7.jpg" alt="image" /></p>
+
+<p><strong>平台操作操作码</strong></p>
+
+<p>在字节码这一级，构造方法被转换成带有特殊名称<init>的方法。不能由用户代码调用，但可以由字节码调用。这便形成了一个与对象创建直接相关的不同的字节码模式：new之后跟着一个dup，然后是一个调用<init>方法的invokespecial.</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-12-05-5-8.jpg" alt="image" /></p>
+
+<blockquote><p>为了节省字节，很多字节码都有快捷方式。</p></blockquote>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Java并发编程(四)]]></title>
@@ -7543,279 +8233,6 @@
 <p>自底向上的归并排序比较适合用链表组织的数据。想象一下将链表先按大小为1的子链表进行排序，然后是大小为2的子链表。。。这种方法只需要重新组织链表链接，就能将链表原地排序。</p>
 
 <p>在最坏的情况下，没有任何基于比较的排序算法能够将比较次数做到小于NlgN。也就是说，在最坏的情况下，归并排序算法的比较次数是最小的算法之一。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[初级排序算法]]></title>
-    <link href="http://blog.ubone.com/blog/2014/09/25/chu-ji-pai-xu-suan-fa/"/>
-    <updated>2014-09-25T20:25:11+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/09/25/chu-ji-pai-xu-suan-fa</id>
-    <content type="html"><![CDATA[<p>即使只使用类库提供的排序函数，学习排序算法仍然具有实际意义。因为排序算法是解决其他问题的第一步，类似的技术能够有效解决其它类型的问题。本文学习一些初级的排序算法，包括选择排序、插入排序和希尔排序。</p>
-
-<!--more-->
-
-
-<h2>1. 排序模板</h2>
-
-<p>不同的排序程序只是在排序算法上不同，但排序的框架是相同的。因此先建立一个排序模板，在此基础上实现各种算法。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractSort</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">protected</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">getClass</span><span class="o">());</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//待实现的算法</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">);</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//进行比较</span>
-</span><span class='line'>  <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">less</span><span class="o">(</span><span class="n">Comparable</span> <span class="n">v</span><span class="o">,</span> <span class="n">Comparable</span> <span class="n">w</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="na">compareTo</span><span class="o">(</span><span class="n">w</span><span class="o">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//交换位置</span>
-</span><span class='line'>  <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">exchange</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i</span><span class="o">,</span> <span class="kt">int</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">Comparable</span> <span class="n">t</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
-</span><span class='line'>      <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
-</span><span class='line'>      <span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">t</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//打印数组</span>
-</span><span class='line'>  <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">show</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">+</span> <span class="s">&quot; &quot;</span><span class="o">);</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//验证是否为有序状态</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isSorted</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">less</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">],</span> <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">]))</span>
-</span><span class='line'>              <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>为了粗略验证各种算法的效率，以10万的随机整数数组为对象进行排序，测试代码如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SortTest</span> <span class="kd">extends</span> <span class="n">TestCase</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">Integer</span><span class="o">[]</span> <span class="n">array</span><span class="o">;</span>
-</span><span class='line'>      
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUp</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="mi">1000000</span><span class="o">;</span>
-</span><span class='line'>      <span class="n">array</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Integer</span><span class="o">[</span><span class="n">len</span><span class="o">];</span>
-</span><span class='line'>      <span class="n">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">Random</span><span class="o">();</span>
-</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">array</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span>  <span class="n">random</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="mi">100000000</span><span class="o">);</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testSort</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kt">long</span> <span class="n">from</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
-</span><span class='line'>      <span class="n">AbstractSort</span> <span class="n">sorter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Selection</span><span class="o">();</span><span class="c1">//或其它算法</span>
-</span><span class='line'>      <span class="n">sorter</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">array</span><span class="o">);</span>
-</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;totoalTime: %dms \n&quot;</span><span class="o">,</span> <span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">()</span> <span class="o">-</span> <span class="n">from</span><span class="o">)</span> <span class="o">/</span> <span class="mi">1000000</span><span class="o">);</span>      
-</span><span class='line'>      <span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">AbstractSort</span><span class="o">.</span><span class="na">isSorted</span><span class="o">(</span><span class="n">array</span><span class="o">));</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>2. 选择排序(Selection)</h2>
-
-<p>选择排序是最简单的排序算法，即<strong>不断地选择剩余元素中的最小者</strong>：先找到数组中最小的元素，然后跟第一个元素交换。接下来在剩下的元素中找最小的元素，跟第二个元素交换。如此往复，直到整个数组遍历结束。代码实现如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Selection</span> <span class="kd">extends</span> <span class="n">AbstractSort</span><span class="o">{</span>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
-</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="o">;</span> <span class="n">i</span> <span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="kt">int</span> <span class="n">min</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span>
-</span><span class='line'>          <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">len</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="k">if</span> <span class="o">(</span><span class="n">less</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">],</span> <span class="n">a</span><span class="o">[</span><span class="n">min</span><span class="o">]))</span> <span class="o">{</span>
-</span><span class='line'>                  <span class="n">min</span> <span class="o">=</span> <span class="n">j</span><span class="o">;</span>
-</span><span class='line'>              <span class="o">}</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>          
-</span><span class='line'>          <span class="n">exchange</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">min</span><span class="o">);</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>性能：对于长度为N的数组，需要进行大约N<sup>2</sup>/2次比较和N次交换。运行上面的测试代码，耗时：11424ms</p>
-
-<h2>3. 插入排序(Insertion)</h2>
-
-<p>与选择排序一样，当前索引左边的所有元素都是有序的，但它们的最终位置还不确定，后续元素将会跟前面的元素比较，并插入适当的位置。当索引到达数组的最右端时，排序完成。代码实现如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Insertion</span> <span class="kd">extends</span> <span class="n">AbstractSort</span> <span class="o">{</span>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
-</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">less</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">],</span> <span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">]);</span> <span class="n">j</span><span class="o">--)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="n">exchange</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>性能：插入排序的性能取决于数组的初始顺序。对于一个很大且其中的元素已经有序或接近有序的数组进行排序效率很高。插入排序平均需要大约N<sup>2</sup>/4次比较和N<sup>2</sup>/4次交换。最坏的情况下则需要N<sup>2</sup>次比较和N<sup>2</sup>/2次交换。也就是说最坏的情况下（如初始排序是倒序的），插入排序比选择排序还要慢。运行上面的测试代码，耗时：15208ms，由于是随机数组，因此比选择排序还要慢。</p>
-
-<h2>4. 希尔排序(Shell)</h2>
-
-<p>希尔排序其实是基于插入排序。既然插入排序对有序数组效率很高，但对于乱序数组，元素只能一点一点地从一端移动到另一端。那么希尔排序就改进这一点，交换不相邻的元素，最终用插入排序将局部有序的数组排序。</p>
-
-<p>其思想是使任意间隔为h的元素有序，称为h有序数组。排序时，如果h很大，我们就能将元素移动到很远的地方，为实现更小的h有序创造方便。代码实现如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Shell</span> <span class="kd">extends</span> <span class="n">AbstractSort</span> <span class="o">{</span>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
-</span><span class='line'>      <span class="kt">int</span> <span class="n">h</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
-</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">h</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">/</span><span class="mi">3</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">h</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">h</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      <span class="c1">//h:1, 4, 13, 40, 121, 364, 1093, ...</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">h</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="c1">//这部分就是插入排序，但将位移由1变为了h</span>
-</span><span class='line'>          <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">h</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="n">h</span> <span class="o">&amp;&amp;</span> <span class="n">less</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">],</span> <span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">-</span><span class="n">h</span><span class="o">]);</span> <span class="n">j</span> <span class="o">-=</span> <span class="n">h</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>                  <span class="n">exchange</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="n">j</span><span class="o">-</span><span class="n">h</span><span class="o">);</span>
-</span><span class='line'>              <span class="o">}</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>          
-</span><span class='line'>          <span class="n">h</span> <span class="o">=</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">3</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="n">draw</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<p>性能：此算法的性能不仅取决于h，还取决于h之间的数学性质，比如它们的公因子。有很多论文研究不同的递增序列，但上面的代码似乎已经相当好，更优的递增序列有待发现。希尔排序对任意排序的数组表现也很好。运行上面的测试代码，耗时：160ms</p>
-
-<p>希尔排序对于中等大小的数组运行时间是可以接受的。它的代码量很小，不需要额外的内存空间。其它更高效的算法除了对于很大的N，它们可能只会比希尔排序快最多两倍，而且更复杂。</p>
 ]]></content>
   </entry>
   
