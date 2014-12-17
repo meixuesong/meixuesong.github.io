@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="所谓归并排序，是先把待排序数组分成两半，分别排序，然后将结果归并起来。归并排序最吸引人的地方是它能够保证将任意长度为N的数组排序所需时间和NlogN成正比。但其缺点是所需的额外空间和N成正比。 ">
+  <meta name="description" content="快速排序可能是应用最广泛的算法，原因是它实现简单、速度快。它完美地实现了原地排序（只需要一个很小的辅助栈），并且时间与NlgN成正比。它的内循环比大多数排序算法都要短小，因此理论上要更快。但它的主要缺点是非常脆弱，实现时要非常小心才能避免低劣的性能。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,50 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">快速排序算法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-27T10:38:32+08:00" pubdate data-updated="true">2014-09-27</time>
+        
+           | <a href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>快速排序可能是应用最广泛的算法，原因是它实现简单、速度快。它完美地实现了原地排序（只需要一个很小的辅助栈），并且时间与NlgN成正比。它的内循环比大多数排序算法都要短小，因此理论上要更快。但它的主要缺点是非常脆弱，实现时要非常小心才能避免低劣的性能。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -479,66 +523,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/">Effective Java-通用程序设计</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-22T20:06:07+08:00" pubdate data-updated="true">2014-08-22</time>
-        
-           | <a href="/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Effective Java 通用程序设计，读书笔记：</p>
-
-<ol>
-<li>将局部变量的作用域最小化</li>
-<li>for-each循环优先于传统的for循环</li>
-<li>使用类库</li>
-<li>如果需要精确值，就避免使用float和double</li>
-<li>基本类型优先于装箱基本类型</li>
-<li>如果其它类型更合适，则尽量避免使用字符串</li>
-<li>小心字符串拼接的性能问题</li>
-<li>通过接口引用对象</li>
-<li>接口优先于反射机制</li>
-<li>谨慎使用本地方法</li>
-<li>谨慎进行优化</li>
-<li>遵守普遍接受的命名惯例</li>
-</ol>
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/08/22/effective-java-tong-yong-cheng-xu-she-ji/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -560,10 +544,14 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (22)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (23)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/15/javayun-xing-shi-shu-ju-qu-yu-nei-cun-yi-chu-yi-chang/">Java运行时数据区与内存溢出异常</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">理解Java性能调优</a>
@@ -579,10 +567,6 @@
     
       <li class="post">
         <a href="/blog/2014/11/23/java-nio-dot-2/">Java NIO.2</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/18/java-7de-6ge-xin-te-xing/">Java 7的6个新特性</a>
       </li>
     
   </ul>

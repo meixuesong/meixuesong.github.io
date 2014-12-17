@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="加权图是一种为每条边关联一个权值或成本的图模型。这种图最令人感兴趣的是将成本最小化。本节学习加权无向图模型并找到它的一棵最小生成树。 图的生成树是它的一棵含有其所有顶点的无环连通子图。一幅加权图的最小生成树（MST）是它的一棵权值（树中所有边的权值之和）最小的生成树。 ">
+  <meta name="description" content="最短路径算法可以解决很多问题，例如地图导航、任务调度和网络路由等。本章的主题就是找到从一个顶点到达另一个顶点的成本最小的路径。 在一幅加权有向图中，从顶点s到顶点t的最短路径是所有从s到t的路径中的权重最小者。 本章要涉及以下问题： 加权有向图的API、单点最短路径的API及它们的实现； &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,62 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/03/zui-duan-lu-jing/">最短路径</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-03T20:22:31+08:00" pubdate data-updated="true">2014-11-03</time>
+        
+           | <a href="/blog/2014/11/03/zui-duan-lu-jing/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/11/03/zui-duan-lu-jing/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>最短路径算法可以解决很多问题，例如地图导航、任务调度和网络路由等。本章的主题就是找到从一个顶点到达另一个顶点的成本最小的路径。</p>
+
+<blockquote><p>在一幅加权有向图中，从顶点s到顶点t的最短路径是所有从s到t的路径中的权重最小者。</p></blockquote>
+
+<p>本章要涉及以下问题：</p>
+
+<ul>
+<li>加权有向图的API、单点最短路径的API及它们的实现；</li>
+<li>解决边的权重非负的最短路径问题的经典Dijkstra算法；</li>
+<li>在无环加权有向图中解决该问题的一种快速算法，边的权重甚至可以是负值；</li>
+<li>适用于一般情况的经典Bellman-Ford算法，其中图可以含有环，边的权重也可以是负值。</li>
+</ul>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/11/03/zui-duan-lu-jing/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -492,50 +548,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">快速排序算法</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-27T10:38:32+08:00" pubdate data-updated="true">2014-09-27</time>
-        
-           | <a href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>快速排序可能是应用最广泛的算法，原因是它实现简单、速度快。它完美地实现了原地排序（只需要一个很小的辅助栈），并且时间与NlgN成正比。它的内循环比大多数排序算法都要短小，因此理论上要更快。但它的主要缺点是非常脆弱，实现时要非常小心才能避免低劣的性能。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/27/kuai-su-pai-xu-suan-fa/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -557,10 +569,14 @@
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (22)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (23)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/15/javayun-xing-shi-shu-ju-qu-yu-nei-cun-yi-chu-yi-chang/">Java运行时数据区与内存溢出异常</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">理解Java性能调优</a>
@@ -576,10 +592,6 @@
     
       <li class="post">
         <a href="/blog/2014/11/23/java-nio-dot-2/">Java NIO.2</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/18/java-7de-6ge-xin-te-xing/">Java 7的6个新特性</a>
       </li>
     
   </ul>
