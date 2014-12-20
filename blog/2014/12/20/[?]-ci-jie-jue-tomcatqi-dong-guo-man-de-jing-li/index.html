@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>一次解决Tomcat启动过慢的经历 - 码出人生</title>
+  <title>解决SecureRandom导致Tomcat启动过慢的问题 - 码出人生</title>
   <meta name="author" content="梅雪松">
 
   
@@ -76,7 +76,7 @@ Dec 19, 2014 9:56:33 AM org.apache. &hellip;">
   
   <header>
     
-      <h1 class="entry-title">一次解决Tomcat启动过慢的经历</h1>
+      <h1 class="entry-title">解决SecureRandom导致Tomcat启动过慢的问题</h1>
     
     
       <p class="meta">
@@ -103,6 +103,11 @@ Dec 19, 2014 9:56:33 AM org.apache. &hellip;">
 
 
 <div class="entry-content"><p>昨天晚上在Tomcat上部署一个小应用时，Tomcat启动非常慢，有时甚至需要10分钟。查看日志，发现一直停在Deploying阶段：</p>
+
+<!--more-->
+
+
+
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -273,7 +278,7 @@ Dec 19, 2014 9:56:33 AM org.apache. &hellip;">
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2014/12/20/%5B%3F%5D-ci-jie-jue-tomcatqi-dong-guo-man-de-jing-li/">一次解决Tomcat启动过慢的经历</a>
+        <a href="/blog/2014/12/20/%5B%3F%5D-ci-jie-jue-tomcatqi-dong-guo-man-de-jing-li/">解决SecureRandom导致Tomcat启动过慢的问题</a>
       </li>
     
       <li class="post">

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-12-20T17:53:41+08:00</updated>
+  <updated>2014-12-20T17:59:00+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -14,11 +14,14 @@
 
   
   <entry>
-    <title type="html"><![CDATA[一次解决Tomcat启动过慢的经历]]></title>
+    <title type="html"><![CDATA[解决SecureRandom导致Tomcat启动过慢的问题]]></title>
     <link href="http://blog.ubone.com/blog/2014/12/20/%5B%3F%5D-ci-jie-jue-tomcatqi-dong-guo-man-de-jing-li/"/>
     <updated>2014-12-20T12:08:33+08:00</updated>
     <id>http://blog.ubone.com/blog/2014/12/20/[?]-ci-jie-jue-tomcatqi-dong-guo-man-de-jing-li</id>
     <content type="html"><![CDATA[<p>昨天晚上在Tomcat上部署一个小应用时，Tomcat启动非常慢，有时甚至需要10分钟。查看日志，发现一直停在Deploying阶段：</p>
+
+<!--more-->
+
 
 <p><code>
 INFO: Starting service Catalina
