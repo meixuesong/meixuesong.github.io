@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-12-17T20:35:44+08:00</updated>
+  <updated>2014-12-20T17:53:41+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,78 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[一次解决Tomcat启动过慢的经历]]></title>
+    <link href="http://blog.ubone.com/blog/2014/12/20/%5B%3F%5D-ci-jie-jue-tomcatqi-dong-guo-man-de-jing-li/"/>
+    <updated>2014-12-20T12:08:33+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/12/20/[?]-ci-jie-jue-tomcatqi-dong-guo-man-de-jing-li</id>
+    <content type="html"><![CDATA[<p>昨天晚上在Tomcat上部署一个小应用时，Tomcat启动非常慢，有时甚至需要10分钟。查看日志，发现一直停在Deploying阶段：</p>
+
+<p><code>
+INFO: Starting service Catalina
+Dec 19, 2014 9:56:33 AM org.apache.catalina.core.StandardEngine startInternal
+INFO: Starting Servlet Engine: Apache Tomcat/7.0.52 (Ubuntu)
+Dec 19, 2014 9:56:33 AM org.apache.catalina.startup.HostConfig deployWAR
+INFO: Deploying web application archive /usr/mxs/kindleinstance/webapps/kindlegen.war
+</code></p>
+
+<p>难道是war文件有问题？检查了md5校验码，尝试了解压缩，完全没问题啊！到底是什么原因呢？等了十分钟后，发现Tomcat已经启动完成，可以使用了。再次查看日志：</p>
+
+<p><code>
+INFO: Deploying web application archive /usr/mxs/kindleinstance/webapps/kindlegen.war
+Dec 19, 2014 10:11:25 AM org.apache.catalina.util.SessionIdGenerator createSecureRandom
+INFO: Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [888,934] milliseconds.
+Dec 19, 2014 10:11:25 AM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler ["http-bio-9090"]
+Dec 19, 2014 10:11:25 AM org.apache.catalina.startup.Catalina start
+INFO: Server startup in 892334 ms
+</code></p>
+
+<p>原来是“Creation of SecureRandom instance for session ID”消耗了888秒，这个SecureRandom实例是什么呢？在<a href="http://wiki.apache.org/tomcat/HowTo/FasterStartUp">How do I make Tomcat startup faster?</a>中，有这样的描述：</p>
+
+<blockquote><p>Tomcat 7+ heavily relies on SecureRandom class to provide random values for its session ids and in other places. Depending on your JRE it can cause delays during startup if entropy source that is used to initialize SecureRandom is short of entropy.</p></blockquote>
+
+<p>也就是说，Tomcat 7之后严重依赖SecureRandom类来提供随机数用于Session ID。当Tomcat启动时，取决于你使用的JRE，如果用来初始化SecureRandom的熵值（Entropy）资源是一个短熵时，将可能导致延时。</p>
+
+<p>再看看JDK中关于<a href="http://docs.oracle.com/javase/7/docs/api/java/security/SecureRandom.html">SecureRandom类</a>:</p>
+
+<blockquote><p>This class provides a cryptographically strong random number generator (RNG). A cryptographically strong random number minimally complies with the statistical random number generator tests specified in FIPS 140-2, Security Requirements for Cryptographic Modules, section 4.9.1. Additionally, SecureRandom must produce non-deterministic output. Therefore any seed material passed to a SecureRandom object must be unpredictable, and all SecureRandom output sequences must be cryptographically strong, as described in RFC 1750: Randomness Recommendations for Security.</p></blockquote>
+
+<p>该类提供保密性强的随机数生成器（RNG）。一个保密性强的随机数应最低限度遵循FIPS 140-2指定的统计随机数发生器测试和4.9.1节的加密模块安全要求。并且SecureRandom必须产出非确定性的输出。因此，正如RFC 1750中描述的，传递给SecureRandom对象的任何材料必须是不可预测的，并且所有SecureRandom输出序列必须是保密性强的的。</p>
+
+<p>在<a href="http://www.cigital.com/justice-league-blog/2014/01/06/issues-when-using-java-securerandom/">ISSUES TO BE AWARE OF WHEN USING JAVA’S SECURERANDOM</a>中，提到了使用SecureRandom可能存在的问题，主要包括三个方面：调用顺序、阻塞和内部Seeding机制。其中说明了阻塞是如何产生的：</p>
+
+<blockquote><p>Some SecureRandom implementations in the Oracle JRE for *nix use /dev/random to get entropy at certain times. Since /dev/random can block if sufficient entropy is not available, your code will stop executing if you call certain SecureRandom methods at times when /dev/random does not have sufficient entropy available.</p></blockquote>
+
+<p>这样看来，我的Ubuntu 14中的OpenJDK(OpenJDK Runtime Environment (IcedTea 2.5.3) (7u71-2.5.3-0ubuntu0.14.04.1))正是使用了操作系统的<code>/dev/random</code>作为信息源，而它又没有提供足够的熵，所以导致阻塞。</p>
+
+<p>按照前文<a href="http://wiki.apache.org/tomcat/HowTo/FasterStartUp">How do I make Tomcat startup faster?</a>中给出的次安全的解决办法，改为使用<code>-Djava.security.egd=file:/dev/./urandom</code>，即在setenv.sh中加入一行：</p>
+
+<p>```</p>
+
+<h1>!/bin/sh</h1>
+
+<p>export CATALINA_OPTS=&ldquo;-Djava.security.egd=file:/dev/./urandom&rdquo;
+```</p>
+
+<p>然后再重启Tomcat，这次非常快了，整个启动只用了3秒多：</p>
+
+<p><code>
+INFO: Starting service Catalina
+Dec 19, 2014 10:51:55 PM org.apache.catalina.core.StandardEngine startInternal
+INFO: Starting Servlet Engine: Apache Tomcat/7.0.52 (Ubuntu)
+Dec 19, 2014 10:51:55 PM org.apache.catalina.startup.HostConfig deployWAR
+INFO: Deploying web application archive /usr/mxs/kindleinstance/webapps/kindlegen.war
+Dec 19, 2014 10:51:58 PM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler ["http-bio-9090"]
+Dec 19, 2014 10:51:58 PM org.apache.catalina.startup.Catalina start
+INFO: Server startup in 3418 ms
+</code></p>
+
+<p>修改后的<code>/dev/urandom</code>没有默认的<code>dev/random</code>安全吗？似乎也不一定，博文<a href="http://www.2uo.de/myths-about-urandom/">Myths about /dev/urandom</a>对两者进行了全面的分析，值得一看。最后作者认为用<code>/dev/urandom</code>就可以了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Java运行时数据区与内存溢出异常]]></title>
@@ -1437,382 +1509,6 @@ for (Update u : sorter.getResult()) {
 <li>对于子任务来说，分而治之是不是很自然的事？子任务是不是会创建更多的子任务，而且它们要比派生出它们的任务粒度更细？</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java NIO.2]]></title>
-    <link href="http://blog.ubone.com/blog/2014/11/23/java-nio-dot-2/"/>
-    <updated>2014-11-23T10:59:37+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/11/23/java-nio-dot-2</id>
-    <content type="html"><![CDATA[<p>Java 7提供了新的NIO(或称为NIO.2, JSR-203)，这是一组新的类和方法，用于取代File类与文件系统的交互，提供新的异步处理类并简化Socket与通道的编码工作。</p>
-
-<!--more-->
-
-
-<p>在Java 1.4之前，Java缺乏对非阻塞I/O的支持，1.4引入了非阻塞I/O，为I/O操作抽象出缓冲区和通道层；提供字符集的编码和解码能力；能够将文件映射为内存数据；实现正则表达式。Java 7进一步扩展了NIO的能力。</p>
-
-<h2>1. PATH</h2>
-
-<p>Path相关的类包括：</p>
-
-<ul>
-<li>Path：获取路径信息</li>
-<li>Paths：工具类，提供返回一个路径的辅助方法</li>
-<li>FileSystem：与文件系统交互的类</li>
-<li>FileSystems：工具类，提供各种方法。</li>
-</ul>
-
-
-<p>Path不仅用于传统的文件系统，也能表示zip或jar这样的文件系统。</p>
-
-<p>```java
-//创建Path
-Path listing = Paths.get(&ldquo;/user/bin/zip&rdquo;)；
-//相当于
-Path listing = FileSystems.getDefault().getPath(&ldquo;/user/bin/zip&rdquo;);</p>
-
-<p>//获取Path信息：
-listing.getFileName(): zip
-listing.getNameCount(): 3
-listing.subpath(0, 2): /user/bin
-listing.getParent(): /user/bin
-listing.getRoot(): /
-```</p>
-
-<p>如果Path是一个文件的路径，有时需要去除冗余信息。例如去除表示当前路径的<code>./</code>，或者该文件只是个符号链接，指向了另一个真正的位置，此时需要得到真实路径。</p>
-
-<p>```java
-//移除冗余
-Path testPath = Paths.get(&ldquo;./test.java&rdquo;);
-Path normalizedPath = testPath.normalize();</p>
-
-<p>//获取绝对路径
-Path absolutePath = testPath.toAbsolutePath();
-//获取绝对路径并去除冗余信息，或者获取符号连接的真实路径
-Path realPath = testPath.toRealPath();
-```</p>
-
-<p>合并路径与路径比较。</p>
-
-<p>```java
-//合并
-Path prefix = Paths.get(&ldquo;/usr&rdquo;);
-Path completePath = prefix.resolve(&ldquo;mxs&rdquo;);
-//completePath: /usr/mxs</p>
-
-<p>//比较
-Path path1 = Paths.get(&ldquo;/Users/mxs/Documents/Blog/&rdquo;);
-Path path2 = Paths.get(&ldquo;/Users/mxs&rdquo;);
-path1.relativize(path2): ../..
-path2.relativize(path1): Documents/Blog
-```</p>
-
-<p>新的API完全替换了java.io.File类，在处理遗留代码时，可能将其进行互换：</p>
-
-<p><code>java
-File file = new File("../abcd.txt");
-Path listing = file.toPath();
-file = listing.toFile();
-</code></p>
-
-<h2>2. 处理目录与目录树</h2>
-
-<p>新的DirectoryStream<T>接口实现了目录相关的操作：</p>
-
-<ul>
-<li>循环遍历目录中的子项</li>
-<li>用glob表达式（如<code>*Foobar*</code>）进行目录子项的匹配和MIME内容检测（如text/xml文件）</li>
-<li>用walkFileTree实现递归移动、复制和删除操作</li>
-</ul>
-
-
-<p><strong>在目录中查找文件：</strong></p>
-
-<p>```java
-Path dir = Paths.get(&ldquo;/user/mxs/Documents&rdquo;);</p>
-
-<p>try(DirectoryStream<Path> stream = Files.newDirectoryStream(dir, &ldquo;*.properties&rdquo;)) {</p>
-
-<pre><code>for(Path entry : stream){
-    System.out.println(entry.getFileName());    
-}
-</code></pre>
-
-<p>} catch(IOException e) {</p>
-
-<pre><code>//...
-</code></pre>
-
-<p>}
-```</p>
-
-<p><strong>遍历目录树。</strong>Files.walkFileTree方法是遍历目录树的关键，该方法定义如下：</p>
-
-<p><code>Files.walkFileTree(Path startingDir, FileVisitor&lt;? super Path&gt; visitor);
-</code></p>
-
-<p>其中Visitor是一个接口，包括5个方法，但一般使用Java的默认实现SimpleFileVisitor就可以了。</p>
-
-<p>```java
-public void walk() {</p>
-
-<pre><code>Path dir = Paths.get("/code/src");
-Files.walkFileTree(dir, new FindJavaVisitor());
-</code></pre>
-
-<p>}</p>
-
-<p>private static class FindJavaVisitor extends SimpleFileVisitor<Path> {</p>
-
-<pre><code>@Override
-public FileVisitresult visitFile(Path file, BasicFileAttributes attrs) {
-    if (file.toString().endsWith(".java")) {
-        //...
-    }
-
-    return FileVisitResult.CONTINUE;
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>需要注意的是，walkFileTree方法不会自动跟随符号链接（为了确保递归等操作的安全性）。因此如果你需要跟随符号链接，就需要检查相应属性并执行相应操作。</p>
-
-<h2>3. 文件系统I/O</h2>
-
-<p>在NIO.2中，Files和WatchService是两个重要的基础类。前者用于复制、移动、删除或处理文件，后者用于监视文件或目录，发出定制通知等。</p>
-
-<h3>3.1 创建和删除文件</h3>
-
-<p><code>java
-Path target = Paths.get("/Users/mxs/Document/mystuff.txt");
-Path file = Files.createFile(target);
-</code></p>
-
-<p>如果需要设置文件属性，如读、写和执行的权限，则需要设置FileAttribute，但文件属性与操作系统相关，因此要使用与操作系统相关的文件权限类。以下是POSIX文件系统的示例(其它文件系统参考java.nio.file.attribute.*FilePermission类)：</p>
-
-<p><code>java
-Set&lt;PosixFilePermission&gt; perms = PosixFilePermissions.fromString("rw-rw-rw-");
-FileAttribute&lt;Set&lt;PosixFilePermission&gt;&gt; attr = PosixFilePermissions.asFileAttribute(perms);
-Files.createFile(target, attr);
-</code></p>
-
-<p>删除文件只需要调用<code>Files.delete(target)</code>方法。</p>
-
-<h3>3.2 文件复制与移动</h3>
-
-<p>```java
-Path source = Paths.get(&ldquo;c:\My Documents\stuff.txt&rdquo;);
-Path target = Paths.get(&ldquo;D:\backup\stuff.txt&rdquo;);
-Files.copy(source, target);</p>
-
-<p>//复制时还可以设置CopyOptions选项（变参，可多个。ATOMIC_MOVE确保两边都成功，否则回滚）
-import static java.nio.file.StandardCopyOption.*;
-Files.copy(source, target, REPLACE_EXISTING, COPY_ATTRIBUTES, ATOMIC_MOVE);</p>
-
-<p>//移动
-Files.move(source, target);
-Files.move(source, target, CopyOptions);
-```</p>
-
-<h3>3.3 文件属性</h3>
-
-<p>由于不同的文件系统属性不同，因此Java中的文件属性分为基本文件属性、特定文件属性。前者是各文件系统通用的文件属性。</p>
-
-<p><code>java
-Path zip = Paths.get("/usr/bin/zip");
-Files.getLastModifiedTime(zip);
-Files.size(zip);
-Files.isSymbolicLink(zip);
-Files.isDirectory(zip);
-Files.readAttributes(zip, "*"); //批量读取属性
-</code></p>
-
-<p>特定文件属性独立于某个操作系统。以POSIX文件系统为例：</p>
-
-<p>```java
-//获取文件属性
-PosixFileAttributes attrs = Files.readAttributes(zip, PosixFileAttributes.class);</p>
-
-<p>//修改属性
-Set<PosixFilePermission> permissions = attrs.permissions();
-permissions.clear;
-permissions.add(GROUP_READ);
-//&hellip;
-Files.setPosixFilePermissions(zip, permissions);
-```</p>
-
-<p>符号链接的处理：</p>
-
-<p>```java
-Path file = Paths.get(&ldquo;/opt/platform/java&rdquo;);
-if (Files.isSymbolicLink(file)) {</p>
-
-<pre><code>file = Files.readSymbolicLink(file);
-</code></pre>
-
-<p>}
-//继续处理文件相关操作
-Files.readAttributes(file, BasicFileAttributes.class);
-```</p>
-
-<h3>3.4. 快速读写数据</h3>
-
-<p>Files工具类提供了更方便的方法来读写数据：</p>
-
-<p>```java
-Path logFile = Paths.get(&ldquo;/tmp/app.log&rdquo;);
-try(BufferedReader reader =</p>
-
-<pre><code>Files.newBufferedReader(logFile, StandardCharsets.UTF_8)) {
-String line;
-while((line = reader.readLine()) != null) {
-    //...
-}
-</code></pre>
-
-<p>}</p>
-
-<p>//写入
-try(BufferedWriter writer =</p>
-
-<pre><code>Files.newBufferedWrite(logFile, StandardCharsets.UTF_8, StandardOpenOption.WRITE)) //变参，可多个
-</code></pre>
-
-<p>{</p>
-
-<pre><code>writer.write("Hello!");
-</code></pre>
-
-<p>}
-```</p>
-
-<p>Files工具类提供的方法还有<code>newInputStream()</code>, <code>newOutputStream()</code>等方法，用于配合现有IO类。还有更方便的方式：</p>
-
-<p><code>java
-List&lt;String&gt; lines = Files.readAllLines(logFile, StandardCharsets.UTF_8);
-byte[] bytes = Files.readAllBytes(logFile);
-</code></p>
-
-<h3>3.5. 文件修改通知</h3>
-
-<p>WatchService可用于监测文件或目录的变化，可监测的事件包括：ENTRY_CREATE, ENTRY_DELETE, OVERFLOW(事件已经丢弃或丢失)。</p>
-
-<p>```java
-import static java.nio.file.StandardWatchEventKinds.*;</p>
-
-<p>try {</p>
-
-<pre><code>WatchService watcher = FileSystems.getDefault().newWatchService();
-Path dir = FileSystems.getDefault().getPath("/usr/mxs");
-WatchKey key = dir.register(watcher, ENTRY_MODIFY);
-
-while(!shutdown ) { //一个标志，判断循环是否该结束
-    key = watcher.take();
-    for (WatchEvent&lt;?&gt; event: key.pollEvents()) {
-        if (event.kind() == ENTRY_MODIFY) {
-            //dir changed
-        }
-    }
-    key.reset(); 
-}
-</code></pre>
-
-<p>} catch(IOException | InterruptedException e) {</p>
-
-<pre><code>//...
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>3.6 SeekableByteChannel</h3>
-
-<p>这是Java 7引入的新接口，用于改变字节通道的位置和大小。例如用多个线程去分析一个大型日志文件的字节通道。FileChannel是这个接口的一种实现，下面的示例读取日志文件的最后1000个字符：</p>
-
-<p><code>java
-Path logFile = Paths.get("c:\\temp.log");
-ByteBuffer buffer = ByteBuffer.allocate(1024);
-FileChannel channel = FileChannel.open(logFile, StandardOpenOption.READ);
-channel.read(buffer, channel.size() - 1000);
-</code></p>
-
-<h2>4. 异步I/O操作</h2>
-
-<p>异步I/O操作主要有两种方式：Future和回调。Java 7提供了三个新的异步通道：</p>
-
-<ul>
-<li>AsynchronousFileChannel 用于文件I/O</li>
-<li>AsynchronousSocketChannel 用于Socket I/O, 支持超时</li>
-<li>AsynchronousServerSocketChannel 用于Socket接受异步连接</li>
-</ul>
-
-
-<h3>4.1 Future方式</h3>
-
-<p>```java
-try {</p>
-
-<pre><code>Path file = Paths.get("/usr/mxs/foobar.txt");
-AsynchronousFileChannel channel = AsynchronousFileChannel.open(file);
-
-//读取100 000字节
-ByteBuffer buffer = ByteBuffer.allocate(100_1000); 
-Future&lt;Integer&gt; result = channel.read(buffer, 0);//返回值为Integer
-
-//如果未结束
-while(! result.isDone()) {
-    //...干点别的事。
-}
-
-//获取结果
-Integer byteRead = result.get();
-</code></pre>
-
-<p>} catch(IOException | ExecutionException | InterruptedException e) {</p>
-
-<pre><code>//...
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>4.2 回调方式</h3>
-
-<p>CompletionHandler&lt;V, A>是回调的接口。V表示结果类型，A是提供结果的附着对象。</p>
-
-<p>```
-try {</p>
-
-<pre><code>Path file = Paths.get("/usr/mxs/foobar.txt");
-AsynchronousFileChannel channel = AsynchronousFileChannel.open(file);
-//读取100 000字节
-ByteBuffer buffer = ByteBuffer.allocate(100_1000); 
-
-channel.read(buffer, 0, buffer, new CompletionHandler&lt;Integer, ByteBuffer&gt;(){
-    public void completed(Integer result, ByteBuffer attachment) {
-        //完成时的回调方法
-    }
-
-    public void failed(Throwable exception, ByteBuffer attachment) {
-        //失败时的回调方法
-    }
-});
-</code></pre>
-
-<p>} catch(IOException e) {</p>
-
-<pre><code>//...
-</code></pre>
-
-<p>}
-```</p>
-
-<h2>5. Socket与Channel整合</h2>
-
-<p>NetworkChannel把Socket和Channel结合起来，更好地应对网络编程。而MulticastChannel则可以用于像BitTorrent这样的多播编程。</p>
 ]]></content>
   </entry>
   
