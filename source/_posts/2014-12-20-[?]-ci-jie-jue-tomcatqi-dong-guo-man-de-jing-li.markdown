@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "解决SecureRandom导致Tomcat启动过慢的问题"
+title: "SecureRandom导致Tomcat启动过慢"
 date: 2014-12-20 12:08:33 +0800
 comments: true
 categories: 
