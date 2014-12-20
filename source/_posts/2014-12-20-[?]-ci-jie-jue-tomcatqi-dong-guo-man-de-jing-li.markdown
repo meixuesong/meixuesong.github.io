@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "一次解决Tomcat启动过慢的经历"
+title: "解决SecureRandom导致Tomcat启动过慢的问题"
 date: 2014-12-20 12:08:33 +0800
 comments: true
 categories: 
@@ -8,6 +8,8 @@ categories:
 ---
 
 昨天晚上在Tomcat上部署一个小应用时，Tomcat启动非常慢，有时甚至需要10分钟。查看日志，发现一直停在Deploying阶段：
+
+<!--more-->
 
 ```
 INFO: Starting service Catalina
