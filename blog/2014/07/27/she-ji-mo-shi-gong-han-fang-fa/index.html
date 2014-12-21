@@ -27,7 +27,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -111,44 +112,26 @@
 
 <p>ConcreteFactory1示例代码：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConcreteFactory1</span> <span class="kd">implements</span> <span class="n">Factory</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="n">SomeProduct</span> <span class="nf">factory</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="k">new</span> <span class="nf">SomeConcreteProduct1</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class ConcreteFactory1 implements Factory {
+    public SomeProduct factory() {
+        return new SomeConcreteProduct1();
+    }  
+}</code></pre>
 
 
 <p>Client代码示例：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Client</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">Factory</span> <span class="n">concreteFactory1</span><span class="o">,</span><span class="n">concreteFactory2</span><span class="o">;</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">SomeProduct</span> <span class="n">concreteProduct1</span><span class="o">,</span> <span class="n">concreteProduct2</span><span class="o">;</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">concreteFactory1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcreteFactory1</span><span class="o">();</span>
-</span><span class='line'>      <span class="n">concreteProduct1</span> <span class="o">=</span> <span class="n">concreteFactory1</span><span class="o">.</span><span class="na">factory</span><span class="o">();</span>
-</span><span class='line'>      <span class="n">concreteFactory2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcreteFactory2</span><span class="o">();</span>
-</span><span class='line'>      <span class="n">concreteProduct2</span> <span class="o">=</span> <span class="n">concreteFactory2</span><span class="o">.</span><span class="na">factory</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Client {
+    private static Factory concreteFactory1,concreteFactory2;
+    private static SomeProduct concreteProduct1, concreteProduct2;
+    
+    public static void main(String[] args) {
+        concreteFactory1 = new ConcreteFactory1();
+        concreteProduct1 = concreteFactory1.factory();
+        concreteFactory2 = new ConcreteFactory2();
+        concreteProduct2 = concreteFactory2.factory();
+    }
+}</code></pre>
 
 </div>
 
@@ -302,7 +285,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

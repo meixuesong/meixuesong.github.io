@@ -27,7 +27,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -105,22 +106,14 @@
 
 <p>阿姆达尔定律（Amdahl&rsquo;s law）说明程序中可以并行的代码的比例，决定了你增加处理器能带来的速度提升的上限。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>S(N) = 1 / ((1 - P) + P / N)
-</span><span class='line'>
-</span><span class='line'>P: 可并行的程序在单核上执行时间的占比
-</span><span class='line'>N: 处理器的个数
-</span><span class='line'>S(N): 程序在N个处理器（总核心数）相对于单个处理器中的速度提升比。
-</span><span class='line'>
-</span><span class='line'>当P=0.2, S(N)的上限为1.25
-</span><span class='line'>当P=0.5, S(N)的上限为2</span></code></pre></td></tr></table></div></figure>
+<pre  class='line-numbers language-'><code class='line-numbers language-'>S(N) = 1 / ((1 - P) + P / N)
+
+P: 可并行的程序在单核上执行时间的占比
+N: 处理器的个数
+S(N): 程序在N个处理器（总核心数）相对于单个处理器中的速度提升比。
+
+当P=0.2, S(N)的上限为1.25
+当P=0.5, S(N)的上限为2</code></pre>
 
 
 <p>根据阿姆达尔定律，提升P非常的重要！</p>
@@ -147,39 +140,24 @@
 
 <p>某个线程需要等到某个状态或者事件发生后才能继续自己的工作，而这个状态或者事件与另一个线程有关，这时候就需要完成线程间的协调。<strong>为了防止死锁，一般要原子性地获取所需的多个锁，或者注意以相同的顺序获取多个锁。</strong></p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//原子性地获取多个锁</span>
-</span><span class='line'><span class="n">Thread</span> <span class="mi">1</span>
-</span><span class='line'><span class="n">GetLocks</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">B</span><span class="o">);</span> <span class="c1">//伪代码，一次性获取两个锁，不同平台支持不同。</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">Thread</span> <span class="mi">2</span>
-</span><span class='line'><span class="n">GetLocks</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">B</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//或者同样的顺序获取多个锁</span>
-</span><span class='line'><span class="n">Thread</span> <span class="mi">1</span>
-</span><span class='line'><span class="n">A</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
-</span><span class='line'>  <span class="n">B</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
-</span><span class='line'>  
-</span><span class='line'><span class="n">Thread</span> <span class="mi">2</span>
-</span><span class='line'><span class="n">A</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
-</span><span class='line'>  <span class="n">B</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
-</span><span class='line'><span class="c1">//两个线程的加锁顺序一致，如果Thread 2中的顺序反过来，则很可能造成锁死。      </span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//原子性地获取多个锁
+Thread 1
+GetLocks(A, B); //伪代码，一次性获取两个锁，不同平台支持不同。
+
+Thread 2
+GetLocks(A, B);
+
+//或者同样的顺序获取多个锁
+Thread 1
+A.lock();
+    B.lock();
+    
+Thread 2
+A.lock();
+    B.lock();
+//两个线程的加锁顺序一致，如果Thread 2中的顺序反过来，则很可能造成锁死。     
+
+</code></pre>
 
 
 <h2>2.多进程模式</h2>
@@ -429,7 +407,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

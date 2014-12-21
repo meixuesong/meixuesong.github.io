@@ -27,7 +27,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -191,87 +192,46 @@
 
 <p>有了Page，B树集合的实现就简单了：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BTreeSET</span><span class="o">&lt;</span><span class="n">Key</span> <span class="kd">extends</span> <span class="n">Comparable</span><span class="o">&lt;</span><span class="n">Key</span><span class="o">&gt;&gt;</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="n">Page</span> <span class="n">root</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Page</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="nf">BTreeSET</span><span class="o">(</span><span class="n">Key</span> <span class="n">sentinel</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">add</span><span class="o">(</span><span class="n">sentinel</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">contains</span><span class="o">(</span><span class="n">Key</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nf">contains</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">contains</span><span class="o">(</span><span class="n">Page</span> <span class="n">h</span><span class="o">,</span> <span class="n">Key</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">h</span><span class="o">.</span><span class="na">isExternal</span><span class="o">())</span> <span class="k">return</span> <span class="n">h</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nf">contains</span><span class="o">(</span><span class="n">h</span><span class="o">.</span><span class="na">next</span><span class="o">(</span><span class="n">key</span><span class="o">),</span> <span class="n">key</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">add</span><span class="o">(</span><span class="n">Key</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">add</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">root</span><span class="o">.</span><span class="na">isFull</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">Page</span> <span class="n">lefthalf</span> <span class="o">=</span> <span class="n">root</span><span class="o">;</span>
-</span><span class='line'>          <span class="n">Page</span> <span class="n">righthalf</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">split</span><span class="o">();</span>
-</span><span class='line'>          <span class="n">root</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Page</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-</span><span class='line'>          <span class="n">root</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">lefthalf</span><span class="o">);</span>
-</span><span class='line'>          <span class="n">root</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">righthalf</span><span class="o">);</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">add</span><span class="o">(</span><span class="n">Page</span> <span class="n">h</span><span class="o">,</span> <span class="n">Key</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">h</span><span class="o">.</span><span class="na">isExternal</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">h</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
-</span><span class='line'>          <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="n">Page</span> <span class="n">next</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="na">next</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
-</span><span class='line'>      <span class="n">add</span><span class="o">(</span><span class="n">next</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">next</span><span class="o">.</span><span class="na">isFull</span><span class="o">())</span>
-</span><span class='line'>          <span class="n">h</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">next</span><span class="o">.</span><span class="na">split</span><span class="o">());</span>      
-</span><span class='line'>      <span class="n">next</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>    
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class BTreeSET&lt;Key extends Comparable&lt;Key&gt;&gt; {
+    private Page root = new Page(true);
+    
+    public BTreeSET(Key sentinel) {
+        add(sentinel);
+    }
+    
+    public boolean contains(Key key) {
+        return contains(root, key);
+    }
+    
+    private boolean contains(Page h, Key key) {
+        if (h.isExternal()) return h.contains(key);
+        return contains(h.next(key), key);
+    }
+    
+    public void add(Key key) {
+        add(root, key);
+        if (root.isFull()) {
+            Page lefthalf = root;
+            Page righthalf = root.split();
+            root = new Page(false);
+            root.add(lefthalf);
+            root.add(righthalf);
+        }
+    }
+    
+    public void add(Page h, Key key) {
+        if (h.isExternal()) {
+            h.add(key);
+            return;
+        }
+        
+        Page next = h.next(key);
+        add(next, key);
+        if (next.isFull())
+            h.add(next.split());        
+        next.close();
+    }   
+}</code></pre>
 
 
 <h2>4. 性能与空间</h2>
@@ -433,7 +393,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

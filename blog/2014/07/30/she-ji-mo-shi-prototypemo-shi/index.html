@@ -27,7 +27,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -107,11 +108,8 @@
 
 <p>Java的Object类提供了<code>protected Object clone()</code>方法，用于复制对象。而<code>Cloneable</code>接口用于在运行期告诉JVM可以安全地使用<code>clone()</code>方法，否则JVM将会抛出<code>CloneNotSupportedException</code>异常。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//复制一个pandaA</span>
-</span><span class='line'><span class="n">pandaB</span> <span class="o">=</span> <span class="n">pandaA</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//复制一个pandaA
+pandaB = pandaA.clone();</code></pre>
 
 
 <p>一般而言，clone方法满足以下描述：</p>
@@ -133,109 +131,57 @@
 
 <p><code>clone()</code>方法是浅复制，而深复制可以通过序列化实现。例如：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DeepCloneDemo</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="n">DeepCloneDemo</span> <span class="nf">deepClone</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ClassNotFoundException</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">ByteArrayOutputStream</span> <span class="n">bo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
-</span><span class='line'>      <span class="n">ObjectOutputStream</span> <span class="n">oo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectOutputStream</span><span class="o">(</span><span class="n">bo</span><span class="o">);</span>
-</span><span class='line'>      <span class="n">oo</span><span class="o">.</span><span class="na">writeObject</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="n">ByteArrayInputStream</span> <span class="n">bi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">bo</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">());</span>
-</span><span class='line'>      <span class="n">ObjectInputStream</span> <span class="n">oi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectInputStream</span><span class="o">(</span><span class="n">bi</span><span class="o">);</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">return</span> <span class="o">(</span><span class="n">DeepCloneDemo</span><span class="o">)</span> <span class="n">oi</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">hashCode</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="c1">//...</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">obj</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="c1">//...</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//测试代码</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DeepCloneDemoTest</span> <span class="kd">extends</span> <span class="n">TestCase</span><span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testDeepClone</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">DeepCloneDemo</span> <span class="n">demo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DeepCloneDemo</span><span class="o">();</span>
-</span><span class='line'>      <span class="n">demo</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">&quot;Demo&quot;</span><span class="o">);</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">DeepCloneDemo</span> <span class="n">demo2</span> <span class="o">=</span> <span class="n">demo</span><span class="o">.</span><span class="na">deepClone</span><span class="o">();</span>
-</span><span class='line'>          <span class="n">Assert</span><span class="o">.</span><span class="na">assertFalse</span><span class="o">(</span><span class="n">demo2</span> <span class="o">==</span> <span class="n">demo</span><span class="o">);</span>
-</span><span class='line'>          <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="n">demo</span><span class="o">,</span> <span class="n">demo2</span><span class="o">);</span>
-</span><span class='line'>          
-</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ClassNotFoundException</span> <span class="o">|</span> <span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-</span><span class='line'>          <span class="n">Assert</span><span class="o">.</span><span class="na">assertFalse</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class DeepCloneDemo implements Serializable {
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public DeepCloneDemo deepClone() throws IOException, ClassNotFoundException {
+        ByteArrayOutputStream bo = new ByteArrayOutputStream();
+        ObjectOutputStream oo = new ObjectOutputStream(bo);
+        oo.writeObject(this);
+        
+        ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
+        ObjectInputStream oi = new ObjectInputStream(bi);
+        
+        return (DeepCloneDemo) oi.readObject();
+    }
+
+    @Override
+    public int hashCode() {
+        //...
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        //...
+    }
+}
+
+
+//测试代码
+public class DeepCloneDemoTest extends TestCase{
+    public void testDeepClone() {
+        DeepCloneDemo demo = new DeepCloneDemo();
+        demo.setName("Demo");
+        
+        try {
+            DeepCloneDemo demo2 = demo.deepClone();
+            Assert.assertFalse(demo2 == demo);
+            Assert.assertEquals(demo, demo2);
+            
+        } catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();
+            Assert.assertFalse(true);
+        }
+    }
+}</code></pre>
 
 
 <p>注意要实现Serializable接口。如果不希望某个属性被序列化，可以使用<code>transient</code>关键字，例如：<code>private transient int age;</code>。</p>
@@ -399,7 +345,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

@@ -31,7 +31,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -118,68 +119,38 @@
 
 <p>当没有数据库时，使用单例实现序列生成器非常简单，示例代码如下，注意<code>synchronized</code>关键字：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/**</span>
-</span><span class='line'><span class="cm"> * 没有数据库的序列键生成器</span>
-</span><span class='line'><span class="cm"> * @author mxs</span>
-</span><span class='line'><span class="cm"> *</span>
-</span><span class='line'><span class="cm"> */</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KeyGenerator</span> <span class="o">{</span>    
-</span><span class='line'>  <span class="kd">private</span> <span class="kt">long</span> <span class="n">key</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">KeyGenerator</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KeyGenerator</span><span class="o">();</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="nf">KeyGenerator</span><span class="o">()</span> <span class="o">{}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">KeyGenerator</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">long</span> <span class="nf">getNextKey</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">key</span><span class="o">++;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>/**
+ * 没有数据库的序列键生成器
+ * @author mxs
+ *
+ */
+public class KeyGenerator { 
+    private long key = 0;
+    private static KeyGenerator instance = new KeyGenerator();
+    
+    private KeyGenerator() {}
+    
+    public static KeyGenerator getInstance() {
+        return instance;
+    }
+    
+    public synchronized long getNextKey() {
+        return key++;
+    }
+}</code></pre>
 
 
 <p>单元测试代码：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KeyGeneratorTest</span> <span class="kd">extends</span> <span class="n">TestCase</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testKey</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">KeyGenerator</span> <span class="n">keyGenerator</span> <span class="o">=</span> <span class="n">KeyGenerator</span><span class="o">.</span><span class="na">getInstance</span><span class="o">();</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">keyGenerator</span><span class="o">.</span><span class="na">getNextKey</span><span class="o">());</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class KeyGeneratorTest extends TestCase {
+    public void testKey() {
+        KeyGenerator keyGenerator = KeyGenerator.getInstance();
+        
+        for(int i = 0; i &lt; 100; i++) {
+            Assert.assertEquals(i, keyGenerator.getNextKey());
+        }
+    }
+}</code></pre>
 
 
 <p>这种实现没有持久化，一旦重启，序列又从0开始。因此我们需要一个有数据库持久化的方案。</p>
@@ -188,334 +159,180 @@
 
 <p>当有数据库时，每次获取序列都从数据库读取。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/**</span>
-</span><span class='line'><span class="cm"> * 有数据库的序列键生成器</span>
-</span><span class='line'><span class="cm"> * @author mxs</span>
-</span><span class='line'><span class="cm"> *</span>
-</span><span class='line'><span class="cm"> */</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KeyGenerator</span> <span class="o">{</span>    
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">KeyGenerator</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KeyGenerator</span><span class="o">();</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="nf">KeyGenerator</span><span class="o">()</span> <span class="o">{}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">KeyGenerator</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">long</span> <span class="nf">getNextKey</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nf">getNextKeyFromDB</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="kt">long</span> <span class="nf">getNextKeyFromDB</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="c1">//update t_sequence set seq_value = seq_value + 1</span>
-</span><span class='line'>      <span class="c1">//select seq_value from t_sequence</span>
-</span><span class='line'>      <span class="c1">//返回结果</span>
-</span><span class='line'>      <span class="k">return</span> <span class="mi">1000</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>/**
+ * 有数据库的序列键生成器
+ * @author mxs
+ *
+ */
+public class KeyGenerator { 
+    private static KeyGenerator instance = new KeyGenerator();
+    
+    private KeyGenerator() {}
+    
+    public static KeyGenerator getInstance() {
+        return instance;
+    }
+    
+    public synchronized long getNextKey() {
+        return getNextKeyFromDB();
+    }
+    
+    private long getNextKeyFromDB() {
+        //update t_sequence set seq_value = seq_value + 1
+        //select seq_value from t_sequence
+        //返回结果
+        return 1000;
+    }
+}
+</code></pre>
 
 
 <h2>3. 有缓存的单例实现</h2>
 
 <p>第2种方法每次都要访问数据库，影响了性能，可以一次多取一些序列放到缓存中，只有缓存都取完时，才访问数据库。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/**</span>
-</span><span class='line'><span class="cm"> * 有数据库、带缓存的序列键生成器</span>
-</span><span class='line'><span class="cm"> * @author mxs</span>
-</span><span class='line'><span class="cm"> *</span>
-</span><span class='line'><span class="cm"> */</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KeyGenerator</span> <span class="o">{</span>    
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">KeyGenerator</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KeyGenerator</span><span class="o">();</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">cacheSize</span> <span class="o">=</span> <span class="mi">20</span><span class="o">;</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="n">KeyInfo</span> <span class="n">keyInfo</span><span class="o">;</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="nf">KeyGenerator</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">keyInfo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KeyInfo</span><span class="o">(</span><span class="n">cacheSize</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">KeyGenerator</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">long</span> <span class="nf">getNextKey</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">keyInfo</span><span class="o">.</span><span class="na">getNext</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KeyInfo</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kt">long</span> <span class="n">max</span><span class="o">;</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kt">long</span> <span class="n">min</span><span class="o">;</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kt">long</span> <span class="n">nextKey</span><span class="o">;</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">poolSize</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kd">public</span> <span class="nf">KeyInfo</span><span class="o">(</span><span class="kt">int</span> <span class="n">poolSize</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">poolSize</span> <span class="o">=</span> <span class="n">poolSize</span><span class="o">;</span>
-</span><span class='line'>      <span class="n">retrieveFromDB</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">long</span> <span class="nf">getNext</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">nextKey</span> <span class="o">&gt;=</span> <span class="n">max</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">retrieveFromDB</span><span class="o">();</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">return</span> <span class="n">nextKey</span><span class="o">++;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">retrieveFromDB</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="c1">// update t_sequence set seq_value = seq_value + poolSize</span>
-</span><span class='line'>      <span class="c1">// select seq_value from t_sequence</span>
-</span><span class='line'>      <span class="c1">//以下为模拟数据库操作</span>
-</span><span class='line'>      <span class="kt">long</span> <span class="n">value</span> <span class="o">=</span> <span class="n">dbvalue</span><span class="o">[</span><span class="n">dbIndex</span> <span class="o">++];</span>
-</span><span class='line'>      <span class="n">min</span> <span class="o">=</span> <span class="n">value</span> <span class="o">-</span> <span class="n">poolSize</span><span class="o">;</span>
-</span><span class='line'>      <span class="n">max</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
-</span><span class='line'>      <span class="n">nextKey</span> <span class="o">=</span> <span class="n">min</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">dbvalue</span> <span class="o">=</span> <span class="o">{</span><span class="mi">20</span><span class="o">,</span> <span class="mi">40</span><span class="o">,</span> <span class="mi">60</span><span class="o">,</span> <span class="mi">80</span><span class="o">,</span> <span class="mi">100</span><span class="o">};</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">dbIndex</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>/**
+ * 有数据库、带缓存的序列键生成器
+ * @author mxs
+ *
+ */
+public class KeyGenerator { 
+    private static KeyGenerator instance = new KeyGenerator();
+    private static final int cacheSize = 20;
+    private KeyInfo keyInfo;
+    
+    private KeyGenerator() {
+        keyInfo = new KeyInfo(cacheSize);
+    }
+    
+    public static KeyGenerator getInstance() {
+        return instance;
+    }
+    
+    public synchronized long getNextKey() {
+        return keyInfo.getNext();
+    }
+}
+
+
+public class KeyInfo {
+    private long max;
+    private long min;
+    private long nextKey;
+    private int poolSize;
+
+    public KeyInfo(int poolSize) {
+        this.poolSize = poolSize;
+        retrieveFromDB();
+    }
+
+    public long getNext() {
+        if (nextKey &gt;= max) {
+            retrieveFromDB();
+        }
+
+        return nextKey++;
+    }
+
+    private void retrieveFromDB() {
+        // update t_sequence set seq_value = seq_value + poolSize
+        // select seq_value from t_sequence
+        //以下为模拟数据库操作
+        long value = dbvalue[dbIndex ++];
+        min = value - poolSize;
+        max = value;
+        nextKey = min;
+    }
+    
+    private int[] dbvalue = {20, 40, 60, 80, 100};
+    private int dbIndex = 0;
+}
+</code></pre>
 
 
 <h2>4. 有缓存的多序列实现</h2>
 
 <p>要实现多序列，只需要用HashMap改造第3种方法，保持KeyInfo不变，KeyGenerator修改为：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/**</span>
-</span><span class='line'><span class="cm"> * 有数据库、带缓存的多序列键生成器</span>
-</span><span class='line'><span class="cm"> * @author mxs</span>
-</span><span class='line'><span class="cm"> *</span>
-</span><span class='line'><span class="cm"> */</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KeyGenerator</span> <span class="o">{</span>    
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">KeyGenerator</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KeyGenerator</span><span class="o">();</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">cacheSize</span> <span class="o">=</span> <span class="mi">20</span><span class="o">;</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">KeyInfo</span><span class="o">&gt;</span> <span class="n">map</span><span class="o">;</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="nf">KeyGenerator</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">KeyInfo</span><span class="o">&gt;();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">KeyGenerator</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">long</span> <span class="nf">getNextKey</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">KeyInfo</span> <span class="n">keyInfo</span><span class="o">;</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">map</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">key</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">keyInfo</span> <span class="o">=</span> <span class="n">map</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
-</span><span class='line'>      <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">keyInfo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KeyInfo</span><span class="o">(</span><span class="n">cacheSize</span><span class="o">);</span>
-</span><span class='line'>          <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">keyInfo</span><span class="o">);</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>              
-</span><span class='line'>      <span class="k">return</span> <span class="n">keyInfo</span><span class="o">.</span><span class="na">getNext</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>/**
+ * 有数据库、带缓存的多序列键生成器
+ * @author mxs
+ *
+ */
+public class KeyGenerator { 
+    private static KeyGenerator instance = new KeyGenerator();
+    private static final int cacheSize = 20;
+    
+    private Map&lt;String, KeyInfo&gt; map;
+    
+    private KeyGenerator() {
+        map = new HashMap&lt;String, KeyInfo&gt;();
+    }
+    
+    public static KeyGenerator getInstance() {
+        return instance;
+    }
+    
+    public synchronized long getNextKey(String key) {
+        KeyInfo keyInfo;
+        if (map.containsKey(key)) {
+            keyInfo = map.get(key);
+        } else {
+            keyInfo = new KeyInfo(cacheSize);
+            map.put(key, keyInfo);
+        }
+                
+        return keyInfo.getNext();
+    }
+}</code></pre>
 
 
 <h2>5. 多序列的多例实现</h2>
 
 <p>前面所有实现方案都是基于单例模式，其实还可以使用多例模式。多例模式允许一个类有多个实例，这些实例有自己的状态。保持KeyInfo不变，KeyGenerator修改为：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/**</span>
-</span><span class='line'><span class="cm"> * 有数据库、带缓存的多序列键生成器，采用多例模式</span>
-</span><span class='line'><span class="cm"> * @author mxs</span>
-</span><span class='line'><span class="cm"> *</span>
-</span><span class='line'><span class="cm"> */</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KeyGenerator</span> <span class="o">{</span>    
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">cacheSize</span> <span class="o">=</span> <span class="mi">20</span><span class="o">;</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="n">KeyInfo</span> <span class="n">keyInfo</span><span class="o">;</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">KeyGenerator</span><span class="o">&gt;</span> <span class="n">instances</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">KeyGenerator</span><span class="o">&gt;(</span><span class="mi">10</span><span class="o">);</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="nf">KeyGenerator</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">keyInfo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KeyInfo</span><span class="o">(</span><span class="n">cacheSize</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">synchronized</span> <span class="n">KeyGenerator</span> <span class="nf">getInstance</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(!</span> <span class="n">instances</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">key</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">KeyGenerator</span> <span class="n">generator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KeyGenerator</span><span class="o">();</span>
-</span><span class='line'>          <span class="n">instances</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">generator</span><span class="o">);</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">return</span> <span class="n">instances</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">long</span> <span class="nf">getNextKey</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">keyInfo</span><span class="o">.</span><span class="na">getNext</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//测试代码：</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KeyGeneratorTest</span> <span class="kd">extends</span> <span class="n">TestCase</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testKey</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">j</span> <span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">&quot;&quot;</span> <span class="o">+</span> <span class="n">j</span><span class="o">;</span>
-</span><span class='line'>          <span class="n">KeyGenerator</span> <span class="n">keyGenerator</span> <span class="o">=</span> <span class="n">KeyGenerator</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
-</span><span class='line'>          <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">90</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="kt">long</span> <span class="n">ii</span> <span class="o">=</span> <span class="n">keyGenerator</span><span class="o">.</span><span class="na">getNextKey</span><span class="o">();</span>
-</span><span class='line'>              <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">ii</span><span class="o">);</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>      <span class="o">}</span>        
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>/**
+ * 有数据库、带缓存的多序列键生成器，采用多例模式
+ * @author mxs
+ *
+ */
+public class KeyGenerator { 
+    private static final int cacheSize = 20;
+    private KeyInfo keyInfo;
+    private static Map&lt;String, KeyGenerator&gt; instances = new HashMap&lt;String, KeyGenerator&gt;(10);
+    
+    private KeyGenerator() {
+        keyInfo = new KeyInfo(cacheSize);
+    }
+    
+    public static synchronized KeyGenerator getInstance(String key) {
+        if (! instances.containsKey(key)) {
+            KeyGenerator generator = new KeyGenerator();
+            instances.put(key, generator);
+        }
+        
+        return instances.get(key);
+    }
+    
+    public synchronized long getNextKey() {
+        return keyInfo.getNext();
+    }
+}
+
+//测试代码：
+public class KeyGeneratorTest extends TestCase {
+    public void testKey() {
+        for(int j = 0; j &lt; 10; j ++) {
+            String key = "" + j;
+            KeyGenerator keyGenerator = KeyGenerator.getInstance(key);
+            for(int i = 0; i &lt; 90; i++) {
+                long ii = keyGenerator.getNextKey();
+                Assert.assertEquals(i, ii);
+            }
+        }       
+    }
+}
+</code></pre>
 
 
 <p>参考：
@@ -672,7 +489,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

@@ -27,7 +27,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -117,86 +118,50 @@
 
 <p>Path不仅用于传统的文件系统，也能表示zip或jar这样的文件系统。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//创建Path</span>
-</span><span class='line'><span class="n">Path</span> <span class="n">listing</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;/user/bin/zip&quot;</span><span class="o">)</span><span class="err">；</span>
-</span><span class='line'><span class="c1">//相当于</span>
-</span><span class='line'><span class="n">Path</span> <span class="n">listing</span> <span class="o">=</span> <span class="n">FileSystems</span><span class="o">.</span><span class="na">getDefault</span><span class="o">().</span><span class="na">getPath</span><span class="o">(</span><span class="s">&quot;/user/bin/zip&quot;</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//获取Path信息：</span>
-</span><span class='line'><span class="n">listing</span><span class="o">.</span><span class="na">getFileName</span><span class="o">():</span> <span class="n">zip</span>
-</span><span class='line'><span class="n">listing</span><span class="o">.</span><span class="na">getNameCount</span><span class="o">():</span> <span class="mi">3</span>
-</span><span class='line'><span class="n">listing</span><span class="o">.</span><span class="na">subpath</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">2</span><span class="o">):</span> <span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">bin</span>
-</span><span class='line'><span class="n">listing</span><span class="o">.</span><span class="na">getParent</span><span class="o">():</span> <span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">bin</span>
-</span><span class='line'><span class="n">listing</span><span class="o">.</span><span class="na">getRoot</span><span class="o">():</span> <span class="o">/</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//创建Path
+Path listing = Paths.get("/user/bin/zip")；
+//相当于
+Path listing = FileSystems.getDefault().getPath("/user/bin/zip");
+
+//获取Path信息：
+listing.getFileName(): zip
+listing.getNameCount(): 3
+listing.subpath(0, 2): /user/bin
+listing.getParent(): /user/bin
+listing.getRoot(): /</code></pre>
 
 
 <p>如果Path是一个文件的路径，有时需要去除冗余信息。例如去除表示当前路径的<code>./</code>，或者该文件只是个符号链接，指向了另一个真正的位置，此时需要得到真实路径。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//移除冗余</span>
-</span><span class='line'><span class="n">Path</span> <span class="n">testPath</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;./test.java&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">Path</span> <span class="n">normalizedPath</span> <span class="o">=</span> <span class="n">testPath</span><span class="o">.</span><span class="na">normalize</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//获取绝对路径</span>
-</span><span class='line'><span class="n">Path</span> <span class="n">absolutePath</span> <span class="o">=</span> <span class="n">testPath</span><span class="o">.</span><span class="na">toAbsolutePath</span><span class="o">();</span>
-</span><span class='line'><span class="c1">//获取绝对路径并去除冗余信息，或者获取符号连接的真实路径</span>
-</span><span class='line'><span class="n">Path</span> <span class="n">realPath</span> <span class="o">=</span> <span class="n">testPath</span><span class="o">.</span><span class="na">toRealPath</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//移除冗余
+Path testPath = Paths.get("./test.java");
+Path normalizedPath = testPath.normalize();
+
+//获取绝对路径
+Path absolutePath = testPath.toAbsolutePath();
+//获取绝对路径并去除冗余信息，或者获取符号连接的真实路径
+Path realPath = testPath.toRealPath();</code></pre>
 
 
 <p>合并路径与路径比较。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//合并</span>
-</span><span class='line'><span class="n">Path</span> <span class="n">prefix</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;/usr&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">Path</span> <span class="n">completePath</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">.</span><span class="na">resolve</span><span class="o">(</span><span class="s">&quot;mxs&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="c1">//completePath: /usr/mxs</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//比较</span>
-</span><span class='line'><span class="n">Path</span> <span class="n">path1</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;/Users/mxs/Documents/Blog/&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">Path</span> <span class="n">path2</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;/Users/mxs&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">path1</span><span class="o">.</span><span class="na">relativize</span><span class="o">(</span><span class="n">path2</span><span class="o">):</span> <span class="o">../..</span>
-</span><span class='line'><span class="n">path2</span><span class="o">.</span><span class="na">relativize</span><span class="o">(</span><span class="n">path1</span><span class="o">):</span> <span class="n">Documents</span><span class="o">/</span><span class="n">Blog</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//合并
+Path prefix = Paths.get("/usr");
+Path completePath = prefix.resolve("mxs");
+//completePath: /usr/mxs
+
+//比较
+Path path1 = Paths.get("/Users/mxs/Documents/Blog/");
+Path path2 = Paths.get("/Users/mxs");
+path1.relativize(path2): ../..
+path2.relativize(path1): Documents/Blog</code></pre>
 
 
 <p>新的API完全替换了java.io.File类，在处理遗留代码时，可能将其进行互换：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">File</span> <span class="n">file</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="s">&quot;../abcd.txt&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">Path</span> <span class="n">listing</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="na">toPath</span><span class="o">();</span>
-</span><span class='line'><span class="n">file</span> <span class="o">=</span> <span class="n">listing</span><span class="o">.</span><span class="na">toFile</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>File file = new File("../abcd.txt");
+Path listing = file.toPath();
+file = listing.toFile();</code></pre>
 
 
 <h2>2. 处理目录与目录树</h2>
@@ -212,25 +177,15 @@
 
 <p><strong>在目录中查找文件：</strong></p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Path</span> <span class="n">dir</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;/user/mxs/Documents&quot;</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">try</span><span class="o">(</span><span class="n">DirectoryStream</span><span class="o">&lt;</span><span class="n">Path</span><span class="o">&gt;</span> <span class="n">stream</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">newDirectoryStream</span><span class="o">(</span><span class="n">dir</span><span class="o">,</span> <span class="s">&quot;*.properties&quot;</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">Path</span> <span class="n">entry</span> <span class="o">:</span> <span class="n">stream</span><span class="o">){</span>
-</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getFileName</span><span class="o">());</span>   
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">//...</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path dir = Paths.get("/user/mxs/Documents");
+
+try(DirectoryStream&lt;Path&gt; stream = Files.newDirectoryStream(dir, "*.properties")) {
+    for(Path entry : stream){
+        System.out.println(entry.getFileName());    
+    }
+} catch(IOException e) {
+    //...
+}</code></pre>
 
 
 <p><strong>遍历目录树。</strong>Files.walkFileTree方法是遍历目录树的关键，该方法定义如下：</p>
@@ -240,37 +195,21 @@
 
 <p>其中Visitor是一个接口，包括5个方法，但一般使用Java的默认实现SimpleFileVisitor就可以了。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">walk</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">Path</span> <span class="n">dir</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;/code/src&quot;</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">Files</span><span class="o">.</span><span class="na">walkFileTree</span><span class="o">(</span><span class="n">dir</span><span class="o">,</span> <span class="k">new</span> <span class="n">FindJavaVisitor</span><span class="o">());</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">FindJavaVisitor</span> <span class="kd">extends</span> <span class="n">SimpleFileVisitor</span><span class="o">&lt;</span><span class="n">Path</span><span class="o">&gt;</span> <span class="o">{</span>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="n">FileVisitresult</span> <span class="nf">visitFile</span><span class="o">(</span><span class="n">Path</span> <span class="n">file</span><span class="o">,</span> <span class="n">BasicFileAttributes</span> <span class="n">attrs</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">file</span><span class="o">.</span><span class="na">toString</span><span class="o">().</span><span class="na">endsWith</span><span class="o">(</span><span class="s">&quot;.java&quot;</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>          <span class="c1">//...</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">return</span> <span class="n">FileVisitResult</span><span class="o">.</span><span class="na">CONTINUE</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public void walk() {
+    Path dir = Paths.get("/code/src");
+    Files.walkFileTree(dir, new FindJavaVisitor());
+}
+
+private static class FindJavaVisitor extends SimpleFileVisitor&lt;Path&gt; {
+    @Override
+    public FileVisitresult visitFile(Path file, BasicFileAttributes attrs) {
+        if (file.toString().endsWith(".java")) {
+            //...
+        }
+        
+        return FileVisitResult.CONTINUE;
+    }
+}</code></pre>
 
 
 <p>需要注意的是，walkFileTree方法不会自动跟随符号链接（为了确保递归等操作的安全性）。因此如果你需要跟随符号链接，就需要检查相应属性并执行相应操作。</p>
@@ -281,216 +220,129 @@
 
 <h3>3.1 创建和删除文件</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Path</span> <span class="n">target</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;/Users/mxs/Document/mystuff.txt&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">Path</span> <span class="n">file</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">createFile</span><span class="o">(</span><span class="n">target</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path target = Paths.get("/Users/mxs/Document/mystuff.txt");
+Path file = Files.createFile(target);</code></pre>
 
 
 <p>如果需要设置文件属性，如读、写和执行的权限，则需要设置FileAttribute，但文件属性与操作系统相关，因此要使用与操作系统相关的文件权限类。以下是POSIX文件系统的示例(其它文件系统参考java.nio.file.attribute.*FilePermission类)：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Set</span><span class="o">&lt;</span><span class="n">PosixFilePermission</span><span class="o">&gt;</span> <span class="n">perms</span> <span class="o">=</span> <span class="n">PosixFilePermissions</span><span class="o">.</span><span class="na">fromString</span><span class="o">(</span><span class="s">&quot;rw-rw-rw-&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">FileAttribute</span><span class="o">&lt;</span><span class="n">Set</span><span class="o">&lt;</span><span class="n">PosixFilePermission</span><span class="o">&gt;&gt;</span> <span class="n">attr</span> <span class="o">=</span> <span class="n">PosixFilePermissions</span><span class="o">.</span><span class="na">asFileAttribute</span><span class="o">(</span><span class="n">perms</span><span class="o">);</span>
-</span><span class='line'><span class="n">Files</span><span class="o">.</span><span class="na">createFile</span><span class="o">(</span><span class="n">target</span><span class="o">,</span> <span class="n">attr</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>Set&lt;PosixFilePermission&gt; perms = PosixFilePermissions.fromString("rw-rw-rw-");
+FileAttribute&lt;Set&lt;PosixFilePermission&gt;&gt; attr = PosixFilePermissions.asFileAttribute(perms);
+Files.createFile(target, attr);</code></pre>
 
 
 <p>删除文件只需要调用<code>Files.delete(target)</code>方法。</p>
 
 <h3>3.2 文件复制与移动</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Path</span> <span class="n">source</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;c:\\My Documents\\stuff.txt&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">Path</span> <span class="n">target</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;D:\backup\stuff.txt&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">Files</span><span class="o">.</span><span class="na">copy</span><span class="o">(</span><span class="n">source</span><span class="o">,</span> <span class="n">target</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//复制时还可以设置CopyOptions选项（变参，可多个。ATOMIC_MOVE确保两边都成功，否则回滚）</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">nio</span><span class="o">.</span><span class="na">file</span><span class="o">.</span><span class="na">StandardCopyOption</span><span class="o">.*;</span>
-</span><span class='line'><span class="n">Files</span><span class="o">.</span><span class="na">copy</span><span class="o">(</span><span class="n">source</span><span class="o">,</span> <span class="n">target</span><span class="o">,</span> <span class="n">REPLACE_EXISTING</span><span class="o">,</span> <span class="n">COPY_ATTRIBUTES</span><span class="o">,</span> <span class="n">ATOMIC_MOVE</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//移动</span>
-</span><span class='line'><span class="n">Files</span><span class="o">.</span><span class="na">move</span><span class="o">(</span><span class="n">source</span><span class="o">,</span> <span class="n">target</span><span class="o">);</span>
-</span><span class='line'><span class="n">Files</span><span class="o">.</span><span class="na">move</span><span class="o">(</span><span class="n">source</span><span class="o">,</span> <span class="n">target</span><span class="o">,</span> <span class="n">CopyOptions</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path source = Paths.get("c:\\My Documents\\stuff.txt");
+Path target = Paths.get("D:\backup\stuff.txt");
+Files.copy(source, target);
+
+//复制时还可以设置CopyOptions选项（变参，可多个。ATOMIC_MOVE确保两边都成功，否则回滚）
+import static java.nio.file.StandardCopyOption.*;
+Files.copy(source, target, REPLACE_EXISTING, COPY_ATTRIBUTES, ATOMIC_MOVE); 
+
+//移动
+Files.move(source, target);
+Files.move(source, target, CopyOptions);</code></pre>
 
 
 <h3>3.3 文件属性</h3>
 
 <p>由于不同的文件系统属性不同，因此Java中的文件属性分为基本文件属性、特定文件属性。前者是各文件系统通用的文件属性。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Path</span> <span class="n">zip</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;/usr/bin/zip&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">Files</span><span class="o">.</span><span class="na">getLastModifiedTime</span><span class="o">(</span><span class="n">zip</span><span class="o">);</span>
-</span><span class='line'><span class="n">Files</span><span class="o">.</span><span class="na">size</span><span class="o">(</span><span class="n">zip</span><span class="o">);</span>
-</span><span class='line'><span class="n">Files</span><span class="o">.</span><span class="na">isSymbolicLink</span><span class="o">(</span><span class="n">zip</span><span class="o">);</span>
-</span><span class='line'><span class="n">Files</span><span class="o">.</span><span class="na">isDirectory</span><span class="o">(</span><span class="n">zip</span><span class="o">);</span>
-</span><span class='line'><span class="n">Files</span><span class="o">.</span><span class="na">readAttributes</span><span class="o">(</span><span class="n">zip</span><span class="o">,</span> <span class="s">&quot;*&quot;</span><span class="o">);</span> <span class="c1">//批量读取属性</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path zip = Paths.get("/usr/bin/zip");
+Files.getLastModifiedTime(zip);
+Files.size(zip);
+Files.isSymbolicLink(zip);
+Files.isDirectory(zip);
+Files.readAttributes(zip, "*"); //批量读取属性</code></pre>
 
 
 <p>特定文件属性独立于某个操作系统。以POSIX文件系统为例：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//获取文件属性</span>
-</span><span class='line'><span class="n">PosixFileAttributes</span> <span class="n">attrs</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">readAttributes</span><span class="o">(</span><span class="n">zip</span><span class="o">,</span> <span class="n">PosixFileAttributes</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//修改属性</span>
-</span><span class='line'><span class="n">Set</span><span class="o">&lt;</span><span class="n">PosixFilePermission</span><span class="o">&gt;</span> <span class="n">permissions</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="na">permissions</span><span class="o">();</span>
-</span><span class='line'><span class="n">permissions</span><span class="o">.</span><span class="na">clear</span><span class="o">;</span>
-</span><span class='line'><span class="n">permissions</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">GROUP_READ</span><span class="o">);</span>
-</span><span class='line'><span class="c1">//...</span>
-</span><span class='line'><span class="n">Files</span><span class="o">.</span><span class="na">setPosixFilePermissions</span><span class="o">(</span><span class="n">zip</span><span class="o">,</span> <span class="n">permissions</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//获取文件属性
+PosixFileAttributes attrs = Files.readAttributes(zip, PosixFileAttributes.class);
+
+//修改属性
+Set&lt;PosixFilePermission&gt; permissions = attrs.permissions();
+permissions.clear;
+permissions.add(GROUP_READ);
+//...
+Files.setPosixFilePermissions(zip, permissions);</code></pre>
 
 
 <p>符号链接的处理：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Path</span> <span class="n">file</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;/opt/platform/java&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">Files</span><span class="o">.</span><span class="na">isSymbolicLink</span><span class="o">(</span><span class="n">file</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">file</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">readSymbolicLink</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="c1">//继续处理文件相关操作</span>
-</span><span class='line'><span class="n">Files</span><span class="o">.</span><span class="na">readAttributes</span><span class="o">(</span><span class="n">file</span><span class="o">,</span> <span class="n">BasicFileAttributes</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path file = Paths.get("/opt/platform/java");
+if (Files.isSymbolicLink(file)) {
+    file = Files.readSymbolicLink(file);
+}
+//继续处理文件相关操作
+Files.readAttributes(file, BasicFileAttributes.class);</code></pre>
 
 
 <h3>3.4. 快速读写数据</h3>
 
 <p>Files工具类提供了更方便的方法来读写数据：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Path</span> <span class="n">logFile</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;/tmp/app.log&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="k">try</span><span class="o">(</span><span class="n">BufferedReader</span> <span class="n">reader</span> <span class="o">=</span>
-</span><span class='line'>  <span class="n">Files</span><span class="o">.</span><span class="na">newBufferedReader</span><span class="o">(</span><span class="n">logFile</span><span class="o">,</span> <span class="n">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">String</span> <span class="n">line</span><span class="o">;</span>
-</span><span class='line'>  <span class="k">while</span><span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="c1">//...</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//写入</span>
-</span><span class='line'><span class="k">try</span><span class="o">(</span><span class="n">BufferedWriter</span> <span class="n">writer</span> <span class="o">=</span>
-</span><span class='line'>  <span class="n">Files</span><span class="o">.</span><span class="na">newBufferedWrite</span><span class="o">(</span><span class="n">logFile</span><span class="o">,</span> <span class="n">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">,</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">WRITE</span><span class="o">))</span> <span class="c1">//变参，可多个</span>
-</span><span class='line'><span class="o">{</span>
-</span><span class='line'>  <span class="n">writer</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="s">&quot;Hello!&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path logFile = Paths.get("/tmp/app.log");
+try(BufferedReader reader = 
+    Files.newBufferedReader(logFile, StandardCharsets.UTF_8)) {
+    String line;
+    while((line = reader.readLine()) != null) {
+        //...
+    }
+}
+
+//写入
+try(BufferedWriter writer = 
+    Files.newBufferedWrite(logFile, StandardCharsets.UTF_8, StandardOpenOption.WRITE)) //变参，可多个
+{ 
+    writer.write("Hello!");
+}</code></pre>
 
 
 <p>Files工具类提供的方法还有<code>newInputStream()</code>, <code>newOutputStream()</code>等方法，用于配合现有IO类。还有更方便的方式：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">lines</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">readAllLines</span><span class="o">(</span><span class="n">logFile</span><span class="o">,</span> <span class="n">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">);</span>
-</span><span class='line'><span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">readAllBytes</span><span class="o">(</span><span class="n">logFile</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>List&lt;String&gt; lines = Files.readAllLines(logFile, StandardCharsets.UTF_8);
+byte[] bytes = Files.readAllBytes(logFile);</code></pre>
 
 
 <h3>3.5. 文件修改通知</h3>
 
 <p>WatchService可用于监测文件或目录的变化，可监测的事件包括：ENTRY_CREATE, ENTRY_DELETE, OVERFLOW(事件已经丢弃或丢失)。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">nio</span><span class="o">.</span><span class="na">file</span><span class="o">.</span><span class="na">StandardWatchEventKinds</span><span class="o">.*;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">WatchService</span> <span class="n">watcher</span> <span class="o">=</span> <span class="n">FileSystems</span><span class="o">.</span><span class="na">getDefault</span><span class="o">().</span><span class="na">newWatchService</span><span class="o">();</span>
-</span><span class='line'>  <span class="n">Path</span> <span class="n">dir</span> <span class="o">=</span> <span class="n">FileSystems</span><span class="o">.</span><span class="na">getDefault</span><span class="o">().</span><span class="na">getPath</span><span class="o">(</span><span class="s">&quot;/usr/mxs&quot;</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">WatchKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">dir</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">watcher</span><span class="o">,</span> <span class="n">ENTRY_MODIFY</span><span class="o">);</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="k">while</span><span class="o">(!</span><span class="n">shutdown</span> <span class="o">)</span> <span class="o">{</span> <span class="c1">//一个标志，判断循环是否该结束</span>
-</span><span class='line'>      <span class="n">key</span> <span class="o">=</span> <span class="n">watcher</span><span class="o">.</span><span class="na">take</span><span class="o">();</span>
-</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="n">WatchEvent</span><span class="o">&lt;?&gt;</span> <span class="nl">event:</span> <span class="n">key</span><span class="o">.</span><span class="na">pollEvents</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="na">kind</span><span class="o">()</span> <span class="o">==</span> <span class="n">ENTRY_MODIFY</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="c1">//dir changed</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      <span class="n">key</span><span class="o">.</span><span class="na">reset</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">IOException</span> <span class="o">|</span> <span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">//...</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>import static java.nio.file.StandardWatchEventKinds.*;
+
+try {
+    WatchService watcher = FileSystems.getDefault().newWatchService();
+    Path dir = FileSystems.getDefault().getPath("/usr/mxs");
+    WatchKey key = dir.register(watcher, ENTRY_MODIFY);
+    
+    while(!shutdown ) { //一个标志，判断循环是否该结束
+        key = watcher.take();
+        for (WatchEvent&lt;?&gt; event: key.pollEvents()) {
+            if (event.kind() == ENTRY_MODIFY) {
+                //dir changed
+            }
+        }
+        key.reset(); 
+    }
+} catch(IOException | InterruptedException e) {
+    //...
+}</code></pre>
 
 
 <h3>3.6 SeekableByteChannel</h3>
 
 <p>这是Java 7引入的新接口，用于改变字节通道的位置和大小。例如用多个线程去分析一个大型日志文件的字节通道。FileChannel是这个接口的一种实现，下面的示例读取日志文件的最后1000个字符：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Path</span> <span class="n">logFile</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;c:\\temp.log&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">ByteBuffer</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">1024</span><span class="o">);</span>
-</span><span class='line'><span class="n">FileChannel</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">FileChannel</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="n">logFile</span><span class="o">,</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">READ</span><span class="o">);</span>
-</span><span class='line'><span class="n">channel</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buffer</span><span class="o">,</span> <span class="n">channel</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1000</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path logFile = Paths.get("c:\\temp.log");
+ByteBuffer buffer = ByteBuffer.allocate(1024);
+FileChannel channel = FileChannel.open(logFile, StandardOpenOption.READ);
+channel.read(buffer, channel.size() - 1000);</code></pre>
 
 
 <h2>4. 异步I/O操作</h2>
@@ -506,86 +358,48 @@
 
 <h3>4.1 Future方式</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">Path</span> <span class="n">file</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;/usr/mxs/foobar.txt&quot;</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">AsynchronousFileChannel</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">AsynchronousFileChannel</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//读取100 000字节</span>
-</span><span class='line'>  <span class="n">ByteBuffer</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">100</span><span class="n">_1000</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">Future</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buffer</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span><span class="c1">//返回值为Integer</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//如果未结束</span>
-</span><span class='line'>  <span class="k">while</span><span class="o">(!</span> <span class="n">result</span><span class="o">.</span><span class="na">isDone</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>      <span class="c1">//...干点别的事。</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//获取结果</span>
-</span><span class='line'>  <span class="n">Integer</span> <span class="n">byteRead</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">IOException</span> <span class="o">|</span> <span class="n">ExecutionException</span> <span class="o">|</span> <span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">//...</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>try {
+    Path file = Paths.get("/usr/mxs/foobar.txt");
+    AsynchronousFileChannel channel = AsynchronousFileChannel.open(file);
+    
+    //读取100 000字节
+    ByteBuffer buffer = ByteBuffer.allocate(100_1000); 
+    Future&lt;Integer&gt; result = channel.read(buffer, 0);//返回值为Integer
+    
+    //如果未结束
+    while(! result.isDone()) {
+        //...干点别的事。
+    }
+    
+    //获取结果
+    Integer byteRead = result.get();
+} catch(IOException | ExecutionException | InterruptedException e) {
+    //...
+}</code></pre>
 
 
 <h3>4.2 回调方式</h3>
 
 <p>CompletionHandler&lt;V, A>是回调的接口。V表示结果类型，A是提供结果的附着对象。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">Path</span> <span class="n">file</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;/usr/mxs/foobar.txt&quot;</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">AsynchronousFileChannel</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">AsynchronousFileChannel</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
-</span><span class='line'>  <span class="c1">//读取100 000字节</span>
-</span><span class='line'>  <span class="n">ByteBuffer</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">100</span><span class="n">_1000</span><span class="o">);</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="n">channel</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buffer</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">buffer</span><span class="o">,</span> <span class="k">new</span> <span class="n">CompletionHandler</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">ByteBuffer</span><span class="o">&gt;(){</span>
-</span><span class='line'>      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">completed</span><span class="o">(</span><span class="n">Integer</span> <span class="n">result</span><span class="o">,</span> <span class="n">ByteBuffer</span> <span class="n">attachment</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="c1">//完成时的回调方法</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failed</span><span class="o">(</span><span class="n">Throwable</span> <span class="n">exception</span><span class="o">,</span> <span class="n">ByteBuffer</span> <span class="n">attachment</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="c1">//失败时的回调方法</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">});</span>
-</span><span class='line'><span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">//...</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>try {
+    Path file = Paths.get("/usr/mxs/foobar.txt");
+    AsynchronousFileChannel channel = AsynchronousFileChannel.open(file);
+    //读取100 000字节
+    ByteBuffer buffer = ByteBuffer.allocate(100_1000); 
+    
+    channel.read(buffer, 0, buffer, new CompletionHandler&lt;Integer, ByteBuffer&gt;(){
+        public void completed(Integer result, ByteBuffer attachment) {
+            //完成时的回调方法
+        }
+        
+        public void failed(Throwable exception, ByteBuffer attachment) {
+            //失败时的回调方法
+        }
+    });
+} catch(IOException e) {
+    //...
+}</code></pre>
 
 
 <h2>5. Socket与Channel整合</h2>
@@ -743,7 +557,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

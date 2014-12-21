@@ -27,7 +27,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -105,165 +106,89 @@
 
 <p>不同的排序程序只是在排序算法上不同，但排序的框架是相同的。因此先建立一个排序模板，在此基础上实现各种算法。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractSort</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">protected</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">getClass</span><span class="o">());</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//待实现的算法</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">);</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//进行比较</span>
-</span><span class='line'>  <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">less</span><span class="o">(</span><span class="n">Comparable</span> <span class="n">v</span><span class="o">,</span> <span class="n">Comparable</span> <span class="n">w</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="na">compareTo</span><span class="o">(</span><span class="n">w</span><span class="o">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//交换位置</span>
-</span><span class='line'>  <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">exchange</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i</span><span class="o">,</span> <span class="kt">int</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">Comparable</span> <span class="n">t</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
-</span><span class='line'>      <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
-</span><span class='line'>      <span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">t</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//打印数组</span>
-</span><span class='line'>  <span class="kd">protected</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">show</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">+</span> <span class="s">&quot; &quot;</span><span class="o">);</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//验证是否为有序状态</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isSorted</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">less</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">],</span> <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">]))</span>
-</span><span class='line'>              <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public abstract class AbstractSort {
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    
+    //待实现的算法
+    public abstract void sort(Comparable[] a);
+    
+    //进行比较
+    protected static boolean less(Comparable v, Comparable w) {
+        return v.compareTo(w) &lt; 0;
+    }
+    
+    //交换位置
+    protected static void exchange(Comparable[] a, int i, int j) {
+        Comparable t = a[i];
+        a[i] = a[j];
+        a[j] = t;
+    }
+    
+    //打印数组
+    protected static void show(Comparable[] a) {
+        for (int i = 0; i &lt; a.length; i++) {
+            System.out.print(a[i] + " ");
+        }
+        System.out.println();
+    }
+    
+    //验证是否为有序状态
+    public static boolean isSorted(Comparable[] a) {
+        for (int i = 1; i &lt; a.length; i++) {
+            if (less(a[i], a[i-1]))
+                return false;
+        }
+        
+        return true;
+    }
+}</code></pre>
 
 
 <p>为了粗略验证各种算法的效率，以10万的随机整数数组为对象进行排序，测试代码如下：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SortTest</span> <span class="kd">extends</span> <span class="n">TestCase</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">Integer</span><span class="o">[]</span> <span class="n">array</span><span class="o">;</span>
-</span><span class='line'>      
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUp</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="mi">1000000</span><span class="o">;</span>
-</span><span class='line'>      <span class="n">array</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Integer</span><span class="o">[</span><span class="n">len</span><span class="o">];</span>
-</span><span class='line'>      <span class="n">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">Random</span><span class="o">();</span>
-</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">array</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span>  <span class="n">random</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="mi">100000000</span><span class="o">);</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testSort</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kt">long</span> <span class="n">from</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
-</span><span class='line'>      <span class="n">AbstractSort</span> <span class="n">sorter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Selection</span><span class="o">();</span><span class="c1">//或其它算法</span>
-</span><span class='line'>      <span class="n">sorter</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">array</span><span class="o">);</span>
-</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;totoalTime: %dms \n&quot;</span><span class="o">,</span> <span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">()</span> <span class="o">-</span> <span class="n">from</span><span class="o">)</span> <span class="o">/</span> <span class="mi">1000000</span><span class="o">);</span>      
-</span><span class='line'>      <span class="n">Assert</span><span class="o">.</span><span class="na">assertTrue</span><span class="o">(</span><span class="n">AbstractSort</span><span class="o">.</span><span class="na">isSorted</span><span class="o">(</span><span class="n">array</span><span class="o">));</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class SortTest extends TestCase {
+    Integer[] array;
+        
+    @Override
+    public void setUp() {
+        int len = 1000000;
+        array = new Integer[len];
+        Random random = new java.util.Random();
+        for(int i = 0; i &lt; len; i++) {
+            array[i] =  random.nextInt(100000000);
+        }
+    }
+    
+    public void testSort() {
+        long from = System.nanoTime();
+        AbstractSort sorter = new Selection();//或其它算法
+        sorter.sort(array);
+        System.out.format("totoalTime: %dms \n", (System.nanoTime() - from) / 1000000);     
+        Assert.assertTrue(AbstractSort.isSorted(array));
+    }
+}</code></pre>
 
 
 <h2>2. 选择排序(Selection)</h2>
 
 <p>选择排序是最简单的排序算法，即<strong>不断地选择剩余元素中的最小者</strong>：先找到数组中最小的元素，然后跟第一个元素交换。接下来在剩下的元素中找最小的元素，跟第二个元素交换。如此往复，直到整个数组遍历结束。代码实现如下：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Selection</span> <span class="kd">extends</span> <span class="n">AbstractSort</span><span class="o">{</span>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
-</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="o">;</span> <span class="n">i</span> <span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="kt">int</span> <span class="n">min</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span>
-</span><span class='line'>          <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">len</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="k">if</span> <span class="o">(</span><span class="n">less</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">],</span> <span class="n">a</span><span class="o">[</span><span class="n">min</span><span class="o">]))</span> <span class="o">{</span>
-</span><span class='line'>                  <span class="n">min</span> <span class="o">=</span> <span class="n">j</span><span class="o">;</span>
-</span><span class='line'>              <span class="o">}</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>          
-</span><span class='line'>          <span class="n">exchange</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">min</span><span class="o">);</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Selection extends AbstractSort{
+    @Override
+    public void sort(Comparable[] a) {
+        int len = a.length;
+        for(int i = 0; i &lt; len; i ++) {
+            int min = i;
+            for (int j = i + 1; j &lt; len; j++) {
+                if (less(a[j], a[min])) {
+                    min = j;
+                }
+            }
+            
+            exchange(a, i, min);
+        }
+    }
+}</code></pre>
 
 
 <p>性能：对于长度为N的数组，需要进行大约N<sup>2</sup>/2次比较和N次交换。运行上面的测试代码，耗时：11424ms</p>
@@ -272,29 +197,17 @@
 
 <p>与选择排序一样，当前索引左边的所有元素都是有序的，但它们的最终位置还不确定，后续元素将会跟前面的元素比较，并插入适当的位置。当索引到达数组的最右端时，排序完成。代码实现如下：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Insertion</span> <span class="kd">extends</span> <span class="n">AbstractSort</span> <span class="o">{</span>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
-</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">less</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">],</span> <span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">]);</span> <span class="n">j</span><span class="o">--)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="n">exchange</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Insertion extends AbstractSort {
+    @Override
+    public void sort(Comparable[] a) {
+        int len = a.length;
+        for(int i = 1; i &lt; len; i++) {
+            for(int j = i; j &gt; 0 && less(a[j], a[j-1]); j--) {
+                exchange(a, j, j-1);
+            }
+        }
+    }
+}</code></pre>
 
 
 <p>性能：插入排序的性能取决于数组的初始顺序。对于一个很大且其中的元素已经有序或接近有序的数组进行排序效率很高。插入排序平均需要大约N<sup>2</sup>/4次比较和N<sup>2</sup>/4次交换。最坏的情况下则需要N<sup>2</sup>次比较和N<sup>2</sup>/2次交换。也就是说最坏的情况下（如初始排序是倒序的），插入排序比选择排序还要慢。运行上面的测试代码，耗时：15208ms，由于是随机数组，因此比选择排序还要慢。</p>
@@ -305,55 +218,30 @@
 
 <p>其思想是使任意间隔为h的元素有序，称为h有序数组。排序时，如果h很大，我们就能将元素移动到很远的地方，为实现更小的h有序创造方便。代码实现如下：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Shell</span> <span class="kd">extends</span> <span class="n">AbstractSort</span> <span class="o">{</span>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
-</span><span class='line'>      <span class="kt">int</span> <span class="n">h</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
-</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">h</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">/</span><span class="mi">3</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">h</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">h</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      <span class="c1">//h:1, 4, 13, 40, 121, 364, 1093, ...</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">h</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="c1">//这部分就是插入排序，但将位移由1变为了h</span>
-</span><span class='line'>          <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">h</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="n">h</span> <span class="o">&amp;&amp;</span> <span class="n">less</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">],</span> <span class="n">a</span><span class="o">[</span><span class="n">j</span><span class="o">-</span><span class="n">h</span><span class="o">]);</span> <span class="n">j</span> <span class="o">-=</span> <span class="n">h</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>                  <span class="n">exchange</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="n">j</span><span class="o">-</span><span class="n">h</span><span class="o">);</span>
-</span><span class='line'>              <span class="o">}</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>          
-</span><span class='line'>          <span class="n">h</span> <span class="o">=</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">3</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="n">draw</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Shell extends AbstractSort {
+    @Override
+    public void sort(Comparable[] a) {
+        int n = a.length;
+        int h = 1;
+        while (h &lt; n/3) {
+            h = 3 * h + 1;
+        }
+        //h:1, 4, 13, 40, 121, 364, 1093, ...
+        
+        while (h &gt;= 1) {
+            //这部分就是插入排序，但将位移由1变为了h
+            for (int i = h; i &lt; n; i++) {
+                for (int j = i; j &gt;= h && less(a[j], a[j-h]); j -= h) {
+                    exchange(a, j, j-h);
+                }
+            }
+            
+            h = h / 3;
+        }
+        
+        draw();
+    }
+}</code></pre>
 
 
 <p></p>
@@ -513,7 +401,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

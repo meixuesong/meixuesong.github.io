@@ -9,14 +9,8 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="本文记录Java注解的基本用法。 注解类型声明与接口声明的唯一区别是，在interface之前增加了一个@符： 1
-2
-public @interface TestMethod {
-} 判断方法是否有某个注解： 1
-2
-3
-4
-for(Method method: testClass. &hellip;">
+  <meta name="description" content="本文记录Java注解的基本用法。 注解类型声明与接口声明的唯一区别是，在interface之前增加了一个@符： public @interface TestMethod {
+} 判断方法是否有某个注解： for(Method method: testClass.getDeclaredMethods &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -34,7 +28,8 @@ for(Method method: testClass. &hellip;">
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -110,24 +105,16 @@ for(Method method: testClass. &hellip;">
 
 <p>注解类型声明与接口声明的唯一区别是，在interface之前增加了一个@符：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="nd">@interface</span> <span class="n">TestMethod</span> <span class="o">{</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public @interface TestMethod {
+}</code></pre>
 
 
 <p>判断方法是否有某个注解：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">for</span><span class="o">(</span><span class="n">Method</span> <span class="nl">method:</span> <span class="n">testClass</span><span class="o">.</span><span class="na">getDeclaredMethods</span><span class="o">())</span>
-</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">isAnnotationPresent</span><span class="o">(</span><span class="n">TestMethod</span><span class="o">.</span><span class="na">class</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>      <span class="o">...</span>
-</span><span class='line'>  <span class="o">}</span>            
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>for(Method method: testClass.getDeclaredMethods())
+    if (method.isAnnotationPresent(TestMethod.class)) {
+        ...
+    }           </code></pre>
 
 
 <h3>保留(Retention)</h3>
@@ -141,26 +128,17 @@ for(Method method: testClass. &hellip;">
 </ul>
 
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Retention</span><span class="o">(</span><span class="n">RetentionPolicy</span><span class="o">.</span><span class="na">RUNTIME</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="nd">@interface</span> <span class="n">TestMethod</span> <span class="o">{</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>@Retention(RetentionPolicy.RUNTIME)
+public @interface TestMethod {
+}</code></pre>
 
 
 <h3>注解的目标（Annotation Target）</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Retention</span><span class="o">(</span><span class="n">RetentionPolicy</span><span class="o">.</span><span class="na">RUNTIME</span><span class="o">)</span>
-</span><span class='line'><span class="nd">@Target</span><span class="o">(</span><span class="n">ElementType</span><span class="o">.</span><span class="na">METHOD</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="nd">@interface</span> <span class="n">TestMethod</span> <span class="o">{</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface TestMethod {
+}</code></pre>
 
 
 <p>目标的类别包括：TYPE, FIELD, METHOD, PARAMETER, CONSTRUCTOR, LOCAL_VARIABLE, ANNOTATION_TYPET和PACKAGE。如果没有指定目标，则注解可以修饰任何Java元素。</p>
@@ -169,25 +147,15 @@ for(Method method: testClass. &hellip;">
 
 <p>为了在注解类型中支持单个参数，需要提供一个名为value的方法，返回适当的类型并且没有任何参数。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Retention</span><span class="o">(</span><span class="n">RetentionPolicy</span><span class="o">.</span><span class="na">RUNTIME</span><span class="o">)</span>
-</span><span class='line'><span class="nd">@Target</span><span class="o">(</span><span class="n">ElementType</span><span class="o">.</span><span class="na">METHOD</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="nd">@interface</span> <span class="n">Ignore</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">String</span> <span class="nf">value</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//使用示例</span>
-</span><span class='line'><span class="nd">@Ignore</span><span class="o">(</span><span class="s">&quot;忽略&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testC</span><span class="o">()</span> <span class="o">{}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Ignore {
+    String value();
+}
+
+//使用示例
+@Ignore("忽略")
+public void testC() {}</code></pre>
 
 
 <p>不能将null作为注解的值（value）。</p>
@@ -196,125 +164,74 @@ for(Method method: testClass. &hellip;">
 
 <p>可指定value方法的返回值为数组：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Retention</span><span class="o">(</span><span class="n">RetentionPolicy</span><span class="o">.</span><span class="na">RUNTIME</span><span class="o">)</span>
-</span><span class='line'><span class="nd">@Target</span><span class="o">(</span><span class="n">ElementType</span><span class="o">.</span><span class="na">METHOD</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="nd">@interface</span> <span class="n">Ignore</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">String</span><span class="o">[]</span> <span class="nf">value</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//使用示例</span>
-</span><span class='line'><span class="nd">@Ignore</span><span class="o">({</span><span class="s">&quot;忽略&quot;</span><span class="o">,</span> <span class="s">&quot;房价涨了&quot;</span><span class="o">})</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testC</span><span class="o">()</span> <span class="o">{}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//如果数组只有一个成员，也可以这样写：</span>
-</span><span class='line'><span class="nd">@Ignore</span><span class="o">(</span><span class="s">&quot;房价涨了&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testC</span><span class="o">()</span> <span class="o">{}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Ignore {
+    String[] value();
+}
+
+//使用示例
+@Ignore({"忽略", "房价涨了"})
+public void testC() {}
+
+//如果数组只有一个成员，也可以这样写：
+@Ignore("房价涨了")
+public void testC() {}</code></pre>
 
 
 <h3>多个参数的注解</h3>
 
 <p>注解有多个参数时，注解类型的成员名与注解声明的名称一致，如下例中的reasons和initials：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Retention</span><span class="o">(</span><span class="n">RetentionPolicy</span><span class="o">.</span><span class="na">RUNTIME</span><span class="o">)</span>
-</span><span class='line'><span class="nd">@Target</span><span class="o">(</span><span class="n">ElementType</span><span class="o">.</span><span class="na">METHOD</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="nd">@interface</span> <span class="n">Ignore</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">String</span><span class="o">[]</span> <span class="nf">reasons</span><span class="o">();</span>
-</span><span class='line'>  <span class="n">String</span> <span class="nf">initials</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//使用示例</span>
-</span><span class='line'><span class="nd">@Ignore</span><span class="o">(</span><span class="n">reasons</span><span class="o">={</span><span class="s">&quot;just because&quot;</span><span class="o">,</span> <span class="s">&quot;and why not&quot;</span><span class="o">},</span> <span class="n">initials</span><span class="o">=</span><span class="s">&quot;jjl&quot;</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Ignore {
+    String[] reasons();
+    String initials();
+}
+
+//使用示例
+@Ignore(reasons={"just because", "and why not"}, initials="jjl")</code></pre>
 
 
 <h3>缺省值</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Retention</span><span class="o">(</span><span class="n">RetentionPolicy</span><span class="o">.</span><span class="na">RUNTIME</span><span class="o">)</span>
-</span><span class='line'><span class="nd">@Target</span><span class="o">(</span><span class="n">ElementType</span><span class="o">.</span><span class="na">METHOD</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="nd">@interface</span> <span class="n">Ignore</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">String</span><span class="o">[]</span> <span class="nf">reasons</span><span class="o">()</span> <span class="k">default</span> <span class="s">&quot;房价涨了&quot;</span><span class="o">;</span>
-</span><span class='line'>  <span class="n">String</span> <span class="nf">initials</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Ignore {
+    String[] reasons() default "房价涨了";
+    String initials();
+}</code></pre>
 
 
 <h3>附加返回类型与复式注解类型</h3>
 
 <p>注解值可以是基本类型、枚举、Class引用、注解类型本身，或者任意这些类型的数组。我们以注解类型为例：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="nd">@interface</span> <span class="n">Date</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="nf">month</span><span class="o">();</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="nf">day</span><span class="o">();</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="nf">year</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Retention</span><span class="o">(</span><span class="n">RetentionPolicy</span><span class="o">.</span><span class="na">RUNTIME</span><span class="o">)</span>
-</span><span class='line'><span class="nd">@Target</span><span class="o">(</span><span class="n">ElementType</span><span class="o">.</span><span class="na">METHOD</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="nd">@interface</span> <span class="n">Ignore</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">Date</span> <span class="nf">date</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//使用示例</span>
-</span><span class='line'><span class="nd">@Ignore</span><span class="o">(</span><span class="n">date</span><span class="o">=</span><span class="nd">@Date</span><span class="o">(</span><span class="n">month</span><span class="o">=</span><span class="mi">1</span><span class="o">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">2</span><span class="o">,</span> <span class="n">year</span><span class="o">=</span><span class="mi">2014</span><span class="o">))</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testC</span><span class="o">()</span> <span class="o">{}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public @interface Date {
+    int month();
+    int day();
+    int year();
+}
+
+
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Ignore {
+    Date date();
+}
+
+//使用示例
+@Ignore(date=@Date(month=1, day=2, year=2014))
+public void testC() {}</code></pre>
 
 
 <h3>包注解</h3>
 
 <p>注解的目标除了方法、属性等外，还可以是包，那么包注解写在哪呢？方法在在包对应的目录中，创建一个名为package-info.java的源文件，这个文件应该包含所有的包注解，后面跟随适当的package语句。除此之外，这个文件不能够包含其它任何东西。示例如下：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@TestPackage</span><span class="o">(</span><span class="n">isPerformance</span><span class="o">=</span><span class="kc">true</span><span class="o">)</span> <span class="kn">package</span> <span class="n">sis</span><span class="o">.</span><span class="na">testing</span><span class="o">;</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>@TestPackage(isPerformance=true) package sis.testing;</code></pre>
 
 
 
@@ -470,7 +387,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

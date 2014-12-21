@@ -27,7 +27,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -136,136 +137,73 @@
 
 <p><img src="/myresource/images/image_blog_2014-11-04-directed-edge-api.png" alt="image" /></p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DirectedEdge</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">v</span><span class="o">;</span>                <span class="c1">//边的起点</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">w</span><span class="o">;</span>                <span class="c1">//边的终点</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">weight</span><span class="o">;</span>        <span class="c1">//边的权重</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">DirectedEdge</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">,</span> <span class="kt">int</span> <span class="n">w</span><span class="o">,</span> <span class="kt">double</span> <span class="n">weight</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">v</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IndexOutOfBoundsException</span><span class="o">(</span><span class="s">&quot;Vertex names must be nonnegative integers&quot;</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">w</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IndexOutOfBoundsException</span><span class="o">(</span><span class="s">&quot;Vertex names must be nonnegative integers&quot;</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">Double</span><span class="o">.</span><span class="na">isNaN</span><span class="o">(</span><span class="n">weight</span><span class="o">))</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;Weight is NaN&quot;</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">w</span> <span class="o">=</span> <span class="n">w</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">weight</span> <span class="o">=</span> <span class="n">weight</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">from</span><span class="o">()</span> <span class="o">{</span><span class="k">return</span> <span class="n">v</span><span class="o">;}</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">to</span><span class="o">()</span> <span class="o">{</span><span class="k">return</span> <span class="n">w</span><span class="o">;}</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">double</span> <span class="nf">weight</span><span class="o">()</span> <span class="o">{</span><span class="k">return</span> <span class="n">weight</span><span class="o">;}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">v</span> <span class="o">+</span> <span class="s">&quot;-&gt;&quot;</span> <span class="o">+</span> <span class="n">w</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;%5.2f&quot;</span><span class="o">,</span> <span class="n">weight</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class DirectedEdge { 
+    private final int v;                //边的起点
+    private final int w;                //边的终点
+    private final double weight;        //边的权重
+
+    public DirectedEdge(int v, int w, double weight) {
+        if (v &lt; 0) throw new IndexOutOfBoundsException("Vertex names must be nonnegative integers");
+        if (w &lt; 0) throw new IndexOutOfBoundsException("Vertex names must be nonnegative integers");
+        if (Double.isNaN(weight)) throw new IllegalArgumentException("Weight is NaN");
+        this.v = v;
+        this.w = w;
+        this.weight = weight;
+    }
+
+    public int from() {return v;}
+    public int to() {return w;}
+    public double weight() {return weight;}
+
+    public String toString() {
+        return v + "-&gt;" + w + " " + String.format("%5.2f", weight);
+    }
+}</code></pre>
 
 
 <p>加权有向图的API也与无向图类似：</p>
 
 <p><img src="/myresource/images/image_blog_2014-11-04-edge-weighted-digraph-api.png" alt="image" /></p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EdgeWeightedDigraph</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">V</span><span class="o">;</span>                    <span class="c1">//顶点总数</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">int</span> <span class="n">E</span><span class="o">;</span>                          <span class="c1">//边的总数</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Bag</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;[]</span> <span class="n">adj</span><span class="o">;</span>      <span class="c1">//邻接表</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">EdgeWeightedDigraph</span><span class="o">(</span><span class="kt">int</span> <span class="n">V</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">V</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;Number of vertices in a Digraph must be nonnegative&quot;</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">V</span> <span class="o">=</span> <span class="n">V</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">E</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">adj</span> <span class="o">=</span> <span class="o">(</span><span class="n">Bag</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;[])</span> <span class="k">new</span> <span class="n">Bag</span><span class="o">[</span><span class="n">V</span><span class="o">];</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">V</span><span class="o">;</span> <span class="n">v</span><span class="o">++)</span>
-</span><span class='line'>            <span class="n">adj</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Bag</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;();</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">V</span><span class="o">()</span> <span class="o">{</span><span class="k">return</span> <span class="n">V</span><span class="o">;}</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">E</span><span class="o">()</span> <span class="o">{</span><span class="k">return</span> <span class="n">E</span><span class="o">;}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">//将e添加到有向图中</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addEdge</span><span class="o">(</span><span class="n">DirectedEdge</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">adj</span><span class="o">[</span><span class="n">e</span><span class="o">.</span><span class="na">from</span><span class="o">()].</span><span class="na">add</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">E</span><span class="o">++;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">//从v指出的边</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;</span> <span class="nf">adj</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">adj</span><span class="o">[</span><span class="n">v</span><span class="o">];</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">//有向图中的所有边</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;</span> <span class="nf">edges</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">Bag</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Bag</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;();</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">V</span><span class="o">;</span> <span class="n">v</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">for</span> <span class="o">(</span><span class="n">DirectedEdge</span> <span class="n">e</span> <span class="o">:</span> <span class="n">adj</span><span class="o">(</span><span class="n">v</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>                <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
-</span><span class='line'>            <span class="o">}</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">list</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class EdgeWeightedDigraph {
+    private final int V;                    //顶点总数
+    private int E;                          //边的总数
+    private Bag&lt;DirectedEdge&gt;[] adj;      //邻接表
+    
+    public EdgeWeightedDigraph(int V) {
+        if (V &lt; 0) throw new IllegalArgumentException("Number of vertices in a Digraph must be nonnegative");
+        this.V = V;
+        this.E = 0;
+        adj = (Bag&lt;DirectedEdge&gt;[]) new Bag[V];
+        for (int v = 0; v &lt; V; v++)
+            adj[v] = new Bag&lt;DirectedEdge&gt;();
+    }
+
+    public int V() {return V;}
+    public int E() {return E;}
+
+    //将e添加到有向图中
+    public void addEdge(DirectedEdge e) {
+        adj[e.from()].add(e);
+        E++;
+    }
+
+    //从v指出的边
+    public Iterable&lt;DirectedEdge&gt; adj(int v) {
+        return adj[v];
+    }
+
+    //有向图中的所有边
+    public Iterable&lt;DirectedEdge&gt; edges() {
+        Bag&lt;DirectedEdge&gt; list = new Bag&lt;DirectedEdge&gt;();
+        for (int v = 0; v &lt; V; v++) {
+            for (DirectedEdge e : adj(v)) {
+                list.add(e);
+            }
+        }
+        return list;
+    } 
+}</code></pre>
 
 
 <p>加权有向图的表示：</p>
@@ -314,169 +252,87 @@
 
 <p>Dijkstra算法实现时，除了要distTo[]和edgeTo[]之外，还需要一条索引优先队列pa，以保存需要被放松的顶点并确认下一个被放松的顶点。只要将v和distTo[v]关联起来放入队列就可以立即实现Dijkstra算法。Prim算法每次添加的都是离树最近的非树顶点，而Dijkstra算法每次添加的都是离起点最近的非树顶点。如果将加权无向图看成加权有向图，对无向图中的每条边都相应地创建方向相反的有向边，最短路径的问题是等价的。Dijkstra算法实现实现如下：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DijkstraSP</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">double</span><span class="o">[]</span> <span class="n">distTo</span><span class="o">;</span>          <span class="c1">// distTo[v] = distance  of shortest s-&gt;v path</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">DirectedEdge</span><span class="o">[]</span> <span class="n">edgeTo</span><span class="o">;</span>    <span class="c1">// edgeTo[v] = last edge on shortest s-&gt;v path</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">IndexMinPQ</span><span class="o">&lt;</span><span class="n">Double</span><span class="o">&gt;</span> <span class="n">pq</span><span class="o">;</span>    <span class="c1">// priority queue of vertices</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Computes a shortest paths tree from &lt;tt&gt;s&lt;/tt&gt; to every other vertex in</span>
-</span><span class='line'><span class="cm">     * the edge-weighted digraph &lt;tt&gt;G&lt;/tt&gt;.</span>
-</span><span class='line'><span class="cm">     * @param G the edge-weighted digraph</span>
-</span><span class='line'><span class="cm">     * @param s the source vertex</span>
-</span><span class='line'><span class="cm">     * @throws IllegalArgumentException if an edge weight is negative</span>
-</span><span class='line'><span class="cm">     * @throws IllegalArgumentException unless 0 &amp;le; &lt;tt&gt;s&lt;/tt&gt; &amp;le; &lt;tt&gt;V&lt;/tt&gt; - 1</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">DijkstraSP</span><span class="o">(</span><span class="n">EdgeWeightedDigraph</span> <span class="n">G</span><span class="o">,</span> <span class="kt">int</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">DirectedEdge</span> <span class="n">e</span> <span class="o">:</span> <span class="n">G</span><span class="o">.</span><span class="na">edges</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">weight</span><span class="o">()</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span>
-</span><span class='line'>                <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;edge &quot;</span> <span class="o">+</span> <span class="n">e</span> <span class="o">+</span> <span class="s">&quot; has negative weight&quot;</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">distTo</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">double</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
-</span><span class='line'>        <span class="n">edgeTo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DirectedEdge</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">();</span> <span class="n">v</span><span class="o">++)</span>
-</span><span class='line'>            <span class="n">distTo</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">=</span> <span class="n">Double</span><span class="o">.</span><span class="na">POSITIVE_INFINITY</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">distTo</span><span class="o">[</span><span class="n">s</span><span class="o">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// relax vertices in order of distance from s</span>
-</span><span class='line'>        <span class="n">pq</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IndexMinPQ</span><span class="o">&lt;</span><span class="n">Double</span><span class="o">&gt;(</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">());</span>
-</span><span class='line'>        <span class="n">pq</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">distTo</span><span class="o">[</span><span class="n">s</span><span class="o">]);</span>
-</span><span class='line'>        <span class="k">while</span> <span class="o">(!</span><span class="n">pq</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>            <span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="na">delMin</span><span class="o">();</span>
-</span><span class='line'>            <span class="k">for</span> <span class="o">(</span><span class="n">DirectedEdge</span> <span class="n">e</span> <span class="o">:</span> <span class="n">G</span><span class="o">.</span><span class="na">adj</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
-</span><span class='line'>                <span class="n">relax</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// relax edge e and update pq if changed</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">relax</span><span class="o">(</span><span class="n">DirectedEdge</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">from</span><span class="o">(),</span> <span class="n">w</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">to</span><span class="o">();</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">distTo</span><span class="o">[</span><span class="n">w</span><span class="o">]</span> <span class="o">&gt;</span> <span class="n">distTo</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="na">weight</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">distTo</span><span class="o">[</span><span class="n">w</span><span class="o">]</span> <span class="o">=</span> <span class="n">distTo</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="na">weight</span><span class="o">();</span>
-</span><span class='line'>            <span class="n">edgeTo</span><span class="o">[</span><span class="n">w</span><span class="o">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">;</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">pq</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">w</span><span class="o">))</span> <span class="n">pq</span><span class="o">.</span><span class="na">decreaseKey</span><span class="o">(</span><span class="n">w</span><span class="o">,</span> <span class="n">distTo</span><span class="o">[</span><span class="n">w</span><span class="o">]);</span>
-</span><span class='line'>            <span class="k">else</span>                <span class="n">pq</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">w</span><span class="o">,</span> <span class="n">distTo</span><span class="o">[</span><span class="n">w</span><span class="o">]);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Returns the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.</span>
-</span><span class='line'><span class="cm">     * @param v the destination vertex</span>
-</span><span class='line'><span class="cm">     * @return the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;;</span>
-</span><span class='line'><span class="cm">     *    &lt;tt&gt;Double.POSITIVE_INFINITY&lt;/tt&gt; if no such path</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">double</span> <span class="nf">distTo</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">distTo</span><span class="o">[</span><span class="n">v</span><span class="o">];</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Is there a path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;?</span>
-</span><span class='line'><span class="cm">     * @param v the destination vertex</span>
-</span><span class='line'><span class="cm">     * @return &lt;tt&gt;true&lt;/tt&gt; if there is a path from the source vertex</span>
-</span><span class='line'><span class="cm">     *    &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;, and &lt;tt&gt;false&lt;/tt&gt; otherwise</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">hasPathTo</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">distTo</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">Double</span><span class="o">.</span><span class="na">POSITIVE_INFINITY</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Returns a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.</span>
-</span><span class='line'><span class="cm">     * @param v the destination vertex</span>
-</span><span class='line'><span class="cm">     * @return a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;</span>
-</span><span class='line'><span class="cm">     *    as an iterable of edges, and &lt;tt&gt;null&lt;/tt&gt; if no such path</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;</span> <span class="nf">pathTo</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(!</span><span class="n">hasPathTo</span><span class="o">(</span><span class="n">v</span><span class="o">))</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">Stack</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;</span> <span class="n">path</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Stack</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;();</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">DirectedEdge</span> <span class="n">e</span> <span class="o">=</span> <span class="n">edgeTo</span><span class="o">[</span><span class="n">v</span><span class="o">];</span> <span class="n">e</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">;</span> <span class="n">e</span> <span class="o">=</span> <span class="n">edgeTo</span><span class="o">[</span><span class="n">e</span><span class="o">.</span><span class="na">from</span><span class="o">()])</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">path</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">path</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class DijkstraSP {
+    private double[] distTo;          // distTo[v] = distance  of shortest s-&gt;v path
+    private DirectedEdge[] edgeTo;    // edgeTo[v] = last edge on shortest s-&gt;v path
+    private IndexMinPQ&lt;Double&gt; pq;    // priority queue of vertices
+
+    /**
+     * Computes a shortest paths tree from &lt;tt&gt;s&lt;/tt&gt; to every other vertex in
+     * the edge-weighted digraph &lt;tt&gt;G&lt;/tt&gt;.
+     * @param G the edge-weighted digraph
+     * @param s the source vertex
+     * @throws IllegalArgumentException if an edge weight is negative
+     * @throws IllegalArgumentException unless 0 &le; &lt;tt&gt;s&lt;/tt&gt; &le; &lt;tt&gt;V&lt;/tt&gt; - 1
+     */
+    public DijkstraSP(EdgeWeightedDigraph G, int s) {
+        for (DirectedEdge e : G.edges()) {
+            if (e.weight() &lt; 0)
+                throw new IllegalArgumentException("edge " + e + " has negative weight");
+        }
+
+        distTo = new double[G.V()];
+        edgeTo = new DirectedEdge[G.V()];
+        for (int v = 0; v &lt; G.V(); v++)
+            distTo[v] = Double.POSITIVE_INFINITY;
+        distTo[s] = 0.0;
+
+        // relax vertices in order of distance from s
+        pq = new IndexMinPQ&lt;Double&gt;(G.V());
+        pq.insert(s, distTo[s]);
+        while (!pq.isEmpty()) {
+            int v = pq.delMin();
+            for (DirectedEdge e : G.adj(v))
+                relax(e);
+        }
+    }
+
+    // relax edge e and update pq if changed
+    private void relax(DirectedEdge e) {
+        int v = e.from(), w = e.to();
+        if (distTo[w] &gt; distTo[v] + e.weight()) {
+            distTo[w] = distTo[v] + e.weight();
+            edgeTo[w] = e;
+            if (pq.contains(w)) pq.decreaseKey(w, distTo[w]);
+            else                pq.insert(w, distTo[w]);
+        }
+    }
+
+    /**
+     * Returns the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+     * @param v the destination vertex
+     * @return the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;;
+     *    &lt;tt&gt;Double.POSITIVE_INFINITY&lt;/tt&gt; if no such path
+     */
+    public double distTo(int v) {
+        return distTo[v];
+    }
+
+    /**
+     * Is there a path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;?
+     * @param v the destination vertex
+     * @return &lt;tt&gt;true&lt;/tt&gt; if there is a path from the source vertex
+     *    &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;, and &lt;tt&gt;false&lt;/tt&gt; otherwise
+     */
+    public boolean hasPathTo(int v) {
+        return distTo[v] &lt; Double.POSITIVE_INFINITY;
+    }
+
+    /**
+     * Returns a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+     * @param v the destination vertex
+     * @return a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;
+     *    as an iterable of edges, and &lt;tt&gt;null&lt;/tt&gt; if no such path
+     */
+    public Iterable&lt;DirectedEdge&gt; pathTo(int v) {
+        if (!hasPathTo(v)) return null;
+        Stack&lt;DirectedEdge&gt; path = new Stack&lt;DirectedEdge&gt;();
+        for (DirectedEdge e = edgeTo[v]; e != null; e = edgeTo[e.from()]) {
+            path.push(e);
+        }
+        return path;
+    }
+}</code></pre>
 
 
 <p>要解决<strong>加权有向图中给定两点（从s到t）的最短路径</strong>这个问题，只要使用Dijkstra算法并从优先队列中取到t之后终止搜索。</p>
@@ -487,155 +343,80 @@
 
 <p>根据在<a href="/blog/2014/10/30/you-xiang-tu/">有向图</a>中学习的拓扑顺序知识，我们知道一幅有向无环图的拓扑顺序就是所有顶点的逆后序排列。如果我们按照拓扑顺序放松顶点，就能在E+V成正比的时间内解决无环加权有向图的单点最短路径问题。代码实现如下：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AcyclicSP</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">double</span><span class="o">[]</span> <span class="n">distTo</span><span class="o">;</span>         <span class="c1">// distTo[v] = distance  of shortest s-&gt;v path</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">DirectedEdge</span><span class="o">[]</span> <span class="n">edgeTo</span><span class="o">;</span>   <span class="c1">// edgeTo[v] = last edge on shortest s-&gt;v path</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Computes a shortest paths tree from &lt;tt&gt;s&lt;/tt&gt; to every other vertex in</span>
-</span><span class='line'><span class="cm">     * the directed acyclic graph &lt;tt&gt;G&lt;/tt&gt;.</span>
-</span><span class='line'><span class="cm">     * @param G the acyclic digraph</span>
-</span><span class='line'><span class="cm">     * @param s the source vertex</span>
-</span><span class='line'><span class="cm">     * @throws IllegalArgumentException if the digraph is not acyclic</span>
-</span><span class='line'><span class="cm">     * @throws IllegalArgumentException unless 0 &amp;le; &lt;tt&gt;s&lt;/tt&gt; &amp;le; &lt;tt&gt;V&lt;/tt&gt; - 1</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">AcyclicSP</span><span class="o">(</span><span class="n">EdgeWeightedDigraph</span> <span class="n">G</span><span class="o">,</span> <span class="kt">int</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">distTo</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">double</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
-</span><span class='line'>        <span class="n">edgeTo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DirectedEdge</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">();</span> <span class="n">v</span><span class="o">++)</span>
-</span><span class='line'>            <span class="n">distTo</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">=</span> <span class="n">Double</span><span class="o">.</span><span class="na">POSITIVE_INFINITY</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">distTo</span><span class="o">[</span><span class="n">s</span><span class="o">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// visit vertices in toplogical order</span>
-</span><span class='line'>        <span class="n">Topological</span> <span class="n">topological</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Topological</span><span class="o">(</span><span class="n">G</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(!</span><span class="n">topological</span><span class="o">.</span><span class="na">hasOrder</span><span class="o">())</span>
-</span><span class='line'>            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;Digraph is not acyclic.&quot;</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">:</span> <span class="n">topological</span><span class="o">.</span><span class="na">order</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">for</span> <span class="o">(</span><span class="n">DirectedEdge</span> <span class="n">e</span> <span class="o">:</span> <span class="n">G</span><span class="o">.</span><span class="na">adj</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
-</span><span class='line'>                <span class="n">relax</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// relax edge e</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">relax</span><span class="o">(</span><span class="n">DirectedEdge</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">from</span><span class="o">(),</span> <span class="n">w</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">to</span><span class="o">();</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">distTo</span><span class="o">[</span><span class="n">w</span><span class="o">]</span> <span class="o">&gt;</span> <span class="n">distTo</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="na">weight</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">distTo</span><span class="o">[</span><span class="n">w</span><span class="o">]</span> <span class="o">=</span> <span class="n">distTo</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="na">weight</span><span class="o">();</span>
-</span><span class='line'>            <span class="n">edgeTo</span><span class="o">[</span><span class="n">w</span><span class="o">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Returns the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.</span>
-</span><span class='line'><span class="cm">     * @param v the destination vertex</span>
-</span><span class='line'><span class="cm">     * @return the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;;</span>
-</span><span class='line'><span class="cm">     *    &lt;tt&gt;Double.POSITIVE_INFINITY&lt;/tt&gt; if no such path</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">double</span> <span class="nf">distTo</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">distTo</span><span class="o">[</span><span class="n">v</span><span class="o">];</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Is there a path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;?</span>
-</span><span class='line'><span class="cm">     * @param v the destination vertex</span>
-</span><span class='line'><span class="cm">     * @return &lt;tt&gt;true&lt;/tt&gt; if there is a path from the source vertex</span>
-</span><span class='line'><span class="cm">     *    &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;, and &lt;tt&gt;false&lt;/tt&gt; otherwise</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">hasPathTo</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">distTo</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">Double</span><span class="o">.</span><span class="na">POSITIVE_INFINITY</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Returns a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.</span>
-</span><span class='line'><span class="cm">     * @param v the destination vertex</span>
-</span><span class='line'><span class="cm">     * @return a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;</span>
-</span><span class='line'><span class="cm">     *    as an iterable of edges, and &lt;tt&gt;null&lt;/tt&gt; if no such path</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;</span> <span class="nf">pathTo</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(!</span><span class="n">hasPathTo</span><span class="o">(</span><span class="n">v</span><span class="o">))</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">Stack</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;</span> <span class="n">path</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Stack</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;();</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">DirectedEdge</span> <span class="n">e</span> <span class="o">=</span> <span class="n">edgeTo</span><span class="o">[</span><span class="n">v</span><span class="o">];</span> <span class="n">e</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">;</span> <span class="n">e</span> <span class="o">=</span> <span class="n">edgeTo</span><span class="o">[</span><span class="n">e</span><span class="o">.</span><span class="na">from</span><span class="o">()])</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">path</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">path</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class AcyclicSP {
+    private double[] distTo;         // distTo[v] = distance  of shortest s-&gt;v path
+    private DirectedEdge[] edgeTo;   // edgeTo[v] = last edge on shortest s-&gt;v path
+
+
+    /**
+     * Computes a shortest paths tree from &lt;tt&gt;s&lt;/tt&gt; to every other vertex in
+     * the directed acyclic graph &lt;tt&gt;G&lt;/tt&gt;.
+     * @param G the acyclic digraph
+     * @param s the source vertex
+     * @throws IllegalArgumentException if the digraph is not acyclic
+     * @throws IllegalArgumentException unless 0 &le; &lt;tt&gt;s&lt;/tt&gt; &le; &lt;tt&gt;V&lt;/tt&gt; - 1
+     */
+    public AcyclicSP(EdgeWeightedDigraph G, int s) {
+        distTo = new double[G.V()];
+        edgeTo = new DirectedEdge[G.V()];
+        for (int v = 0; v &lt; G.V(); v++)
+            distTo[v] = Double.POSITIVE_INFINITY;
+        distTo[s] = 0.0;
+
+        // visit vertices in toplogical order
+        Topological topological = new Topological(G);
+        if (!topological.hasOrder())
+            throw new IllegalArgumentException("Digraph is not acyclic.");
+        for (int v : topological.order()) {
+            for (DirectedEdge e : G.adj(v))
+                relax(e);
+        }
+    }
+
+    // relax edge e
+    private void relax(DirectedEdge e) {
+        int v = e.from(), w = e.to();
+        if (distTo[w] &gt; distTo[v] + e.weight()) {
+            distTo[w] = distTo[v] + e.weight();
+            edgeTo[w] = e;
+        }       
+    }
+
+    /**
+     * Returns the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+     * @param v the destination vertex
+     * @return the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;;
+     *    &lt;tt&gt;Double.POSITIVE_INFINITY&lt;/tt&gt; if no such path
+     */
+    public double distTo(int v) {
+        return distTo[v];
+    }
+
+    /**
+     * Is there a path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;?
+     * @param v the destination vertex
+     * @return &lt;tt&gt;true&lt;/tt&gt; if there is a path from the source vertex
+     *    &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;, and &lt;tt&gt;false&lt;/tt&gt; otherwise
+     */
+    public boolean hasPathTo(int v) {
+        return distTo[v] &lt; Double.POSITIVE_INFINITY;
+    }
+
+    /**
+     * Returns a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+     * @param v the destination vertex
+     * @return a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;
+     *    as an iterable of edges, and &lt;tt&gt;null&lt;/tt&gt; if no such path
+     */
+    public Iterable&lt;DirectedEdge&gt; pathTo(int v) {
+        if (!hasPathTo(v)) return null;
+        Stack&lt;DirectedEdge&gt; path = new Stack&lt;DirectedEdge&gt;();
+        for (DirectedEdge e = edgeTo[v]; e != null; e = edgeTo[e.from()]) {
+            path.push(e);
+        }
+        return path;
+    }
+}</code></pre>
 
 
 <p>上面这个算法的效率几乎已经没有提高的空间。<strong>在已知加权图是无环的情况下，它是找出最短路径的最好方法。</strong>而且它与边的权重是否非负无关，因此无环加权有向图不会受到任何限制。</p>
@@ -678,404 +459,207 @@
 
 <p>Bellman-Ford算法所需的时间和EV成正比，空间和V成正比。因为每一轮算法都会放松E条边，共重复了V轮。把这个算法稍加改进可以提高效率。每一轮放松所有边的过程中，许多边的放松都不会成功。只有上一轮中的distTo[]值发生变化的顶点指出的边才能够改变其他distTo[]元素的值。因此可以用FIFO队列记录这样的顶点，不需要放松所有边。代码实现如下（先忽略负权重环的代码）：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BellmanFordSP</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">double</span><span class="o">[]</span> <span class="n">distTo</span><span class="o">;</span>               <span class="c1">// distTo[v] = 从起点到某个顶点的路径长度</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">DirectedEdge</span><span class="o">[]</span> <span class="n">edgeTo</span><span class="o">;</span>         <span class="c1">// edgeTo[v] = 从起点到某个顶点的最后一条边</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">boolean</span><span class="o">[]</span> <span class="n">onQueue</span><span class="o">;</span>             <span class="c1">// onQueue[v] = 该顶点是否存在于队列中</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">queue</span><span class="o">;</span>          <span class="c1">// 正在被放松的顶点</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">int</span> <span class="n">cost</span><span class="o">;</span>                      <span class="c1">// relax()的调用次数</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;</span> <span class="n">cycle</span><span class="o">;</span>  <span class="c1">// edgeTo[]是否有负权重环</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Computes a shortest paths tree from &lt;tt&gt;s&lt;/tt&gt; to every other vertex in</span>
-</span><span class='line'><span class="cm">     * the edge-weighted digraph &lt;tt&gt;G&lt;/tt&gt;.</span>
-</span><span class='line'><span class="cm">     * @param G the acyclic digraph</span>
-</span><span class='line'><span class="cm">     * @param s the source vertex</span>
-</span><span class='line'><span class="cm">     * @throws IllegalArgumentException unless 0 &amp;le; &lt;tt&gt;s&lt;/tt&gt; &amp;le; &lt;tt&gt;V&lt;/tt&gt; - 1</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">BellmanFordSP</span><span class="o">(</span><span class="n">EdgeWeightedDigraph</span> <span class="n">G</span><span class="o">,</span> <span class="kt">int</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">distTo</span>  <span class="o">=</span> <span class="k">new</span> <span class="kt">double</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
-</span><span class='line'>        <span class="n">edgeTo</span>  <span class="o">=</span> <span class="k">new</span> <span class="n">DirectedEdge</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
-</span><span class='line'>        <span class="n">onQueue</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">();</span> <span class="n">v</span><span class="o">++)</span>
-</span><span class='line'>            <span class="n">distTo</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">=</span> <span class="n">Double</span><span class="o">.</span><span class="na">POSITIVE_INFINITY</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">distTo</span><span class="o">[</span><span class="n">s</span><span class="o">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// Bellman-Ford algorithm</span>
-</span><span class='line'>        <span class="n">queue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
-</span><span class='line'>        <span class="n">queue</span><span class="o">.</span><span class="na">enqueue</span><span class="o">(</span><span class="n">s</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">onQueue</span><span class="o">[</span><span class="n">s</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">while</span> <span class="o">(!</span><span class="n">queue</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">hasNegativeCycle</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>            <span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="na">dequeue</span><span class="o">();</span>
-</span><span class='line'>            <span class="n">onQueue</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
-</span><span class='line'>            <span class="n">relax</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">v</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// relax vertex v and put other endpoints on queue if changed</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">relax</span><span class="o">(</span><span class="n">EdgeWeightedDigraph</span> <span class="n">G</span><span class="o">,</span> <span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">DirectedEdge</span> <span class="n">e</span> <span class="o">:</span> <span class="n">G</span><span class="o">.</span><span class="na">adj</span><span class="o">(</span><span class="n">v</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>            <span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">to</span><span class="o">();</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">distTo</span><span class="o">[</span><span class="n">w</span><span class="o">]</span> <span class="o">&gt;</span> <span class="n">distTo</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="na">weight</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>                <span class="c1">//成功放松的边指向的所有顶点加入到FIFO队列</span>
-</span><span class='line'>                <span class="n">distTo</span><span class="o">[</span><span class="n">w</span><span class="o">]</span> <span class="o">=</span> <span class="n">distTo</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="na">weight</span><span class="o">();</span>
-</span><span class='line'>                <span class="n">edgeTo</span><span class="o">[</span><span class="n">w</span><span class="o">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">;</span>
-</span><span class='line'>                <span class="k">if</span> <span class="o">(!</span><span class="n">onQueue</span><span class="o">[</span><span class="n">w</span><span class="o">])</span> <span class="o">{</span>
-</span><span class='line'>                    <span class="n">queue</span><span class="o">.</span><span class="na">enqueue</span><span class="o">(</span><span class="n">w</span><span class="o">);</span>
-</span><span class='line'>                    <span class="n">onQueue</span><span class="o">[</span><span class="n">w</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
-</span><span class='line'>                <span class="o">}</span>
-</span><span class='line'>            <span class="o">}</span>
-</span><span class='line'>            <span class="c1">//周期性地检查是否有负权重环，避免无限循环</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">cost</span><span class="o">++</span> <span class="o">%</span> <span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
-</span><span class='line'>                <span class="n">findNegativeCycle</span><span class="o">();</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Is there a negative cycle reachable from the source vertex &lt;tt&gt;s&lt;/tt&gt;?</span>
-</span><span class='line'><span class="cm">     * @return &lt;tt&gt;true&lt;/tt&gt; if there is a negative cycle reachable from the</span>
-</span><span class='line'><span class="cm">     *    source vertex &lt;tt&gt;s&lt;/tt&gt;, and &lt;tt&gt;false&lt;/tt&gt; otherwise</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">hasNegativeCycle</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">cycle</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Returns a negative cycle reachable from the source vertex &lt;tt&gt;s&lt;/tt&gt;, or &lt;tt&gt;null&lt;/tt&gt;</span>
-</span><span class='line'><span class="cm">     * if there is no such cycle.</span>
-</span><span class='line'><span class="cm">     * @return a negative cycle reachable from the soruce vertex &lt;tt&gt;s&lt;/tt&gt; </span>
-</span><span class='line'><span class="cm">     *    as an iterable of edges, and &lt;tt&gt;null&lt;/tt&gt; if there is no such cycle</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;</span> <span class="nf">negativeCycle</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">cycle</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// by finding a cycle in predecessor graph</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">findNegativeCycle</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kt">int</span> <span class="n">V</span> <span class="o">=</span> <span class="n">edgeTo</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">EdgeWeightedDigraph</span> <span class="n">spt</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EdgeWeightedDigraph</span><span class="o">(</span><span class="n">V</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">V</span><span class="o">;</span> <span class="n">v</span><span class="o">++)</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">edgeTo</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
-</span><span class='line'>                <span class="n">spt</span><span class="o">.</span><span class="na">addEdge</span><span class="o">(</span><span class="n">edgeTo</span><span class="o">[</span><span class="n">v</span><span class="o">]);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">EdgeWeightedDirectedCycle</span> <span class="n">finder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EdgeWeightedDirectedCycle</span><span class="o">(</span><span class="n">spt</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">cycle</span> <span class="o">=</span> <span class="n">finder</span><span class="o">.</span><span class="na">cycle</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Returns the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.</span>
-</span><span class='line'><span class="cm">     * @param v the destination vertex</span>
-</span><span class='line'><span class="cm">     * @return the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;;</span>
-</span><span class='line'><span class="cm">     *    &lt;tt&gt;Double.POSITIVE_INFINITY&lt;/tt&gt; if no such path</span>
-</span><span class='line'><span class="cm">     * @throws UnsupportedOperationException if there is a negative cost cycle reachable</span>
-</span><span class='line'><span class="cm">     *    from the source vertex &lt;tt&gt;s&lt;/tt&gt;</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">double</span> <span class="nf">distTo</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">hasNegativeCycle</span><span class="o">())</span>
-</span><span class='line'>            <span class="k">throw</span> <span class="k">new</span> <span class="nf">UnsupportedOperationException</span><span class="o">(</span><span class="s">&quot;Negative cost cycle exists&quot;</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">distTo</span><span class="o">[</span><span class="n">v</span><span class="o">];</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Is there a path from the source &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;?</span>
-</span><span class='line'><span class="cm">     * @param v the destination vertex</span>
-</span><span class='line'><span class="cm">     * @return &lt;tt&gt;true&lt;/tt&gt; if there is a path from the source vertex</span>
-</span><span class='line'><span class="cm">     *    &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;, and &lt;tt&gt;false&lt;/tt&gt; otherwise</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">hasPathTo</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">distTo</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">Double</span><span class="o">.</span><span class="na">POSITIVE_INFINITY</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Returns a shortest path from the source &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.</span>
-</span><span class='line'><span class="cm">     * @param v the destination vertex</span>
-</span><span class='line'><span class="cm">     * @return a shortest path from the source &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;</span>
-</span><span class='line'><span class="cm">     *    as an iterable of edges, and &lt;tt&gt;null&lt;/tt&gt; if no such path</span>
-</span><span class='line'><span class="cm">     * @throws UnsupportedOperationException if there is a negative cost cycle reachable</span>
-</span><span class='line'><span class="cm">     *    from the source vertex &lt;tt&gt;s&lt;/tt&gt;</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;</span> <span class="nf">pathTo</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">hasNegativeCycle</span><span class="o">())</span>
-</span><span class='line'>            <span class="k">throw</span> <span class="k">new</span> <span class="nf">UnsupportedOperationException</span><span class="o">(</span><span class="s">&quot;Negative cost cycle exists&quot;</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(!</span><span class="n">hasPathTo</span><span class="o">(</span><span class="n">v</span><span class="o">))</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">Stack</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;</span> <span class="n">path</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Stack</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;();</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">DirectedEdge</span> <span class="n">e</span> <span class="o">=</span> <span class="n">edgeTo</span><span class="o">[</span><span class="n">v</span><span class="o">];</span> <span class="n">e</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">;</span> <span class="n">e</span> <span class="o">=</span> <span class="n">edgeTo</span><span class="o">[</span><span class="n">e</span><span class="o">.</span><span class="na">from</span><span class="o">()])</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">path</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">path</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class BellmanFordSP {
+    private double[] distTo;               // distTo[v] = 从起点到某个顶点的路径长度
+    private DirectedEdge[] edgeTo;         // edgeTo[v] = 从起点到某个顶点的最后一条边
+    private boolean[] onQueue;             // onQueue[v] = 该顶点是否存在于队列中
+    private Queue&lt;Integer&gt; queue;          // 正在被放松的顶点
+    private int cost;                      // relax()的调用次数
+    private Iterable&lt;DirectedEdge&gt; cycle;  // edgeTo[]是否有负权重环
+
+    /**
+     * Computes a shortest paths tree from &lt;tt&gt;s&lt;/tt&gt; to every other vertex in
+     * the edge-weighted digraph &lt;tt&gt;G&lt;/tt&gt;.
+     * @param G the acyclic digraph
+     * @param s the source vertex
+     * @throws IllegalArgumentException unless 0 &le; &lt;tt&gt;s&lt;/tt&gt; &le; &lt;tt&gt;V&lt;/tt&gt; - 1
+     */
+    public BellmanFordSP(EdgeWeightedDigraph G, int s) {
+        distTo  = new double[G.V()];
+        edgeTo  = new DirectedEdge[G.V()];
+        onQueue = new boolean[G.V()];
+        for (int v = 0; v &lt; G.V(); v++)
+            distTo[v] = Double.POSITIVE_INFINITY;
+        distTo[s] = 0.0;
+
+        // Bellman-Ford algorithm
+        queue = new Queue&lt;Integer&gt;();
+        queue.enqueue(s);
+        onQueue[s] = true;
+        while (!queue.isEmpty() && !hasNegativeCycle()) {
+            int v = queue.dequeue();
+            onQueue[v] = false;
+            relax(G, v);
+        }
+    }
+
+    // relax vertex v and put other endpoints on queue if changed
+    private void relax(EdgeWeightedDigraph G, int v) {
+        for (DirectedEdge e : G.adj(v)) {
+            int w = e.to();
+            if (distTo[w] &gt; distTo[v] + e.weight()) {
+                //成功放松的边指向的所有顶点加入到FIFO队列
+                distTo[w] = distTo[v] + e.weight();
+                edgeTo[w] = e;
+                if (!onQueue[w]) {
+                    queue.enqueue(w);
+                    onQueue[w] = true;
+                }
+            }
+            //周期性地检查是否有负权重环，避免无限循环
+            if (cost++ % G.V() == 0) 
+                findNegativeCycle();
+        }
+    }
+
+    /**
+     * Is there a negative cycle reachable from the source vertex &lt;tt&gt;s&lt;/tt&gt;?
+     * @return &lt;tt&gt;true&lt;/tt&gt; if there is a negative cycle reachable from the
+     *    source vertex &lt;tt&gt;s&lt;/tt&gt;, and &lt;tt&gt;false&lt;/tt&gt; otherwise
+     */
+    public boolean hasNegativeCycle() {
+        return cycle != null;
+    }
+
+    /**
+     * Returns a negative cycle reachable from the source vertex &lt;tt&gt;s&lt;/tt&gt;, or &lt;tt&gt;null&lt;/tt&gt;
+     * if there is no such cycle.
+     * @return a negative cycle reachable from the soruce vertex &lt;tt&gt;s&lt;/tt&gt; 
+     *    as an iterable of edges, and &lt;tt&gt;null&lt;/tt&gt; if there is no such cycle
+     */
+    public Iterable&lt;DirectedEdge&gt; negativeCycle() {
+        return cycle;
+    }
+
+    // by finding a cycle in predecessor graph
+    private void findNegativeCycle() {
+        int V = edgeTo.length;
+        EdgeWeightedDigraph spt = new EdgeWeightedDigraph(V);
+        for (int v = 0; v &lt; V; v++)
+            if (edgeTo[v] != null)
+                spt.addEdge(edgeTo[v]);
+
+        EdgeWeightedDirectedCycle finder = new EdgeWeightedDirectedCycle(spt);
+        cycle = finder.cycle();
+    }
+
+    /**
+     * Returns the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+     * @param v the destination vertex
+     * @return the length of a shortest path from the source vertex &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;;
+     *    &lt;tt&gt;Double.POSITIVE_INFINITY&lt;/tt&gt; if no such path
+     * @throws UnsupportedOperationException if there is a negative cost cycle reachable
+     *    from the source vertex &lt;tt&gt;s&lt;/tt&gt;
+     */
+    public double distTo(int v) {
+        if (hasNegativeCycle())
+            throw new UnsupportedOperationException("Negative cost cycle exists");
+        return distTo[v];
+    }
+
+    /**
+     * Is there a path from the source &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;?
+     * @param v the destination vertex
+     * @return &lt;tt&gt;true&lt;/tt&gt; if there is a path from the source vertex
+     *    &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;, and &lt;tt&gt;false&lt;/tt&gt; otherwise
+     */
+    public boolean hasPathTo(int v) {
+        return distTo[v] &lt; Double.POSITIVE_INFINITY;
+    }
+
+    /**
+     * Returns a shortest path from the source &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;.
+     * @param v the destination vertex
+     * @return a shortest path from the source &lt;tt&gt;s&lt;/tt&gt; to vertex &lt;tt&gt;v&lt;/tt&gt;
+     *    as an iterable of edges, and &lt;tt&gt;null&lt;/tt&gt; if no such path
+     * @throws UnsupportedOperationException if there is a negative cost cycle reachable
+     *    from the source vertex &lt;tt&gt;s&lt;/tt&gt;
+     */
+    public Iterable&lt;DirectedEdge&gt; pathTo(int v) {
+        if (hasNegativeCycle())
+            throw new UnsupportedOperationException("Negative cost cycle exists");
+        if (!hasPathTo(v)) return null;
+        Stack&lt;DirectedEdge&gt; path = new Stack&lt;DirectedEdge&gt;();
+        for (DirectedEdge e = edgeTo[v]; e != null; e = edgeTo[e.from()]) {
+            path.push(e);
+        }
+        return path;
+    }
+}</code></pre>
 
 
 <h3>6.1 负权重环的检测</h3>
 
 <p>BellmanFordSP的实现会检测负权重环来避免陷入无限循环。当BellmanFordSP构造函数运行之后，将所有边放松V轮之后当且仅当队列非空时有向图中才存在从起点可达的负权重环。如果是这样，edgeTo[]数组中所表示的子图必然含有这个负权重环。因此nagativeCycle()的实现中，会根据edgeTo[]中的边构造一幅加权有向图并在该图中检测环。我们修改DirectedCycle类来在加权有向图中寻找环：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EdgeWeightedDirectedCycle</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">boolean</span><span class="o">[]</span> <span class="n">marked</span><span class="o">;</span>             <span class="c1">// marked[v] = has vertex v been marked?</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">DirectedEdge</span><span class="o">[]</span> <span class="n">edgeTo</span><span class="o">;</span>        <span class="c1">// edgeTo[v] = previous edge on path to v</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">boolean</span><span class="o">[]</span> <span class="n">onStack</span><span class="o">;</span>            <span class="c1">// onStack[v] = is vertex on the stack?</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Stack</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;</span> <span class="n">cycle</span><span class="o">;</span>    <span class="c1">// directed cycle (or null if no such cycle)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Determines whether the edge-weighted digraph &lt;tt&gt;G&lt;/tt&gt; has a directed cycle and,</span>
-</span><span class='line'><span class="cm">     * if so, finds such a cycle.</span>
-</span><span class='line'><span class="cm">     * @param G the edge-weighted digraph</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">EdgeWeightedDirectedCycle</span><span class="o">(</span><span class="n">EdgeWeightedDigraph</span> <span class="n">G</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">marked</span>  <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
-</span><span class='line'>        <span class="n">onStack</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
-</span><span class='line'>        <span class="n">edgeTo</span>  <span class="o">=</span> <span class="k">new</span> <span class="n">DirectedEdge</span><span class="o">[</span><span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">()];</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">G</span><span class="o">.</span><span class="na">V</span><span class="o">();</span> <span class="n">v</span><span class="o">++)</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(!</span><span class="n">marked</span><span class="o">[</span><span class="n">v</span><span class="o">])</span> <span class="n">dfs</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">v</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// check that algorithm computes either the topological order or finds a directed cycle</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">dfs</span><span class="o">(</span><span class="n">EdgeWeightedDigraph</span> <span class="n">G</span><span class="o">,</span> <span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">onStack</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">marked</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">DirectedEdge</span> <span class="n">e</span> <span class="o">:</span> <span class="n">G</span><span class="o">.</span><span class="na">adj</span><span class="o">(</span><span class="n">v</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>            <span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">to</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1">// short circuit if directed cycle found</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">cycle</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1">//found new vertex, so recur</span>
-</span><span class='line'>            <span class="k">else</span> <span class="nf">if</span> <span class="o">(!</span><span class="n">marked</span><span class="o">[</span><span class="n">w</span><span class="o">])</span> <span class="o">{</span>
-</span><span class='line'>                <span class="n">edgeTo</span><span class="o">[</span><span class="n">w</span><span class="o">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">;</span>
-</span><span class='line'>                <span class="n">dfs</span><span class="o">(</span><span class="n">G</span><span class="o">,</span> <span class="n">w</span><span class="o">);</span>
-</span><span class='line'>            <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="c1">// trace back directed cycle</span>
-</span><span class='line'>            <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">onStack</span><span class="o">[</span><span class="n">w</span><span class="o">])</span> <span class="o">{</span>
-</span><span class='line'>                <span class="n">cycle</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Stack</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;();</span>
-</span><span class='line'>                <span class="k">while</span> <span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">from</span><span class="o">()</span> <span class="o">!=</span> <span class="n">w</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>                    <span class="n">cycle</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
-</span><span class='line'>                    <span class="n">e</span> <span class="o">=</span> <span class="n">edgeTo</span><span class="o">[</span><span class="n">e</span><span class="o">.</span><span class="na">from</span><span class="o">()];</span>
-</span><span class='line'>                <span class="o">}</span>
-</span><span class='line'>                <span class="n">cycle</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
-</span><span class='line'>            <span class="o">}</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">onStack</span><span class="o">[</span><span class="n">v</span><span class="o">]</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Does the edge-weighted digraph have a directed cycle?</span>
-</span><span class='line'><span class="cm">     * @return &lt;tt&gt;true&lt;/tt&gt; if the edge-weighted digraph has a directed cycle,</span>
-</span><span class='line'><span class="cm">     * &lt;tt&gt;false&lt;/tt&gt; otherwise</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">hasCycle</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">cycle</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Returns a directed cycle if the edge-weighted digraph has a directed cycle,</span>
-</span><span class='line'><span class="cm">     * and &lt;tt&gt;null&lt;/tt&gt; otherwise.</span>
-</span><span class='line'><span class="cm">     * @return a directed cycle (as an iterable) if the edge-weighted digraph</span>
-</span><span class='line'><span class="cm">     *    has a directed cycle, and &lt;tt&gt;null&lt;/tt&gt; otherwise</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">DirectedEdge</span><span class="o">&gt;</span> <span class="nf">cycle</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">cycle</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class EdgeWeightedDirectedCycle {
+    private boolean[] marked;             // marked[v] = has vertex v been marked?
+    private DirectedEdge[] edgeTo;        // edgeTo[v] = previous edge on path to v
+    private boolean[] onStack;            // onStack[v] = is vertex on the stack?
+    private Stack&lt;DirectedEdge&gt; cycle;    // directed cycle (or null if no such cycle)
+
+    /**
+     * Determines whether the edge-weighted digraph &lt;tt&gt;G&lt;/tt&gt; has a directed cycle and,
+     * if so, finds such a cycle.
+     * @param G the edge-weighted digraph
+     */
+    public EdgeWeightedDirectedCycle(EdgeWeightedDigraph G) {
+        marked  = new boolean[G.V()];
+        onStack = new boolean[G.V()];
+        edgeTo  = new DirectedEdge[G.V()];
+        for (int v = 0; v &lt; G.V(); v++)
+            if (!marked[v]) dfs(G, v);
+    }
+
+    // check that algorithm computes either the topological order or finds a directed cycle
+    private void dfs(EdgeWeightedDigraph G, int v) {
+        onStack[v] = true;
+        marked[v] = true;
+        for (DirectedEdge e : G.adj(v)) {
+            int w = e.to();
+
+            // short circuit if directed cycle found
+            if (cycle != null) return;
+
+            //found new vertex, so recur
+            else if (!marked[w]) {
+                edgeTo[w] = e;
+                dfs(G, w);
+            }
+
+            // trace back directed cycle
+            else if (onStack[w]) {
+                cycle = new Stack&lt;DirectedEdge&gt;();
+                while (e.from() != w) {
+                    cycle.push(e);
+                    e = edgeTo[e.from()];
+                }
+                cycle.push(e);
+            }
+        }
+
+        onStack[v] = false;
+    }
+
+    /**
+     * Does the edge-weighted digraph have a directed cycle?
+     * @return &lt;tt&gt;true&lt;/tt&gt; if the edge-weighted digraph has a directed cycle,
+     * &lt;tt&gt;false&lt;/tt&gt; otherwise
+     */
+    public boolean hasCycle() {
+        return cycle != null;
+    }
+
+    /**
+     * Returns a directed cycle if the edge-weighted digraph has a directed cycle,
+     * and &lt;tt&gt;null&lt;/tt&gt; otherwise.
+     * @return a directed cycle (as an iterable) if the edge-weighted digraph
+     *    has a directed cycle, and &lt;tt&gt;null&lt;/tt&gt; otherwise
+     */
+    public Iterable&lt;DirectedEdge&gt; cycle() {
+        return cycle;
+    }
+}</code></pre>
 
 
 <h3>6.2 套汇</h3>
@@ -1283,7 +867,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

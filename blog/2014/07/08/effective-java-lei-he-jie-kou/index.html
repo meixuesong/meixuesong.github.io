@@ -27,7 +27,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -111,33 +112,21 @@
 
 <p>长度非零的数组总是可变的，所以，类具有公有的静态final数组域，或者返回这种域的访问方法，这几乎总是错误的！</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//潜在安全漏洞</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Thing</span><span class="o">[]</span> <span class="n">VALUES</span> <span class="o">=</span> <span class="o">{...};</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//可改为：</span>
-</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Thing</span><span class="o">[]</span> <span class="n">PRIVATE_VALUES</span> <span class="o">=</span> <span class="o">{...};</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Thing</span><span class="o">&gt;</span> <span class="n">VALUES</span> <span class="o">=</span>
-</span><span class='line'>  <span class="n">Collections</span><span class="o">.</span><span class="na">unmodifiableList</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">PRIVATE_VALUES</span><span class="o">));</span>
-</span><span class='line'>  
-</span><span class='line'><span class="c1">//或者返回一个数组的备份：</span>
-</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Thing</span><span class="o">[]</span> <span class="n">PRIVATE_VALUES</span> <span class="o">=</span> <span class="o">{...};</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Thing</span><span class="o">[]</span> <span class="n">values</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">PRIVATE_VALUES</span><span class="o">.</span><span class="na">clones</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>  
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>
+//潜在安全漏洞
+public static final Thing[] VALUES = {...};
+
+//可改为：
+private static final Thing[] PRIVATE_VALUES = {...};
+public static final List&lt;Thing&gt; VALUES = 
+    Collections.unmodifiableList(Arrays.asList(PRIVATE_VALUES));
+    
+//或者返回一个数组的备份：
+private static final Thing[] PRIVATE_VALUES = {...};
+public static final Thing[] values {
+    return PRIVATE_VALUES.clones();
+}   
+</code></pre>
 
 
 <h2>14.在public类中使用访问方法而非公有域</h2>
@@ -199,17 +188,11 @@
 </ul>
 
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PhysicalConstants</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="nf">PhysicalConstants</span><span class="o">()</span> <span class="o">{}</span> <span class="c1">//避免实例化</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">AVOGADROS_NUMBER</span> <span class="o">=</span> <span class="mf">6.0221419e23</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">...</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class PhysicalConstants {
+    private PhysicalConstants() {} //避免实例化
+    public static final double AVOGADROS_NUMBER = 6.0221419e23;
+    ...
+}</code></pre>
 
 
 <h2>20.类层次优于标签类</h2>
@@ -222,28 +205,18 @@
 
 <p>如果一个类，它的方法执行其他对象的操作，这个类仅导出一个这样的方法，它的实例就等同于一个指向该方法的指针。这样的实例就称为函数对象（function object）。例如：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">StringLengthComparator</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">String</span> <span class="n">s1</span><span class="o">,</span> <span class="n">String</span> <span class="n">s2</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">s1</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="n">s2</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>class StringLengthComparator {
+    public int compare(String s1, String s2) {
+        return s1.length() - s2.length();
+    }
+}</code></pre>
 
 
 <p>上面这个类没有属性，因此适合于单例。为了把该类的实例传递给方法，应该定义一个接口，并让类实现这个接口。这就是一个策略接口：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Comparator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">T</span> <span class="n">t1</span><span class="o">,</span> <span class="n">T</span> <span class="n">t2</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public interface Comparator&lt;T&gt; {
+    public int compare(T t1, T t2);
+}</code></pre>
 
 
 <p>函数指针的主要用途就是实现策略模式。为了在Java中实现这种模式，要声明一个接口来表示该策略，并且为每个具体策略声明一个实现了该接口的类。当一个具体策略只使用一次时，通常使用匿名类，如果可以重复使用，通常实现为私有的静态成员类，并通过公有的静态final属性导出，其类型为该策略接口。</p>
@@ -416,7 +389,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

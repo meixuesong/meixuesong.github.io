@@ -9,13 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="本文是《Java编程思想》第21章并发的读书笔记。 操作系统：抢占式（调度机制会周期性地中断线程，将上下文切换到另一个线程）、协作式（每个任务自己放弃控制）。 1. 基本线程机制 1.1 定义任务 1
-2
-3
-4
-5
-6
-public class LiftOff implements &hellip;">
+  <meta name="description" content="本文是《Java编程思想》第21章并发的读书笔记。 操作系统：抢占式（调度机制会周期性地中断线程，将上下文切换到另一个线程）、协作式（每个任务自己放弃控制）。 1. 基本线程机制 1.1 定义任务 public class LiftOff implements Runnable { public &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -33,7 +27,8 @@ public class LiftOff implements &hellip;">
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -113,106 +108,64 @@ public class LiftOff implements &hellip;">
 
 <h3>1.1 定义任务</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LiftOff</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
-</span><span class='line'>     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>          <span class="c1">//...</span>
-</span><span class='line'>          <span class="n">Thread</span><span class="o">.</span><span class="na">yield</span><span class="o">();</span> <span class="c1">//声明，我已经干完重要的事，可以把CPU让给其他任务了。</span>
-</span><span class='line'>     <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class LiftOff implements Runnable {
+     public void run() {
+          //...
+          Thread.yield(); //声明，我已经干完重要的事，可以把CPU让给其他任务了。
+     }
+}</code></pre>
 
 
 <h3>1.2 Thread类</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="k">new</span> <span class="n">LiftOff</span><span class="o">());</span>
-</span><span class='line'><span class="n">t</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>Thread t = new Thread(new LiftOff());
+t.start();</code></pre>
 
 
 <h3>1.3 使用Executor</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">ExecutorService</span> <span class="n">exec</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newCachedThreadPool</span><span class="o">();</span> <span class="c1">//or newFixedThreadPool, newSingleThreadExecutor</span>
-</span><span class='line'><span class="n">exec</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">LiftOff</span><span class="o">());</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">exec</span><span class="o">.</span><span class="na">shutdown</span><span class="o">();</span> <span class="c1">//防止加入新任务。</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>ExecutorService exec = Executors.newCachedThreadPool(); //or newFixedThreadPool, newSingleThreadExecutor
+exec.execute(new LiftOff());
+
+exec.shutdown(); //防止加入新任务。</code></pre>
 
 
 <h3>1.4 从任务中产生返回值</h3>
 
 <p>Runnable不返回任何值，Callable接口可以返回值。两者的区别只是后者的方法是call()而不是run()。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">TaskWithResult</span> <span class="kd">implements</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="o">{</span>
-</span><span class='line'>     <span class="kd">public</span> <span class="n">String</span> <span class="nf">call</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">return</span> <span class="s">&quot;result&quot;</span><span class="o">;</span>
-</span><span class='line'>     <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">ExecutorService</span> <span class="n">exec</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newSingleThreadExecutor</span><span class="o">();</span>
-</span><span class='line'><span class="n">Future</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">future</span> <span class="o">=</span> <span class="n">exec</span><span class="o">.</span><span class="na">submit</span><span class="o">(</span><span class="k">new</span> <span class="n">TaskWithResult</span><span class="o">());</span>
-</span><span class='line'><span class="n">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="na">get</span><span class="o">();</span> <span class="c1">//get方法会一直等线程结束后返回结果。isDone()查询Future是否已经完成。</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>class TaskWithResult implements Callable&lt;String&gt; {
+     public String call() {
+          return "result";
+     }
+}
+
+ExecutorService exec = Executors.newSingleThreadExecutor();
+Future&lt;String&gt; future = exec.submit(new TaskWithResult());
+String result = future.get(); //get方法会一直等线程结束后返回结果。isDone()查询Future是否已经完成。</code></pre>
 
 
 <h3>1.5 休眠</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SleepingTask</span> <span class="kd">extends</span> <span class="n">LiftOff</span> <span class="o">{</span>
-</span><span class='line'>     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>               <span class="k">while</span><span class="o">(</span><span class="n">countDown</span><span class="o">--</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>                    <span class="c1">//...</span>
-</span><span class='line'>                    <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">100</span><span class="o">);</span>
-</span><span class='line'>               <span class="o">}</span>
-</span><span class='line'>          <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>               <span class="c1">//...</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>     <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class SleepingTask extends LiftOff {
+     public void run() {
+          try {
+               while(countDown-- &gt; 0) {
+                    //...
+                    TimeUnit.MILLISECONDS.sleep(100);
+               }
+          } catch(InterruptedException e) {
+               //...
+          }
+     }
+}</code></pre>
 
 
 <h3>1.6 优先级</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">setPriority</span><span class="o">(</span><span class="n">Thread</span><span class="o">.</span><span class="na">MAX_PRIORITY</span><span class="o">);</span>
-</span><span class='line'> <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'> public void run() {
+      Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+ }</code></pre>
 
 
 <p>Windows有7个优先级， Solaris有2<sup>31</sup>个优先级。各操作系统不一致，因此建议只使用三个优先级：Thread.MAX_PRIORITY, NORM_PRIORITY, MIN_PRIORITY。</p>
@@ -223,93 +176,53 @@ public class LiftOff implements &hellip;">
 
 <p>要设置为后台线程，必须在线程启动之前调用setDaemon()方法。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="n">Thread</span> <span class="n">daemon</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="k">new</span> <span class="n">LiftOff</span><span class="o">()</span> <span class="o">);</span>
-</span><span class='line'> <span class="n">daemon</span><span class="o">.</span><span class="na">setDaemon</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span> <span class="c1">//必须在start()方法前调用</span>
-</span><span class='line'> <span class="n">daemon</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'> Thread daemon = new Thread(new LiftOff() );
+ daemon.setDaemon(true); //必须在start()方法前调用
+ daemon.start(); </code></pre>
 
 
 <p>可以通过定制的ThreadFactory创建后台线程，例如：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DaemonThreadFactory</span> <span class="kd">implements</span> <span class="n">ThreadFactory</span> <span class="o">{</span>
-</span><span class='line'>     <span class="kd">public</span> <span class="n">Thread</span> <span class="nf">newThread</span><span class="o">(</span><span class="n">Runnable</span> <span class="n">r</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="n">r</span><span class="o">);</span>
-</span><span class='line'>          <span class="n">t</span><span class="o">.</span><span class="na">setDaemon</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-</span><span class='line'>          <span class="c1">//还可以设置优先级、名称等，这些将成为新线程的默认值。</span>
-</span><span class='line'>
-</span><span class='line'>          <span class="k">return</span> <span class="n">t</span><span class="o">;</span>
-</span><span class='line'>     <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">ExecutorService</span> <span class="n">exec</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newCachedThreadPool</span><span class="o">(</span><span class="k">new</span> <span class="n">DaemonThreadFactory</span><span class="o">());</span> <span class="c1">//这个Factory将用于创建新的线程。</span>
-</span><span class='line'><span class="n">exec</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">LiftOff</span><span class="o">());</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class DaemonThreadFactory implements ThreadFactory {
+     public Thread newThread(Runnable r) {
+          Thread t = new Thread(r);
+          t.setDaemon(true);
+          //还可以设置优先级、名称等，这些将成为新线程的默认值。
+          
+          return t;
+     }
+}
+
+ExecutorService exec = Executors.newCachedThreadPool(new DaemonThreadFactory()); //这个Factory将用于创建新的线程。
+exec.execute(new LiftOff()); </code></pre>
 
 
 <p><code>isDaemon()</code>方法用于判断是否后台线程。后台线程创建的任何线程都将自动设置为后台线程。</p>
 
 <p>注意！对于后台线程，在不会执行<code>finally</code>子句的情况下就会终止其<code>run()</code>方法：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">ADaemon</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>          <span class="c1">//...</span>
-</span><span class='line'>          <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="c1">//...</span>
-</span><span class='line'>          <span class="c1">//注意，此时已经是false, 因为异常被捕获时将清理这个标志</span>
-</span><span class='line'>          <span class="n">print</span><span class="o">(</span><span class="s">&quot;isInterrupted(): &quot;</span> <span class="o">+</span> <span class="n">isInterrupted</span><span class="o">());</span>
-</span><span class='line'>      <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">print</span><span class="o">(</span><span class="s">&quot;会运行到这吗？&quot;</span><span class="o">)</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DaemonsDontRunFinally</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="k">new</span> <span class="n">ADaemon</span><span class="o">());</span>
-</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="na">setDaemon</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>class ADaemon implements Runnable {
+    public void run() {
+        try {
+            //...
+            TimeUnit.SECONDS.sleep(1);
+        } catch(InterruptedException e) {
+            //...
+            //注意，此时已经是false, 因为异常被捕获时将清理这个标志
+            print("isInterrupted(): " + isInterrupted()); 
+        } finally {
+            print("会运行到这吗？")
+        }
+    }
+}
+
+public class DaemonsDontRunFinally {
+    public static void main(String[] args) {
+        Thread t = new Thread(new ADaemon());
+        t.setDaemon(true);
+        t.start();
+    }
+}</code></pre>
 
 
 <p>一旦<code>setDaemon(true)</code>，finally并没有被执行。因为一旦main结束，所有后台线程就立即终止了。</p>
@@ -318,58 +231,33 @@ public class LiftOff implements &hellip;">
 
 <p>除了实现Runnable，也可以直接继承Thread类。但是由于Java不支持多重继承，所以继承自Thread适应的场景要少一些。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kd">class</span> <span class="nc">SampleThread</span> <span class="kd">extends</span> <span class="n">Thread</span><span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="nf">SampleThread</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kd">super</span><span class="o">(</span><span class="s">&quot;线程名称&quot;</span><span class="o">);</span>  <span class="c1">//线程名称可通过getName()获取。</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="c1">//...</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>private class SampleThread extends Thread{
+    public SampleThread() {
+        super("线程名称");  //线程名称可通过getName()获取。
+    }
+    
+    public void run() {
+        //...
+    }
+}</code></pre>
 
 
 <p>自管理的Runnable</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SelfManaged</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="n">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="nf">SelfManaged</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>  <span class="c1">//注，不建议在构造器中启动线程，可能会有问题，建议使用Executor</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="c1">//...</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">new</span> <span class="nf">SelfManaged</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class SelfManaged implements Runnable {
+    private Thread t = new Thread(this);
+    public SelfManaged() {
+        t.start();  //注，不建议在构造器中启动线程，可能会有问题，建议使用Executor
+    }
+    
+    public void run() {
+        //...
+    }
+    
+    public static void main(String[] args) {
+        new SelfManaged();
+    }
+}</code></pre>
 
 
 <h3>1.9 加入一个线程</h3>
@@ -380,54 +268,31 @@ public class LiftOff implements &hellip;">
 
 <p>线程中的未捕获的异常会导致系统不稳定，但常规方法并不能在外面捕获这些异常，因此需要借助特殊处理。下面的例子创建了一个新类型的ThreadFactory，它将在每个新创建的Thread对象上附着一个Thread.UncaughtExceptionHandler。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">MyUncaughtExceptionHandler</span> <span class="kd">implements</span> <span class="n">Thread</span><span class="o">.</span><span class="na">UncaughtExceptionHandler</span> <span class="o">{</span>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">uncaughtException</span><span class="o">(</span><span class="n">Thread</span> <span class="n">t</span><span class="o">,</span> <span class="n">Throwable</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="c1">// TODO Auto-generated method stub</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">class</span> <span class="nc">HandlerThreadFactory</span> <span class="kd">implements</span> <span class="n">ThreadFactory</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="n">Thread</span> <span class="nf">newThread</span><span class="o">(</span><span class="n">Runnable</span> <span class="n">r</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="n">r</span><span class="o">);</span>
-</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="na">setUncaughtExceptionHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">MyUncaughtExceptionHandler</span><span class="o">());</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">return</span> <span class="n">t</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">ExecutorService</span> <span class="n">exec</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newCachedThreadPool</span><span class="o">(</span><span class="k">new</span> <span class="n">HandlerThreadFactory</span><span class="o">());</span>
-</span><span class='line'><span class="n">exec</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">SomeThread</span><span class="o">());</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>class MyUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
+        // TODO Auto-generated method stub
+    }
+}
+
+class HandlerThreadFactory implements ThreadFactory {
+
+    @Override
+    public Thread newThread(Runnable r) {
+        Thread t = new Thread(r);
+        t.setUncaughtExceptionHandler(new MyUncaughtExceptionHandler());
+        
+        return t;
+    }
+}
+
+ExecutorService exec = Executors.newCachedThreadPool(new HandlerThreadFactory());
+exec.execute(new SomeThread());</code></pre>
 
 
 <p>如果你知道将要在代码中处处使用相同的异常处理器，那么更简单的方式是在Thread类中设置一个表态域，示例如下：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Thread</span><span class="o">.</span><span class="na">setDefaultUncaughtExceptionHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">MyUncaughtExceptionHandler</span><span class="o">());</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler());</code></pre>
 
 
 <h2>2. 共享受限资源</h2>
@@ -444,58 +309,34 @@ public class LiftOff implements &hellip;">
 
 <p>Lock对象也用于解决共享资源竞争。它必须被显式地创建、锁定和释放。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MutexEvenGenerator</span> <span class="kd">extends</span> <span class="n">IntGenerator</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="n">Lock</span> <span class="n">lock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReentrantLock</span><span class="o">();</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">next</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
-</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>          <span class="c1">//...</span>
-</span><span class='line'>          
-</span><span class='line'>          <span class="c1">//注意！必须在try中返回值，以避免lock.unlock之后将数据暴露给其它线程。</span>
-</span><span class='line'>          <span class="k">return</span> <span class="n">someValue</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="c1">//不要在这里返回值</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class MutexEvenGenerator extends IntGenerator {
+    private Lock lock = new ReentrantLock();
+    public int next() {
+        lock.lock();
+        try {
+            //...
+            
+            //注意！必须在try中返回值，以避免lock.unlock之后将数据暴露给其它线程。
+            return someValue; 
+        } finally {
+            lock.unlock();
+        }
+        
+        //不要在这里返回值
+    }
+}</code></pre>
 
 
 <p>Lock提供了更细粒度的控制能力。使用Lock，可以更加自由地控制锁。例如尝试获得锁，如果获取不到，可以先干点别的事：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kt">boolean</span> <span class="n">captured</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="na">tryLock</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//设置超时时间，超时则触发异常。</span>
-</span><span class='line'><span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kt">boolean</span> <span class="n">captured</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="na">tryLock</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>boolean captured = lock.tryLock();
+
+//设置超时时间，超时则触发异常。
+try {
+    boolean captured = lock.tryLock(2, TimeUnit.SECONDS);
+} catch(InterruptedException e) {
+}
+</code></pre>
 
 
 <h3>2.2 原子性和易变性</h3>
@@ -516,13 +357,9 @@ public class LiftOff implements &hellip;">
 
 <p>以下同步控制块就是临界区：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">synchronized</span><span class="o">(</span><span class="n">synObject</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">//这部分代码一次只能被一个线程访问</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>synchronized(synObject) {
+    //这部分代码一次只能被一个线程访问
+}</code></pre>
 
 
 <p>使用同步控制块，可以防止整个方法都同步，显著提高性能。但要注意，上面例子中，只要没有退出同步控制块，那么被同步对象synObject的所有同步方法都无法被其它线程调用。</p>
@@ -533,137 +370,78 @@ public class LiftOff implements &hellip;">
 
 <p>ThreadLocal对象通常当作静态域存储。示例如下：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ThreadLocalVariableHolder</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">ThreadLocal</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">value</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ThreadLocal</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="nd">@Override</span>
-</span><span class='line'>      <span class="kd">protected</span> <span class="kd">synchronized</span> <span class="n">Integer</span> <span class="nf">initialValue</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">return</span> <span class="mi">10</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">};</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">increment</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">value</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">value</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Accessor</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">ThreadLocalVariableHolder</span><span class="o">.</span><span class="na">increment</span><span class="o">();</span>
-</span><span class='line'>      <span class="c1">//..</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class ThreadLocalVariableHolder {
+    private static final ThreadLocal&lt;Integer&gt; value = new ThreadLocal&lt;Integer&gt;() {
+        @Override
+        protected synchronized Integer initialValue() {
+            return 10;
+        }
+    };
+    
+    public static int get() {
+        return value.get();
+    }
+    
+    public static void increment() {
+        value.set(value.get() + 1);
+    }
+}
+
+
+public class Accessor implements Runnable {
+    @Override
+    public void run() {
+        ThreadLocalVariableHolder.increment();
+        //..
+    }
+}</code></pre>
 
 
 <h2>慎用延迟初始化</h2>
 
 <p>在并发编程时，延迟初始化可能导致问题。除非绝对必要，否则就不要使用延迟初始化。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//正常的初始化</span>
-</span><span class='line'><span class="kd">private</span> <span class="kd">final</span> <span class="n">FieldType</span> <span class="n">field</span> <span class="o">=</span> <span class="n">computeFieldValue</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//正常的初始化
+private final FieldType field = computeFieldValue();</code></pre>
 
 
 <p>如果要使用延迟初始化，就要使用同步方法，例如：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">FieldType</span> <span class="n">field</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">synchronized</span> <span class="n">FieldType</span> <span class="nf">getField</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>     <span class="k">if</span> <span class="o">(</span><span class="n">field</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">field</span> <span class="o">=</span> <span class="n">computeFieldValue</span><span class="o">();</span>
-</span><span class='line'>     <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>     <span class="k">return</span> <span class="n">field</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>private FieldType field;
+
+synchronized FieldType getField() {
+     if (field == null) {
+          field = computeFieldValue();
+     }
+
+     return field;
+}</code></pre>
 
 
 <p>如果出于性能考虑，需要对静态域使用延迟初始化，就使用<strong>Lazy initialization holder class</strong>模式：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="n">Class</span> <span class="n">FieldHolder</span> <span class="o">{</span>
-</span><span class='line'>     <span class="kd">static</span> <span class="kd">final</span> <span class="n">FieldType</span> <span class="n">field</span> <span class="o">=</span> <span class="n">computefieldValue</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">static</span> <span class="n">FieldType</span> <span class="nf">getField</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">FieldHolder</span><span class="o">.</span><span class="na">field</span><span class="o">;</span> <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>private static Class FieldHolder {
+     static final FieldType field = computefieldValue();
+}
+
+static FieldType getField() { return FieldHolder.field; }</code></pre>
 
 
 <p>如果出于性能考虑，需要对实例域使用延迟初始化，就使用双重检查模式(Double check idiom)：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kd">volatile</span> <span class="n">FieldType</span> <span class="n">field</span><span class="o">;</span>
-</span><span class='line'><span class="n">FieldType</span> <span class="nf">getField</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'><span class="n">FieldType</span> <span class="n">result</span> <span class="o">=</span> <span class="n">field</span><span class="o">;</span>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'><span class="kd">synchronized</span><span class="o">(</span><span class="k">this</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'><span class="n">result</span> <span class="o">=</span> <span class="n">field</span><span class="o">;</span>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'><span class="n">field</span> <span class="o">=</span> <span class="n">result</span> <span class="o">=</span> <span class="n">computeFieldValue</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="k">return</span> <span class="n">result</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>private volatile FieldType field;
+FieldType getField() {
+FieldType result = field;
+if (result == null) {
+synchronized(this) {
+result = field;
+if (result == null) {
+field = result = computeFieldValue();
+}
+}
+}
+return result;
+}</code></pre>
 
 
 <p>注意上面的代码：</p>
@@ -827,7 +605,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

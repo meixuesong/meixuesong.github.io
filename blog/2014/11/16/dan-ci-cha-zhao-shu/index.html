@@ -27,7 +27,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -196,435 +197,220 @@
 
 <h3>1.4 实现</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-<span class='line-number'>158</span>
-<span class='line-number'>159</span>
-<span class='line-number'>160</span>
-<span class='line-number'>161</span>
-<span class='line-number'>162</span>
-<span class='line-number'>163</span>
-<span class='line-number'>164</span>
-<span class='line-number'>165</span>
-<span class='line-number'>166</span>
-<span class='line-number'>167</span>
-<span class='line-number'>168</span>
-<span class='line-number'>169</span>
-<span class='line-number'>170</span>
-<span class='line-number'>171</span>
-<span class='line-number'>172</span>
-<span class='line-number'>173</span>
-<span class='line-number'>174</span>
-<span class='line-number'>175</span>
-<span class='line-number'>176</span>
-<span class='line-number'>177</span>
-<span class='line-number'>178</span>
-<span class='line-number'>179</span>
-<span class='line-number'>180</span>
-<span class='line-number'>181</span>
-<span class='line-number'>182</span>
-<span class='line-number'>183</span>
-<span class='line-number'>184</span>
-<span class='line-number'>185</span>
-<span class='line-number'>186</span>
-<span class='line-number'>187</span>
-<span class='line-number'>188</span>
-<span class='line-number'>189</span>
-<span class='line-number'>190</span>
-<span class='line-number'>191</span>
-<span class='line-number'>192</span>
-<span class='line-number'>193</span>
-<span class='line-number'>194</span>
-<span class='line-number'>195</span>
-<span class='line-number'>196</span>
-<span class='line-number'>197</span>
-<span class='line-number'>198</span>
-<span class='line-number'>199</span>
-<span class='line-number'>200</span>
-<span class='line-number'>201</span>
-<span class='line-number'>202</span>
-<span class='line-number'>203</span>
-<span class='line-number'>204</span>
-<span class='line-number'>205</span>
-<span class='line-number'>206</span>
-<span class='line-number'>207</span>
-<span class='line-number'>208</span>
-<span class='line-number'>209</span>
-<span class='line-number'>210</span>
-<span class='line-number'>211</span>
-<span class='line-number'>212</span>
-<span class='line-number'>213</span>
-<span class='line-number'>214</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TrieST</span><span class="o">&lt;</span><span class="n">Value</span><span class="o">&gt;</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">R</span> <span class="o">=</span> <span class="mi">256</span><span class="o">;</span>        <span class="c1">// extended ASCII</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="n">root</span><span class="o">;</span>      <span class="c1">// root of trie</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">int</span> <span class="n">N</span><span class="o">;</span>          <span class="c1">// number of keys in trie</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// R-way trie node</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Node</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kd">private</span> <span class="n">Object</span> <span class="n">val</span><span class="o">;</span>
-</span><span class='line'>        <span class="kd">private</span> <span class="n">Node</span><span class="o">[]</span> <span class="n">next</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Node</span><span class="o">[</span><span class="n">R</span><span class="o">];</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">TrieST</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Initializes an empty string symbol table.</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Returns the value associated with the given key.</span>
-</span><span class='line'><span class="cm">     * @param key the key</span>
-</span><span class='line'><span class="cm">     * @return the value associated with the given key if the key is in the symbol table</span>
-</span><span class='line'><span class="cm">     *     and &lt;tt&gt;null&lt;/tt&gt; if the key is not in the symbol table</span>
-</span><span class='line'><span class="cm">     * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Value</span> <span class="nf">get</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">Node</span> <span class="n">x</span> <span class="o">=</span> <span class="n">get</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">return</span> <span class="o">(</span><span class="n">Value</span><span class="o">)</span> <span class="n">x</span><span class="o">.</span><span class="na">val</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Does this symbol table contain the given key?</span>
-</span><span class='line'><span class="cm">     * @param key the key</span>
-</span><span class='line'><span class="cm">     * @return &lt;tt&gt;true&lt;/tt&gt; if this symbol table contains &lt;tt&gt;key&lt;/tt&gt; and</span>
-</span><span class='line'><span class="cm">     *     &lt;tt&gt;false&lt;/tt&gt; otherwise</span>
-</span><span class='line'><span class="cm">     * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">contains</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nf">get</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="nf">get</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="k">return</span> <span class="n">x</span><span class="o">;</span>
-</span><span class='line'>        <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nf">get</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">],</span> <span class="n">key</span><span class="o">,</span> <span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Inserts the key-value pair into the symbol table, overwriting the old value</span>
-</span><span class='line'><span class="cm">     * with the new value if the key is already in the symbol table.</span>
-</span><span class='line'><span class="cm">     * If the value is &lt;tt&gt;null&lt;/tt&gt;, this effectively deletes the key from the symbol table.</span>
-</span><span class='line'><span class="cm">     * @param key the key</span>
-</span><span class='line'><span class="cm">     * @param val the value</span>
-</span><span class='line'><span class="cm">     * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">put</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="n">Value</span> <span class="n">val</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">val</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="n">delete</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">else</span> <span class="n">root</span> <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">val</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="nf">put</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="n">Value</span> <span class="n">val</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="n">x</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Node</span><span class="o">();</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="n">N</span><span class="o">++;</span>
-</span><span class='line'>            <span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">;</span>
-</span><span class='line'>            <span class="k">return</span> <span class="n">x</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">]</span> <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">],</span> <span class="n">key</span><span class="o">,</span> <span class="n">val</span><span class="o">,</span> <span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">x</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Returns the number of key-value pairs in this symbol table.</span>
-</span><span class='line'><span class="cm">     * @return the number of key-value pairs in this symbol table</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">size</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">N</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Is this symbol table empty?</span>
-</span><span class='line'><span class="cm">     * @return &lt;tt&gt;true&lt;/tt&gt; if this symbol table is empty and &lt;tt&gt;false&lt;/tt&gt; otherwise</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isEmpty</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nf">size</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Returns all keys in the symbol table as an &lt;tt&gt;Iterable&lt;/tt&gt;.</span>
-</span><span class='line'><span class="cm">     * To iterate over all of the keys in the symbol table named &lt;tt&gt;st&lt;/tt&gt;,</span>
-</span><span class='line'><span class="cm">     * use the foreach notation: &lt;tt&gt;for (Key key : st.keys())&lt;/tt&gt;.</span>
-</span><span class='line'><span class="cm">     * @return all keys in the sybol table as an &lt;tt&gt;Iterable&lt;/tt&gt;</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">keys</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nf">keysWithPrefix</span><span class="o">(</span><span class="s">&quot;&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Returns all of the keys in the set that start with &lt;tt&gt;prefix&lt;/tt&gt;.</span>
-</span><span class='line'><span class="cm">     * @param prefix the prefix</span>
-</span><span class='line'><span class="cm">     * @return all of the keys in the set that start with &lt;tt&gt;prefix&lt;/tt&gt;,</span>
-</span><span class='line'><span class="cm">     *     as an iterable</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">keysWithPrefix</span><span class="o">(</span><span class="n">String</span> <span class="n">prefix</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">results</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
-</span><span class='line'>        <span class="n">Node</span> <span class="n">x</span> <span class="o">=</span> <span class="n">get</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">prefix</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">(</span><span class="n">prefix</span><span class="o">),</span> <span class="n">results</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">results</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">collect</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">StringBuilder</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">results</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">results</span><span class="o">.</span><span class="na">enqueue</span><span class="o">(</span><span class="n">prefix</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>  <span class="c1">//有值才是键</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="n">R</span><span class="o">;</span> <span class="n">c</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">prefix</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">],</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">results</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">prefix</span><span class="o">.</span><span class="na">deleteCharAt</span><span class="o">(</span><span class="n">prefix</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Returns all of the keys in the symbol table that match &lt;tt&gt;pattern&lt;/tt&gt;,</span>
-</span><span class='line'><span class="cm">     * where . symbol is treated as a wildcard character.</span>
-</span><span class='line'><span class="cm">     * @param pattern the pattern</span>
-</span><span class='line'><span class="cm">     * @return all of the keys in the symbol table that match &lt;tt&gt;pattern&lt;/tt&gt;,</span>
-</span><span class='line'><span class="cm">     *     as an iterable, where . is treated as a wildcard character.</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">keysThatMatch</span><span class="o">(</span><span class="n">String</span> <span class="n">pattern</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">results</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
-</span><span class='line'>        <span class="n">collect</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">(),</span> <span class="n">pattern</span><span class="o">,</span> <span class="n">results</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">results</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">collect</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">StringBuilder</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">String</span> <span class="n">pattern</span><span class="o">,</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">results</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>        <span class="kt">int</span> <span class="n">d</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">pattern</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
-</span><span class='line'>            <span class="n">results</span><span class="o">.</span><span class="na">enqueue</span><span class="o">(</span><span class="n">prefix</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">pattern</span><span class="o">.</span><span class="na">length</span><span class="o">())</span>
-</span><span class='line'>            <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>        <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;.&#39;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">for</span> <span class="o">(</span><span class="kt">char</span> <span class="n">ch</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">ch</span> <span class="o">&lt;</span> <span class="n">R</span><span class="o">;</span> <span class="n">ch</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>                <span class="n">prefix</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">ch</span><span class="o">);</span>
-</span><span class='line'>                <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">ch</span><span class="o">],</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">pattern</span><span class="o">,</span> <span class="n">results</span><span class="o">);</span>
-</span><span class='line'>                <span class="n">prefix</span><span class="o">.</span><span class="na">deleteCharAt</span><span class="o">(</span><span class="n">prefix</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>            <span class="o">}</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">prefix</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">],</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">pattern</span><span class="o">,</span> <span class="n">results</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">prefix</span><span class="o">.</span><span class="na">deleteCharAt</span><span class="o">(</span><span class="n">prefix</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Returns the string in the symbol table that is the longest prefix of &lt;tt&gt;query&lt;/tt&gt;,</span>
-</span><span class='line'><span class="cm">     * or &lt;tt&gt;null&lt;/tt&gt;, if no such string.</span>
-</span><span class='line'><span class="cm">     * @param query the query string</span>
-</span><span class='line'><span class="cm">     * @throws NullPointerException if &lt;tt&gt;query&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;</span>
-</span><span class='line'><span class="cm">     * @return the string in the symbol table that is the longest prefix of &lt;tt&gt;query&lt;/tt&gt;,</span>
-</span><span class='line'><span class="cm">     *     or &lt;tt&gt;null&lt;/tt&gt; if no such string</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">longestPrefixOf</span><span class="o">(</span><span class="n">String</span> <span class="n">query</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">longestPrefixOf</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">query</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">query</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">length</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// returns the length of the longest string key in the subtrie</span>
-</span><span class='line'>    <span class="c1">// rooted at x that is a prefix of the query string,</span>
-</span><span class='line'>    <span class="c1">// assuming the first d character match and we have already</span>
-</span><span class='line'>    <span class="c1">// found a prefix match of length length</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">int</span> <span class="nf">longestPrefixOf</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">String</span> <span class="n">query</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">,</span> <span class="kt">int</span> <span class="n">length</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="n">length</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">length</span> <span class="o">=</span> <span class="n">d</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">query</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="k">return</span> <span class="n">length</span><span class="o">;</span>
-</span><span class='line'>        <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nf">longestPrefixOf</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">],</span> <span class="n">query</span><span class="o">,</span> <span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">length</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="cm">/**</span>
-</span><span class='line'><span class="cm">     * Removes the key from the set if the key is present.</span>
-</span><span class='line'><span class="cm">     * @param key the key</span>
-</span><span class='line'><span class="cm">     * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;</span>
-</span><span class='line'><span class="cm">     */</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">delete</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">root</span> <span class="o">=</span> <span class="n">delete</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="nf">delete</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">N</span><span class="o">--;</span>
-</span><span class='line'>            <span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>            <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">]</span> <span class="o">=</span> <span class="n">delete</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">],</span> <span class="n">key</span><span class="o">,</span> <span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// remove subtrie rooted at x if it is completely empty</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="n">x</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="n">R</span><span class="o">;</span> <span class="n">c</span><span class="o">++)</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">c</span><span class="o">]</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
-</span><span class='line'>                <span class="k">return</span> <span class="n">x</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class TrieST&lt;Value&gt; {
+    private static final int R = 256;        // extended ASCII
+
+
+    private Node root;      // root of trie
+    private int N;          // number of keys in trie
+
+    // R-way trie node
+    private static class Node {
+        private Object val;
+        private Node[] next = new Node[R];
+    }
+
+    public TrieST() {
+    }
+
+   /**
+     * Initializes an empty string symbol table.
+     */
+
+    /**
+     * Returns the value associated with the given key.
+     * @param key the key
+     * @return the value associated with the given key if the key is in the symbol table
+     *     and &lt;tt&gt;null&lt;/tt&gt; if the key is not in the symbol table
+     * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
+     */
+    public Value get(String key) {
+        Node x = get(root, key, 0);
+        if (x == null) return null;
+        return (Value) x.val;
+    }
+
+    /**
+     * Does this symbol table contain the given key?
+     * @param key the key
+     * @return &lt;tt&gt;true&lt;/tt&gt; if this symbol table contains &lt;tt&gt;key&lt;/tt&gt; and
+     *     &lt;tt&gt;false&lt;/tt&gt; otherwise
+     * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
+     */
+    public boolean contains(String key) {
+        return get(key) != null;
+    }
+
+    private Node get(Node x, String key, int d) {
+        if (x == null) return null;
+        if (d == key.length()) return x;
+        char c = key.charAt(d);
+        return get(x.next[c], key, d+1);
+    }
+
+    /**
+     * Inserts the key-value pair into the symbol table, overwriting the old value
+     * with the new value if the key is already in the symbol table.
+     * If the value is &lt;tt&gt;null&lt;/tt&gt;, this effectively deletes the key from the symbol table.
+     * @param key the key
+     * @param val the value
+     * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
+     */
+    public void put(String key, Value val) {
+        if (val == null) delete(key);
+        else root = put(root, key, val, 0);
+    }
+
+    private Node put(Node x, String key, Value val, int d) {
+        if (x == null) x = new Node();
+        if (d == key.length()) {
+            if (x.val == null) N++;
+            x.val = val;
+            return x;
+        }
+        char c = key.charAt(d);
+        x.next[c] = put(x.next[c], key, val, d+1);
+        return x;
+    }
+
+    /**
+     * Returns the number of key-value pairs in this symbol table.
+     * @return the number of key-value pairs in this symbol table
+     */
+    public int size() {
+        return N;
+    }
+
+    /**
+     * Is this symbol table empty?
+     * @return &lt;tt&gt;true&lt;/tt&gt; if this symbol table is empty and &lt;tt&gt;false&lt;/tt&gt; otherwise
+     */
+    public boolean isEmpty() {
+        return size() == 0;
+    }
+
+    /**
+     * Returns all keys in the symbol table as an &lt;tt&gt;Iterable&lt;/tt&gt;.
+     * To iterate over all of the keys in the symbol table named &lt;tt&gt;st&lt;/tt&gt;,
+     * use the foreach notation: &lt;tt&gt;for (Key key : st.keys())&lt;/tt&gt;.
+     * @return all keys in the sybol table as an &lt;tt&gt;Iterable&lt;/tt&gt;
+     */
+    public Iterable&lt;String&gt; keys() {
+        return keysWithPrefix("");
+    }
+
+    /**
+     * Returns all of the keys in the set that start with &lt;tt&gt;prefix&lt;/tt&gt;.
+     * @param prefix the prefix
+     * @return all of the keys in the set that start with &lt;tt&gt;prefix&lt;/tt&gt;,
+     *     as an iterable
+     */
+    public Iterable&lt;String&gt; keysWithPrefix(String prefix) {
+        Queue&lt;String&gt; results = new Queue&lt;String&gt;();
+        Node x = get(root, prefix, 0);
+        collect(x, new StringBuilder(prefix), results);
+        return results;
+    }
+
+    private void collect(Node x, StringBuilder prefix, Queue&lt;String&gt; results) {
+        if (x == null) return;
+        if (x.val != null) results.enqueue(prefix.toString());  //有值才是键
+        for (char c = 0; c &lt; R; c++) {
+            prefix.append(c);
+            collect(x.next[c], prefix, results);
+            prefix.deleteCharAt(prefix.length() - 1);
+        }
+    }
+
+    /**
+     * Returns all of the keys in the symbol table that match &lt;tt&gt;pattern&lt;/tt&gt;,
+     * where . symbol is treated as a wildcard character.
+     * @param pattern the pattern
+     * @return all of the keys in the symbol table that match &lt;tt&gt;pattern&lt;/tt&gt;,
+     *     as an iterable, where . is treated as a wildcard character.
+     */
+    public Iterable&lt;String&gt; keysThatMatch(String pattern) {
+        Queue&lt;String&gt; results = new Queue&lt;String&gt;();
+        collect(root, new StringBuilder(), pattern, results);
+        return results;
+    }
+
+    private void collect(Node x, StringBuilder prefix, String pattern, Queue&lt;String&gt; results) {
+        if (x == null) return;
+        int d = prefix.length();
+        if (d == pattern.length() && x.val != null)
+            results.enqueue(prefix.toString());
+        if (d == pattern.length())
+            return;
+        char c = pattern.charAt(d);
+        if (c == '.') {
+            for (char ch = 0; ch &lt; R; ch++) {
+                prefix.append(ch);
+                collect(x.next[ch], prefix, pattern, results);
+                prefix.deleteCharAt(prefix.length() - 1);
+            }
+        }
+        else {
+            prefix.append(c);
+            collect(x.next[c], prefix, pattern, results);
+            prefix.deleteCharAt(prefix.length() - 1);
+        }
+    }
+
+    /**
+     * Returns the string in the symbol table that is the longest prefix of &lt;tt&gt;query&lt;/tt&gt;,
+     * or &lt;tt&gt;null&lt;/tt&gt;, if no such string.
+     * @param query the query string
+     * @throws NullPointerException if &lt;tt&gt;query&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
+     * @return the string in the symbol table that is the longest prefix of &lt;tt&gt;query&lt;/tt&gt;,
+     *     or &lt;tt&gt;null&lt;/tt&gt; if no such string
+     */
+    public String longestPrefixOf(String query) {
+        int length = longestPrefixOf(root, query, 0, 0);
+        return query.substring(0, length);
+    }
+
+    // returns the length of the longest string key in the subtrie
+    // rooted at x that is a prefix of the query string,
+    // assuming the first d character match and we have already
+    // found a prefix match of length length
+    private int longestPrefixOf(Node x, String query, int d, int length) {
+        if (x == null) return length;
+        if (x.val != null) length = d;
+        if (d == query.length()) return length;
+        char c = query.charAt(d);
+        return longestPrefixOf(x.next[c], query, d+1, length);
+    }
+
+    /**
+     * Removes the key from the set if the key is present.
+     * @param key the key
+     * @throws NullPointerException if &lt;tt&gt;key&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
+     */
+    public void delete(String key) {
+        root = delete(root, key, 0);
+    }
+
+    private Node delete(Node x, String key, int d) {
+        if (x == null) return null;
+        if (d == key.length()) {
+            if (x.val != null) N--;
+            x.val = null;
+        }
+        else {
+            char c = key.charAt(d);
+            x.next[c] = delete(x.next[c], key, d+1);
+        }
+
+        // remove subtrie rooted at x if it is completely empty
+        if (x.val != null) return x;
+        for (int c = 0; c &lt; R; c++)
+            if (x.next[c] != null)
+                return x;
+        return null;
+    }
+
+}</code></pre>
 
 
 <p>上面的代码可以处理扩展ASCII码，但很容易就可以修改为能够处理由任意字母表得到的键：</p>
@@ -664,269 +450,137 @@
 
 <h3>2.2 实现</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TST</span><span class="o">&lt;</span><span class="n">Value</span><span class="o">&gt;</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">int</span> <span class="n">N</span><span class="o">;</span>       <span class="c1">// size</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="n">root</span><span class="o">;</span>   <span class="c1">// root of TST</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">class</span> <span class="nc">Node</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kd">private</span> <span class="kt">char</span> <span class="n">c</span><span class="o">;</span>                 <span class="c1">// character</span>
-</span><span class='line'>        <span class="kd">private</span> <span class="n">Node</span> <span class="n">left</span><span class="o">,</span> <span class="n">mid</span><span class="o">,</span> <span class="n">right</span><span class="o">;</span>  <span class="c1">// left, middle, and right subtries</span>
-</span><span class='line'>        <span class="kd">private</span> <span class="n">Value</span> <span class="n">val</span><span class="o">;</span>              <span class="c1">// value associated with string</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// return number of key-value pairs</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">size</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">N</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="cm">/**************************************************************</span>
-</span><span class='line'><span class="cm">    * Is string key in the symbol table?</span>
-</span><span class='line'><span class="cm">    **************************************************************/</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">contains</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nf">get</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Value</span> <span class="nf">get</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">key</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">NullPointerException</span><span class="o">();</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;key must have length &gt;= 1&quot;</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">Node</span> <span class="n">x</span> <span class="o">=</span> <span class="n">get</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="na">val</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// return subtrie corresponding to given key</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="nf">get</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">key</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">NullPointerException</span><span class="o">();</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;key must have length &gt;= 1&quot;</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span>      <span class="o">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span>              <span class="k">return</span> <span class="n">get</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">left</span><span class="o">,</span>  <span class="n">key</span><span class="o">,</span> <span class="n">d</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span>              <span class="k">return</span> <span class="n">get</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">right</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">d</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">&lt;</span> <span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="k">return</span> <span class="n">get</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">mid</span><span class="o">,</span>   <span class="n">key</span><span class="o">,</span> <span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">else</span>                           <span class="k">return</span> <span class="n">x</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>   <span class="cm">/**************************************************************</span>
-</span><span class='line'><span class="cm">    * Insert string s into the symbol table.</span>
-</span><span class='line'><span class="cm">    **************************************************************/</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">put</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">,</span> <span class="n">Value</span> <span class="n">val</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(!</span><span class="n">contains</span><span class="o">(</span><span class="n">s</span><span class="o">))</span> <span class="n">N</span><span class="o">++;</span>
-</span><span class='line'>        <span class="n">root</span> <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">s</span><span class="o">,</span> <span class="n">val</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="nf">put</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">String</span> <span class="n">s</span><span class="o">,</span> <span class="n">Value</span> <span class="n">val</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">x</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Node</span><span class="o">();</span>
-</span><span class='line'>            <span class="n">x</span><span class="o">.</span><span class="na">c</span> <span class="o">=</span> <span class="n">c</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="k">if</span>      <span class="o">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span>             <span class="n">x</span><span class="o">.</span><span class="na">left</span>  <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">left</span><span class="o">,</span>  <span class="n">s</span><span class="o">,</span> <span class="n">val</span><span class="o">,</span> <span class="n">d</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span>             <span class="n">x</span><span class="o">.</span><span class="na">right</span> <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">right</span><span class="o">,</span> <span class="n">s</span><span class="o">,</span> <span class="n">val</span><span class="o">,</span> <span class="n">d</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">&lt;</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span>  <span class="n">x</span><span class="o">.</span><span class="na">mid</span>   <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">mid</span><span class="o">,</span>   <span class="n">s</span><span class="o">,</span> <span class="n">val</span><span class="o">,</span> <span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">else</span>                          <span class="n">x</span><span class="o">.</span><span class="na">val</span>   <span class="o">=</span> <span class="n">val</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">x</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>   <span class="cm">/**************************************************************</span>
-</span><span class='line'><span class="cm">    * Find and return longest prefix of s in TST</span>
-</span><span class='line'><span class="cm">    **************************************************************/</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">longestPrefixOf</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">s</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">Node</span> <span class="n">x</span> <span class="o">=</span> <span class="n">root</span><span class="o">;</span>
-</span><span class='line'>        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">while</span> <span class="o">(</span><span class="n">x</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>            <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
-</span><span class='line'>            <span class="k">if</span>      <span class="o">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="na">left</span><span class="o">;</span>
-</span><span class='line'>            <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="na">right</span><span class="o">;</span>
-</span><span class='line'>            <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>                <span class="n">i</span><span class="o">++;</span>
-</span><span class='line'>                <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">length</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span>
-</span><span class='line'>                <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="na">mid</span><span class="o">;</span>
-</span><span class='line'>            <span class="o">}</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">length</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// all keys in symbol table</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">keys</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">queue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
-</span><span class='line'>        <span class="n">collect</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="s">&quot;&quot;</span><span class="o">,</span> <span class="n">queue</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">queue</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// all keys starting with given prefix</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">prefixMatch</span><span class="o">(</span><span class="n">String</span> <span class="n">prefix</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">queue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
-</span><span class='line'>        <span class="n">Node</span> <span class="n">x</span> <span class="o">=</span> <span class="n">get</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">prefix</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="n">queue</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">queue</span><span class="o">.</span><span class="na">enqueue</span><span class="o">(</span><span class="n">prefix</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">mid</span><span class="o">,</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">queue</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">queue</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// all keys in subtrie rooted at x with given prefix</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">collect</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">String</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">queue</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">left</span><span class="o">,</span>  <span class="n">prefix</span><span class="o">,</span>       <span class="n">queue</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">queue</span><span class="o">.</span><span class="na">enqueue</span><span class="o">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">mid</span><span class="o">,</span>   <span class="n">prefix</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">,</span> <span class="n">queue</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">right</span><span class="o">,</span> <span class="n">prefix</span><span class="o">,</span>       <span class="n">queue</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// return all keys matching given wildcard pattern</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">wildcardMatch</span><span class="o">(</span><span class="n">String</span> <span class="n">pat</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">queue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
-</span><span class='line'>        <span class="n">collect</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="s">&quot;&quot;</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">pat</span><span class="o">,</span> <span class="n">queue</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">queue</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">collect</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">String</span> <span class="n">prefix</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i</span><span class="o">,</span> <span class="n">String</span> <span class="n">pat</span><span class="o">,</span> <span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">q</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>        <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">pat</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;.&#39;</span> <span class="o">||</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span> <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">left</span><span class="o">,</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">pat</span><span class="o">,</span> <span class="n">q</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;.&#39;</span> <span class="o">||</span> <span class="n">c</span> <span class="o">==</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">pat</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">x</span><span class="o">.</span><span class="na">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">q</span><span class="o">.</span><span class="na">enqueue</span><span class="o">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">);</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">pat</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">mid</span><span class="o">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">pat</span><span class="o">,</span> <span class="n">q</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;.&#39;</span> <span class="o">||</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">.</span><span class="na">c</span><span class="o">)</span> <span class="n">collect</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">right</span><span class="o">,</span> <span class="n">prefix</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">pat</span><span class="o">,</span> <span class="n">q</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class TST&lt;Value&gt; {
+    private int N;       // size
+    private Node root;   // root of TST
+
+    private class Node {
+        private char c;                 // character
+        private Node left, mid, right;  // left, middle, and right subtries
+        private Value val;              // value associated with string
+    }
+
+    // return number of key-value pairs
+    public int size() {
+        return N;
+    }
+
+   /**************************************************************
+    * Is string key in the symbol table?
+    **************************************************************/
+    public boolean contains(String key) {
+        return get(key) != null;
+    }
+
+    public Value get(String key) {
+        if (key == null) throw new NullPointerException();
+        if (key.length() == 0) throw new IllegalArgumentException("key must have length &gt;= 1");
+        Node x = get(root, key, 0);
+        if (x == null) return null;
+        return x.val;
+    }
+
+    // return subtrie corresponding to given key
+    private Node get(Node x, String key, int d) {
+        if (key == null) throw new NullPointerException();
+        if (key.length() == 0) throw new IllegalArgumentException("key must have length &gt;= 1");
+        if (x == null) return null;
+        char c = key.charAt(d);
+        if      (c &lt; x.c)              return get(x.left,  key, d);
+        else if (c &gt; x.c)              return get(x.right, key, d);
+        else if (d &lt; key.length() - 1) return get(x.mid,   key, d+1);
+        else                           return x;
+    }
+
+
+   /**************************************************************
+    * Insert string s into the symbol table.
+    **************************************************************/
+    public void put(String s, Value val) {
+        if (!contains(s)) N++;
+        root = put(root, s, val, 0);
+    }
+
+    private Node put(Node x, String s, Value val, int d) {
+        char c = s.charAt(d);
+        if (x == null) {
+            x = new Node();
+            x.c = c;
+        }
+        if      (c &lt; x.c)             x.left  = put(x.left,  s, val, d);
+        else if (c &gt; x.c)             x.right = put(x.right, s, val, d);
+        else if (d &lt; s.length() - 1)  x.mid   = put(x.mid,   s, val, d+1);
+        else                          x.val   = val;
+        return x;
+    }
+
+
+   /**************************************************************
+    * Find and return longest prefix of s in TST
+    **************************************************************/
+    public String longestPrefixOf(String s) {
+        if (s == null || s.length() == 0) return null;
+        int length = 0;
+        Node x = root;
+        int i = 0;
+        while (x != null && i &lt; s.length()) {
+            char c = s.charAt(i);
+            if      (c &lt; x.c) x = x.left;
+            else if (c &gt; x.c) x = x.right;
+            else {
+                i++;
+                if (x.val != null) length = i;
+                x = x.mid;
+            }
+        }
+        return s.substring(0, length);
+    }
+
+    // all keys in symbol table
+    public Iterable&lt;String&gt; keys() {
+        Queue&lt;String&gt; queue = new Queue&lt;String&gt;();
+        collect(root, "", queue);
+        return queue;
+    }
+
+    // all keys starting with given prefix
+    public Iterable&lt;String&gt; prefixMatch(String prefix) {
+        Queue&lt;String&gt; queue = new Queue&lt;String&gt;();
+        Node x = get(root, prefix, 0);
+        if (x == null) return queue;
+        if (x.val != null) queue.enqueue(prefix);
+        collect(x.mid, prefix, queue);
+        return queue;
+    }
+
+    // all keys in subtrie rooted at x with given prefix
+    private void collect(Node x, String prefix, Queue&lt;String&gt; queue) {
+        if (x == null) return;
+        collect(x.left,  prefix,       queue);
+        if (x.val != null) queue.enqueue(prefix + x.c);
+        collect(x.mid,   prefix + x.c, queue);
+        collect(x.right, prefix,       queue);
+    }
+
+
+    // return all keys matching given wildcard pattern
+    public Iterable&lt;String&gt; wildcardMatch(String pat) {
+        Queue&lt;String&gt; queue = new Queue&lt;String&gt;();
+        collect(root, "", 0, pat, queue);
+        return queue;
+    }
+ 
+    private void collect(Node x, String prefix, int i, String pat, Queue&lt;String&gt; q) {
+        if (x == null) return;
+        char c = pat.charAt(i);
+        if (c == '.' || c &lt; x.c) collect(x.left, prefix, i, pat, q);
+        if (c == '.' || c == x.c) {
+            if (i == pat.length() - 1 && x.val != null) q.enqueue(prefix + x.c);
+            if (i &lt; pat.length() - 1) collect(x.mid, prefix + x.c, i+1, pat, q);
+        }
+        if (c == '.' || c &gt; x.c) collect(x.right, prefix, i, pat, q);
+    }
+}</code></pre>
 
 
 <h3>2.3 三向单词查找树的性质</h3>
@@ -1096,7 +750,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

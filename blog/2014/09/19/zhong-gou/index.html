@@ -27,7 +27,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -203,99 +204,57 @@
 
 <p>JUnit就是一个测试框架，其用途是单元测试。关于JUnit，必须知道的知识包括：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//必须继承TestCase</span>
-</span><span class='line'><span class="kd">class</span> <span class="nc">FileReaderTest</span> <span class="kd">extends</span> <span class="n">TestCase</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">setUp</span><span class="o">()</span> <span class="o">{...}</span> <span class="c1">//用于在每次测试前准备相应环境</span>
-</span><span class='line'>  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">tearDown</span><span class="o">()</span> <span class="o">{...}</span> <span class="c1">//用于测试完后大扫除，例如关闭文件。</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testXXX</span><span class="o">()</span> <span class="o">{</span><span class="c1">//注意必须是返回void, 方法名test开始</span>
-</span><span class='line'>      <span class="c1">//...</span>
-</span><span class='line'>      <span class="n">assertEquals</span><span class="o">(...);</span> <span class="c1">//然后就可以assertXXX了</span>
-</span><span class='line'>  <span class="o">}</span>        
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//必须继承TestCase
+class FileReaderTest extends TestCase {
+    protected void setUp() {...} //用于在每次测试前准备相应环境
+    protected void tearDown() {...} //用于测试完后大扫除，例如关闭文件。
+    public void testXXX() {//注意必须是返回void, 方法名test开始
+        //...
+        assertEquals(...); //然后就可以assertXXX了
+    }       
+}</code></pre>
 
 
 <p>执行每一个test测试方法前，都会先运行setUp()。每一个test测试方法执行结束都会运行tearDown()。</p>
 
 <p>别忘了检查预期的异常是否如期出现，例如，如果尝试在关闭流后再读取它，就应该得到一个IOException，这也应该被测试出来：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">_input</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-</span><span class='line'><span class="k">try</span><span class="o">{</span>
-</span><span class='line'>  <span class="n">_input</span><span class="o">.</span><span class="na">read</span><span class="o">();</span>
-</span><span class='line'>  <span class="n">fail</span><span class="o">(</span><span class="s">&quot;no exception for read past end&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span> <span class="k">catch</span><span class="o">(</span><span class="n">IOException</span> <span class="n">io</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">//...</span>
-</span><span class='line'><span class="o">}</span>  
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>_input.close();
+try{
+    _input.read();
+    fail("no exception for read past end");
+} catch(IOException io) {
+    //...
+}   
+</code></pre>
 
 
 <p>当测试类越来越多，就用得上TestSuite了。TestSuite可以用于只执行某一些测试类，或者某一些测试方法。示例如下：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestAllSort</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">Test</span> <span class="nf">suite</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">TestSuite</span> <span class="n">suite</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TestSuite</span><span class="o">(</span><span class="s">&quot;测试分组名称&quot;</span><span class="o">);</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="c1">//测试类SortTest的所有测试方法都会运行</span>
-</span><span class='line'>      <span class="n">suite</span><span class="o">.</span><span class="na">addTestSuite</span><span class="o">(</span><span class="n">SortTest</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="c1">//只运行测试类SortTest的指定测试方法testSelectSort</span>
-</span><span class='line'>      <span class="n">suite</span><span class="o">.</span><span class="na">addTest</span><span class="o">(</span><span class="k">new</span> <span class="n">SortTest</span><span class="o">(</span><span class="s">&quot;testSelectSort&quot;</span><span class="o">));</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">return</span> <span class="n">suite</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SortTest</span> <span class="kd">extends</span> <span class="n">TestCase</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">//如果要执行指定的测试方法，那么这个构造方法是必须的。name对应测试方法名</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="nf">SortTest</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kd">super</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testSelectSort</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="c1">//...</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>  
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class TestAllSort {
+    public static Test suite() {
+        TestSuite suite = new TestSuite("测试分组名称");
+        
+        //测试类SortTest的所有测试方法都会运行
+        suite.addTestSuite(SortTest.class);
+        
+        //只运行测试类SortTest的指定测试方法testSelectSort
+        suite.addTest(new SortTest("testSelectSort"));
+        
+        return suite;
+    }
+}
+
+public class SortTest extends TestCase {
+    //如果要执行指定的测试方法，那么这个构造方法是必须的。name对应测试方法名
+    public SortTest(String name) {
+        super(name);
+    }
+    
+    public void testSelectSort() {
+        //...
+    }
+}   </code></pre>
 
 
 <p><strong>边界条件是最容易出错的地方，要把火力集中在那！</strong></p>
@@ -321,142 +280,81 @@
 
 <p>关键点：函数名和函数本体之间的语义要匹配。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="kt">void</span> <span class="nf">printOwing</span><span class="o">(</span><span class="kt">double</span> <span class="n">amount</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">printBanner</span><span class="o">();</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//print details</span>
-</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;name: &quot;</span> <span class="o">+</span> <span class="n">_name</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="s">&quot;amount: &quot;</span> <span class="o">+</span> <span class="n">amount</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="kt">void</span> <span class="nf">printOwing</span><span class="o">(</span><span class="kt">double</span> <span class="n">amount</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">printBanner</span><span class="o">();</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="n">printDetails</span><span class="o">(</span><span class="n">amount</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">printDetails</span><span class="o">(</span><span class="kt">double</span> <span class="n">amount</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;name: &quot;</span> <span class="o">+</span> <span class="n">_name</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="s">&quot;amount: &quot;</span> <span class="o">+</span> <span class="n">amount</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+void printOwing(double amount) {
+    printBanner();
+    
+    //print details
+    System.out.println("name: " + _name);
+    System.out.print("amount: " + amount);
+}
+
+//after
+void printOwing(double amount) {
+    printBanner();
+    
+    printDetails(amount);
+}
+
+void printDetails(double amount) {
+    System.out.println("name: " + _name);
+    System.out.print("amount: " + amount);
+}</code></pre>
 
 
 <h3>3.2 Inline Method</h3>
 
 <p>如果函数内容和其名称同样清晰，就应该去掉这个函数。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="kt">int</span> <span class="nf">getRating</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="o">(</span><span class="n">moreThanFiveLateDeliveries</span><span class="o">())</span> <span class="o">?</span> <span class="mi">2</span> <span class="o">:</span> <span class="mi">1</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">boolean</span> <span class="nf">moreThanFiveLateDeliveries</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">numberOfLateDeliveries</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="kt">int</span> <span class="nf">getRating</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="o">(</span><span class="n">numberOfLateDeliveries</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="o">)</span> <span class="o">?</span> <span class="mi">2</span> <span class="o">:</span> <span class="mi">1</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+int getRating() {
+    return (moreThanFiveLateDeliveries()) ? 2 : 1;
+}
+
+boolean moreThanFiveLateDeliveries() {
+    return numberOfLateDeliveries &gt; 5;
+}
+
+//after
+int getRating() {
+    return (numberOfLateDeliveries &gt; 5) ? 2 : 1;
+}</code></pre>
 
 
 <h3>3.3 Inline Temp</h3>
 
 <p>适用于一个临时变量，只被一个简单表达式赋值一次，而它妨碍了其他重构手法。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="kt">double</span> <span class="n">basePrice</span> <span class="o">=</span> <span class="n">anOrder</span><span class="o">.</span><span class="na">basePrice</span><span class="o">();</span>
-</span><span class='line'><span class="k">return</span> <span class="o">(</span><span class="n">basePrice</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="k">return</span> <span class="o">(</span><span class="n">anOrder</span><span class="o">.</span><span class="na">basePrice</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+double basePrice = anOrder.basePrice();
+return (basePrice &gt; 1000);
+
+//after
+return (anOrder.basePrice() &gt; 1000);</code></pre>
 
 
 <h3>3.4 Replace Temp with Query</h3>
 
 <p>你的程序以一个临时变量保存某一表达式的运算结果。将这个表达式提炼到一个独立函数中。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="kt">double</span> <span class="n">basePrice</span> <span class="o">=</span> <span class="n">quantity</span> <span class="o">*</span> <span class="n">itemPrice</span><span class="o">;</span>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">basePrice</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="o">)</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">basePrice</span> <span class="o">*</span> <span class="mf">0.95</span><span class="o">;</span>
-</span><span class='line'><span class="k">else</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">basePrice</span> <span class="o">*</span> <span class="mf">0.98</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">basePrice</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="o">)</span>
-</span><span class='line'>  <span class="k">return</span> <span class="nf">basePrice</span><span class="o">()</span> <span class="o">*</span> <span class="mf">0.95</span><span class="o">;</span>
-</span><span class='line'><span class="k">else</span>
-</span><span class='line'>  <span class="k">return</span> <span class="nf">basePrice</span><span class="o">()</span> <span class="o">*</span> <span class="mf">0.98</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//...</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">double</span> <span class="nf">basePrice</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">quantity</span> <span class="o">*</span> <span class="n">itemPrice</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+double basePrice = quantity * itemPrice;
+if (basePrice &gt; 1000) 
+    return basePrice * 0.95;
+else
+    return basePrice * 0.98;
+
+//after
+if (basePrice() &gt; 1000) 
+    return basePrice() * 0.95;
+else
+    return basePrice() * 0.98;
+
+//...
+
+double basePrice() {
+    return quantity * itemPrice;
+}</code></pre>
 
 
 <p>如果你担心性能问题，先不管它，因为十有八九根本不会造成任何影响。如果真有问题，在优化时解决它。</p>
@@ -465,37 +363,21 @@
 
 <p>你有一个复杂的表达式，可以将该复杂表达式（或其中一部分）的结果放进一临时变量，以此变量名称来解释用途。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="k">if</span> <span class="o">((</span><span class="n">platform</span><span class="o">.</span><span class="na">toUpperCase</span><span class="o">().</span><span class="na">indexOf</span><span class="o">(</span><span class="s">&quot;MAC&quot;</span><span class="o">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">&amp;&amp;</span>
-</span><span class='line'>      <span class="o">(</span><span class="n">browser</span><span class="o">.</span><span class="na">toUpperCase</span><span class="o">().</span><span class="na">indexOf</span><span class="o">(</span><span class="s">&quot;IE&quot;</span><span class="o">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">&amp;&amp;</span>
-</span><span class='line'>      <span class="n">wasInitialized</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">resize</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">//do something</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="kd">final</span> <span class="kt">boolean</span> <span class="n">isMacOs</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="na">toUpperCase</span><span class="o">().</span><span class="na">indexOf</span><span class="o">(</span><span class="s">&quot;MAC&quot;</span><span class="o">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
-</span><span class='line'><span class="kd">final</span> <span class="kt">boolean</span> <span class="n">isIEBrowser</span> <span class="o">=</span> <span class="n">browser</span><span class="o">.</span><span class="na">toUpperCase</span><span class="o">().</span><span class="na">indexOf</span><span class="o">(</span><span class="s">&quot;IE&quot;</span><span class="o">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
-</span><span class='line'><span class="kd">final</span> <span class="kt">boolean</span> <span class="n">wasResized</span> <span class="o">=</span> <span class="n">resize</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">isMacOs</span> <span class="o">&amp;&amp;</span> <span class="n">isIEBrowser</span> <span class="o">&amp;&amp;</span> <span class="n">wasInitialized</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">wasResized</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">//do something</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+if ((platform.toUpperCase().indexOf("MAC") &gt; -1) &&
+        (browser.toUpperCase().indexOf("IE") &gt; -1) &&
+        wasInitialized() && resize &gt; 0) {
+    //do something
+}
+
+//after
+final boolean isMacOs = platform.toUpperCase().indexOf("MAC") &gt; -1;
+final boolean isIEBrowser = browser.toUpperCase().indexOf("IE") &gt; -1;
+final boolean wasResized = resize &gt; 0;
+
+if (isMacOs && isIEBrowser && wasInitialized() && wasResized) {
+    //do something
+}</code></pre>
 
 
 <p>这种重构方法虽然很常见，但几乎总是可以用Extract Method来处理。因此常在Extract Method难以解决，或需要花费更大工作量时使用。</p>
@@ -504,29 +386,17 @@
 
 <p>如果某个临时变量被赋值超过一次，即不是循环变量，也不是用于收集计算结果，那么可以针对每次赋值创建一个独立的临时变量。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// before</span>
-</span><span class='line'><span class="kt">double</span> <span class="n">temp</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="o">(</span><span class="n">height</span> <span class="o">+</span> <span class="n">width</span><span class="o">);</span>
-</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">temp</span><span class="o">);</span>
-</span><span class='line'><span class="n">temp</span> <span class="o">=</span> <span class="n">height</span> <span class="o">*</span> <span class="n">widht</span><span class="o">;</span>
-</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">temp</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// after</span>
-</span><span class='line'><span class="kd">final</span> <span class="kt">double</span> <span class="n">perimeter</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="o">(</span><span class="n">height</span> <span class="o">+</span> <span class="n">width</span><span class="o">);</span>
-</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">perimeter</span><span class="o">);</span>
-</span><span class='line'><span class="kd">final</span> <span class="kt">double</span> <span class="n">area</span> <span class="o">=</span> <span class="n">height</span> <span class="o">*</span> <span class="n">widht</span><span class="o">;</span>
-</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">area</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>// before
+double temp = 2 * (height + width);
+System.out.println(temp);
+temp = height * widht;
+System.out.println(temp);
+
+// after
+final double perimeter = 2 * (height + width);
+System.out.println(perimeter);
+final double area = height * widht;
+System.out.println(area);</code></pre>
 
 
 <p>临时变量有各种不同的用途，如果同一临时变量被多次赋值，且意义不同，就会令代码难以阅读。</p>
@@ -535,48 +405,29 @@
 
 <p>不要对参数赋值。因为Java对于参数传递的处理方式是按值传递。对参数赋值同样容易让人犯糊涂。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="kt">int</span> <span class="nf">discount</span><span class="o">(</span><span class="kt">int</span> <span class="n">inputVal</span><span class="o">,</span> <span class="kt">int</span> <span class="n">quantity</span><span class="o">,</span> <span class="kt">int</span> <span class="n">yearToDate</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">inputVal</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="o">)</span> <span class="n">inputVal</span> <span class="o">-=</span> <span class="mi">2</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="kt">int</span> <span class="nf">discount</span><span class="o">(</span><span class="kt">int</span> <span class="n">inputVal</span><span class="o">,</span> <span class="kt">int</span> <span class="n">quantity</span><span class="o">,</span> <span class="kt">int</span> <span class="n">yearToDate</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="n">inputVal</span><span class="o">;</span>
-</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">inputVal</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="o">)</span> <span class="n">result</span> <span class="o">-=</span> <span class="mi">2</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+int discount(int inputVal, int quantity, int yearToDate) {
+    if (inputVal &gt; 50) inputVal -= 2;
+}
+
+//after
+int discount(int inputVal, int quantity, int yearToDate) {
+    int result = inputVal;
+    if (inputVal &gt; 50) result -= 2;
+}</code></pre>
 
 
 <h3>3.8 Replace Method with Method Object</h3>
 
 <p>对于一个大型函数，其中的局域变量使你无法采用Extract Method时，可以将这个函数放进一个单独对象中。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">Order</span><span class="o">...</span>
-</span><span class='line'>  <span class="kt">double</span> <span class="nf">price</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kt">double</span> <span class="n">basePrice</span><span class="o">;</span>
-</span><span class='line'>      <span class="kt">double</span> <span class="n">secondPrice</span><span class="o">;</span>
-</span><span class='line'>      <span class="kt">double</span> <span class="n">otherPrice</span><span class="o">;</span>
-</span><span class='line'>      <span class="c1">//复杂的运算</span>
-</span><span class='line'>  <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>class Order...
+    double price() {
+        double basePrice;
+        double secondPrice;
+        double otherPrice;
+        //复杂的运算
+    }</code></pre>
 
 
 <p>上面的代码可以这样重构：</p>
@@ -587,63 +438,34 @@
 
 <p>如果发现一件事可以有更清晰的方式（更好的解决方案/算法），就应该以较清晰的方式取代复杂的方式。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="n">String</span> <span class="nf">foundPerson</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">people</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">people</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">people</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;Don&quot;</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">return</span> <span class="s">&quot;Don&quot;</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">people</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;John&quot;</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">return</span> <span class="s">&quot;John&quot;</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">people</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;Kent&quot;</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">return</span> <span class="s">&quot;Kent&quot;</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="n">String</span> <span class="nf">foundPerson</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">people</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">List</span> <span class="n">candidates</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="k">new</span> <span class="n">String</span><span class="o">[]{</span><span class="s">&quot;Don&quot;</span><span class="o">,</span> <span class="s">&quot;John&quot;</span><span class="o">,</span> <span class="s">&quot;Kent&quot;</span><span class="o">});</span>
-</span><span class='line'>  <span class="k">for</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span> <span class="o">:</span> <span class="n">people</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">candidates</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">str</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">return</span> <span class="n">str</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+String foundPerson(String[] people) {
+    for (int i = 0; i &lt; people.length; i++) {
+        if (people[i].equals("Don")) {
+            return "Don";
+        }
+        if (people[i].equals("John")) {
+            return "John";
+        }
+        if (people[i].equals("Kent")) {
+            return "Kent";
+        }
+    }
+    
+    return "";
+}
+
+//after
+String foundPerson(String[] people) {
+    List candidates = Arrays.asList(new String[]{"Don", "John", "Kent"});
+    for(String str : people) {
+        if (candidates.contains(str)) {
+            return str;
+        }
+    }
+    
+    return "";
+}</code></pre>
 
 
 <h2>4. 在对象之间搬移特性</h2>
@@ -688,25 +510,15 @@
 
 <p>你需要为提供服务的类增加一个函数，但你无法修改这个类。此时，可以在客户类中建立一个函数，并以第一个参数形式传入一个服务类实例。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="n">Date</span> <span class="n">newStart</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Date</span><span class="o">(</span><span class="n">previousEnd</span><span class="o">.</span><span class="na">getYear</span><span class="o">(),</span> <span class="n">previousEnd</span><span class="o">.</span><span class="na">getMonth</span><span class="o">(),</span> <span class="n">previousEnd</span><span class="o">.</span><span class="na">getDate</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="n">Date</span> <span class="n">newStart</span> <span class="o">=</span> <span class="n">nextDay</span><span class="o">(</span><span class="n">previousEnd</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="n">Date</span> <span class="nf">nextDay</span><span class="o">(</span><span class="n">Date</span> <span class="n">arg</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="k">new</span> <span class="nf">Date</span><span class="o">(</span><span class="n">arg</span><span class="o">.</span><span class="na">getYear</span><span class="o">(),</span> <span class="n">arg</span><span class="o">.</span><span class="na">getMonth</span><span class="o">(),</span> <span class="n">arg</span><span class="o">.</span><span class="na">getDate</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+Date newStart = new Date(previousEnd.getYear(), previousEnd.getMonth(), previousEnd.getDate() + 1);
+
+//after
+Date newStart = nextDay(previousEnd);
+
+private static Date nextDay(Date arg) {
+    return new Date(arg.getYear(), arg.getMonth(), arg.getDate() + 1);
+}</code></pre>
 
 
 <p>你正在使用一个类，它工作得很好。但你又需要一项新服务，这个类无法提供。如果可以修改代码，你就可以自行添加一个函数。但如果不能，你就得在客户端编码，补足你要的那个函数。如果需要多次使用，就应该放到同一个函数中。</p>
@@ -759,29 +571,17 @@
 
 <p>以字面常量取代魔法数。魔法数是指拥有特殊意义，却又不能明确表现出这种意义的数字。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="kt">double</span> <span class="nf">potentialEnergy</span><span class="o">(</span><span class="kt">double</span> <span class="n">mass</span><span class="o">,</span> <span class="kt">double</span> <span class="n">height</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">mass</span> <span class="o">*</span> <span class="mf">9.81</span> <span class="o">*</span> <span class="n">height</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="kd">static</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">GRAITATIONAL_CONSTANT</span> <span class="o">=</span> <span class="mf">9.81</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">double</span> <span class="nf">potentialEnergy</span><span class="o">(</span><span class="kt">double</span> <span class="n">mass</span><span class="o">,</span> <span class="kt">double</span> <span class="n">height</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">mass</span> <span class="o">*</span> <span class="n">GRAITATIONAL_CONSTANT</span> <span class="o">*</span> <span class="n">height</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+double potentialEnergy(double mass, double height) {
+    return mass * 9.81 * height;
+}
+
+//after
+static final double GRAITATIONAL_CONSTANT = 9.81;
+
+double potentialEnergy(double mass, double height) {
+    return mass * GRAITATIONAL_CONSTANT * height;
+}</code></pre>
 
 
 <h3>5.10 Encapsulate Field</h3>
@@ -822,29 +622,17 @@
 
 <p>从if, then, else三个段落中分别提炼出独立函数：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">date</span><span class="o">.</span><span class="na">before</span><span class="o">(</span><span class="n">SUMMER_START</span><span class="o">)</span> <span class="o">||</span> <span class="n">date</span><span class="o">.</span><span class="na">after</span><span class="o">(</span><span class="n">SUMMER_END</span><span class="o">))</span>
-</span><span class='line'>  <span class="n">charge</span> <span class="o">=</span> <span class="n">quantity</span> <span class="o">*</span> <span class="n">_winterRate</span> <span class="o">+</span> <span class="n">_winterServiceCharge</span><span class="o">;</span>
-</span><span class='line'><span class="k">else</span>
-</span><span class='line'>  <span class="n">charge</span> <span class="o">=</span> <span class="n">quantity</span> <span class="o">*</span> <span class="n">_summerRate</span><span class="o">;</span>
-</span><span class='line'>  
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">notSummer</span><span class="o">(</span><span class="n">date</span><span class="o">))</span>
-</span><span class='line'>  <span class="n">charge</span> <span class="o">=</span> <span class="n">winterCharge</span><span class="o">(</span><span class="n">quantity</span><span class="o">);</span>
-</span><span class='line'><span class="k">else</span>
-</span><span class='line'>  <span class="n">charge</span> <span class="o">=</span> <span class="n">summerCharge</span><span class="o">(</span><span class="n">quantity</span><span class="o">);</span>      
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+if (date.before(SUMMER_START) || date.after(SUMMER_END))
+    charge = quantity * _winterRate + _winterServiceCharge;
+else
+    charge = quantity * _summerRate;
+    
+//after
+if (notSummer(date))
+    charge = winterCharge(quantity);
+else
+    charge = summerCharge(quantity);        </code></pre>
 
 
 <p>和任何大块头的代码一样，你可以将它分解为多个独立函数。</p>
@@ -853,196 +641,112 @@
 
 <p>如果有一系列条件测试，都得到相同的结果，你可以将它们合并为一个表达式，并提炼成一个函数。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="kt">double</span> <span class="nf">disabilityAmount</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">_seniority</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">)</span> <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">_monthsDisabled</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="o">)</span> <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">_isPartTime</span><span class="o">)</span> <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>  <span class="c1">//...</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="kt">double</span> <span class="nf">disabilityAmount</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">isNotEligibleForDisability</span><span class="o">())</span> <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>  <span class="c1">//...</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+double disabilityAmount() {
+    if (_seniority &lt; 2) return 0;
+    if (_monthsDisabled &gt; 12) return 0;
+    if (_isPartTime) return 0;
+    //...
+}
+
+//after
+double disabilityAmount() {
+    if (isNotEligibleForDisability()) return 0;
+    //...
+}</code></pre>
 
 
 <h3>6.3 Consolidate Duplicate Conditional Fragments</h3>
 
 <p>合并重复的条件片段。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">isSpecialDeal</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">total</span> <span class="o">=</span> <span class="n">price</span> <span class="o">*</span> <span class="mf">0.95</span><span class="o">;</span>
-</span><span class='line'>  <span class="n">send</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">total</span> <span class="o">=</span> <span class="n">price</span> <span class="o">*</span> <span class="mf">0.98</span><span class="o">;</span>
-</span><span class='line'>  <span class="n">send</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">isSpecialDeal</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">total</span> <span class="o">=</span> <span class="n">price</span> <span class="o">*</span> <span class="mf">0.95</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">total</span> <span class="o">=</span> <span class="n">price</span> <span class="o">*</span> <span class="mf">0.98</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="n">send</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+if (isSpecialDeal()) {
+    total = price * 0.95;
+    send();
+} else {
+    total = price * 0.98;
+    send();
+}
+
+//after
+if (isSpecialDeal()) {
+    total = price * 0.95;
+} else {
+    total = price * 0.98;
+}
+send();</code></pre>
 
 
 <h3>6.4 Remove Control Flag</h3>
 
 <p>类似下面的代码，应该以break或return语句取代控制标记。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">set</span> <span class="n">done</span> <span class="n">to</span> <span class="kc">false</span>
-</span><span class='line'><span class="k">while</span> <span class="n">not</span> <span class="n">down</span>
-</span><span class='line'>  <span class="nf">if</span> <span class="o">(</span><span class="n">condition</span><span class="o">)</span>
-</span><span class='line'>      <span class="k">do</span> <span class="n">something</span>
-</span><span class='line'>      <span class="n">set</span> <span class="n">done</span> <span class="n">to</span> <span class="kc">true</span>
-</span><span class='line'>  <span class="n">next</span> <span class="n">step</span> <span class="n">of</span> <span class="n">loop</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>set done to false
+while not down
+    if (condition)
+        do something
+        set done to true
+    next step of loop</code></pre>
 
 
 <h3>6.5 Replace Nested Conditional with Guard Clauses</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="kt">double</span> <span class="nf">getPayAmount</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kt">double</span> <span class="n">result</span><span class="o">;</span>
-</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">_isDead</span><span class="o">)</span>
-</span><span class='line'>      <span class="n">result</span> <span class="o">=</span> <span class="n">deadAmount</span><span class="o">();</span>
-</span><span class='line'>  <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">_isSeparated</span><span class="o">)</span>
-</span><span class='line'>          <span class="n">result</span> <span class="o">=</span> <span class="n">separatedAmount</span><span class="o">();</span>
-</span><span class='line'>      <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">_isRetired</span><span class="o">)</span>
-</span><span class='line'>              <span class="n">result</span> <span class="o">=</span> <span class="n">retiredAmount</span><span class="o">();</span>
-</span><span class='line'>          <span class="k">else</span>
-</span><span class='line'>              <span class="n">result</span> <span class="o">=</span> <span class="n">normalPayAmount</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="kt">double</span> <span class="nf">getPayAmount</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">_isDead</span><span class="o">)</span> <span class="k">return</span> <span class="n">deadAmount</span><span class="o">();</span>
-</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">_isSeparated</span><span class="o">)</span> <span class="k">return</span> <span class="n">separatedAmount</span><span class="o">();</span>
-</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">_isRetired</span><span class="o">)</span> <span class="k">return</span> <span class="n">retiredAmount</span><span class="o">();</span>
-</span><span class='line'>  <span class="k">return</span> <span class="nf">normalPayAmount</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+double getPayAmount() {
+    double result;
+    if (_isDead) 
+        result = deadAmount();
+    else {
+        if (_isSeparated)
+            result = separatedAmount();
+        else {
+            if (_isRetired)
+                result = retiredAmount();
+            else
+                result = normalPayAmount;
+        }
+    }
+    
+    return result;
+}
+
+//after
+double getPayAmount() {
+    if (_isDead) return deadAmount();
+    if (_isSeparated) return separatedAmount();
+    if (_isRetired) return retiredAmount();
+    return normalPayAmount();
+}</code></pre>
 
 
 <h3>6.6 Replace Conditional with Polymorphism</h3>
 
 <p>用多态取代条件表达式。例如下面的类</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="kt">double</span> <span class="nf">getSpeed</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">switch</span><span class="o">(</span><span class="n">type</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">case</span> <span class="nl">EUROPEAN:</span>
-</span><span class='line'>          <span class="k">return</span> <span class="nf">getBaseSpeed</span><span class="o">();</span>
-</span><span class='line'>      <span class="k">case</span> <span class="nl">AFRICAN:</span>
-</span><span class='line'>          <span class="k">return</span> <span class="nf">getBaseSpeed</span><span class="o">()</span> <span class="o">-</span> <span class="n">xxx</span><span class="o">;</span>
-</span><span class='line'>      <span class="k">case</span> <span class="nl">NORWEGIAN_BLUE:</span>
-</span><span class='line'>          <span class="k">return</span> <span class="o">...</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after, 以Bird为基类，European, African, Norwegian Blue为子类，实现多态方法getSpeed()。</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+double getSpeed() {
+    switch(type) {
+        case EUROPEAN:
+            return getBaseSpeed();
+        case AFRICAN:
+            return getBaseSpeed() - xxx;
+        case NORWEGIAN_BLUE:
+            return ...
+    }
+}
+
+//after, 以Bird为基类，European, African, Norwegian Blue为子类，实现多态方法getSpeed()。</code></pre>
 
 
 <h3>6.7 Introduce Null Object</h3>
 
 <p>如果你需要再三检查某个对象是否为null，可以将null值替换为null对象。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">customer</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
-</span><span class='line'>  <span class="n">plan</span> <span class="o">=</span> <span class="n">BillingPlan</span><span class="o">.</span><span class="na">basic</span><span class="o">();</span>
-</span><span class='line'><span class="k">else</span>
-</span><span class='line'>  <span class="n">plan</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getPlan</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>if (customer == null) 
+    plan = BillingPlan.basic();
+else
+    plan = customer.getPlan();</code></pre>
 
 
 <p>上面的代码可以重构为：</p>
@@ -1081,93 +785,54 @@
 
 <p>如果一个函数，其行为取决于参数值，那么可以考虑针对该参数的每一个可能值，建立一个独立函数。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="kt">void</span> <span class="nf">setValue</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="kt">int</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;height&quot;</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">height</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
-</span><span class='line'>      <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;width&quot;</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">width</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
-</span><span class='line'>      <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="kt">void</span> <span class="nf">setHeight</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">height</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">setWidth</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">width</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+void setValue(String name, int value) {
+    if (name.equals("height")) {
+        height = value;
+        return;
+    }
+    
+    if (name.equals("width")) {
+        width = value;
+        return;
+    }
+}
+
+//after
+void setHeight(int value) {
+    height = value;
+}
+
+void setWidth(int value) {
+    width = value;
+}</code></pre>
 
 
 <h3>7.7 Preserve Whole Object</h3>
 
 <p>如果你从某个对象中取出若干值，将它们作为某一次函数调用时的参数，可以考虑改为传递整个对象。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="kt">int</span> <span class="n">low</span> <span class="o">=</span> <span class="n">daysTempRange</span><span class="o">().</span><span class="na">getLow</span><span class="o">();</span>
-</span><span class='line'><span class="kt">int</span> <span class="n">hight</span> <span class="o">=</span> <span class="n">daysTempRange</span><span class="o">().</span><span class="na">getHigh</span><span class="o">();</span>
-</span><span class='line'><span class="n">withinPlan</span> <span class="o">=</span> <span class="n">plan</span><span class="o">.</span><span class="na">withinRange</span><span class="o">(</span><span class="n">low</span><span class="o">,</span> <span class="n">high</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="n">withinPlan</span> <span class="o">=</span> <span class="n">plan</span><span class="o">.</span><span class="na">withinRange</span><span class="o">(</span><span class="n">daysTempRange</span><span class="o">());</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+int low = daysTempRange().getLow();
+int hight = daysTempRange().getHigh();
+withinPlan = plan.withinRange(low, high);
+
+//after
+withinPlan = plan.withinRange(daysTempRange());</code></pre>
 
 
 <h3>7.8 Replace Parameter with Methods</h3>
 
 <p>对象调用某个函数，并将所得结果作为参数，传递给另一个函数。而接受该参数的函数本身也能调用前一个函数。那么<strong>让参数接受者去除该项参数，并直接调用前一个函数。</strong></p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="kt">int</span> <span class="n">basePrice</span> <span class="o">=</span> <span class="n">quantity</span> <span class="o">*</span> <span class="n">itemPrice</span><span class="o">;</span>
-</span><span class='line'><span class="n">discountLevel</span> <span class="o">=</span> <span class="n">getDiscountLevel</span><span class="o">();</span>
-</span><span class='line'><span class="kt">double</span> <span class="n">finalPrice</span> <span class="o">=</span> <span class="n">discountedPrice</span><span class="o">(</span><span class="n">basePrice</span><span class="o">,</span> <span class="n">discountLevel</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="kt">int</span> <span class="n">basePrice</span> <span class="o">=</span> <span class="n">quantity</span> <span class="o">*</span> <span class="n">itemPrice</span><span class="o">;</span>
-</span><span class='line'><span class="kt">double</span> <span class="n">finalPrice</span> <span class="o">=</span> <span class="n">discountedPrice</span><span class="o">(</span><span class="n">basePrice</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+int basePrice = quantity * itemPrice;
+discountLevel = getDiscountLevel();
+double finalPrice = discountedPrice(basePrice, discountLevel);
+
+//after
+int basePrice = quantity * itemPrice;
+double finalPrice = discountedPrice(basePrice);</code></pre>
 
 
 <p>如果函数本身可以通过其他途径获得参数值，那么它就不应该通过参数取得该值。应尽量缩短参数的数量。</p>
@@ -1194,25 +859,16 @@
 
 <p>封装向下转型。如果某个函数返回的对象，需要由函数调用者执行向下转型，可以将向下转型动作移到函数中。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="n">Object</span> <span class="nf">lastReading</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">readings</span><span class="o">.</span><span class="na">lastElement</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="n">Reading</span> <span class="nf">lastReading</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="o">(</span><span class="n">Reading</span><span class="o">)</span> <span class="n">readings</span><span class="o">.</span><span class="na">lastElement</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+Object lastReading() {
+    return readings.lastElement();
+}
+
+//after
+Reading lastReading() {
+    return (Reading) readings.lastElement();
+}
+</code></pre>
 
 
 <p>向下转型也许是不可避免的，但仍然应该尽可能少做。通常在返回迭代器和集合的函数上会发生。</p>
@@ -1223,37 +879,21 @@
 
 <p>某个函数返回一个特定的代码，用以表示错误情况，这种情况可以改用异常。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//before</span>
-</span><span class='line'><span class="kt">int</span> <span class="nf">withdraw</span><span class="o">(</span><span class="kt">int</span> <span class="n">amount</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">amount</span> <span class="o">&gt;</span> <span class="n">balance</span><span class="o">)</span>
-</span><span class='line'>      <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
-</span><span class='line'>  <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">balance</span> <span class="o">-=</span> <span class="n">amount</span><span class="o">;</span>
-</span><span class='line'>      <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//after</span>
-</span><span class='line'><span class="kt">void</span> <span class="nf">withdraw</span><span class="o">(</span><span class="kt">int</span> <span class="n">amount</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BalanceException</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">amount</span> <span class="o">&gt;</span> <span class="n">balance</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">BalanceException</span><span class="o">();</span>
-</span><span class='line'>  <span class="n">balance</span> <span class="o">-=</span> <span class="n">amount</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+int withdraw(int amount) {
+    if (amount &gt; balance)
+        return -1;
+    else {
+        balance -= amount;
+        return 0;
+    }
+}
+
+//after
+void withdraw(int amount) throws BalanceException {
+    if (amount &gt; balance) throw new BalanceException();
+    balance -= amount; 
+}</code></pre>
 
 
 <p>这种方式之所以更好，是因为它清楚地将普通程序和错误处理分开了，使程序更容易理解。</p>
@@ -1451,7 +1091,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

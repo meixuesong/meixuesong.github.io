@@ -30,7 +30,8 @@ Invoker角色： &hellip;">
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -117,19 +118,12 @@ Invoker角色： &hellip;">
 
 <p>Client的示例代码：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">Receiver</span> <span class="n">receiver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Receiver</span><span class="o">();</span>
-</span><span class='line'>  <span class="n">Command</span> <span class="n">command</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcreteCommand</span><span class="o">(</span><span class="n">receiver</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">Invoker</span> <span class="n">invoker</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Invoker</span><span class="o">(</span><span class="n">command</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">invoker</span><span class="o">.</span><span class="na">action</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public static void main(String[] args) {
+    Receiver receiver = new Receiver();
+    Command command = new ConcreteCommand(receiver);
+    Invoker invoker = new Invoker(command);
+    invoker.action();
+}</code></pre>
 
 
 <p>上面的代码中，invoker.action调用command.execute，execute方法调用receiver.action，receiver.action是真正实施命令的方法。</p>
@@ -297,7 +291,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

@@ -9,13 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="在《Effective Java》中，提到创建单例的三种方法以及枚举类型的使用。 单例实现 作者首先说明Java 1.5之前的两种单例实现方法： 方法一：Singleton with public final field 1
-2
-3
-4
-5
-6
-// Singleton with public &hellip;">
+  <meta name="description" content="在《Effective Java》中，提到创建单例的三种方法以及枚举类型的使用。 单例实现 作者首先说明Java 1.5之前的两种单例实现方法： 方法一：Singleton with public final field // Singleton with public final field &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -33,7 +27,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -113,59 +108,38 @@
 
 <h3>方法一：Singleton with public final field</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// Singleton with public final field</span>
-</span><span class='line'>   <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Elvis</span> <span class="o">{</span>
-</span><span class='line'>       <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Elvis</span> <span class="n">INSTANCE</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Elvis</span><span class="o">();</span>
-</span><span class='line'>       <span class="kd">private</span> <span class="nf">Elvis</span><span class="o">()</span> <span class="o">{</span> <span class="o">...</span> <span class="o">}</span>
-</span><span class='line'>       <span class="kd">public</span> <span class="kt">void</span> <span class="nf">leaveTheBuilding</span><span class="o">()</span> <span class="o">{</span> <span class="o">...</span> <span class="o">}</span>
-</span><span class='line'>   <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>// Singleton with public final field
+   public class Elvis {
+       public static final Elvis INSTANCE = new Elvis();
+       private Elvis() { ... }
+       public void leaveTheBuilding() { ... }
+   }</code></pre>
 
 
 <p>这种方法通过私有构造方法，并提供public static final属性实现单例。但其缺点是，通过反射，及AccessibleObject.setAccessible(true)方法，可以调用私有构造方法。</p>
 
 <h3>方法二：Singleton with static factory</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// Singleton with static factory</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Elvis</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Elvis</span> <span class="n">INSTANCE</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Elvis</span><span class="o">();</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="nf">Elvis</span><span class="o">()</span> <span class="o">{</span> <span class="o">...</span> <span class="o">}</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">Elvis</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">INSTANCE</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">leaveTheBuilding</span><span class="o">()</span> <span class="o">{</span> <span class="o">...</span> <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>// Singleton with static factory
+public class Elvis {
+    private static final Elvis INSTANCE = new Elvis(); 
+    private Elvis() { ... }
+    public static Elvis getInstance() { return INSTANCE; }
+    public void leaveTheBuilding() { ... }
+}</code></pre>
 
 
 <p></p>
 
 <p>这种方法也是通过私有构造方法，并提供public static方法实现单例。但其缺点时反序列化后，会创建一个新的实例。为了解决这个问题，要增加readResolve方法：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// readResolve method to preserve singleton property</span>
-</span><span class='line'>   <span class="kd">private</span> <span class="n">Object</span> <span class="nf">readResolve</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="c1">// Return the one true Elvis and let the garbage collector</span>
-</span><span class='line'>        <span class="c1">// take care of the Elvis impersonator.</span>
-</span><span class='line'>       <span class="k">return</span> <span class="n">INSTANCE</span><span class="o">;</span>
-</span><span class='line'>   <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>// readResolve method to preserve singleton property
+   private Object readResolve() {
+        // Return the one true Elvis and let the garbage collector
+        // take care of the Elvis impersonator.
+       return INSTANCE;
+   }
+</code></pre>
 
 
 <p></p>
@@ -176,68 +150,38 @@
 
 <p>Java 1.5以后，可以使用枚举类型实现单例：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// Enum singleton - the preferred approach</span>
-</span><span class='line'>   <span class="kd">public</span> <span class="kd">enum</span> <span class="n">Elvis</span> <span class="o">{</span>
-</span><span class='line'>       <span class="n">INSTANCE</span><span class="o">;</span>
-</span><span class='line'>       <span class="kd">public</span> <span class="kt">void</span> <span class="nf">leaveTheBuilding</span><span class="o">()</span> <span class="o">{</span> <span class="o">...</span> <span class="o">}</span>
-</span><span class='line'>   <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>// Enum singleton - the preferred approach
+   public enum Elvis {
+       INSTANCE;
+       public void leaveTheBuilding() { ... }
+   }</code></pre>
 
-
-<p></p>
 
 <p><strong>只有一个元素的enum类型是实现单例最好的方法。</strong>不存在序列化、反射等影响。</p>
 
 <p>上面的简单例子似乎不太清晰，到底怎么用呢？就如下面这样：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">enum</span> <span class="n">MySingleton</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">INSTANCE</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">otherMethod</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="o">...</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//调用示例</span>
-</span><span class='line'><span class="n">MySingleton</span><span class="o">.</span><span class="na">INSTANCE</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">&quot;ABCD&quot;</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public enum MySingleton {
+    INSTANCE;
+
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void otherMethod() {
+        ...
+    }
+}
+
+
+//调用示例
+MySingleton.INSTANCE.setName("ABCD");</code></pre>
 
 
 <p>枚举类型究竟还有哪些功能呢？</p>
@@ -248,274 +192,150 @@
 
 <p>枚举类型最基本的用法就像下面的例子：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">enum</span> <span class="n">Day</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">SUNDAY</span><span class="o">,</span> <span class="n">MONDAY</span><span class="o">,</span> <span class="n">TUESDAY</span><span class="o">,</span> <span class="n">WEDNESDAY</span><span class="o">,</span>
-</span><span class='line'>    <span class="n">THURSDAY</span><span class="o">,</span> <span class="n">FRIDAY</span><span class="o">,</span> <span class="n">SATURDAY</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EnumTest</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">Day</span> <span class="n">day</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">EnumTest</span><span class="o">(</span><span class="n">Day</span> <span class="n">day</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">day</span> <span class="o">=</span> <span class="n">day</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">tellItLikeItIs</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">switch</span> <span class="o">(</span><span class="n">day</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">case</span> <span class="nl">MONDAY:</span>
-</span><span class='line'>                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Mondays are bad.&quot;</span><span class="o">);</span>
-</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="k">case</span> <span class="nl">FRIDAY:</span>
-</span><span class='line'>                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Fridays are better.&quot;</span><span class="o">);</span>
-</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="k">case</span> <span class="nl">SATURDAY:</span> <span class="k">case</span> <span class="nl">SUNDAY:</span>
-</span><span class='line'>                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Weekends are best.&quot;</span><span class="o">);</span>
-</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="k">default</span><span class="o">:</span>
-</span><span class='line'>                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Midweek days are so-so.&quot;</span><span class="o">);</span>
-</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">EnumTest</span> <span class="n">firstDay</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EnumTest</span><span class="o">(</span><span class="n">Day</span><span class="o">.</span><span class="na">MONDAY</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">firstDay</span><span class="o">.</span><span class="na">tellItLikeItIs</span><span class="o">();</span>
-</span><span class='line'>        <span class="n">EnumTest</span> <span class="n">thirdDay</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EnumTest</span><span class="o">(</span><span class="n">Day</span><span class="o">.</span><span class="na">WEDNESDAY</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">thirdDay</span><span class="o">.</span><span class="na">tellItLikeItIs</span><span class="o">();</span>
-</span><span class='line'>        <span class="n">EnumTest</span> <span class="n">fifthDay</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EnumTest</span><span class="o">(</span><span class="n">Day</span><span class="o">.</span><span class="na">FRIDAY</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">fifthDay</span><span class="o">.</span><span class="na">tellItLikeItIs</span><span class="o">();</span>
-</span><span class='line'>        <span class="n">EnumTest</span> <span class="n">sixthDay</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EnumTest</span><span class="o">(</span><span class="n">Day</span><span class="o">.</span><span class="na">SATURDAY</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">sixthDay</span><span class="o">.</span><span class="na">tellItLikeItIs</span><span class="o">();</span>
-</span><span class='line'>        <span class="n">EnumTest</span> <span class="n">seventhDay</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EnumTest</span><span class="o">(</span><span class="n">Day</span><span class="o">.</span><span class="na">SUNDAY</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">seventhDay</span><span class="o">.</span><span class="na">tellItLikeItIs</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//The output is:</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">Mondays</span> <span class="n">are</span> <span class="n">bad</span><span class="o">.</span>
-</span><span class='line'><span class="n">Midweek</span> <span class="n">days</span> <span class="n">are</span> <span class="n">so</span><span class="o">-</span><span class="n">so</span><span class="o">.</span>
-</span><span class='line'><span class="n">Fridays</span> <span class="n">are</span> <span class="n">better</span><span class="o">.</span>
-</span><span class='line'><span class="n">Weekends</span> <span class="n">are</span> <span class="n">best</span><span class="o">.</span>
-</span><span class='line'><span class="n">Weekends</span> <span class="n">are</span> <span class="n">best</span><span class="o">.</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public enum Day {
+    SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
+    THURSDAY, FRIDAY, SATURDAY 
+}
+
+public class EnumTest {
+    Day day;
+    
+    public EnumTest(Day day) {
+        this.day = day;
+    }
+    
+    public void tellItLikeItIs() {
+        switch (day) {
+            case MONDAY:
+                System.out.println("Mondays are bad.");
+                break;
+                    
+            case FRIDAY:
+                System.out.println("Fridays are better.");
+                break;
+                         
+            case SATURDAY: case SUNDAY:
+                System.out.println("Weekends are best.");
+                break;
+                        
+            default:
+                System.out.println("Midweek days are so-so.");
+                break;
+        }
+    }
+    
+    public static void main(String[] args) {
+        EnumTest firstDay = new EnumTest(Day.MONDAY);
+        firstDay.tellItLikeItIs();
+        EnumTest thirdDay = new EnumTest(Day.WEDNESDAY);
+        thirdDay.tellItLikeItIs();
+        EnumTest fifthDay = new EnumTest(Day.FRIDAY);
+        fifthDay.tellItLikeItIs();
+        EnumTest sixthDay = new EnumTest(Day.SATURDAY);
+        sixthDay.tellItLikeItIs();
+        EnumTest seventhDay = new EnumTest(Day.SUNDAY);
+        seventhDay.tellItLikeItIs();
+    }
+}
+
+//The output is:
+
+Mondays are bad.
+Midweek days are so-so.
+Fridays are better.
+Weekends are best.
+Weekends are best.
+</code></pre>
 
 
 <p>还可以对枚举类型遍历：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">for</span> <span class="o">(</span><span class="n">Day</span> <span class="n">p</span> <span class="o">:</span> <span class="n">Day</span><span class="o">.</span><span class="na">values</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>  <span class="o">...</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>for (Day p : Day.values()) {
+    ...
+}</code></pre>
 
 
 <p>其它大家熟知的用法还包括：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">enum</span> <span class="n">Coin</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">PENNY</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span> <span class="n">NICKEL</span><span class="o">(</span><span class="mi">5</span><span class="o">),</span> <span class="n">DIME</span><span class="o">(</span><span class="mi">10</span><span class="o">),</span> <span class="n">QUARTER</span><span class="o">(</span><span class="mi">25</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">Coin</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">value</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">value</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">value</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public enum Coin {
+    PENNY(1), NICKEL(5), DIME(10), QUARTER(25);
+
+    Coin(int value) {
+        this.value = value;
+    }
+
+    private final int value;
+
+    public int value() {
+        return value;
+    }
+}</code></pre>
 
 
 <h3>枚举类型的高级用法</h3>
 
 <h4>枚举常量的自引用（Self-Reference）限制</h4>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//有错误代码</span>
-</span><span class='line'><span class="kd">enum</span> <span class="n">Color</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">RED</span><span class="o">,</span> <span class="n">GREEN</span><span class="o">,</span> <span class="n">BLUE</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">Color</span><span class="o">()</span> <span class="o">{</span> <span class="n">colorMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">toString</span><span class="o">(),</span> <span class="k">this</span><span class="o">);</span> <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">static</span> <span class="kd">final</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Color</span><span class="o">&gt;</span> <span class="n">colorMap</span> <span class="o">=</span>
-</span><span class='line'>        <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Color</span><span class="o">&gt;();</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//有错误代码
+enum Color {
+    RED, GREEN, BLUE;
+    Color() { colorMap.put(toString(), this); }
+
+    static final Map&lt;String,Color&gt; colorMap =
+        new HashMap&lt;String,Color&gt;();
+}</code></pre>
 
 
 <p>上面的代码中，colorMap并未初始化，所以构造方法会出错！可以改成：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">enum</span> <span class="n">Color</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">RED</span><span class="o">,</span> <span class="n">GREEN</span><span class="o">,</span> <span class="n">BLUE</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">static</span> <span class="kd">final</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Color</span><span class="o">&gt;</span> <span class="n">colorMap</span> <span class="o">=</span>
-</span><span class='line'>        <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Color</span><span class="o">&gt;();</span>
-</span><span class='line'>    <span class="kd">static</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">Color</span> <span class="n">c</span> <span class="o">:</span> <span class="n">Color</span><span class="o">.</span><span class="na">values</span><span class="o">())</span>
-</span><span class='line'>            <span class="n">colorMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="n">c</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>enum Color {
+    RED, GREEN, BLUE;
+
+    static final Map&lt;String,Color&gt; colorMap =
+        new HashMap&lt;String,Color&gt;();
+    static {
+        for (Color c : Color.values())
+            colorMap.put(c.toString(), c);
+    }
+}</code></pre>
 
 
 <h4>Enum Constants with Class Bodies</h4>
 
 <p>枚举类型还能这么玩：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">enum</span> <span class="n">Operation</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">PLUS</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kt">double</span> <span class="nf">eval</span><span class="o">(</span><span class="kt">double</span> <span class="n">x</span><span class="o">,</span> <span class="kt">double</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span> <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'>    <span class="o">},</span>
-</span><span class='line'>    <span class="n">MINUS</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kt">double</span> <span class="nf">eval</span><span class="o">(</span><span class="kt">double</span> <span class="n">x</span><span class="o">,</span> <span class="kt">double</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span> <span class="k">return</span> <span class="n">x</span> <span class="o">-</span> <span class="n">y</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'>    <span class="o">},</span>
-</span><span class='line'>    <span class="n">TIMES</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kt">double</span> <span class="nf">eval</span><span class="o">(</span><span class="kt">double</span> <span class="n">x</span><span class="o">,</span> <span class="kt">double</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span> <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'>    <span class="o">},</span>
-</span><span class='line'>    <span class="n">DIVIDED_BY</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kt">double</span> <span class="nf">eval</span><span class="o">(</span><span class="kt">double</span> <span class="n">x</span><span class="o">,</span> <span class="kt">double</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span> <span class="k">return</span> <span class="n">x</span> <span class="o">/</span> <span class="n">y</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'>    <span class="o">};</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// Each constant supports an arithmetic operation</span>
-</span><span class='line'>    <span class="kd">abstract</span> <span class="kt">double</span> <span class="nf">eval</span><span class="o">(</span><span class="kt">double</span> <span class="n">x</span><span class="o">,</span> <span class="kt">double</span> <span class="n">y</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[])</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kt">double</span> <span class="n">x</span> <span class="o">=</span> <span class="n">Double</span><span class="o">.</span><span class="na">parseDouble</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
-</span><span class='line'>        <span class="kt">double</span> <span class="n">y</span> <span class="o">=</span> <span class="n">Double</span><span class="o">.</span><span class="na">parseDouble</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">1</span><span class="o">]);</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">Operation</span> <span class="n">op</span> <span class="o">:</span> <span class="n">Operation</span><span class="o">.</span><span class="na">values</span><span class="o">())</span>
-</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">x</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="n">op</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="n">y</span> <span class="o">+</span>
-</span><span class='line'>                               <span class="s">&quot; = &quot;</span> <span class="o">+</span> <span class="n">op</span><span class="o">.</span><span class="na">eval</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">));</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="n">java</span> <span class="n">Operation</span> <span class="mf">2.0</span> <span class="mf">4.0</span>
-</span><span class='line'><span class="mf">2.0</span> <span class="n">PLUS</span> <span class="mf">4.0</span> <span class="o">=</span> <span class="mf">6.0</span>
-</span><span class='line'><span class="mf">2.0</span> <span class="n">MINUS</span> <span class="mf">4.0</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.0</span>
-</span><span class='line'><span class="mf">2.0</span> <span class="n">TIMES</span> <span class="mf">4.0</span> <span class="o">=</span> <span class="mf">8.0</span>
-</span><span class='line'><span class="mf">2.0</span> <span class="n">DIVIDED_BY</span> <span class="mf">4.0</span> <span class="o">=</span> <span class="mf">0.5</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>enum Operation {
+    PLUS {
+        double eval(double x, double y) { return x + y; }
+    },
+    MINUS {
+        double eval(double x, double y) { return x - y; }
+    },
+    TIMES {
+        double eval(double x, double y) { return x * y; }
+    },
+    DIVIDED_BY {
+        double eval(double x, double y) { return x / y; }
+    };
+
+    // Each constant supports an arithmetic operation
+    abstract double eval(double x, double y);
+
+    public static void main(String args[]) {
+        double x = Double.parseDouble(args[0]);
+        double y = Double.parseDouble(args[1]);
+        for (Operation op : Operation.values())
+            System.out.println(x + " " + op + " " + y +
+                               " = " + op.eval(x, y));
+    }
+}
+
+
+java Operation 2.0 4.0
+2.0 PLUS 4.0 = 6.0
+2.0 MINUS 4.0 = -2.0
+2.0 TIMES 4.0 = 8.0
+2.0 DIVIDED_BY 4.0 = 0.5</code></pre>
 
 </div>
 
@@ -667,7 +487,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

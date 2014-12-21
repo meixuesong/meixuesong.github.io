@@ -9,13 +9,8 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="昨天晚上在Tomcat上部署一个小应用时，Tomcat启动非常慢，有时甚至需要10分钟。查看日志，发现一直停在Deploying阶段： 1
-2
-3
-4
-5
-INFO: Starting service Catalina
-Dec 19, 2014 9:56:33 AM org.apache. &hellip;">
+  <meta name="description" content="昨天晚上在Tomcat上部署一个小应用时，Tomcat启动非常慢，有时甚至需要10分钟。查看日志，发现一直停在Deploying阶段： INFO: Starting service Catalina
+Dec 19, 2014 9:56:33 AM org.apache.catalina.core. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -33,7 +28,8 @@ Dec 19, 2014 9:56:33 AM org.apache. &hellip;">
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -109,34 +105,22 @@ Dec 19, 2014 9:56:33 AM org.apache. &hellip;">
 
 
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>INFO: Starting service Catalina
-</span><span class='line'>Dec 19, 2014 9:56:33 AM org.apache.catalina.core.StandardEngine startInternal
-</span><span class='line'>INFO: Starting Servlet Engine: Apache Tomcat/7.0.52 (Ubuntu)
-</span><span class='line'>Dec 19, 2014 9:56:33 AM org.apache.catalina.startup.HostConfig deployWAR
-</span><span class='line'>INFO: Deploying web application archive /usr/mxs/kindleinstance/webapps/kindlegen.war</span></code></pre></td></tr></table></div></figure>
+<pre  class='line-numbers language-'><code class='line-numbers language-'>INFO: Starting service Catalina
+Dec 19, 2014 9:56:33 AM org.apache.catalina.core.StandardEngine startInternal
+INFO: Starting Servlet Engine: Apache Tomcat/7.0.52 (Ubuntu)
+Dec 19, 2014 9:56:33 AM org.apache.catalina.startup.HostConfig deployWAR
+INFO: Deploying web application archive /usr/mxs/kindleinstance/webapps/kindlegen.war</code></pre>
 
 
 <p>难道是war文件有问题？检查了md5校验码，尝试了解压缩，完全没问题啊！到底是什么原因呢？等了十分钟后，发现Tomcat已经启动完成，可以使用了。再次查看日志：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>INFO: Deploying web application archive /usr/mxs/kindleinstance/webapps/kindlegen.war
-</span><span class='line'>Dec 19, 2014 10:11:25 AM org.apache.catalina.util.SessionIdGenerator createSecureRandom
-</span><span class='line'>INFO: Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [888,934] milliseconds.
-</span><span class='line'>Dec 19, 2014 10:11:25 AM org.apache.coyote.AbstractProtocol start
-</span><span class='line'>INFO: Starting ProtocolHandler ["http-bio-9090"]
-</span><span class='line'>Dec 19, 2014 10:11:25 AM org.apache.catalina.startup.Catalina start
-</span><span class='line'>INFO: Server startup in 892334 ms</span></code></pre></td></tr></table></div></figure>
+<pre  class='line-numbers language-'><code class='line-numbers language-'>INFO: Deploying web application archive /usr/mxs/kindleinstance/webapps/kindlegen.war
+Dec 19, 2014 10:11:25 AM org.apache.catalina.util.SessionIdGenerator createSecureRandom
+INFO: Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [888,934] milliseconds.
+Dec 19, 2014 10:11:25 AM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler ["http-bio-9090"]
+Dec 19, 2014 10:11:25 AM org.apache.catalina.startup.Catalina start
+INFO: Server startup in 892334 ms</code></pre>
 
 
 <p>原来是“Creation of SecureRandom instance for session ID”消耗了888秒，这个SecureRandom实例是什么呢？在<a href="http://wiki.apache.org/tomcat/HowTo/FasterStartUp">How do I make Tomcat startup faster?</a>中，有这样的描述：</p>
@@ -159,32 +143,21 @@ Dec 19, 2014 9:56:33 AM org.apache. &hellip;">
 
 <p>按照前文<a href="http://wiki.apache.org/tomcat/HowTo/FasterStartUp">How do I make Tomcat startup faster?</a>中给出的次安全的解决办法，改为使用<code>-Djava.security.egd=file:/dev/./urandom</code>，即在setenv.sh中加入一行：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>#!/bin/sh
-</span><span class='line'>export CATALINA_OPTS="-Djava.security.egd=file:/dev/./urandom"</span></code></pre></td></tr></table></div></figure>
+<pre  class='line-numbers language-'><code class='line-numbers language-'>#!/bin/sh
+export CATALINA_OPTS="-Djava.security.egd=file:/dev/./urandom"</code></pre>
 
 
 <p>然后再重启Tomcat，这次非常快了，整个启动只用了3秒多：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>INFO: Starting service Catalina
-</span><span class='line'>Dec 19, 2014 10:51:55 PM org.apache.catalina.core.StandardEngine startInternal
-</span><span class='line'>INFO: Starting Servlet Engine: Apache Tomcat/7.0.52 (Ubuntu)
-</span><span class='line'>Dec 19, 2014 10:51:55 PM org.apache.catalina.startup.HostConfig deployWAR
-</span><span class='line'>INFO: Deploying web application archive /usr/mxs/kindleinstance/webapps/kindlegen.war
-</span><span class='line'>Dec 19, 2014 10:51:58 PM org.apache.coyote.AbstractProtocol start
-</span><span class='line'>INFO: Starting ProtocolHandler ["http-bio-9090"]
-</span><span class='line'>Dec 19, 2014 10:51:58 PM org.apache.catalina.startup.Catalina start
-</span><span class='line'>INFO: Server startup in 3418 ms</span></code></pre></td></tr></table></div></figure>
+<pre  class='line-numbers language-'><code class='line-numbers language-'>INFO: Starting service Catalina
+Dec 19, 2014 10:51:55 PM org.apache.catalina.core.StandardEngine startInternal
+INFO: Starting Servlet Engine: Apache Tomcat/7.0.52 (Ubuntu)
+Dec 19, 2014 10:51:55 PM org.apache.catalina.startup.HostConfig deployWAR
+INFO: Deploying web application archive /usr/mxs/kindleinstance/webapps/kindlegen.war
+Dec 19, 2014 10:51:58 PM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler ["http-bio-9090"]
+Dec 19, 2014 10:51:58 PM org.apache.catalina.startup.Catalina start
+INFO: Server startup in 3418 ms</code></pre>
 
 
 <p>修改后的<code>/dev/urandom</code>没有默认的<code>dev/random</code>安全吗？似乎也不一定，博文<a href="http://www.2uo.de/myths-about-urandom/">Myths about /dev/urandom</a>对两者进行了全面的分析，值得一看。最后作者认为用<code>/dev/urandom</code>就可以了。</p>
@@ -338,7 +311,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

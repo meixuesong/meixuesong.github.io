@@ -32,7 +32,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -129,27 +130,16 @@
 </ol>
 
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//使用构造方法时：</span>
-</span><span class='line'><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;</span> <span class="n">m</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;();</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//假设有静态方法后：</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">K</span><span class="o">,</span> <span class="n">V</span><span class="o">&gt;</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span> <span class="n">V</span><span class="o">&gt;</span> <span class="n">newInstance</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">K</span><span class="o">,</span> <span class="n">V</span><span class="o">&gt;();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//只需要：</span>
-</span><span class='line'><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;</span> <span class="n">m</span> <span class="o">=</span> <span class="n">HashMap</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>//使用构造方法时：
+Map&lt;String, List&lt;String&gt;&gt; m = new HashMap&lt;String, List&lt;String&gt;&gt;();
+
+//假设有静态方法后：
+public static &lt;K, V&gt; HashMap&lt;K, V&gt; newInstance() {
+    return new HashMap&lt;K, V&gt;();
+}
+
+//只需要：
+Map&lt;String, List&lt;String&gt;&gt; m = HashMap.newInstance();</code></pre>
 
 
 <p>实际上，Java 7和8在泛型类型推断上已经有了一些改进，可以让代码写得更简单些。因此上述第4条优势已经不明显。</p>
@@ -168,159 +158,86 @@
 
 <p>使用Builder模式就可以很好地解决这个问题。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BuilderDemoClass</span> <span class="o">{</span>
-</span><span class='line'>    <span class="c1">//1个必须属性，2个可选属性。</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">a_required</span><span class="o">;</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">b</span><span class="o">;</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">c</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Builder</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kd">private</span> <span class="kt">int</span> <span class="n">a_required</span><span class="o">;</span>
-</span><span class='line'>        <span class="kd">private</span> <span class="kt">int</span> <span class="n">b</span><span class="o">;</span>
-</span><span class='line'>        <span class="kd">private</span> <span class="kt">int</span> <span class="n">c</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kd">public</span> <span class="nf">Builder</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">this</span><span class="o">.</span><span class="na">a_required</span> <span class="o">=</span> <span class="n">a</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kd">public</span> <span class="n">Builder</span> <span class="nf">bb</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">this</span><span class="o">.</span><span class="na">b</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kd">public</span> <span class="n">Builder</span> <span class="nf">cc</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">this</span><span class="o">.</span><span class="na">c</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kd">public</span> <span class="n">BuilderDemoClass</span> <span class="nf">build</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">return</span> <span class="k">new</span> <span class="nf">BuilderDemoClass</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="nf">BuilderDemoClass</span><span class="o">(</span><span class="n">Builder</span> <span class="n">builder</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">a_required</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="na">a_required</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">b</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="na">b</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">c</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="na">c</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getA_required</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">a_required</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getB</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">b</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getC</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">c</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class BuilderDemoClass {
+    //1个必须属性，2个可选属性。
+    private final int a_required;
+    private final int b;
+    private final int c;
+
+    public static class Builder {
+        private int a_required;
+        private int b;
+        private int c;
+
+        public Builder(int a) {
+            this.a_required = a;
+        }
+
+        public Builder bb(int value) {
+            this.b = value;
+
+            return this;
+        }
+
+        public Builder cc(int value) {
+            this.c = value;
+
+            return this;
+        }
+
+        public BuilderDemoClass build() {
+            return new BuilderDemoClass(this);
+        }
+    }
+
+    private BuilderDemoClass(Builder builder) {
+        a_required = builder.a_required;
+        b = builder.b;
+        c = builder.c;
+    }
+
+    public int getA_required() {
+        return a_required;
+    }
+
+    public int getB() {
+        return b;
+    }
+
+    public int getC() {
+        return c;
+    }
+}</code></pre>
 
 
 <p>测试代码：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BuilderDemoClassTest</span> <span class="kd">extends</span> <span class="n">TestCase</span><span class="o">{</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testBuilder</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">BuilderDemoClass</span> <span class="n">c</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BuilderDemoClass</span><span class="o">.</span><span class="na">Builder</span><span class="o">(</span><span class="mi">10</span><span class="o">).</span><span class="na">bb</span><span class="o">(</span><span class="mi">20</span><span class="o">).</span><span class="na">cc</span><span class="o">(</span><span class="mi">30</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getA_required</span><span class="o">(),</span> <span class="mi">10</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getB</span><span class="o">(),</span> <span class="mi">20</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getC</span><span class="o">(),</span> <span class="mi">30</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class BuilderDemoClassTest extends TestCase{
+    public void testBuilder() {
+        BuilderDemoClass c = new BuilderDemoClass.Builder(10).bb(20).cc(30).build();
+
+        Assert.assertEquals(c.getA_required(), 10);
+        Assert.assertEquals(c.getB(), 20);
+        Assert.assertEquals(c.getC(), 30);
+    }
+}</code></pre>
 
 
 <h2>3.用私有构造方法或枚举强化单例属性</h2>
 
 <p>这一条说的是实现单例的几种方法，推荐使用枚举类型。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">enum</span> <span class="n">MySingleton</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">INSTANCE</span><span class="o">;</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doSomething</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="o">...</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//调用：</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">MySingleton</span><span class="o">.</span><span class="na">INSTANCE</span><span class="o">.</span><span class="na">doSomething</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public enum MySingleton {
+    INSTANCE;
+    
+    public void doSomething() {
+        ...
+    }
+}
+
+//调用：
+
+MySingleton.INSTANCE.doSomething();</code></pre>
 
 
 <p>之前有过详细总结：<a href="http://blog.ubone.com/blog/2014/06/25/just-a-test/">单例与枚举</a></p>
@@ -329,27 +246,16 @@
 
 <p>对于一些工具类，主要包括静态方法，可以将构造器private，避免其被实例化。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UtilityClass</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">//强调不能被实例化</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="nf">UtilityClass</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">throw</span> <span class="k">new</span> <span class="nf">AssertionError</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">someStaticMethod</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="o">...</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class UtilityClass {
+    //强调不能被实例化
+    private UtilityClass() {
+        throw new AssertionError();
+    }
+    
+    public static void someStaticMethod() {
+        ...
+    }
+}</code></pre>
 
 
 <h2>5.避免创建不必要的对象</h2>
@@ -362,23 +268,14 @@
 </ul>
 
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testAutoBoxing</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">Long</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0L</span><span class="o">;</span>
-</span><span class='line'>    <span class="k">for</span><span class="o">(</span><span class="kt">long</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">Integer</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">;</span> <span class="n">i</span> <span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">sum</span> <span class="o">+=</span> <span class="n">i</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">sum</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public void testAutoBoxing() {
+    Long sum = 0L;
+    for(long i = 0; i &lt; Integer.MAX_VALUE; i ++) {
+        sum += i;
+    }
+    
+    System.out.println(sum);
+}</code></pre>
 
 
 <p>上面的代码每次增加sum时，都构造了一个实例。把Long sum改成long sum后，我的Thinkpad X230运行时间从15秒减少到了3.3秒。</p>
@@ -563,7 +460,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

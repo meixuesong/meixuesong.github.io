@@ -27,7 +27,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -109,29 +110,17 @@
 
 <p>工厂方法返回的是水果接口。水果接口也可以换成抽象类。这是针对抽象编程的一种体现。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FruitFactory</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">Fruit</span> <span class="nf">getFruit</span><span class="o">(</span><span class="n">String</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">type</span><span class="o">.</span><span class="na">equalsIgnoreCase</span><span class="o">(</span><span class="s">&quot;apple&quot;</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">return</span> <span class="k">new</span> <span class="nf">Apple</span><span class="o">();</span>
-</span><span class='line'>      <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">type</span><span class="o">.</span><span class="na">equalsIgnoreCase</span><span class="o">(</span><span class="s">&quot;orange&quot;</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">return</span> <span class="k">new</span> <span class="nf">Orange</span><span class="o">();</span>
-</span><span class='line'>      <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">throw</span> <span class="k">new</span> <span class="nf">FruitFactoryException</span><span class="o">();</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class FruitFactory {
+    public static Fruit getFruit(String type) {
+        if (type.equalsIgnoreCase("apple")) {
+            return new Apple();
+        } else if (type.equalsIgnoreCase("orange")) {
+            return new Orange();
+        } else {
+            throw new FruitFactoryException();
+        }
+    }
+}</code></pre>
 
 
 <h3>省略抽象产品角色</h3>
@@ -150,34 +139,22 @@
 
 <p><img src="/myresource/images/image_blog_2014-07-27_5.png" alt="image" /></p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConcreteProduct</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="nf">ConcreteProduct</span><span class="o">()</span> <span class="o">{}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">ConcreteProduct</span> <span class="nf">factory</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="k">new</span> <span class="nf">ConcreteProduct</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class ConcreteProduct {
+    public ConcreteProduct() {}
+    
+    public static ConcreteProduct factory() {
+        return new ConcreteProduct();
+    }
+}</code></pre>
 
 
 <h3>多个工厂方法</h3>
 
 <p>工厂类可以有一个或多个工厂方法，分别负责创建不同的产品对象。例如java.text.DateFormat类：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">DateFormat</span> <span class="nf">getDateInstance</span><span class="o">();</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">DateFormat</span> <span class="nf">getDateInstance</span><span class="o">(</span><span class="kt">int</span> <span class="n">style</span><span class="o">);</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">DateFormat</span> <span class="nf">getDateInstance</span><span class="o">(</span><span class="kt">int</span> <span class="n">style</span><span class="o">,</span> <span class="n">Local</span> <span class="n">locale</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public final static DateFormat getDateInstance();
+public final static DateFormat getDateInstance(int style);
+public final static DateFormat getDateInstance(int style, Local locale);</code></pre>
 
 
 <h3>总结</h3>
@@ -339,7 +316,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Others | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/others/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-12-21T14:04:33+08:00</updated>
+  <updated>2014-12-21T19:10:57+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -252,6 +252,47 @@ disqus_show_comment_count: true
 <p>改完后手机上访问也基本可以秒杀了。</p>
 
 <p>用GitHub + Octopress建立博客，过程虽然复杂了点，但最终效果相当不错，你值得拥有！</p>
+
+<p>【Update 2014-12-21】修改代码高亮显示方案</p>
+
+<p>将原来的代码高亮替换为<a href="http://prismjs.com/">prismjs</a>，主要是修改<code>plugins/backtick_code_block.rb</code>:</p>
+
+<p>```ruby</p>
+
+<pre><code>  if @lang.nil? || @lang == 'plain'
+    #mxs comment code = tableize_code(str.gsub('&lt;','&amp;lt;').gsub('&gt;','&amp;gt;'))
+    #mxs comment "&lt;figure class='code'&gt;#{@caption}#{code}&lt;/figure&gt;"
+    mxscode = str.gsub('&lt;','&amp;lt;').gsub('&gt;','&amp;gt;')
+    "&lt;pre  class='line-numbers language-'&gt;&lt;code class='line-numbers language-'&gt;#{mxscode}&lt;/code&gt;&lt;/pre&gt;" 
+  else
+    mxscode = str.gsub('&lt;','&amp;lt;').gsub('&gt;','&amp;gt;')
+    "&lt;pre class='line-numbers language-#{@lang}'&gt;&lt;code class='line-numbers language-#{@lang}'&gt;#{mxscode}&lt;/code&gt;&lt;/pre&gt;" 
+</code></pre>
+
+<h1>mxs comment</h1>
+
+<h1>if @lang.include? &ldquo;-raw&rdquo;</h1>
+
+<h1>raw = &ldquo;`&ldquo; #{@options.sub(&lsquo;-raw&rsquo;, &rdquo;)}\n&rdquo;</h1>
+
+<h1>raw += str</h1>
+
+<h1>raw += &ldquo;\n```\n&rdquo;</h1>
+
+<h1>else</h1>
+
+<h1>code = highlight(str, @lang)</h1>
+
+<h1>&ldquo;<figure class='code'>#{@caption}#{code}</figure>&rdquo;</h1>
+
+<h1>end</h1>
+
+<pre><code>  end
+</code></pre>
+
+<p>```</p>
+
+<p>prismjs部分按照官方文档配置即可。</p>
 ]]></content>
   </entry>
   

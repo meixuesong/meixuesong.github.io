@@ -27,7 +27,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -105,21 +106,13 @@
 
 <p>先定义优先队列的API框架：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">IMaxPQ</span><span class="o">&lt;</span><span class="n">T</span> <span class="kd">extends</span> <span class="n">Comparable</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">insert</span><span class="o">(</span><span class="n">T</span> <span class="n">v</span><span class="o">);</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="n">T</span> <span class="nf">max</span><span class="o">();</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="n">T</span> <span class="nf">delMax</span><span class="o">();</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isEmpty</span><span class="o">();</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">size</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public interface IMaxPQ&lt;T extends Comparable&lt;T&gt;&gt; {
+    public void insert(T v);
+    public T max();
+    public T delMax();
+    public boolean isEmpty();
+    public int size();
+}</code></pre>
 
 
 <h2>2. 实现方法</h2>
@@ -148,159 +141,82 @@
 
 <h4>2.2.3 算法实现</h4>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MaxPQ</span><span class="o">&lt;</span><span class="n">T</span> <span class="kd">extends</span> <span class="n">Comparable</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span> <span class="kd">implements</span> <span class="n">IMaxPQ</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;{</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="n">T</span><span class="o">[]</span> <span class="n">pq</span><span class="o">;</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">public</span> <span class="nf">MaxPQ</span><span class="o">(</span><span class="kt">int</span> <span class="n">maxN</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">pq</span> <span class="o">=</span> <span class="o">(</span><span class="n">T</span><span class="o">[])</span> <span class="k">new</span> <span class="n">Comparable</span><span class="o">[</span><span class="n">maxN</span> <span class="o">+</span> <span class="mi">1</span><span class="o">];</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">insert</span><span class="o">(</span><span class="n">T</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">pq</span><span class="o">[++</span><span class="n">n</span><span class="o">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">;</span>
-</span><span class='line'>      <span class="n">swim</span><span class="o">(</span><span class="n">n</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="n">T</span> <span class="nf">max</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">return</span> <span class="n">pq</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="n">T</span> <span class="nf">delMax</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">T</span> <span class="n">max</span> <span class="o">=</span> <span class="n">pq</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>    <span class="c1">//根结点最大</span>
-</span><span class='line'>      <span class="n">exchange</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">n</span><span class="o">--);</span> <span class="c1">//与最后一个结点交换</span>
-</span><span class='line'>      <span class="n">pq</span><span class="o">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span> <span class="c1">//防止对象游离</span>
-</span><span class='line'>      <span class="n">sink</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>          <span class="c1">//恢复堆的有序性</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">return</span> <span class="n">max</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isEmpty</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">size</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">n</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">less</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">,</span> <span class="kt">int</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">pq</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">compareTo</span><span class="o">(</span><span class="n">pq</span><span class="o">[</span><span class="n">j</span><span class="o">])</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">exchange</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">,</span> <span class="kt">int</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">T</span> <span class="n">t</span> <span class="o">=</span> <span class="n">pq</span><span class="o">[</span><span class="n">i</span><span class="o">];</span> <span class="n">pq</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">pq</span><span class="o">[</span><span class="n">j</span><span class="o">];</span> <span class="n">pq</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">t</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//上浮</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">swim</span><span class="o">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">k</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">less</span><span class="o">(</span><span class="n">k</span> <span class="o">/</span> <span class="mi">2</span><span class="o">,</span> <span class="n">k</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">exchange</span><span class="o">(</span><span class="n">k</span> <span class="o">/</span> <span class="mi">2</span><span class="o">,</span> <span class="n">k</span><span class="o">);</span>
-</span><span class='line'>          <span class="n">k</span> <span class="o">=</span> <span class="n">k</span> <span class="o">/</span> <span class="mi">2</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">//下沉</span>
-</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">sink</span><span class="o">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">k</span><span class="o">;</span>
-</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">&amp;&amp;</span> <span class="n">less</span><span class="o">(</span><span class="n">j</span><span class="o">,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>              <span class="n">j</span><span class="o">++;</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>          
-</span><span class='line'>          <span class="k">if</span> <span class="o">(!</span><span class="n">less</span><span class="o">(</span><span class="n">k</span><span class="o">,</span> <span class="n">j</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>              <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>          
-</span><span class='line'>          <span class="n">exchange</span><span class="o">(</span><span class="n">k</span><span class="o">,</span> <span class="n">j</span><span class="o">);</span>
-</span><span class='line'>          <span class="n">k</span> <span class="o">=</span> <span class="n">j</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class MaxPQ&lt;T extends Comparable&lt;T&gt;&gt; implements IMaxPQ&lt;T&gt;{
+    private T[] pq;
+    private int n = 0;
+    
+    public MaxPQ(int maxN) {
+        pq = (T[]) new Comparable[maxN + 1];
+    }
+    
+    @Override
+    public void insert(T v) {
+        pq[++n] = v;
+        swim(n);
+    }
+
+    @Override
+    public T max() {
+        if (n &gt; 0) {
+            return pq[1];
+        }
+        
+        return null;
+    }
+
+    @Override
+    public T delMax() {
+        T max = pq[1];    //根结点最大
+        exchange(1, n--); //与最后一个结点交换
+        pq[n + 1] = null; //防止对象游离
+        sink(1);          //恢复堆的有序性
+        
+        return max;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return n == 0;
+    }
+
+    @Override
+    public int size() {
+        return n;
+    }
+    
+    private boolean less(int i, int j) {
+        return pq[i].compareTo(pq[j]) &lt; 0;
+    }
+    
+    private void exchange(int i, int j) {
+        T t = pq[i]; pq[i] = pq[j]; pq[j] = t;
+    }
+    
+    //上浮
+    private void swim(int k) {
+        while (k &gt; 1 && less(k / 2, k)) {
+            exchange(k / 2, k);
+            k = k / 2;
+        }
+    }
+    
+    //下沉
+    private void sink(int k) {
+        while (2 * k &lt;= n) {
+            int j = 2 * k;
+            if (j &lt; n && less(j, j + 1)) {
+                j++;
+            }
+            
+            if (!less(k, j)) {
+                break;
+            }
+            
+            exchange(k, j);
+            k = j;
+        }
+    }
+}</code></pre>
 
 
 <p><strong>对于含有N个元素的基于堆的优先队列，插入元素操作只需不超过(lgN + 1)次比较，删除最大元素的操作需要不超过2lgN次比较！</strong></p>
@@ -329,93 +245,49 @@
 
 <h3>3.3 算法实现</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PQSort</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
-</span><span class='line'>      <span class="c1">//构造堆</span>
-</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="n">n</span><span class="o">/</span><span class="mi">2</span><span class="o">;</span> <span class="n">k</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">k</span><span class="o">--)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">sink</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">k</span><span class="o">,</span> <span class="n">n</span><span class="o">);</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="c1">//下沉排序</span>
-</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">exchange</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="n">n</span><span class="o">--);</span>
-</span><span class='line'>          <span class="n">sink</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="n">n</span><span class="o">);</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">sink</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">k</span><span class="o">,</span> <span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">k</span><span class="o">;</span>
-</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">&amp;&amp;</span> <span class="n">less</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>              <span class="n">j</span><span class="o">++;</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>          
-</span><span class='line'>          <span class="k">if</span> <span class="o">(!</span><span class="n">less</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">k</span><span class="o">,</span> <span class="n">j</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>              <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>          
-</span><span class='line'>          <span class="n">exchange</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">k</span><span class="o">,</span> <span class="n">j</span><span class="o">);</span>
-</span><span class='line'>          <span class="n">k</span> <span class="o">=</span> <span class="n">j</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">less</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i</span><span class="o">,</span> <span class="kt">int</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="c1">//要减1</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">a</span><span class="o">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="o">].</span><span class="na">compareTo</span><span class="o">(</span><span class="n">a</span><span class="o">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="o">])</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">exchange</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i</span><span class="o">,</span> <span class="kt">int</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="c1">//要减1</span>
-</span><span class='line'>      <span class="n">Comparable</span> <span class="n">t</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="o">];</span>
-</span><span class='line'>      <span class="n">a</span><span class="o">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="o">];</span>
-</span><span class='line'>      <span class="n">a</span><span class="o">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="n">t</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class PQSort {
+    public void sort(Comparable[] a) {
+        int n = a.length;
+        //构造堆
+        for(int k = n/2; k &gt;= 1; k--) {
+            sink(a, k, n);
+        }
+        
+        //下沉排序
+        while (n &gt; 1) {
+            exchange(a, 1, n--);
+            sink(a, 1, n);
+        }
+    }
+    
+    private void sink(Comparable[] a, int k, int n) {
+        while (2 * k &lt;= n) {
+            int j = 2 * k;
+            if (j &lt; n && less(a, j, j+1)) {
+                j++;
+            }
+            
+            if (!less(a, k, j)) {
+                break;
+            }
+            
+            exchange(a, k, j);
+            k = j;
+        }
+    }
+    
+    private static boolean less(Comparable[] a, int i, int j) {
+        //要减1
+        return a[i - 1].compareTo(a[j - 1]) &lt; 0;
+    }
+    
+    private static void exchange(Comparable[] a, int i, int j) {
+        //要减1
+        Comparable t = a[i - 1];
+        a[i - 1] = a[j - 1];
+        a[j - 1] = t;
+    }
+}</code></pre>
 
 
 <p>对于一百万随机整数，排序时间大约在750ms。</p>
@@ -583,7 +455,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

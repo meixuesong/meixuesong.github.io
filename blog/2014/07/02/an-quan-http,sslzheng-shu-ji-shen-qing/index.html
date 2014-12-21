@@ -28,7 +28,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -190,40 +191,28 @@
 
 <p>第二步是生成Keystore文件。利用java的keytool工具：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>//XXXXXX为密码
-</span><span class='line'>keytool -importkeystore -deststorepass  XXXXXX -destkeystore mykeystore.jks -srckeystore out.p12 -srcstoretype PKCS12 -srcstorepass XXXXXX</span></code></pre></td></tr></table></div></figure>
+<pre  class='line-numbers language-'><code class='line-numbers language-'>//XXXXXX为密码
+keytool -importkeystore -deststorepass  XXXXXX -destkeystore mykeystore.jks -srckeystore out.p12 -srcstoretype PKCS12 -srcstorepass XXXXXX</code></pre>
 
 
 <p>第三步，导入CA证书：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>keytool -import -alias startsslca -file a.class1.server.ca.pem -keystore mykeystore.jks</span></code></pre></td></tr></table></div></figure>
+<pre  class='line-numbers language-'><code class='line-numbers language-'>keytool -import -alias startsslca -file a.class1.server.ca.pem -keystore mykeystore.jks</code></pre>
 
 
 <p>最后一步，配置Tomcat，修改server.xml，将8443端口取消注释：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Connector</span> <span class="na">port=</span><span class="s">&quot;8443&quot;</span> <span class="na">protocol=</span><span class="s">&quot;HTTP/1.1&quot;</span>
-</span><span class='line'>  <span class="na">SSLEnabled=</span><span class="s">&quot;true&quot;</span> <span class="na">maxThreads=</span><span class="s">&quot;150&quot;</span>
-</span><span class='line'>  <span class="na">scheme=</span><span class="s">&quot;https&quot;</span> <span class="na">secure=</span><span class="s">&quot;true&quot;</span>
-</span><span class='line'>  <span class="na">clientAuth=</span><span class="s">&quot;false&quot;</span> <span class="na">sslProtocol=</span><span class="s">&quot;TLS&quot;</span>
-</span><span class='line'>  <span class="na">keystoreFile=</span><span class="s">&quot;/Users/mxs/mykeystore.jks&quot;</span>
-</span><span class='line'>  <span class="na">keystorePass=</span><span class="s">&quot;XXXXXX&quot;</span><span class="nt">/&gt;</span> <span class="c">&lt;!--XXXXXX是密码--&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-xml'><code class='line-numbers language-xml'>&lt;Connector port="8443" protocol="HTTP/1.1" 
+    SSLEnabled="true" maxThreads="150" 
+    scheme="https" secure="true" 
+    clientAuth="false" sslProtocol="TLS" 
+    keystoreFile="/Users/mxs/mykeystore.jks" 
+    keystorePass="XXXXXX"/&gt; &lt;!--XXXXXX是密码--&gt;</code></pre>
 
 
 <p>如果启动时报apr错误，可修改server.xml，加上注释：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="c">&lt;!--&lt;Listener className=&quot;org.apache.catalina.core.AprLifecycleListener&quot; SSLEngine=&quot;on&quot; /&gt;--&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-xml'><code class='line-numbers language-xml'>&lt;!--&lt;Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" /&gt;--&gt;</code></pre>
 
 
 <h2>文件类型说明</h2>
@@ -394,7 +383,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

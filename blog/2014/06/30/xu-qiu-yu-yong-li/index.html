@@ -27,7 +27,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -149,88 +150,47 @@
 
 <p>我们以系统登录为例，尝试编写一个用例：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>用例编号：UC1-001
-</span><span class='line'>用例名称：系统登录
-</span><span class='line'>用例描述：
-</span><span class='line'>      系统登录。
-</span><span class='line'>参与者：
-</span><span class='line'>  所有用户。 
-</span><span class='line'>前置条件：
-</span><span class='line'>  无
-</span><span class='line'>后置条件：
-</span><span class='line'>  Actor成功登录。    
-</span><span class='line'>基本路径
-</span><span class='line'>  1. 系统显示登录窗口，“记住密码”默认选中，登录按钮不可用。
-</span><span class='line'>  2. Actor输入11位手机号码和至少6位密码。
-</span><span class='line'>  3. 系统将“登录”按钮变为可用。
-</span><span class='line'>  4. Actor点击“登录”按钮。
-</span><span class='line'>  5. 系统验证成功后完成登录，打开首页。
-</span><span class='line'>  
-</span><span class='line'>扩展点：
-</span><span class='line'>  1a. 上次登录成功且勾选了“记住密码”：系统直接完成登录，并打开首页。    
-</span><span class='line'>      1a1. 系统直接登录失败，打开登录窗口，显示之前的手机号和密码，
-</span><span class='line'>  系统提示：“请输入正确的手机号和密码。”。“登录”按钮可用。
-</span><span class='line'>  
-</span><span class='line'>  1b. 上次登录成功，但未勾选“记住密码”：则系统显示登录窗口，
-</span><span class='line'>  “手机号”为上次的手机号，“记住密码”不勾选，“密码”为空。
-</span><span class='line'>  
-</span><span class='line'>  5a. 手机号或密码不正确：系统提示“请输入正确的手机号和密码。”
-</span><span class='line'>  
-</span><span class='line'>  5b. 手机号不存在：系统提示“该号码不存在，请与管理员联系。”
-</span><span class='line'>  
-</span><span class='line'>业务规则：
-</span><span class='line'>  手机号必须输入、且只能输入11位。
-</span><span class='line'>  密码至少6位。
-</span><span class='line'>
-</span><span class='line'>非功能性需求：
-</span><span class='line'>  
-</span><span class='line'>设计约束：
-</span><span class='line'>
-</span><span class='line'>补充说明：   
-</span><span class='line'>  所有系统提示都以文本方式显示在上面。详见效果图。
-</span><span class='line'>  登录时的loading和mask按系统约定。
-</span><span class='line'>      </span></code></pre></td></tr></table></div></figure>
+<pre  class='line-numbers language-'><code class='line-numbers language-'>用例编号：UC1-001
+用例名称：系统登录
+用例描述：
+        系统登录。
+参与者：
+    所有用户。 
+前置条件：
+    无
+后置条件：
+    Actor成功登录。    
+基本路径
+    1. 系统显示登录窗口，“记住密码”默认选中，登录按钮不可用。
+    2. Actor输入11位手机号码和至少6位密码。
+    3. 系统将“登录”按钮变为可用。
+    4. Actor点击“登录”按钮。
+    5. 系统验证成功后完成登录，打开首页。
+    
+扩展点：
+    1a. 上次登录成功且勾选了“记住密码”：系统直接完成登录，并打开首页。    
+        1a1. 系统直接登录失败，打开登录窗口，显示之前的手机号和密码，
+    系统提示：“请输入正确的手机号和密码。”。“登录”按钮可用。
+    
+    1b. 上次登录成功，但未勾选“记住密码”：则系统显示登录窗口，
+    “手机号”为上次的手机号，“记住密码”不勾选，“密码”为空。
+    
+    5a. 手机号或密码不正确：系统提示“请输入正确的手机号和密码。”
+    
+    5b. 手机号不存在：系统提示“该号码不存在，请与管理员联系。”
+    
+业务规则：
+    手机号必须输入、且只能输入11位。
+    密码至少6位。
+
+非功能性需求：
+    
+设计约束：
+
+补充说明： 
+  所有系统提示都以文本方式显示在上面。详见效果图。
+  登录时的loading和mask按系统约定。
+        </code></pre>
 
 
 <p>上面的用例中：</p>
@@ -249,10 +209,8 @@
 
 <p>在讨论需求时，要集中讨论所有可能的失败和可选择的过程。扩展条件通常可以加上冒号（：），使读者不会误认为它是一个执行步骤，例如：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>无效PIN：
-</span><span class='line'>网络中断：</span></code></pre></td></tr></table></div></figure>
+<pre  class='line-numbers language-'><code class='line-numbers language-'>无效PIN：
+网络中断：</code></pre>
 
 
 <p>用例可以包含子用例，也可以链接到另一个用例。</p>
@@ -267,20 +225,13 @@
 </ul>
 
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>修改前：
-</span><span class='line'>2. 系统检查密码是否正确。
-</span><span class='line'>3. 如果密码正确，系统向用户提供有效的操作。
-</span><span class='line'>
-</span><span class='line'>修改后：
-</span><span class='line'>2. 系统验证密码正确。
-</span><span class='line'>3. 系统向用户提供有效的操作。 </span></code></pre></td></tr></table></div></figure>
+<pre  class='line-numbers language-'><code class='line-numbers language-'>修改前：
+2. 系统检查密码是否正确。
+3. 如果密码正确，系统向用户提供有效的操作。
+
+修改后：
+2. 系统验证密码正确。
+3. 系统向用户提供有效的操作。 </code></pre>
 
 
 <p>用例的格式有多种，包括单列表格式、双列表格式、RUP格式等等。建议采用上述示例中的格式。简单、条理清晰，易执行。</p>
@@ -446,7 +397,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

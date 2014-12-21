@@ -27,7 +27,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -120,97 +121,51 @@
 
 <p>下面是排序算法的实现。需要注意的是还有几个细节需要完善，它们可能导致错误或影响性能。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Quick</span> <span class="kd">extends</span> <span class="n">AbstractSort</span> <span class="o">{</span>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">StdRandom</span><span class="o">.</span><span class="na">shuffle</span><span class="o">(</span><span class="n">a</span><span class="o">);</span> <span class="c1">//打乱数组，消除对输入的依赖</span>
-</span><span class='line'>      <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">lo</span><span class="o">,</span> <span class="kt">int</span> <span class="n">hi</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">hi</span> <span class="o">&lt;=</span> <span class="n">lo</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">partition</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">lo</span><span class="o">,</span> <span class="n">hi</span><span class="o">);</span>
-</span><span class='line'>      <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">lo</span><span class="o">,</span> <span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>      <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="n">hi</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">partition</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">lo</span><span class="o">,</span> <span class="kt">int</span> <span class="n">hi</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="c1">//i, j分别代表左右扫描指针</span>
-</span><span class='line'>      <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">lo</span><span class="o">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">hi</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
-</span><span class='line'>      <span class="n">Comparable</span> <span class="n">v</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">lo</span><span class="o">];</span> <span class="c1">//选择切分元素</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="c1">//从左往右扫描</span>
-</span><span class='line'>          <span class="k">while</span> <span class="o">(</span><span class="n">less</span><span class="o">(</span><span class="n">a</span><span class="o">[++</span><span class="n">i</span><span class="o">],</span> <span class="n">v</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>              <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">hi</span><span class="o">)</span> <span class="k">break</span><span class="o">;</span> <span class="c1">//冗余，可以去除。</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>          
-</span><span class='line'>          <span class="c1">//从右往左扫描</span>
-</span><span class='line'>          <span class="k">while</span> <span class="o">(</span><span class="n">less</span><span class="o">(</span><span class="n">v</span><span class="o">,</span> <span class="n">a</span><span class="o">[--</span><span class="n">j</span><span class="o">]))</span> <span class="o">{</span>
-</span><span class='line'>              <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">==</span> <span class="n">lo</span><span class="o">)</span> <span class="k">break</span><span class="o">;</span> <span class="c1">//冗余，可以去除。</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>          
-</span><span class='line'>          <span class="c1">//检查两指针是否相遇</span>
-</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">j</span><span class="o">)</span> <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>          
-</span><span class='line'>          <span class="n">exchange</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">);</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="c1">//与切分元素交换</span>
-</span><span class='line'>      <span class="n">exchange</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">lo</span><span class="o">,</span> <span class="n">j</span><span class="o">);</span>
-</span><span class='line'>  
-</span><span class='line'>      <span class="c1">//现在满足：a[lo .. j-1] &lt;= a[j] &lt;= a[j+1 .. hi]</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">j</span><span class="o">;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="c1">//对一百万个随机整数排序，时间大致在350ms，但加上shuffle后，时间在600多ms.</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Quick extends AbstractSort {
+    @Override
+    public void sort(Comparable[] a) {
+        StdRandom.shuffle(a); //打乱数组，消除对输入的依赖
+        sort(a, 0, a.length - 1);
+    }
+    
+    private static void sort(Comparable[] a, int lo, int hi) {
+        if (hi &lt;= lo) return;
+        
+        int j = partition(a, lo, hi);
+        sort(a, lo, j - 1);
+        sort(a, j + 1, hi);
+    }
+    
+    private static int partition(Comparable[] a, int lo, int hi) {
+        //i, j分别代表左右扫描指针
+        int i = lo, j = hi + 1;
+        Comparable v = a[lo]; //选择切分元素
+        
+        while(true) {
+            //从左往右扫描
+            while (less(a[++i], v)) {
+                if (i == hi) break; //冗余，可以去除。
+            }
+            
+            //从右往左扫描
+            while (less(v, a[--j])) {
+                if (j == lo) break; //冗余，可以去除。
+            }
+            
+            //检查两指针是否相遇
+            if (i &gt;= j) break; 
+            
+            exchange(a, i, j);
+        }
+        
+        //与切分元素交换
+        exchange(a, lo, j);
+    
+        //现在满足：a[lo .. j-1] &lt;= a[j] &lt;= a[j+1 .. hi]
+        return j;
+    }
+}
+//对一百万个随机整数排序，时间大致在350ms，但加上shuffle后，时间在600多ms.</code></pre>
 
 
 <h2>3. 性能特点</h2>
@@ -239,65 +194,35 @@
 
 <p>对于有大量重复元素的数组，快速排序算法仍然会递归调用，而三向切分的快速排序算法可以更好地处理这种情况。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Quick3way</span> <span class="kd">extends</span> <span class="n">AbstractSort</span> <span class="o">{</span>
-</span><span class='line'>  <span class="nd">@Override</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">StdRandom</span><span class="o">.</span><span class="na">shuffle</span><span class="o">(</span><span class="n">a</span><span class="o">);</span> <span class="c1">//打乱数组，消除对输入的依赖</span>
-</span><span class='line'>      <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">a</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sort</span><span class="o">(</span><span class="n">Comparable</span><span class="o">[]</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">lo</span><span class="o">,</span> <span class="kt">int</span> <span class="n">hi</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">hi</span> <span class="o">&lt;=</span> <span class="n">lo</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="kt">int</span> <span class="n">lt</span> <span class="o">=</span> <span class="n">lo</span><span class="o">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">lo</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="n">gt</span> <span class="o">=</span> <span class="n">hi</span><span class="o">;</span>
-</span><span class='line'>      <span class="n">Comparable</span> <span class="n">v</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">lo</span><span class="o">];</span>
-</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="n">gt</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="kt">int</span> <span class="n">cmp</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">compareTo</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
-</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">cmp</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="n">exchange</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">lt</span><span class="o">++,</span> <span class="n">i</span><span class="o">++);</span>
-</span><span class='line'>          <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">cmp</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="n">exchange</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">gt</span><span class="o">--);</span>
-</span><span class='line'>          <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>              <span class="n">i</span><span class="o">++;</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>      <span class="o">}</span><span class="c1">//现在a[lo..lt-1] &lt; v = a[lt..gt] &lt; a[gt+1..hi]</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">lo</span><span class="o">,</span> <span class="n">lt</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>      <span class="n">sort</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">gt</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="n">hi</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//（不含shuffle的时间）对于一百万随机整数，排序时间也在350ms左右。但如果存在大量重复时，时间将降到250ms左右。</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Quick3way extends AbstractSort {
+    @Override
+    public void sort(Comparable[] a) {
+        StdRandom.shuffle(a); //打乱数组，消除对输入的依赖
+        sort(a, 0, a.length - 1);
+    }
+    
+    private static void sort(Comparable[] a, int lo, int hi) {
+        if (hi &lt;= lo) return;
+        
+        int lt = lo, i = lo + 1, gt = hi;
+        Comparable v = a[lo];
+        while (i &lt;= gt) {
+            int cmp = a[i].compareTo(v);
+            if (cmp &lt; 0) {
+                exchange(a, lt++, i++);
+            } else if (cmp &gt; 0) {
+                exchange(a, i, gt--);
+            } else {
+                i++;
+            }
+        }//现在a[lo..lt-1] &lt; v = a[lt..gt] &lt; a[gt+1..hi]
+        
+        sort(a, lo, lt - 1);
+        sort(a, gt + 1, hi);
+    }
+}
+
+//（不含shuffle的时间）对于一百万随机整数，排序时间也在350ms左右。但如果存在大量重复时，时间将降到250ms左右。</code></pre>
 
 
 <p>对有大量重复元素的数组排序时，三向切分算法具有更高的效率。而在最差的情况下，也就是没有重复元素时，它的效率与标准快速排序算法相当。因此，三向切分的快速排序成为排序函数的最佳算法选择。</p>
@@ -455,7 +380,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

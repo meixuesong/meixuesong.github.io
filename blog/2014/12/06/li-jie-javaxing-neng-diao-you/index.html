@@ -27,7 +27,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -235,124 +236,68 @@
 
 <p>jmap最简单的用法是查看连接到进程里的本地类库。用处不大，用得最多的是后面两种视图。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ jmap 25154
-</span><span class='line'>Attaching to process ID 25154, please wait...
-</span><span class='line'>Debugger attached successfully.
-</span><span class='line'>Server compiler detected.
-</span><span class='line'>JVM version is 24.65-b04</span></code></pre></td></tr></table></div></figure>
+<pre  class='line-numbers language-'><code class='line-numbers language-'>$ jmap 25154
+Attaching to process ID 25154, please wait...
+Debugger attached successfully.
+Server compiler detected.
+JVM version is 24.65-b04</code></pre>
 
 
 <p><strong>堆视图</strong></p>
 
 <p>使用-heap选项，jmap会抓取进程当前的堆快照。以下是输出结果示例：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ jmap -heap 25164
-</span><span class='line'>Attaching to process ID 25164, please wait...
-</span><span class='line'>Debugger attached successfully.
-</span><span class='line'>Server compiler detected.
-</span><span class='line'>JVM version is 24.65-b04
-</span><span class='line'>
-</span><span class='line'>using thread-local object allocation.
-</span><span class='line'>Parallel GC with 4 thread(s)
-</span><span class='line'>
-</span><span class='line'>Heap Configuration:
-</span><span class='line'>   MinHeapFreeRatio = 0
-</span><span class='line'>   MaxHeapFreeRatio = 100
-</span><span class='line'>   MaxHeapSize      = 2147483648 (2048.0MB)
-</span><span class='line'>   NewSize          = 1310720 (1.25MB)
-</span><span class='line'>   MaxNewSize       = 17592186044415 MB
-</span><span class='line'>   OldSize          = 5439488 (5.1875MB)
-</span><span class='line'>   NewRatio         = 2
-</span><span class='line'>   SurvivorRatio    = 8      //Eden = (From+To)*幸存比例
-</span><span class='line'>   PermSize         = 21757952 (20.75MB)
-</span><span class='line'>   MaxPermSize      = 85983232 (82.0MB)
-</span><span class='line'>   G1HeapRegionSize = 0 (0.0MB)
-</span><span class='line'>
-</span><span class='line'>Heap Usage:
-</span><span class='line'>PS Young Generation
-</span><span class='line'>Eden Space:
-</span><span class='line'>   capacity = 69206016 (66.0MB)
-</span><span class='line'>   used     = 22857000 (21.798133850097656MB)
-</span><span class='line'>   free     = 46349016 (44.201866149902344MB)
-</span><span class='line'>   33.02747553045099% used
-</span><span class='line'>From Space:
-</span><span class='line'>   capacity = 5242880 (5.0MB)
-</span><span class='line'>   used     = 5223552 (4.9815673828125MB)
-</span><span class='line'>   free     = 19328 (0.0184326171875MB)
-</span><span class='line'>   99.63134765625% used
-</span><span class='line'>To Space:
-</span><span class='line'>   capacity = 5242880 (5.0MB)
-</span><span class='line'>   used     = 0 (0.0MB)
-</span><span class='line'>   free     = 5242880 (5.0MB)
-</span><span class='line'>   0.0% used
-</span><span class='line'>PS Old Generation
-</span><span class='line'>   capacity = 89128960 (85.0MB)
-</span><span class='line'>   used     = 14067336 (13.415657043457031MB)
-</span><span class='line'>   free     = 75061624 (71.58434295654297MB)
-</span><span class='line'>   15.78312593347886% used
-</span><span class='line'>PS Perm Generation
-</span><span class='line'>   capacity = 22020096 (21.0MB)
-</span><span class='line'>   used     = 15539944 (14.820045471191406MB)
-</span><span class='line'>   free     = 6480152 (6.179954528808594MB)
-</span><span class='line'>   70.57164510091145% used
-</span><span class='line'>
-</span><span class='line'>10750 interned Strings occupying 1540688 bytes.</span></code></pre></td></tr></table></div></figure>
+<pre  class='line-numbers language-'><code class='line-numbers language-'>$ jmap -heap 25164
+Attaching to process ID 25164, please wait...
+Debugger attached successfully.
+Server compiler detected.
+JVM version is 24.65-b04
+
+using thread-local object allocation.
+Parallel GC with 4 thread(s)
+
+Heap Configuration:
+   MinHeapFreeRatio = 0
+   MaxHeapFreeRatio = 100
+   MaxHeapSize      = 2147483648 (2048.0MB)
+   NewSize          = 1310720 (1.25MB)
+   MaxNewSize       = 17592186044415 MB
+   OldSize          = 5439488 (5.1875MB)
+   NewRatio         = 2
+   SurvivorRatio    = 8      //Eden = (From+To)*幸存比例
+   PermSize         = 21757952 (20.75MB)
+   MaxPermSize      = 85983232 (82.0MB)
+   G1HeapRegionSize = 0 (0.0MB)
+
+Heap Usage:
+PS Young Generation
+Eden Space:
+   capacity = 69206016 (66.0MB)
+   used     = 22857000 (21.798133850097656MB)
+   free     = 46349016 (44.201866149902344MB)
+   33.02747553045099% used
+From Space:
+   capacity = 5242880 (5.0MB)
+   used     = 5223552 (4.9815673828125MB)
+   free     = 19328 (0.0184326171875MB)
+   99.63134765625% used
+To Space:
+   capacity = 5242880 (5.0MB)
+   used     = 0 (0.0MB)
+   free     = 5242880 (5.0MB)
+   0.0% used
+PS Old Generation
+   capacity = 89128960 (85.0MB)
+   used     = 14067336 (13.415657043457031MB)
+   free     = 75061624 (71.58434295654297MB)
+   15.78312593347886% used
+PS Perm Generation
+   capacity = 22020096 (21.0MB)
+   used     = 15539944 (14.820045471191406MB)
+   free     = 6480152 (6.179954528808594MB)
+   70.57164510091145% used
+
+10750 interned Strings occupying 1540688 bytes.</code></pre>
 
 
 <p>可以看到，堆的大小是年轻代、老年代加上PermGen的总和。年轻代分为Eden和幸存者乐园（From + To）。要知道堆里面有什么，需要柱状视图。</p>
@@ -361,90 +306,51 @@
 
 <p>柱状视图显示了系统中每个类型的实例占用的内存量，并按占用内存倒序排序，非常直观：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ jmap -histo 25164 | head -30
-</span><span class='line'>
-</span><span class='line'> num     #instances         #bytes  class name
-</span><span class='line'>----------------------------------------------
-</span><span class='line'>   1:         46155       20826544  [B
-</span><span class='line'>   2:         78977       13845352  [C
-</span><span class='line'>   3:          1777       10259592  [I
-</span><span class='line'>   4:         28606        3977416  &lt;constMethodKlass&gt;
-</span><span class='line'>   5:         28606        3670320  &lt;methodKlass&gt;
-</span><span class='line'>   6:          2464        2990888  &lt;constantPoolKlass&gt;
-</span><span class='line'>   7:          2193        1756960  &lt;constantPoolCacheKlass&gt;
-</span><span class='line'>   8:          2464        1728800  &lt;instanceKlassKlass&gt;
-</span><span class='line'>   9:         53032        1272768  java.lang.String
-</span><span class='line'>  10:         12669         405408  java.util.HashMap$Entry
-</span><span class='line'>  11:          2740         333816  java.lang.Class
-</span><span class='line'>  12:          4131         330480  java.lang.reflect.Method
-</span><span class='line'>  13:          4488         297968  [S
-</span><span class='line'>  14:          4204         287432  [Ljava.lang.Object;
-</span><span class='line'>  15:           524         271024  &lt;methodDataKlass&gt;
-</span><span class='line'>  16:          4277         228680  [[I
-</span><span class='line'>  17:          2107         185416  org.apache.naming.resources.FileDirContext$FileResourceAttributes
-</span><span class='line'>  18:          3047         170632  java.util.zip.ZipFile$ZipFileInputStream
-</span><span class='line'>  19:           987         167256  [Ljava.util.HashMap$Entry;
-</span><span class='line'>  20:          2929         164024  java.util.zip.ZipFile$ZipFileInflaterInputStream
-</span><span class='line'>  21:           259         140896  &lt;objArrayKlassKlass&gt;
-</span><span class='line'>  22:          4282         137024  java.io.File
-</span><span class='line'>  23:          2194         131888  [Ljava.lang.String;
-</span><span class='line'>  24:          5483         131592  java.lang.StringBuilder
-</span><span class='line'>  25:          2656         127488  java.util.HashMap
-</span><span class='line'>  26:          2520         100800  java.lang.ref.Finalizer
-</span><span class='line'>  27:          2341          93640  java.util.LinkedHashMap$Entry</span></code></pre></td></tr></table></div></figure>
+<pre  class='line-numbers language-'><code class='line-numbers language-'>$ jmap -histo 25164 | head -30
+
+ num     #instances         #bytes  class name
+----------------------------------------------
+   1:         46155       20826544  [B
+   2:         78977       13845352  [C
+   3:          1777       10259592  [I
+   4:         28606        3977416  &lt;constMethodKlass&gt;
+   5:         28606        3670320  &lt;methodKlass&gt;
+   6:          2464        2990888  &lt;constantPoolKlass&gt;
+   7:          2193        1756960  &lt;constantPoolCacheKlass&gt;
+   8:          2464        1728800  &lt;instanceKlassKlass&gt;
+   9:         53032        1272768  java.lang.String
+  10:         12669         405408  java.util.HashMap$Entry
+  11:          2740         333816  java.lang.Class
+  12:          4131         330480  java.lang.reflect.Method
+  13:          4488         297968  [S
+  14:          4204         287432  [Ljava.lang.Object;
+  15:           524         271024  &lt;methodDataKlass&gt;
+  16:          4277         228680  [[I
+  17:          2107         185416  org.apache.naming.resources.FileDirContext$FileResourceAttributes
+  18:          3047         170632  java.util.zip.ZipFile$ZipFileInputStream
+  19:           987         167256  [Ljava.util.HashMap$Entry;
+  20:          2929         164024  java.util.zip.ZipFile$ZipFileInflaterInputStream
+  21:           259         140896  &lt;objArrayKlassKlass&gt;
+  22:          4282         137024  java.io.File
+  23:          2194         131888  [Ljava.lang.String;
+  24:          5483         131592  java.lang.StringBuilder
+  25:          2656         127488  java.util.HashMap
+  26:          2520         100800  java.lang.ref.Finalizer
+  27:          2341          93640  java.util.LinkedHashMap$Entry</code></pre>
 
 
 <p>结果使用的是类型内部名称，例如byte数组会写成[B，char数组会写成[C（字符数组数据经常出现在String对象里）。参考<a href="/blog/2014/12/04/lei-wen-jian-yu-zi-jie-ma/">类文件与字节码</a>。以char数组为例，共有78977个实例，占用约13.8MB。</p>
 
 <p>使用-histo:live选项，jmap将只处理活对象，而不是整个堆：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ jmap -histo:live 25164 | head -7
-</span><span class='line'>
-</span><span class='line'> num     #instances         #bytes  class name
-</span><span class='line'>----------------------------------------------
-</span><span class='line'>   1:         28573        5905704  [C
-</span><span class='line'>   2:         28606        3977416  &lt;constMethodKlass&gt;
-</span><span class='line'>   3:         28606        3670320  &lt;methodKlass&gt;
-</span><span class='line'>   4:          2464        2990888  &lt;constantPoolKlass&gt;</span></code></pre></td></tr></table></div></figure>
+<pre  class='line-numbers language-'><code class='line-numbers language-'>$ jmap -histo:live 25164 | head -7
+
+ num     #instances         #bytes  class name
+----------------------------------------------
+   1:         28573        5905704  [C
+   2:         28606        3977416  &lt;constMethodKlass&gt;
+   3:         28606        3670320  &lt;methodKlass&gt;
+   4:          2464        2990888  &lt;constantPoolKlass&gt;</code></pre>
 
 
 <p>活的字符串只有28573个实例，占用约5.9MB，证明有（13.8-5.9）MB在等待回收。需要注意的是，如果jmap正在执行时，JVM做了垃圾回收，有可能看到奇怪或太好的结果，所以应该多运行几次。</p>
@@ -453,12 +359,9 @@
 
 <p>jmap能创建导出文件：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ jmap -dump:live,format=b,file=heap.hprof 25164
-</span><span class='line'>Dumping heap to /Users/mxs/Documents/blog/heap.hprof ...
-</span><span class='line'>Heap dump file created</span></code></pre></td></tr></table></div></figure>
+<pre  class='line-numbers language-'><code class='line-numbers language-'>$ jmap -dump:live,format=b,file=heap.hprof 25164
+Dumping heap to /Users/mxs/Documents/blog/heap.hprof ...
+Heap dump file created</code></pre>
 
 
 <p>导出结果可以用来做离线分析，留给jmap以后使用，或者留给Oracle的jhat（Java堆分析工具）做高级分析。</p>
@@ -467,14 +370,10 @@
 
 <p>Oracle JVM自带的jstat可以查看内存和垃圾收集的活动，并能循环显示。下例以每秒一次的频率显示内存状况：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>meixuesongdeMacBook-Pro:blog mxs$ jstat -gc 25164 1000
-</span><span class='line'> S0C    S1C    S0U    S1U      EC       EU        OC         OU       PC     PU    YGC     YGCT    FGC    FGCT     GCT   
-</span><span class='line'>14336.0 13312.0  0.0    0.0   133632.0 85887.5   52224.0    10313.5   33280.0 15221.9      7    0.064   3      0.171    0.236
-</span><span class='line'>14336.0 13312.0  0.0    0.0   133632.0 85887.5   52224.0    10313.5   33280.0 15221.9      7    0.064   3      0.171    0.236</span></code></pre></td></tr></table></div></figure>
+<pre  class='line-numbers language-'><code class='line-numbers language-'>meixuesongdeMacBook-Pro:blog mxs$ jstat -gc 25164 1000
+ S0C    S1C    S0U    S1U      EC       EU        OC         OU       PC     PU    YGC     YGCT    FGC    FGCT     GCT   
+14336.0 13312.0  0.0    0.0   133632.0 85887.5   52224.0    10313.5   33280.0 15221.9      7    0.064   3      0.171    0.236
+14336.0 13312.0  0.0    0.0   133632.0 85887.5   52224.0    10313.5   33280.0 15221.9      7    0.064   3      0.171    0.236</code></pre>
 
 
 <ul>
@@ -610,10 +509,8 @@
 
 <p>独占调用是大胆优化的例子之一，只有服务端编译器才会做这种大胆优化，实时和客户端编译器都不会这样做。它是基于大量观察做出的优化，以下面的代码为例：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>MyActualClassNotInterface obj = getInstance();
-</span><span class='line'>obj.callMyMethod();</span></code></pre></td></tr></table></div></figure>
+<pre  class='line-numbers language-'><code class='line-numbers language-'>MyActualClassNotInterface obj = getInstance();
+obj.callMyMethod();</code></pre>
 
 
 <p>如果上面的代码只会在一种类型的对象上调用（基于统计），也就是obj.callMyMethod()几乎不会同时碰到一个类和它的子类。这时就可以把Java方法查找替换为callMyMethod()编译结果的直接调用。为了防止getInstance()可能返回的是其他类，运行时会检查，确保对象的类型是由编译器按预期插入的。如果这个预期被违背，运行时会取消优化。程序不会注意到这些动作也不会犯任何错误。</p>
@@ -771,7 +668,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

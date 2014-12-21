@@ -28,7 +28,8 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
   
 
   
@@ -158,95 +159,55 @@
 
 <p>树结点的实现：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kd">class</span> <span class="nc">Node</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Key</span> <span class="n">key</span><span class="o">;</span>           <span class="c1">// sorted by key</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Value</span> <span class="n">val</span><span class="o">;</span>         <span class="c1">// associated data</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="n">left</span><span class="o">,</span> <span class="n">right</span><span class="o">;</span>  <span class="c1">// left and right subtrees</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">int</span> <span class="n">N</span><span class="o">;</span>             <span class="c1">// number of nodes in subtree</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">Node</span><span class="o">(</span><span class="n">Key</span> <span class="n">key</span><span class="o">,</span> <span class="n">Value</span> <span class="n">val</span><span class="o">,</span> <span class="kt">int</span> <span class="n">N</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">N</span> <span class="o">=</span> <span class="n">N</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>private class Node {
+    private Key key;           // sorted by key
+    private Value val;         // associated data
+    private Node left, right;  // left and right subtrees
+    private int N;             // number of nodes in subtree
+
+    public Node(Key key, Value val, int N) {
+        this.key = key;
+        this.val = val;
+        this.N = N;
+    }
+}</code></pre>
 
 
 <h5>查找</h5>
 
 <p>可以使用递归算法在二叉查找树中查找一个键：如果树是空的，则查找未命中；如果被查找的键和根结点的键相等，查找命中；否则就（递归地）在某个子树中继续查找。如果被查找的键较小就选择左子树，较大则选择右子树。查找过程与二分查找一样简单，代码实现如下：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">Value</span> <span class="nf">get</span><span class="o">(</span><span class="n">Key</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nf">get</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">private</span> <span class="n">Value</span> <span class="nf">get</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">Key</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">cmp</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="na">compareTo</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">key</span><span class="o">);</span>
-</span><span class='line'>    <span class="k">if</span>      <span class="o">(</span><span class="n">cmp</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="k">return</span> <span class="n">get</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">left</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
-</span><span class='line'>    <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">cmp</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="k">return</span> <span class="n">get</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">right</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
-</span><span class='line'>    <span class="k">else</span>              <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="na">val</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public Value get(Key key) {
+    return get(root, key);
+}
+
+private Value get(Node x, Key key) {
+    if (x == null) return null;
+    int cmp = key.compareTo(x.key);
+    if      (cmp &lt; 0) return get(x.left, key);
+    else if (cmp &gt; 0) return get(x.right, key);
+    else              return x.val;
+}</code></pre>
 
 
 <h5>插入</h5>
 
 <p>二叉查找树的插入实现难度和查找差不多。当查找到一个不存在于树中的结点并结束于一条空链接时，我们需要做的就是将链接指向一个含有被查找的键的新结点。代码实现如下：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">put</span><span class="o">(</span><span class="n">Key</span> <span class="n">key</span><span class="o">,</span> <span class="n">Value</span> <span class="n">val</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">val</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span> <span class="n">delete</span><span class="o">(</span><span class="n">key</span><span class="o">);</span> <span class="k">return</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'>    <span class="n">root</span> <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">val</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">private</span> <span class="n">Node</span> <span class="nf">put</span><span class="o">(</span><span class="n">Node</span> <span class="n">x</span><span class="o">,</span> <span class="n">Key</span> <span class="n">key</span><span class="o">,</span> <span class="n">Value</span> <span class="n">val</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="k">new</span> <span class="n">Node</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">val</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">cmp</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="na">compareTo</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">key</span><span class="o">);</span>
-</span><span class='line'>    <span class="k">if</span>      <span class="o">(</span><span class="n">cmp</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="n">x</span><span class="o">.</span><span class="na">left</span>  <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">left</span><span class="o">,</span>  <span class="n">key</span><span class="o">,</span> <span class="n">val</span><span class="o">);</span>
-</span><span class='line'>    <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">cmp</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="n">x</span><span class="o">.</span><span class="na">right</span> <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">right</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">val</span><span class="o">);</span>
-</span><span class='line'>    <span class="k">else</span>              <span class="n">x</span><span class="o">.</span><span class="na">val</span>   <span class="o">=</span> <span class="n">val</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">x</span><span class="o">.</span><span class="na">N</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">size</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">left</span><span class="o">)</span> <span class="o">+</span> <span class="n">size</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">right</span><span class="o">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">x</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public void put(Key key, Value val) {
+    if (val == null) { delete(key); return; }
+    root = put(root, key, val);
+}
+
+private Node put(Node x, Key key, Value val) {
+    if (x == null) return new Node(key, val, 1);
+    int cmp = key.compareTo(x.key);
+    if      (cmp &lt; 0) x.left  = put(x.left,  key, val);
+    else if (cmp &gt; 0) x.right = put(x.right, key, val);
+    else              x.val   = val;
+    x.N = 1 + size(x.left) + size(x.right);
+    return x;
+}</code></pre>
 
 
 <h5>分析</h5>
@@ -330,35 +291,20 @@
 
 <p>因此在节点类（Node）中，增加一个属性color表示从父结点指向自己的链接是否为红链接：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kd">class</span> <span class="nc">Node</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Key</span> <span class="n">key</span><span class="o">;</span>           <span class="c1">// sorted by key</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Value</span> <span class="n">val</span><span class="o">;</span>         <span class="c1">// associated data</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="n">left</span><span class="o">,</span> <span class="n">right</span><span class="o">;</span>  <span class="c1">// left and right subtrees</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">int</span> <span class="n">N</span><span class="o">;</span>             <span class="c1">// number of nodes in subtree</span>
-</span><span class='line'>    <span class="kt">boolean</span> <span class="n">color</span><span class="o">;</span>             <span class="c1">//是否红链接   </span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">Node</span><span class="o">(</span><span class="n">Key</span> <span class="n">key</span><span class="o">,</span> <span class="n">Value</span> <span class="n">val</span><span class="o">,</span> <span class="kt">int</span> <span class="n">N</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">color</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">N</span> <span class="o">=</span> <span class="n">N</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">color</span> <span class="o">=</span> <span class="n">color</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>private class Node {
+    private Key key;           // sorted by key
+    private Value val;         // associated data
+    private Node left, right;  // left and right subtrees
+    private int N;             // number of nodes in subtree
+    boolean color;             //是否红链接    
+
+    public Node(Key key, Value val, int N, boolean color) {
+        this.key = key;
+        this.val = val;
+        this.N = N;
+        this.color = color;
+    }
+}</code></pre>
 
 
 <p>在进一步实现红黑树之前，要了解几个基本的动作：左旋转、右旋转和颜色转换。</p>
@@ -400,103 +346,54 @@
 
 <p>以下为红黑树的插入算法：</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RedBlackBST</span><span class="o">&lt;</span><span class="n">Key</span> <span class="kd">extends</span> <span class="n">Comparable</span><span class="o">&lt;</span><span class="n">Key</span><span class="o">&gt;,</span> <span class="n">Value</span><span class="o">&gt;</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">RED</span>   <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">BLACK</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="n">root</span><span class="o">;</span>     <span class="c1">// root of the BST</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// BST helper node data type</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">class</span> <span class="nc">Node</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kd">private</span> <span class="n">Key</span> <span class="n">key</span><span class="o">;</span>           <span class="c1">// key</span>
-</span><span class='line'>        <span class="kd">private</span> <span class="n">Value</span> <span class="n">val</span><span class="o">;</span>         <span class="c1">// associated data</span>
-</span><span class='line'>        <span class="kd">private</span> <span class="n">Node</span> <span class="n">left</span><span class="o">,</span> <span class="n">right</span><span class="o">;</span>  <span class="c1">// links to left and right subtrees</span>
-</span><span class='line'>        <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">color</span><span class="o">;</span>     <span class="c1">// color of parent link</span>
-</span><span class='line'>        <span class="kd">private</span> <span class="kt">int</span> <span class="n">N</span><span class="o">;</span>             <span class="c1">// subtree count</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kd">public</span> <span class="nf">Node</span><span class="o">(</span><span class="n">Key</span> <span class="n">key</span><span class="o">,</span> <span class="n">Value</span> <span class="n">val</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">color</span><span class="o">,</span> <span class="kt">int</span> <span class="n">N</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">this</span><span class="o">.</span><span class="na">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">;</span>
-</span><span class='line'>            <span class="k">this</span><span class="o">.</span><span class="na">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">;</span>
-</span><span class='line'>            <span class="k">this</span><span class="o">.</span><span class="na">color</span> <span class="o">=</span> <span class="n">color</span><span class="o">;</span>
-</span><span class='line'>            <span class="k">this</span><span class="o">.</span><span class="na">N</span> <span class="o">=</span> <span class="n">N</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// insert the key-value pair; overwrite the old value with the new value</span>
-</span><span class='line'>    <span class="c1">// if the key is already present</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">put</span><span class="o">(</span><span class="n">Key</span> <span class="n">key</span><span class="o">,</span> <span class="n">Value</span> <span class="n">val</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">root</span> <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">val</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">root</span><span class="o">.</span><span class="na">color</span> <span class="o">=</span> <span class="n">BLACK</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// insert the key-value pair in the subtree rooted at h</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Node</span> <span class="nf">put</span><span class="o">(</span><span class="n">Node</span> <span class="n">h</span><span class="o">,</span> <span class="n">Key</span> <span class="n">key</span><span class="o">,</span> <span class="n">Value</span> <span class="n">val</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">h</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="k">new</span> <span class="n">Node</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">val</span><span class="o">,</span> <span class="n">RED</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kt">int</span> <span class="n">cmp</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="na">compareTo</span><span class="o">(</span><span class="n">h</span><span class="o">.</span><span class="na">key</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span>      <span class="o">(</span><span class="n">cmp</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="n">h</span><span class="o">.</span><span class="na">left</span>  <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">h</span><span class="o">.</span><span class="na">left</span><span class="o">,</span>  <span class="n">key</span><span class="o">,</span> <span class="n">val</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">cmp</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="n">h</span><span class="o">.</span><span class="na">right</span> <span class="o">=</span> <span class="n">put</span><span class="o">(</span><span class="n">h</span><span class="o">.</span><span class="na">right</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">val</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">else</span>              <span class="n">h</span><span class="o">.</span><span class="na">val</span>   <span class="o">=</span> <span class="n">val</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// fix-up any right-leaning links</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">isRed</span><span class="o">(</span><span class="n">h</span><span class="o">.</span><span class="na">right</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">isRed</span><span class="o">(</span><span class="n">h</span><span class="o">.</span><span class="na">left</span><span class="o">))</span>      <span class="n">h</span> <span class="o">=</span> <span class="n">rotateLeft</span><span class="o">(</span><span class="n">h</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">isRed</span><span class="o">(</span><span class="n">h</span><span class="o">.</span><span class="na">left</span><span class="o">)</span>  <span class="o">&amp;&amp;</span>  <span class="n">isRed</span><span class="o">(</span><span class="n">h</span><span class="o">.</span><span class="na">left</span><span class="o">.</span><span class="na">left</span><span class="o">))</span> <span class="n">h</span> <span class="o">=</span> <span class="n">rotateRight</span><span class="o">(</span><span class="n">h</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">isRed</span><span class="o">(</span><span class="n">h</span><span class="o">.</span><span class="na">left</span><span class="o">)</span>  <span class="o">&amp;&amp;</span>  <span class="n">isRed</span><span class="o">(</span><span class="n">h</span><span class="o">.</span><span class="na">right</span><span class="o">))</span>     <span class="n">flipColors</span><span class="o">(</span><span class="n">h</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">h</span><span class="o">.</span><span class="na">N</span> <span class="o">=</span> <span class="n">size</span><span class="o">(</span><span class="n">h</span><span class="o">.</span><span class="na">left</span><span class="o">)</span> <span class="o">+</span> <span class="n">size</span><span class="o">(</span><span class="n">h</span><span class="o">.</span><span class="na">right</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">return</span> <span class="n">h</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
+
+    private static final boolean RED   = true;
+    private static final boolean BLACK = false;
+
+    private Node root;     // root of the BST
+
+    // BST helper node data type
+    private class Node {
+        private Key key;           // key
+        private Value val;         // associated data
+        private Node left, right;  // links to left and right subtrees
+        private boolean color;     // color of parent link
+        private int N;             // subtree count
+
+        public Node(Key key, Value val, boolean color, int N) {
+            this.key = key;
+            this.val = val;
+            this.color = color;
+            this.N = N;
+        }
+    }
+
+    // insert the key-value pair; overwrite the old value with the new value
+    // if the key is already present
+    public void put(Key key, Value val) {
+        root = put(root, key, val);
+        root.color = BLACK;
+    }
+
+    // insert the key-value pair in the subtree rooted at h
+    private Node put(Node h, Key key, Value val) { 
+        if (h == null) return new Node(key, val, RED, 1);
+
+        int cmp = key.compareTo(h.key);
+        if      (cmp &lt; 0) h.left  = put(h.left,  key, val); 
+        else if (cmp &gt; 0) h.right = put(h.right, key, val); 
+        else              h.val   = val;
+
+        // fix-up any right-leaning links
+        if (isRed(h.right) && !isRed(h.left))      h = rotateLeft(h);
+        if (isRed(h.left)  &&  isRed(h.left.left)) h = rotateRight(h);
+        if (isRed(h.left)  &&  isRed(h.right))     flipColors(h);
+        h.N = size(h.left) + size(h.right) + 1;
+
+        return h;
+    }
+}</code></pre>
 
 
 <h4>2.5.5 删除操作</h4>
@@ -685,7 +582,6 @@ document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 
