@@ -26,16 +26,19 @@ pre[class*="language-"] {
 	hyphens: none;
 }
 
-/* Code blocks */
+/* Code blocks 
+	box-shadow: -1px 0px 0px 0px #dfdfdf, 0px 0px 0px 1px #dfdfdf;
+	border-left: 1px solid #eee;
+*/
 pre[class*="language-"] {
 	position: relative;
 	margin: .5em 0;
 	-webkit-box-shadow: -1px 0px 0px 0px #dfdfdf, 0px 0px 0px 1px #dfdfdf;
 	-moz-box-shadow: -1px 0px 0px 0px #dfdfdf, 0px 0px 0px 1px #dfdfdf;
 	box-shadow: -1px 0px 0px 0px #dfdfdf, 0px 0px 0px 1px #dfdfdf;
-	border-left: 1px solid #dfdfdf;
+	border-left: 1px solid #eee;
 	background-color: #fdfdfd;
-		
+	
 	background-image: -webkit-linear-gradient(transparent 50%, rgba(69, 142, 209, 0.04) 50%);
 	background-image: -moz-linear-gradient(transparent 50%, rgba(69, 142, 209, 0.04) 50%);
 	background-image: -ms-linear-gradient(transparent 50%, rgba(69, 142, 209, 0.04) 50%);
