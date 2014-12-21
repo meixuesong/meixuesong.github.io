@@ -17,14 +17,14 @@ Worklight是IBM公司的产品，支持HTML5，Hybrid、Native开发方式，涵
 
 Worklight以Cordova为核心。因此它与Phonegap是非常类似的产品，基于HTML5、CSS3和JavaScript，通过Adapter集成后台REST、SOA等服务。在其PPT中说提供了以下移动开发模式：
 
-![image](/myresource/images/image_blog_2014-07-27_15.16.22.png)
+![image](/myresource/images/image_blog_2014-07-27_15.16.22.jpg)
 
 **但找遍其资料也未找到Worklight如何使用第4种开发模式。**
 
 几乎支持所有移动设备：iOS, Android, BlackBerry, Windows Phone。基于Dojo的可视化UI构造。充分利用现有Javascript框架，如jQuery, dojo, Sencha等。
 
 通过Worklight Server提供对企业数据和系统的安全访问：
-![image](/myresource/images/image_blog_2014-07-27_15.10.37.png)
+![image](/myresource/images/image_blog_2014-07-27_15.10.37.jpg)
 
 ### Worklight的工作方式
 
@@ -42,7 +42,7 @@ Worklight应用的UI性能取决于系统的浏览器性能。iOS平台的基于
 
 同时，与Web开发相似，存在一些跨平台的问题要处理。即使是基于Webkit的环境，[也存在一些明显的区别](http://westcoastlogic.com/slides/debug-mobile/#/17)。在IBM Worklight介绍的PPT中，一个应用示例在移植到Android时仍然使用了4周的时间，见下图：
 
-![image](/myresource/images/image_blog_2014-07-27_18.46.36.png)
+![image](/myresource/images/image_blog_2014-07-27_18.46.36.jpg)
 
 现代浏览器已经越来越强大，但即使如此，要在浏览器中达到原生的UI性能，几乎是不可能的。
 
@@ -73,7 +73,7 @@ Titanium开发的应用在运行时，包括三大组件：
 
 当我们用JavaScript创建一个窗口时，会发生什么呢，见下图：
 
-![image](/myresource/images/images_download_attachments_35621751_create_proxy.png)
+![image](/myresource/images/images_download_attachments_35621751_create_proxy.jpg)
 
 可以看到，JavaScript代码会调用原生API，创建的是原生的Window，而不是浏览器中的Web对象！因此所有UI与Java或Objective-c开发的原生应用没有区别，它们就是Native UI。
 
@@ -110,7 +110,7 @@ Titanium的API范围，使得它在增加一种新的原生平台时，比较困
 
 对于前面三点，两者没有太多区别，而关于后面两点，Titanium的性能更占优势，而SQLite数据库的支持也有利于部分企业数据（如通讯录）的本地缓存，提升用户体验。下表总结了两者的一些对比：
 
-![image](/myresource/images/image_blog_2014-07-27_18.41.36.png)
+![image](/myresource/images/image_blog_2014-07-27_18.41.36.jpg)
 
 
 ### 参考：

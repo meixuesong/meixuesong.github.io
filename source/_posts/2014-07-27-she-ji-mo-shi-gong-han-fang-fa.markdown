@@ -10,7 +10,7 @@ categories:
 
 前文说到简单工厂方法的工厂类，对“开－闭”原则支持不够，当有新产品时，需要修改工厂类。而工厂方法模式可以解决这个问题。工厂方法模式的用意是定义一个创建产品对象的工厂接口，将实际创建工作推迟到子类中。其结构可表示为：
 
-![image](/myresource/images/image_blog_2014-07-27_22.10.30.png)
+![image](/myresource/images/image_blog_2014-07-27_22.10.30.jpg)
 
 <!--more-->
 上图中，Factory和SomeProduct可以是接口或者抽象类，工厂方法factory的返回类型必须是SomeProduct，这也是针对接口编程的一个体现。
