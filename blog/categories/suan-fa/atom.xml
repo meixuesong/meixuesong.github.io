@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 算法 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/suan-fa/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-12-21T19:50:56+08:00</updated>
+  <updated>2014-12-21T21:31:58+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -2100,7 +2100,7 @@ public String toString() {
 
 <p>Prim算法每一步都会为一棵生长中的树添加一条边。一开始这棵树只有一个顶点，然后会向它添加V-1条边，每次总是找到这样一条边并将其加入树中：这条边的一端在树中，另一端不在树中，并且权值最小。</p>
 
-<p><img src="/myresource/images/image_blog_2014-11-02-prim-eager.png" alt="image" /></p>
+<p><img src="/myresource/images/image_blog_2014-11-02-prim-eager.jpg" alt="image" /></p>
 
 <p>每当向树中添加一条边后，也向树中添加了一个顶点。要维护一个包含所有横切边的集合，可以将连接这个顶点和其他所有不在树中的顶点的边加入优先队列。这样就可以得到符合条件的权值最小的边。当一个顶点加入树中后，连接这个顶点与树中其它顶点的所有边就失效了，因为这些边的两个顶点都已经在树中，这些边不再是横切边。那么何时删除这些边就形成了Prim算法的两种实现：</p>
 
@@ -2247,7 +2247,7 @@ public double weight() {
 
 <p>Kruskal算法构造最小生成树时也是一条边一条边地构造，但它寻找的边会连接一片森林中的两棵树。我们从一片由V棵单顶点的树构成的森林开始并不断将两棵树合并（用可以找到的最短边）直到只剩下一棵树。其主要思想是按边的权重顺序处理它们，将边加入最小生成树中，加入的边不会与已经加入的边构成环，直到树中含有V-1条边为止。</p>
 
-<p><img src="/myresource/images/image_blog_2014-11-02-kruskal.png" alt="image" /></p>
+<p><img src="/myresource/images/image_blog_2014-11-02-kruskal.jpg" alt="image" /></p>
 
 <p>实现时，采用优先队列将边按照权重排序，用一个union-find数据结构识别会形成环的边，以及一个队列来保存最小生成树的所有边。代码实现如下：</p>
 
