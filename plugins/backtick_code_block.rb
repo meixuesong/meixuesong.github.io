@@ -26,17 +26,22 @@ module BacktickCodeBlock
         str = str.gsub(/^( {4}|\t)/, '')
       end
       if @lang.nil? || @lang == 'plain'
-        code = tableize_code(str.gsub('<','&lt;').gsub('>','&gt;'))
-        "<figure class='code'>#{@caption}#{code}</figure>"
+        #mxs comment code = tableize_code(str.gsub('<','&lt;').gsub('>','&gt;'))
+        #mxs comment "<figure class='code'>#{@caption}#{code}</figure>"
+        mxscode = str.gsub('<','&lt;').gsub('>','&gt;')
+        "<pre  class='line-numbers language-'><code class='line-numbers language-'>#{mxscode}</code></pre>" 
       else
-        if @lang.include? "-raw"
-          raw = "``` #{@options.sub('-raw', '')}\n"
-          raw += str
-          raw += "\n```\n"
-        else
-          code = highlight(str, @lang)
-          "<figure class='code'>#{@caption}#{code}</figure>"
-        end
+        mxscode = str.gsub('<','&lt;').gsub('>','&gt;')
+        "<pre class='line-numbers language-#{@lang}'><code class='line-numbers language-#{@lang}'>#{mxscode}</code></pre>" 
+# mxs comment        
+#        if @lang.include? "-raw"
+#          raw = "``` #{@options.sub('-raw', '')}\n"
+#          raw += str
+#          raw += "\n```\n"
+#        else
+#          code = highlight(str, @lang)
+#          "<figure class='code'>#{@caption}#{code}</figure>"
+#        end
       end
     end
   end

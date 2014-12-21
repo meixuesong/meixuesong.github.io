@@ -58,6 +58,32 @@ disqus_show_comment_count: true
 用GitHub + Octopress建立博客，过程虽然复杂了点，但最终效果相当不错，你值得拥有！
 
 
+【Update 2014-12-21】修改代码高亮显示方案
+
+将原来的代码高亮替换为[prismjs](http://prismjs.com/)，主要是修改`plugins/backtick_code_block.rb`:
+
+```ruby
+      if @lang.nil? || @lang == 'plain'
+        #mxs comment code = tableize_code(str.gsub('<','&lt;').gsub('>','&gt;'))
+        #mxs comment "<figure class='code'>#{@caption}#{code}</figure>"
+        mxscode = str.gsub('<','&lt;').gsub('>','&gt;')
+        "<pre  class='line-numbers language-'><code class='line-numbers language-'>#{mxscode}</code></pre>" 
+      else
+        mxscode = str.gsub('<','&lt;').gsub('>','&gt;')
+        "<pre class='line-numbers language-#{@lang}'><code class='line-numbers language-#{@lang}'>#{mxscode}</code></pre>" 
+# mxs comment        
+#        if @lang.include? "-raw"
+#          raw = "``` #{@options.sub('-raw', '')}\n"
+#          raw += str
+#          raw += "\n```\n"
+#        else
+#          code = highlight(str, @lang)
+#          "<figure class='code'>#{@caption}#{code}</figure>"
+#        end
+      end
+```
+
+prismjs部分按照官方文档配置即可。      
 
 
 
