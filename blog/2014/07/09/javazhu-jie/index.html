@@ -120,13 +120,13 @@ var _hmt = _hmt || [];
 
 <p>注解类型声明与接口声明的唯一区别是，在interface之前增加了一个@符：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public @interface TestMethod {
+<pre class='line-numbers language-java'><code class='language-java'>public @interface TestMethod {
 }</code></pre>
 
 
 <p>判断方法是否有某个注解：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>for(Method method: testClass.getDeclaredMethods())
+<pre class='line-numbers language-java'><code class='language-java'>for(Method method: testClass.getDeclaredMethods())
     if (method.isAnnotationPresent(TestMethod.class)) {
         ...
     }           </code></pre>
@@ -143,14 +143,14 @@ var _hmt = _hmt || [];
 </ul>
 
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>@Retention(RetentionPolicy.RUNTIME)
+<pre class='line-numbers language-java'><code class='language-java'>@Retention(RetentionPolicy.RUNTIME)
 public @interface TestMethod {
 }</code></pre>
 
 
 <h3>注解的目标（Annotation Target）</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>@Retention(RetentionPolicy.RUNTIME)
+<pre class='line-numbers language-java'><code class='language-java'>@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface TestMethod {
 }</code></pre>
@@ -162,7 +162,7 @@ public @interface TestMethod {
 
 <p>为了在注解类型中支持单个参数，需要提供一个名为value的方法，返回适当的类型并且没有任何参数。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>@Retention(RetentionPolicy.RUNTIME)
+<pre class='line-numbers language-java'><code class='language-java'>@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Ignore {
     String value();
@@ -179,7 +179,7 @@ public void testC() {}</code></pre>
 
 <p>可指定value方法的返回值为数组：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>@Retention(RetentionPolicy.RUNTIME)
+<pre class='line-numbers language-java'><code class='language-java'>@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Ignore {
     String[] value();
@@ -198,7 +198,7 @@ public void testC() {}</code></pre>
 
 <p>注解有多个参数时，注解类型的成员名与注解声明的名称一致，如下例中的reasons和initials：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>@Retention(RetentionPolicy.RUNTIME)
+<pre class='line-numbers language-java'><code class='language-java'>@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Ignore {
     String[] reasons();
@@ -211,7 +211,7 @@ public @interface Ignore {
 
 <h3>缺省值</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>@Retention(RetentionPolicy.RUNTIME)
+<pre class='line-numbers language-java'><code class='language-java'>@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Ignore {
     String[] reasons() default "房价涨了";
@@ -223,7 +223,7 @@ public @interface Ignore {
 
 <p>注解值可以是基本类型、枚举、Class引用、注解类型本身，或者任意这些类型的数组。我们以注解类型为例：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public @interface Date {
+<pre class='line-numbers language-java'><code class='language-java'>public @interface Date {
     int month();
     int day();
     int year();
@@ -246,7 +246,7 @@ public void testC() {}</code></pre>
 
 <p>注解的目标除了方法、属性等外，还可以是包，那么包注解写在哪呢？方法在在包对应的目录中，创建一个名为package-info.java的源文件，这个文件应该包含所有的包注解，后面跟随适当的package语句。除此之外，这个文件不能够包含其它任何东西。示例如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>@TestPackage(isPerformance=true) package sis.testing;</code></pre>
+<pre class='line-numbers language-java'><code class='language-java'>@TestPackage(isPerformance=true) package sis.testing;</code></pre>
 
 
 

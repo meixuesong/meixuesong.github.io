@@ -170,7 +170,7 @@ var _hmt = _hmt || [];
 
 <p>Queue接口全是泛型<code>Queue&lt;E&gt;</code>，利用这一点把工作项封装到一个人工容器中会更方便。例如工作单元MyAwesomeClass，与其用<code>BlockingQueue&lt;MyAwesomeClass&gt;</code>不如使用<code>BlockingQueue&lt;WorkUnit&lt;MyAwesomeClass&gt;&gt;</code>：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class WorkUnit&lt;T&gt; {
+<pre class='line-numbers language-java'><code class='language-java'>public class WorkUnit&lt;T&gt; {
     private final T workUnit;
     public T getWork() {return workUnit;}
     public WorkUnit(T workUnit) {
@@ -199,7 +199,7 @@ var _hmt = _hmt || [];
 
 <p>Callable接口代表一段可以调用并返回结果的代码，典型用法是匿名实现类：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>final MyObject obj = new MyObject();
+<pre class='line-numbers language-java'><code class='language-java'>final MyObject obj = new MyObject();
 
 Callable&lt;String&gt; cb = new Callable&lt;String&gt;() {
     public String call() throws Exception {
@@ -221,7 +221,7 @@ String s = cb.call();</code></pre>
 </ul>
 
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>interface ArchiveSearcher { String search(String target); }
+<pre class='line-numbers language-java'><code class='language-java'>interface ArchiveSearcher { String search(String target); }
  class App {
    ExecutorService executor = ...
    ArchiveSearcher searcher = ...
@@ -244,7 +244,7 @@ String s = cb.call();</code></pre>
 
 <p>FutureTask类是Future接口的常用实现类，实现了Runnable接口，因此可以由执行者调度。它提供的方法基本是Future和Runnable接口的组合：get(), cancel(), isDone(), isCancelled()和run()。它还提供了两个很方便的构造器：一个以Callable为参数，另一个以Runnable为参数。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>FutureTask&lt;String&gt; future =
+<pre class='line-numbers language-java'><code class='language-java'>FutureTask&lt;String&gt; future =
        new FutureTask&lt;String&gt;(new Callable&lt;String&gt;() {
          public String call() {
            return searcher.search(target);
@@ -262,7 +262,7 @@ executor.execute(future);</code></pre>
 </ul>
 
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>ScheduledExecutorService stpe = Executors.newScheduledThreadPool(2);
+<pre class='line-numbers language-java'><code class='language-java'>ScheduledExecutorService stpe = Executors.newScheduledThreadPool(2);
 
 final Runnable msgReader = new Runnable() {
     public void run() {
@@ -292,7 +292,7 @@ ScheduledFuture&lt;?&gt; hndl = stpe.scheduleAtFixedRate(msgReader, 10, 10, Time
 
 <p>这个框架的关键特性之一就是这些轻量的任务都能生成新的ForkJoinTask实例，而这些实例将仍由执行它们父任务的线程池来安排调度。这就是分而治之。例如在归并算法中，就可以将左侧、右侧的排序任务视为一个ForkJoinTask，在递归过程中，不断产生小型任务执行。下面的示例是一个对微博按时间归并排序的例子：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//RecursiveAction继承自ForkJoinTask&lt;Void&gt;
+<pre class='line-numbers language-java'><code class='language-java'>//RecursiveAction继承自ForkJoinTask&lt;Void&gt;
 public class MicroBlogUpdateSorter extends RecursiveAction {
   private static final int SMALL_ENOUGH = 32;
   private final Update[] updates;

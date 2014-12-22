@@ -145,7 +145,7 @@ var _hmt = _hmt || [];
 </ol>
 
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//使用构造方法时：
+<pre class='line-numbers language-java'><code class='language-java'>//使用构造方法时：
 Map&lt;String, List&lt;String&gt;&gt; m = new HashMap&lt;String, List&lt;String&gt;&gt;();
 
 //假设有静态方法后：
@@ -173,7 +173,7 @@ Map&lt;String, List&lt;String&gt;&gt; m = HashMap.newInstance();</code></pre>
 
 <p>使用Builder模式就可以很好地解决这个问题。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class BuilderDemoClass {
+<pre class='line-numbers language-java'><code class='language-java'>public class BuilderDemoClass {
     //1个必须属性，2个可选属性。
     private final int a_required;
     private final int b;
@@ -227,7 +227,7 @@ Map&lt;String, List&lt;String&gt;&gt; m = HashMap.newInstance();</code></pre>
 
 <p>测试代码：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class BuilderDemoClassTest extends TestCase{
+<pre class='line-numbers language-java'><code class='language-java'>public class BuilderDemoClassTest extends TestCase{
     public void testBuilder() {
         BuilderDemoClass c = new BuilderDemoClass.Builder(10).bb(20).cc(30).build();
 
@@ -242,7 +242,7 @@ Map&lt;String, List&lt;String&gt;&gt; m = HashMap.newInstance();</code></pre>
 
 <p>这一条说的是实现单例的几种方法，推荐使用枚举类型。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public enum MySingleton {
+<pre class='line-numbers language-java'><code class='language-java'>public enum MySingleton {
     INSTANCE;
     
     public void doSomething() {
@@ -261,7 +261,7 @@ MySingleton.INSTANCE.doSomething();</code></pre>
 
 <p>对于一些工具类，主要包括静态方法，可以将构造器private，避免其被实例化。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class UtilityClass {
+<pre class='line-numbers language-java'><code class='language-java'>public class UtilityClass {
     //强调不能被实例化
     private UtilityClass() {
         throw new AssertionError();
@@ -283,7 +283,7 @@ MySingleton.INSTANCE.doSomething();</code></pre>
 </ul>
 
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public void testAutoBoxing() {
+<pre class='line-numbers language-java'><code class='language-java'>public void testAutoBoxing() {
     Long sum = 0L;
     for(long i = 0; i &lt; Integer.MAX_VALUE; i ++) {
         sum += i;

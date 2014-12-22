@@ -146,7 +146,7 @@ var _hmt = _hmt || [];
 
 <h4>中断Sleep Runnable</h4>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class ThreadInterrupt {
+<pre class='line-numbers language-java'><code class='language-java'>public class ThreadInterrupt {
     
     public static void main(String[] args) {
         ExecutorService exec = Executors.newCachedThreadPool();
@@ -181,7 +181,7 @@ public class SleepInterrupt implements Runnable {
 
 <h4>中断Sleep Thread</h4>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class ThreadInterrupt {
+<pre class='line-numbers language-java'><code class='language-java'>public class ThreadInterrupt {
     
     public static void main(String[] args) {
         Thread f = new SleepInterruptThread();
@@ -215,7 +215,7 @@ public class SleepInterruptThread extends Thread {
 
 <h4>中断IO线程</h4>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class ThreadInterrupt {
+<pre class='line-numbers language-java'><code class='language-java'>public class ThreadInterrupt {
     public static void main(String[] args) {
         ExecutorService exec = Executors.newCachedThreadPool();
         Future f = exec.submit(new IOInterrupt(System.in));
@@ -255,7 +255,7 @@ public class IOInterrupt implements Runnable {
 
 <p>对于网络访问这样的IO阻塞，如果不能中断有时挺烦人的。一个较笨的办法是关闭底层资源（例如关闭连接。）示例如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>InputStream socketInput = new Socket("localhost", 8080).getInputStream();
+<pre class='line-numbers language-java'><code class='language-java'>InputStream socketInput = new Socket("localhost", 8080).getInputStream();
 exec.execute(new IOBlocked(socketInput));
 //...
 exec.shutdownNow(); //无法中断线程
@@ -283,7 +283,7 @@ socketInput.close(); //关闭后，解除阻塞。</code></pre>
 
 <p>当从wait唤醒时，往往需要判断特定条件是否满足，如果不满足就返回到wait中，惯用的方法就是使用while来编写这种代码。下例是一个汽车打蜡抛光的示例，其它两个线程未列出。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>class Car {
+<pre class='line-numbers language-java'><code class='language-java'>class Car {
 private boolean waxOn = false;
 public synchronized void waxed() {
 waxOn = true;
@@ -311,7 +311,7 @@ wait();
 
 <p>当两个线程协作时，要特别注意可能会错过某个信号，例如下例T1通知T2，但是有可能T2收不到这个信号：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>T1:
+<pre class='line-numbers language-java'><code class='language-java'>T1:
 synchronized(shareMonitor) {
      //&lt;setup condition for T2&gt;
      shareMonitor.notify();
@@ -328,7 +328,7 @@ while(someCondition) {
 
 <p>以上代码运行到Point1时，如果调度到了T1，则T2收不到通知，就会永远在那里等待。T2正确的做法是：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>synchronized(shareMonitor) {
+<pre class='line-numbers language-java'><code class='language-java'>synchronized(shareMonitor) {
      while(someCondition) {
           shareMonitor.wait();
      }
@@ -347,7 +347,7 @@ while(someCondition) {
 
 <p>除了wait()、notify()和notifyAll()方法用于同步方法或者同步代码块外，也可以使用Lock、Condition、await()、signal()和signalAll()方法。示例如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>class Car {
+<pre class='line-numbers language-java'><code class='language-java'>class Car {
     private Lock lock = new ReentrantLock();
     private Condition condition = lock.newCondition();
     private boolean waxOn = false;
@@ -381,7 +381,7 @@ while(someCondition) {
 
 <p>如果消费者试图从队列中获取对象，而此时该队列为空，那么消费者将挂起，直到队列中有可消费的内容。阻塞队列可以解决很多问题，比wait()和notifyAll()相比，要简单得多，也更加可靠。示例如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>class LiftOffRunner implements Runnable {
+<pre class='line-numbers language-java'><code class='language-java'>class LiftOffRunner implements Runnable {
     private BlockingQueue&lt;LiftOff&gt; rockets;
     public LiftOffRunner(BlockingQueue&lt;LiftOff&gt; queue) {
         rockets = queue;
@@ -414,7 +414,7 @@ while(someCondition) {
 
 <p>通过输入/输出在线程间进行通信也很有用。这种管道在Java IO库中的对应物就是PipedWriter类和PipedReader类。这也是“生产者-消费者”的变体。示例如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>class Sender implements Runnable {
+<pre class='line-numbers language-java'><code class='language-java'>class Sender implements Runnable {
     private PipedWriter out = new PipedWriter();
     public PipedWriter getWriter() { return out;}
     public void run() {

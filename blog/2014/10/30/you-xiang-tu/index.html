@@ -168,7 +168,7 @@ var _hmt = _hmt || [];
 
 <p>API定义和实现如下：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>public class DirectedDFS {
+<pre  class='line-numbers language-bash'><code class='language-bash'>public class DirectedDFS {
     private boolean[] marked;
     
     //在G中找到从s可达的所有顶点
@@ -223,7 +223,7 @@ var _hmt = _hmt || [];
 
 <p>有向环的检测可以通过深度优先搜索来解决。用一个栈表示正在遍历的有向路径，一旦找到一条有向边v->w且w已经在堆栈中，就找到了一个环。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class DirectedCycle {
+<pre class='line-numbers language-java'><code class='language-java'>public class DirectedCycle {
     private boolean[] marked;        // marked[v] = 顶点v是否已经访问过?
     private int[] edgeTo;            // edgeTo[v] = 指向v的前一个顶点
     private boolean[] onStack;       // onStack[v] = 顶点v在递归调用的堆栈上吗？
@@ -295,7 +295,7 @@ var _hmt = _hmt || [];
 
 <p>下面实现的DepthFirstOrder实现了这三种排序：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class DepthFirstOrder {
+<pre class='line-numbers language-java'><code class='language-java'>public class DepthFirstOrder {
     private boolean[] marked;          // marked[v] = has v been marked in dfs?
     private Queue&lt;Integer&gt; pre;                 // pre[v]    = preorder  number of v
     private Queue&lt;Integer&gt; post;                // post[v]   = postorder number of v
@@ -340,7 +340,7 @@ var _hmt = _hmt || [];
 
 <p>DepthFirstOrder提供了三种排序的顶点列表：pre, post, reversePost，因此拓扑排序就非常简单了：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Topological {
+<pre class='line-numbers language-java'><code class='language-java'>public class Topological {
     private Iterable&lt;Integer&gt; order;    // topological order
 
     public Topological(Digraph G) {
@@ -407,7 +407,7 @@ var _hmt = _hmt || [];
 
 <p>第一种情况不可能出现，因为在G<sup>R</sup>中存在一条从v到s的路径；而第二种情况说明G<sup>R</sup>中存在一条从s到v的路径。证毕。</p></blockquote>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class KosarajuSharirSCC {
+<pre class='line-numbers language-java'><code class='language-java'>public class KosarajuSharirSCC {
     private boolean[] marked;     //已访问过的顶点
     private int[] id;             //强连通分量的标识符
     private int count;            //强连通分量的数量
@@ -459,7 +459,7 @@ var _hmt = _hmt || [];
 
 <p>下面的算法只是简单地实现了可达性，但不适用于处理大型有向图，因为它所需的空间与V<sup>2</sup>成正比，所需时间和V(V+E)成正比。但如果图小的话，仍然是一个理想的解决办法。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class TransitiveClosure {
+<pre class='line-numbers language-java'><code class='language-java'>public class TransitiveClosure {
     private DirectedDFS[] tc;  // tc[v] = reachable from v
 
     //预处理的构造方法

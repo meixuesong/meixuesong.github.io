@@ -121,7 +121,7 @@ var _hmt = _hmt || [];
 
 <p>实现归并是将两个不同的有序数组归并到第三个数组中。当归并一个大数组时，需要进行很多次归并，因此如果每次都创建一个新数组会有性能问题。所以要实现原地归并。下面的代码借助一个辅助数组，先将所有元素复制到辅助数组中，然后再把归并结果放回原数组。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public abstract class AbstractMerge extends AbstractSort {
+<pre class='line-numbers language-java'><code class='language-java'>public abstract class AbstractMerge extends AbstractSort {
     //归并所需的辅助数组
     protected Comparable[] aux;
     /**
@@ -171,7 +171,7 @@ var _hmt = _hmt || [];
 
 <p>下面的代码采用分治思想，通过递归实现两个子数组排序，并通过归并两个子数组完成整个数组的排序。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Merge extends AbstractMerge {
+<pre class='line-numbers language-java'><code class='language-java'>public class Merge extends AbstractMerge {
 
     @Override
     public void sort(Comparable[] a) {
@@ -205,7 +205,7 @@ var _hmt = _hmt || [];
 
 <p>实现上述三种优化的MergeX如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class MergeX {
+<pre class='line-numbers language-java'><code class='language-java'>public class MergeX {
     private static final int CUTOFF = 7;  // cutoff to insertion sort
 
     private MergeX() { }
@@ -301,7 +301,7 @@ var _hmt = _hmt || [];
 
 <p>它的思路是先归并微型数组，然后再归并得到的子数组，如此这般，直到将整个数组归并在一起。具体来说，就是两两归并（每个元素是大小为1的数组），然后四四归并（两个大小为2的数组）、八八归并。。。代码实现如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class MergeBU extends AbstractMerge {
+<pre class='line-numbers language-java'><code class='language-java'>public class MergeBU extends AbstractMerge {
     @Override
     public void sort(Comparable[] a) {
         int N = a.length;

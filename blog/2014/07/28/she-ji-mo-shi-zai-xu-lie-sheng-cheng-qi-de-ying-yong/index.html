@@ -134,7 +134,7 @@ var _hmt = _hmt || [];
 
 <p>当没有数据库时，使用单例实现序列生成器非常简单，示例代码如下，注意<code>synchronized</code>关键字：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>/**
+<pre class='line-numbers language-java'><code class='language-java'>/**
  * 没有数据库的序列键生成器
  * @author mxs
  *
@@ -157,7 +157,7 @@ public class KeyGenerator {
 
 <p>单元测试代码：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class KeyGeneratorTest extends TestCase {
+<pre class='line-numbers language-java'><code class='language-java'>public class KeyGeneratorTest extends TestCase {
     public void testKey() {
         KeyGenerator keyGenerator = KeyGenerator.getInstance();
         
@@ -174,7 +174,7 @@ public class KeyGenerator {
 
 <p>当有数据库时，每次获取序列都从数据库读取。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>/**
+<pre class='line-numbers language-java'><code class='language-java'>/**
  * 有数据库的序列键生成器
  * @author mxs
  *
@@ -206,7 +206,7 @@ public class KeyGenerator {
 
 <p>第2种方法每次都要访问数据库，影响了性能，可以一次多取一些序列放到缓存中，只有缓存都取完时，才访问数据库。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>/**
+<pre class='line-numbers language-java'><code class='language-java'>/**
  * 有数据库、带缓存的序列键生成器
  * @author mxs
  *
@@ -269,7 +269,7 @@ public class KeyInfo {
 
 <p>要实现多序列，只需要用HashMap改造第3种方法，保持KeyInfo不变，KeyGenerator修改为：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>/**
+<pre class='line-numbers language-java'><code class='language-java'>/**
  * 有数据库、带缓存的多序列键生成器
  * @author mxs
  *
@@ -306,7 +306,7 @@ public class KeyGenerator {
 
 <p>前面所有实现方案都是基于单例模式，其实还可以使用多例模式。多例模式允许一个类有多个实例，这些实例有自己的状态。保持KeyInfo不变，KeyGenerator修改为：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>/**
+<pre class='line-numbers language-java'><code class='language-java'>/**
  * 有数据库、带缓存的多序列键生成器，采用多例模式
  * @author mxs
  *

@@ -141,7 +141,7 @@ var _hmt = _hmt || [];
 
 <p>永远不要将异常用于正常的控制流。下面的代码试图使用异常退出循环，这是有问题的：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//有问题的代码
+<pre class='line-numbers language-java'><code class='language-java'>//有问题的代码
 try {
      int i = 0;
      while(true)
@@ -197,7 +197,7 @@ try {
 
 <p>如果低层的异常对于调试导致高层异常的问题非常有帮助，使用异常链就很合适。大多数标准异常都支持链的构造器，如果不支持，可以利用Throwable的initCause方法设置原因。下面代码展示了异常转译和异常链：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>try{
+<pre class='line-numbers language-java'><code class='language-java'>try{
 ...
 } catch(LowerLevelException cause) {
      throw new HigherLevelException(cause);
@@ -224,7 +224,7 @@ class HigherLevelException extends Exception {
 
 <p>为了确保异常的细节消息中包含足够的能捕获失败的消息，通常在异常的构造器中引入这些信息。如：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public IndexOutOfBoundsException(int lowerBound, int upperBound, int index) {
+<pre class='line-numbers language-java'><code class='language-java'>public IndexOutOfBoundsException(int lowerBound, int upperBound, int index) {
      ...
 }</code></pre>
 
@@ -249,7 +249,7 @@ class HigherLevelException extends Exception {
 
 <p>如果在finally中return，将会丢失异常：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class LostException {
+<pre class='line-numbers language-java'><code class='language-java'>public class LostException {
     public static void main(String[] args) {
         try {
             throw new RuntimeException("afsd");

@@ -121,7 +121,7 @@ var _hmt = _hmt || [];
 
 <p>不同的排序程序只是在排序算法上不同，但排序的框架是相同的。因此先建立一个排序模板，在此基础上实现各种算法。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public abstract class AbstractSort {
+<pre class='line-numbers language-java'><code class='language-java'>public abstract class AbstractSort {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     
     //待实现的算法
@@ -161,7 +161,7 @@ var _hmt = _hmt || [];
 
 <p>为了粗略验证各种算法的效率，以10万的随机整数数组为对象进行排序，测试代码如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class SortTest extends TestCase {
+<pre class='line-numbers language-java'><code class='language-java'>public class SortTest extends TestCase {
     Integer[] array;
         
     @Override
@@ -188,7 +188,7 @@ var _hmt = _hmt || [];
 
 <p>选择排序是最简单的排序算法，即<strong>不断地选择剩余元素中的最小者</strong>：先找到数组中最小的元素，然后跟第一个元素交换。接下来在剩下的元素中找最小的元素，跟第二个元素交换。如此往复，直到整个数组遍历结束。代码实现如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Selection extends AbstractSort{
+<pre class='line-numbers language-java'><code class='language-java'>public class Selection extends AbstractSort{
     @Override
     public void sort(Comparable[] a) {
         int len = a.length;
@@ -212,7 +212,7 @@ var _hmt = _hmt || [];
 
 <p>与选择排序一样，当前索引左边的所有元素都是有序的，但它们的最终位置还不确定，后续元素将会跟前面的元素比较，并插入适当的位置。当索引到达数组的最右端时，排序完成。代码实现如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Insertion extends AbstractSort {
+<pre class='line-numbers language-java'><code class='language-java'>public class Insertion extends AbstractSort {
     @Override
     public void sort(Comparable[] a) {
         int len = a.length;
@@ -233,7 +233,7 @@ var _hmt = _hmt || [];
 
 <p>其思想是使任意间隔为h的元素有序，称为h有序数组。排序时，如果h很大，我们就能将元素移动到很远的地方，为实现更小的h有序创造方便。代码实现如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Shell extends AbstractSort {
+<pre class='line-numbers language-java'><code class='language-java'>public class Shell extends AbstractSort {
     @Override
     public void sort(Comparable[] a) {
         int n = a.length;

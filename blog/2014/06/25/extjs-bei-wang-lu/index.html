@@ -122,7 +122,7 @@ var _hmt = _hmt || [];
 
 <p>根据Ext文档，有多种替换方式。我想要不区分大小写的替换，而目前Extjs文档中提供的方法无效。</p>
 
-<pre class='line-numbers language-javascript'><code class='line-numbers language-javascript'>//Extjs文档：
+<pre class='line-numbers language-javascript'><code class='language-javascript'>//Extjs文档：
 var str = "Apples are round, and apples are juicy.";
 var newstr = str.replace("apples", "oranges", "gi");
 print(newstr);
@@ -131,7 +131,7 @@ print(newstr);
 
 <p>但上面的代码并没有产生预期的效果，第一个Apples并没有被替换。改用以下方法实现：</p>
 
-<pre class='line-numbers language-javascript'><code class='line-numbers language-javascript'>replaceIgnoreCase : function(str, searchStr, replaceStr) {
+<pre class='line-numbers language-javascript'><code class='language-javascript'>replaceIgnoreCase : function(str, searchStr, replaceStr) {
         var regEx = new RegExp(searchStr, "ig");
         var str = str.replace(regEx, replaceStr);
 
@@ -145,7 +145,7 @@ var result = this._replaceIgnoreCase('This iS IIS', 'is', 'as');
 
 <p>设置Extjs Grid Panel的行高</p>
 
-<pre class='line-numbers language-css'><code class='line-numbers language-css'>//gridPanel的定义中：
+<pre class='line-numbers language-css'><code class='language-css'>//gridPanel的定义中：
 
 viewConfig: {                               
   getRowClass: function (record, rowIndex, rp, store) {
@@ -163,7 +163,7 @@ viewConfig: {
 
 <p>Extjs gridPanel单元格的内容如果超出，默认是显示三个点，要想让它换行，其实很简单：</p>
 
-<pre class='line-numbers language-css'><code class='line-numbers language-css'>//gridPanel的定义，注意tdCls
+<pre class='line-numbers language-css'><code class='language-css'>//gridPanel的定义，注意tdCls
 columns: [
             {
                 header: 'Sentence',
@@ -184,7 +184,7 @@ td.wrap-text div {
 
 <p>Extjs gridPanel单元格的内容自动换行号，默认行高太小，只需将上面的CSS修改为：</p>
 
-<pre class='line-numbers language-css'><code class='line-numbers language-css'>//CSS定义
+<pre class='line-numbers language-css'><code class='language-css'>//CSS定义
 td.wrap-text div {
     white-space: normal;
     line-height: 130%;

@@ -123,7 +123,7 @@ var _hmt = _hmt || [];
 
 <h3>方法一：Singleton with public final field</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>// Singleton with public final field
+<pre class='line-numbers language-java'><code class='language-java'>// Singleton with public final field
    public class Elvis {
        public static final Elvis INSTANCE = new Elvis();
        private Elvis() { ... }
@@ -135,7 +135,7 @@ var _hmt = _hmt || [];
 
 <h3>方法二：Singleton with static factory</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>// Singleton with static factory
+<pre class='line-numbers language-java'><code class='language-java'>// Singleton with static factory
 public class Elvis {
     private static final Elvis INSTANCE = new Elvis(); 
     private Elvis() { ... }
@@ -148,7 +148,7 @@ public class Elvis {
 
 <p>这种方法也是通过私有构造方法，并提供public static方法实现单例。但其缺点时反序列化后，会创建一个新的实例。为了解决这个问题，要增加readResolve方法：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>// readResolve method to preserve singleton property
+<pre class='line-numbers language-java'><code class='language-java'>// readResolve method to preserve singleton property
    private Object readResolve() {
         // Return the one true Elvis and let the garbage collector
         // take care of the Elvis impersonator.
@@ -165,7 +165,7 @@ public class Elvis {
 
 <p>Java 1.5以后，可以使用枚举类型实现单例：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>// Enum singleton - the preferred approach
+<pre class='line-numbers language-java'><code class='language-java'>// Enum singleton - the preferred approach
    public enum Elvis {
        INSTANCE;
        public void leaveTheBuilding() { ... }
@@ -176,7 +176,7 @@ public class Elvis {
 
 <p>上面的简单例子似乎不太清晰，到底怎么用呢？就如下面这样：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public enum MySingleton {
+<pre class='line-numbers language-java'><code class='language-java'>public enum MySingleton {
     INSTANCE;
 
     private String name;
@@ -207,7 +207,7 @@ MySingleton.INSTANCE.setName("ABCD");</code></pre>
 
 <p>枚举类型最基本的用法就像下面的例子：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public enum Day {
+<pre class='line-numbers language-java'><code class='language-java'>public enum Day {
     SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
     THURSDAY, FRIDAY, SATURDAY 
 }
@@ -265,14 +265,14 @@ Weekends are best.
 
 <p>还可以对枚举类型遍历：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>for (Day p : Day.values()) {
+<pre class='line-numbers language-java'><code class='language-java'>for (Day p : Day.values()) {
     ...
 }</code></pre>
 
 
 <p>其它大家熟知的用法还包括：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public enum Coin {
+<pre class='line-numbers language-java'><code class='language-java'>public enum Coin {
     PENNY(1), NICKEL(5), DIME(10), QUARTER(25);
 
     Coin(int value) {
@@ -291,7 +291,7 @@ Weekends are best.
 
 <h4>枚举常量的自引用（Self-Reference）限制</h4>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//有错误代码
+<pre class='line-numbers language-java'><code class='language-java'>//有错误代码
 enum Color {
     RED, GREEN, BLUE;
     Color() { colorMap.put(toString(), this); }
@@ -303,7 +303,7 @@ enum Color {
 
 <p>上面的代码中，colorMap并未初始化，所以构造方法会出错！可以改成：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>enum Color {
+<pre class='line-numbers language-java'><code class='language-java'>enum Color {
     RED, GREEN, BLUE;
 
     static final Map&lt;String,Color&gt; colorMap =
@@ -319,7 +319,7 @@ enum Color {
 
 <p>枚举类型还能这么玩：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>enum Operation {
+<pre class='line-numbers language-java'><code class='language-java'>enum Operation {
     PLUS {
         double eval(double x, double y) { return x + y; }
     },

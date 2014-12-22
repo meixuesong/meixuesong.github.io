@@ -134,7 +134,7 @@ var _hmt = _hmt || [];
 
 <p>上面的发起人只有一个状态“state”，发起人创建备忘录对象，并传入state，而负责人可以保存和获得备忘录对象。上图中备忘录对负责人也是宽接口，因此负责人可以访问到state值。<strong>所以，白箱实现的缺点是破坏了对发起人状态的封闭。</strong>下面的Client的示意代码：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Originator o = new Originator();
+<pre class='line-numbers language-java'><code class='language-java'>Originator o = new Originator();
 Caretaker c = new Caretaker();
 
 o.setState("On");

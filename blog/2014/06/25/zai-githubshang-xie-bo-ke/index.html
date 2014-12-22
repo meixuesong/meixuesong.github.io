@@ -128,7 +128,7 @@ var _hmt = _hmt || [];
 
 <p>Octopress的默认主题背景是黑色，有点太压抑了。代码高亮显示的颜色也不爽，所以改了点颜色：</p>
 
-<pre class='line-numbers language-css'><code class='line-numbers language-css'>//sass/custom/_colors.scss
+<pre class='line-numbers language-css'><code class='language-css'>//sass/custom/_colors.scss
 $page-bg:       #F4F3DE;
 $header-bg:     #5B4947;
 $base03:          #eee; //darkest blue
@@ -138,7 +138,7 @@ $solar-blue:      navy;</code></pre>
 
 <p>另外对配置文件_config.yml，除了常规修改外，还修改了：</p>
 
-<pre class='line-numbers language-css'><code class='line-numbers language-css'>#修改日期格式
+<pre class='line-numbers language-css'><code class='language-css'>#修改日期格式
 date_format: "%Y-%m-%d"
 
 #增加评论功能
@@ -152,7 +152,7 @@ disqus_show_comment_count: true</code></pre>
 
 <p>但是在手机上打开博客时，却非常慢。最后发现原因是使用了googleapis.com托管的jQuery.min.js，在天朝这样的网站是很没保障的。解决办法是修改source/_includes/head.html：</p>
 
-<pre class='line-numbers language-css'><code class='line-numbers language-css'>//将原来的googleapis jquery库改为本地jQuery：
+<pre class='line-numbers language-css'><code class='language-css'>//将原来的googleapis jquery库改为本地jQuery：
 &lt;script src="/javascripts/libs/jquery.min.js"&gt;&lt;/script&gt;</code></pre>
 
 
@@ -164,7 +164,7 @@ disqus_show_comment_count: true</code></pre>
 
 <p>将原来的代码高亮替换为<a href="http://prismjs.com/">prismjs</a>，主要是修改<code>plugins/backtick_code_block.rb</code>:</p>
 
-<pre class='line-numbers language-ruby'><code class='line-numbers language-ruby'>  if @lang.nil? || @lang == 'plain'
+<pre class='line-numbers language-ruby'><code class='language-ruby'>  if @lang.nil? || @lang == 'plain'
     #mxs comment code = tableize_code(str.gsub('&lt;','&lt;').gsub('&gt;','&gt;'))
     #mxs comment "&lt;figure class='code'&gt;#{@caption}#{code}&lt;/figure&gt;"
     mxscode = str.gsub('&lt;','&lt;').gsub('&gt;','&gt;')

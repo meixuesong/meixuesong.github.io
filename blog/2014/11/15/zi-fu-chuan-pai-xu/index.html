@@ -299,7 +299,7 @@ var _hmt = _hmt || [];
 <p><strong>第一步，频率统计</strong>
 使用一个int数组count[]来计算每个键（组号）出现的频率。遍历一遍数组，如果键为r，则将count[r+1]加1。因此对第1组的学生，将会把count[2]++。（在第二步的代码中可以看到为什么是r+1）</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>for (int i = 0; i &lt; N; i++) {
+<pre class='line-numbers language-java'><code class='language-java'>for (int i = 0; i &lt; N; i++) {
     count[a[i].key() + 1]++;
 }</code></pre>
 
@@ -307,7 +307,7 @@ var _hmt = _hmt || [];
 <p><strong>第二步，将频率转换为索引</strong>
 有了count[]中每个键出现的次数，就可以得到每个键在排序结果中的起始索引位置。假如第1组3个人，第2组5个人，那么第三种的同学在排序结果中的起始位置就是8. 因此可以将count[]转化为一张索引表。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>for (int r= 0; r &lt; R; r++) {
+<pre class='line-numbers language-java'><code class='language-java'>for (int r= 0; r &lt; R; r++) {
     count[r+1] += count[r];
 }</code></pre>
 
@@ -315,7 +315,7 @@ var _hmt = _hmt || [];
 <p><strong>第三步，数据分类</strong>
 在第二步中，得到了每个键的起始序号。我们就可以将所有元素（学生）移动到一个辅助数组aux[]。元素在aux[]中的位置由count[]值决定，在移动的过程中将count[]中对应的元素值加1。这个过程只需要遍历一遍数据就可以产生排序结果。并且这种方式是稳定的！键相同的元素在排序后会被聚集到一起，而且相对顺序没有变化。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>for (int i = 0; i &lt; N; i++) {
+<pre class='line-numbers language-java'><code class='language-java'>for (int i = 0; i &lt; N; i++) {
     aux[count[a[i].key()]++]  = a[i];
 }</code></pre>
 
@@ -323,7 +323,7 @@ var _hmt = _hmt || [];
 <p><strong>第四步，回写</strong>
 在第三步已经完成了排序，只需要将排序结果复制回原数组。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>for(int i = 0; i &lt; N; i++) {
+<pre class='line-numbers language-java'><code class='language-java'>for(int i = 0; i &lt; N; i++) {
     a[i] = aux[i];
 }</code></pre>
 
@@ -340,7 +340,7 @@ var _hmt = _hmt || [];
 
 <p>如果字符串的长度均为W，在排序的过程中，从右向左，将每个位置的字符作为键，用键索引计数法将字符串排序W遍。理解了键索引计数法，实现低位优先的字符串排序就很容易了：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class LSD {
+<pre class='line-numbers language-java'><code class='language-java'>public class LSD {
     public static void sort(String[] a, int W) {
         int N = a.length;
         int R = 256;   // extend ASCII alphabet size
@@ -383,7 +383,7 @@ var _hmt = _hmt || [];
 
 <p>对于很小的子数组（15个以内），采用插入排序更快。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class MSD {
+<pre class='line-numbers language-java'><code class='language-java'>public class MSD {
     private static final int R             = 256;   // 基数 extended ASCII alphabet size
     private static final int CUTOFF        =  15;   // 小数组的切换阈值 cutoff to insertion sort
 
@@ -492,7 +492,7 @@ var _hmt = _hmt || [];
 
 <p>和快速排序一样，最好在排序之前将数组打乱，或者将第一个元素和一个随机位置的元素交换以得到一个随机的切分元素。这么做主要是预防数组已经有序或者接近有序的最坏情况。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Quick3string {
+<pre class='line-numbers language-java'><code class='language-java'>public class Quick3string {
     private static final int CUTOFF =  15;   // cutoff to insertion sort
 
     // sort the array a[] of strings

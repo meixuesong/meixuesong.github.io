@@ -152,7 +152,7 @@ var _hmt = _hmt || [];
 
 <p><img src="/myresource/images/image_blog_2014-11-04-directed-edge-api.png" alt="image" /></p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class DirectedEdge { 
+<pre class='line-numbers language-java'><code class='language-java'>public class DirectedEdge { 
     private final int v;                //边的起点
     private final int w;                //边的终点
     private final double weight;        //边的权重
@@ -180,7 +180,7 @@ var _hmt = _hmt || [];
 
 <p><img src="/myresource/images/image_blog_2014-11-04-edge-weighted-digraph-api.png" alt="image" /></p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class EdgeWeightedDigraph {
+<pre class='line-numbers language-java'><code class='language-java'>public class EdgeWeightedDigraph {
     private final int V;                    //顶点总数
     private int E;                          //边的总数
     private Bag&lt;DirectedEdge&gt;[] adj;      //邻接表
@@ -267,7 +267,7 @@ var _hmt = _hmt || [];
 
 <p>Dijkstra算法实现时，除了要distTo[]和edgeTo[]之外，还需要一条索引优先队列pa，以保存需要被放松的顶点并确认下一个被放松的顶点。只要将v和distTo[v]关联起来放入队列就可以立即实现Dijkstra算法。Prim算法每次添加的都是离树最近的非树顶点，而Dijkstra算法每次添加的都是离起点最近的非树顶点。如果将加权无向图看成加权有向图，对无向图中的每条边都相应地创建方向相反的有向边，最短路径的问题是等价的。Dijkstra算法实现实现如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class DijkstraSP {
+<pre class='line-numbers language-java'><code class='language-java'>public class DijkstraSP {
     private double[] distTo;          // distTo[v] = distance  of shortest s-&gt;v path
     private DirectedEdge[] edgeTo;    // edgeTo[v] = last edge on shortest s-&gt;v path
     private IndexMinPQ&lt;Double&gt; pq;    // priority queue of vertices
@@ -358,7 +358,7 @@ var _hmt = _hmt || [];
 
 <p>根据在<a href="/blog/2014/10/30/you-xiang-tu/">有向图</a>中学习的拓扑顺序知识，我们知道一幅有向无环图的拓扑顺序就是所有顶点的逆后序排列。如果我们按照拓扑顺序放松顶点，就能在E+V成正比的时间内解决无环加权有向图的单点最短路径问题。代码实现如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class AcyclicSP {
+<pre class='line-numbers language-java'><code class='language-java'>public class AcyclicSP {
     private double[] distTo;         // distTo[v] = distance  of shortest s-&gt;v path
     private DirectedEdge[] edgeTo;   // edgeTo[v] = last edge on shortest s-&gt;v path
 
@@ -474,7 +474,7 @@ var _hmt = _hmt || [];
 
 <p>Bellman-Ford算法所需的时间和EV成正比，空间和V成正比。因为每一轮算法都会放松E条边，共重复了V轮。把这个算法稍加改进可以提高效率。每一轮放松所有边的过程中，许多边的放松都不会成功。只有上一轮中的distTo[]值发生变化的顶点指出的边才能够改变其他distTo[]元素的值。因此可以用FIFO队列记录这样的顶点，不需要放松所有边。代码实现如下（先忽略负权重环的代码）：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class BellmanFordSP {
+<pre class='line-numbers language-java'><code class='language-java'>public class BellmanFordSP {
     private double[] distTo;               // distTo[v] = 从起点到某个顶点的路径长度
     private DirectedEdge[] edgeTo;         // edgeTo[v] = 从起点到某个顶点的最后一条边
     private boolean[] onQueue;             // onQueue[v] = 该顶点是否存在于队列中
@@ -607,7 +607,7 @@ var _hmt = _hmt || [];
 
 <p>BellmanFordSP的实现会检测负权重环来避免陷入无限循环。当BellmanFordSP构造函数运行之后，将所有边放松V轮之后当且仅当队列非空时有向图中才存在从起点可达的负权重环。如果是这样，edgeTo[]数组中所表示的子图必然含有这个负权重环。因此nagativeCycle()的实现中，会根据edgeTo[]中的边构造一幅加权有向图并在该图中检测环。我们修改DirectedCycle类来在加权有向图中寻找环：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class EdgeWeightedDirectedCycle {
+<pre class='line-numbers language-java'><code class='language-java'>public class EdgeWeightedDirectedCycle {
     private boolean[] marked;             // marked[v] = has vertex v been marked?
     private DirectedEdge[] edgeTo;        // edgeTo[v] = previous edge on path to v
     private boolean[] onStack;            // onStack[v] = is vertex on the stack?

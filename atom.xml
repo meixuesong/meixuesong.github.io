@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-12-21T21:57:22+08:00</updated>
+  <updated>2014-12-22T20:40:05+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -25,7 +25,7 @@
 
 
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>INFO: Starting service Catalina
+<pre  class='line-numbers language-bash'><code class='language-bash'>INFO: Starting service Catalina
 Dec 19, 2014 9:56:33 AM org.apache.catalina.core.StandardEngine startInternal
 INFO: Starting Servlet Engine: Apache Tomcat/7.0.52 (Ubuntu)
 Dec 19, 2014 9:56:33 AM org.apache.catalina.startup.HostConfig deployWAR
@@ -34,7 +34,7 @@ INFO: Deploying web application archive /usr/mxs/kindleinstance/webapps/kindlege
 
 <p>难道是war文件有问题？检查了md5校验码，尝试了解压缩，完全没问题啊！到底是什么原因呢？等了十分钟后，发现Tomcat已经启动完成，可以使用了。再次查看日志：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>INFO: Deploying web application archive /usr/mxs/kindleinstance/webapps/kindlegen.war
+<pre  class='line-numbers language-bash'><code class='language-bash'>INFO: Deploying web application archive /usr/mxs/kindleinstance/webapps/kindlegen.war
 Dec 19, 2014 10:11:25 AM org.apache.catalina.util.SessionIdGenerator createSecureRandom
 INFO: Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [888,934] milliseconds.
 Dec 19, 2014 10:11:25 AM org.apache.coyote.AbstractProtocol start
@@ -63,13 +63,13 @@ INFO: Server startup in 892334 ms</code></pre>
 
 <p>按照前文<a href="http://wiki.apache.org/tomcat/HowTo/FasterStartUp">How do I make Tomcat startup faster?</a>中给出的次安全的解决办法，改为使用<code>-Djava.security.egd=file:/dev/./urandom</code>，即在setenv.sh中加入一行：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>#!/bin/sh
+<pre  class='line-numbers language-bash'><code class='language-bash'>#!/bin/sh
 export CATALINA_OPTS="-Djava.security.egd=file:/dev/./urandom"</code></pre>
 
 
 <p>然后再重启Tomcat，这次非常快了，整个启动只用了3秒多：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>INFO: Starting service Catalina
+<pre  class='line-numbers language-bash'><code class='language-bash'>INFO: Starting service Catalina
 Dec 19, 2014 10:51:55 PM org.apache.catalina.core.StandardEngine startInternal
 INFO: Starting Servlet Engine: Apache Tomcat/7.0.52 (Ubuntu)
 Dec 19, 2014 10:51:55 PM org.apache.catalina.startup.HostConfig deployWAR
@@ -128,7 +128,7 @@ INFO: Server startup in 3418 ms</code></pre>
 
 <p>栈虽然有两个异常，但实验时，如果是单线程操作，无论是栈帧太大还是虚拟机栈容量太小，基本只会出现StackOverflowError，示例如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>/**
+<pre class='line-numbers language-java'><code class='language-java'>/**
 * -Xss128k
 */
 public class JavaVMStackSOF {
@@ -159,7 +159,7 @@ public class JavaVMStackSOF {
 
 <p>堆涉及的内存异常为OutOfMemoryError，如果堆中没有内存用于实例分配并且无法再扩展时，就会抛出此异常。堆内存溢出很容易模拟，示例如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>/**
+<pre class='line-numbers language-java'><code class='language-java'>/**
 * -Xms20m -Xmx20m
 */
 public static void main(String[] args) {
@@ -365,7 +365,7 @@ public static void main(String[] args) {
 
 <p>jmap最简单的用法是查看连接到进程里的本地类库。用处不大，用得最多的是后面两种视图。</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>$ jmap 25154
+<pre  class='line-numbers language-bash'><code class='language-bash'>$ jmap 25154
 Attaching to process ID 25154, please wait...
 Debugger attached successfully.
 Server compiler detected.
@@ -376,7 +376,7 @@ JVM version is 24.65-b04</code></pre>
 
 <p>使用-heap选项，jmap会抓取进程当前的堆快照。以下是输出结果示例：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>$ jmap -heap 25164
+<pre  class='line-numbers language-bash'><code class='language-bash'>$ jmap -heap 25164
 Attaching to process ID 25164, please wait...
 Debugger attached successfully.
 Server compiler detected.
@@ -435,7 +435,7 @@ PS Perm Generation
 
 <p>柱状视图显示了系统中每个类型的实例占用的内存量，并按占用内存倒序排序，非常直观：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>$ jmap -histo 25164 | head -30
+<pre  class='line-numbers language-bash'><code class='language-bash'>$ jmap -histo 25164 | head -30
 
  num     #instances         #bytes  class name
 ----------------------------------------------
@@ -472,7 +472,7 @@ PS Perm Generation
 
 <p>使用-histo:live选项，jmap将只处理活对象，而不是整个堆：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>$ jmap -histo:live 25164 | head -7
+<pre  class='line-numbers language-bash'><code class='language-bash'>$ jmap -histo:live 25164 | head -7
 
  num     #instances         #bytes  class name
 ----------------------------------------------
@@ -488,7 +488,7 @@ PS Perm Generation
 
 <p>jmap能创建导出文件：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>$ jmap -dump:live,format=b,file=heap.hprof 25164
+<pre  class='line-numbers language-bash'><code class='language-bash'>$ jmap -dump:live,format=b,file=heap.hprof 25164
 Dumping heap to /Users/mxs/Documents/blog/heap.hprof ...
 Heap dump file created</code></pre>
 
@@ -499,7 +499,7 @@ Heap dump file created</code></pre>
 
 <p>Oracle JVM自带的jstat可以查看内存和垃圾收集的活动，并能循环显示。下例以每秒一次的频率显示内存状况：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>meixuesongdeMacBook-Pro:blog mxs$ jstat -gc 25164 1000
+<pre  class='line-numbers language-bash'><code class='language-bash'>meixuesongdeMacBook-Pro:blog mxs$ jstat -gc 25164 1000
  S0C    S1C    S0U    S1U      EC       EU        OC         OU       PC     PU    YGC     YGCT    FGC    FGCT     GCT   
 14336.0 13312.0  0.0    0.0   133632.0 85887.5   52224.0    10313.5   33280.0 15221.9      7    0.064   3      0.171    0.236
 14336.0 13312.0  0.0    0.0   133632.0 85887.5   52224.0    10313.5   33280.0 15221.9      7    0.064   3      0.171    0.236</code></pre>
@@ -638,7 +638,7 @@ Heap dump file created</code></pre>
 
 <p>独占调用是大胆优化的例子之一，只有服务端编译器才会做这种大胆优化，实时和客户端编译器都不会这样做。它是基于大量观察做出的优化，以下面的代码为例：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>MyActualClassNotInterface obj = getInstance();
+<pre  class='line-numbers language-bash'><code class='language-bash'>MyActualClassNotInterface obj = getInstance();
 obj.callMyMethod();</code></pre>
 
 
@@ -694,7 +694,7 @@ obj.callMyMethod();</code></pre>
 
 <p>它是对可直接执行的方法（或域、构造方法等）的类型化引用，是一个有能力安全调用方法的对象。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>MethodHandle mh = getTwoArgMH();
+<pre class='line-numbers language-java'><code class='language-java'>MethodHandle mh = getTwoArgMH();
 MyType ret;
 try {
     //调用obj对象的句柄，传入参数arg0, arg1
@@ -708,7 +708,7 @@ try {
 
 <p>它表示方法签名类型的不可变对象。每个方法句柄都有一个MethodType实例，用来指明方法的返回类型和参数类型。但它没有方法的名称和接收者类型。通过工厂方法可以得到MethodType实例：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//第一个参数为返回类型，随后是方法参数的类型。
+<pre class='line-numbers language-java'><code class='language-java'>//第一个参数为返回类型，随后是方法参数的类型。
 //toString()
 MethodType mtToString = MethodType.methodType(String.class);
 //setter方法
@@ -721,7 +721,7 @@ MethodType mtStringComparator = MethodType.methodType(int.class, String.Class, S
 
 <p>通过lookup对象，你给出持有所需方法的类、方法名称以及你所需方法签名相匹配的MethodType，就可以得到方法句柄：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public MethodHandle getToStringMH() {
+<pre class='line-numbers language-java'><code class='language-java'>public MethodHandle getToStringMH() {
     MethodHandle mh;
     MethodType mt = MethodType.methodType(String.class);
     MethodHandles.Lookup lk = MethodHandles.lookup();
@@ -744,7 +744,7 @@ MethodType mtStringComparator = MethodType.methodType(int.class, String.Class, S
 
 <p>现在通过一个实例来对比这三种方法。下面的代码演示了如何通过这三种方法来访问私有方法cancel()：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class ThreadPoolManager {
+<pre class='line-numbers language-java'><code class='language-java'>public class ThreadPoolManager {
     //...
     private void cancel(final ScheduledFuture&lt;?&gt; hndl) {
         //...
@@ -839,7 +839,7 @@ MethodType mtStringComparator = MethodType.methodType(int.class, String.Class, S
 
 <p>方法句柄还有一个特性，可以在静态上下文中确定当前类。例如下面的代码改写了logger的创建方式，可以不用将类名写死：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Logger logger = LoggerFactory.getLogger(MyClass.class);
+<pre class='line-numbers language-java'><code class='language-java'>Logger logger = LoggerFactory.getLogger(MyClass.class);
 //可改为：
 Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());</code></pre>
 
@@ -850,7 +850,7 @@ Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());</
 
 <p>我们以一个简单的Java类作为示例：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Sample {
+<pre class='line-numbers language-java'><code class='language-java'>public class Sample {
     private byte b;
     private char c;
     private double d;
@@ -867,7 +867,7 @@ Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());</
 
 <h3>查看类文件的方法和属性</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>$ javap  Sample.class 
+<pre class='line-numbers language-java'><code class='language-java'>$ javap  Sample.class 
 Compiled from "Sample.java"
 public class com.ubone.tdd.chapter1.javaio.Sample {
   public com.ubone.tdd.chapter1.javaio.Sample();
@@ -900,7 +900,7 @@ public class com.ubone.tdd.chapter1.javaio.Sample {
 
 <p>使用javap -s可以输出签名的类型描述符：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>$ javap -s Sample.class 
+<pre class='line-numbers language-java'><code class='language-java'>$ javap -s Sample.class 
 Compiled from "Sample.java"
 public class com.ubone.tdd.chapter1.javaio.Sample {
   public com.ubone.tdd.chapter1.javaio.Sample();
@@ -972,7 +972,7 @@ public class com.ubone.tdd.chapter1.javaio.Sample {
 
 <p>常量池是为类文件中的其他（常量）元素提供快捷访问方式的区域。通过javap -v可以查看常量池的信息：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Constant pool:
+<pre class='line-numbers language-java'><code class='language-java'>Constant pool:
    #1 = Class              #2             //  com/ubone/tdd/chapter1/javaio/Sample
    #2 = Utf8               com/ubone/tdd/chapter1/javaio/Sample
    #3 = Class              #4             //  java/lang/Object
@@ -1022,7 +1022,7 @@ public class com.ubone.tdd.chapter1.javaio.Sample {
 
 <p>javap可以用于反编译类：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>$ javap -c -p Sample.class 
+<pre class='line-numbers language-java'><code class='language-java'>$ javap -c -p Sample.class 
 Compiled from "Sample.java"
 public class com.ubone.tdd.chapter1.javaio.Sample {
   private byte b;
@@ -1163,7 +1163,7 @@ public class com.ubone.tdd.chapter1.javaio.Sample {
 
 <p>Queue接口全是泛型<code>Queue&lt;E&gt;</code>，利用这一点把工作项封装到一个人工容器中会更方便。例如工作单元MyAwesomeClass，与其用<code>BlockingQueue&lt;MyAwesomeClass&gt;</code>不如使用<code>BlockingQueue&lt;WorkUnit&lt;MyAwesomeClass&gt;&gt;</code>：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class WorkUnit&lt;T&gt; {
+<pre class='line-numbers language-java'><code class='language-java'>public class WorkUnit&lt;T&gt; {
     private final T workUnit;
     public T getWork() {return workUnit;}
     public WorkUnit(T workUnit) {
@@ -1192,7 +1192,7 @@ public class com.ubone.tdd.chapter1.javaio.Sample {
 
 <p>Callable接口代表一段可以调用并返回结果的代码，典型用法是匿名实现类：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>final MyObject obj = new MyObject();
+<pre class='line-numbers language-java'><code class='language-java'>final MyObject obj = new MyObject();
 
 Callable&lt;String&gt; cb = new Callable&lt;String&gt;() {
     public String call() throws Exception {
@@ -1214,7 +1214,7 @@ String s = cb.call();</code></pre>
 </ul>
 
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>interface ArchiveSearcher { String search(String target); }
+<pre class='line-numbers language-java'><code class='language-java'>interface ArchiveSearcher { String search(String target); }
  class App {
    ExecutorService executor = ...
    ArchiveSearcher searcher = ...
@@ -1237,7 +1237,7 @@ String s = cb.call();</code></pre>
 
 <p>FutureTask类是Future接口的常用实现类，实现了Runnable接口，因此可以由执行者调度。它提供的方法基本是Future和Runnable接口的组合：get(), cancel(), isDone(), isCancelled()和run()。它还提供了两个很方便的构造器：一个以Callable为参数，另一个以Runnable为参数。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>FutureTask&lt;String&gt; future =
+<pre class='line-numbers language-java'><code class='language-java'>FutureTask&lt;String&gt; future =
        new FutureTask&lt;String&gt;(new Callable&lt;String&gt;() {
          public String call() {
            return searcher.search(target);
@@ -1255,7 +1255,7 @@ executor.execute(future);</code></pre>
 </ul>
 
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>ScheduledExecutorService stpe = Executors.newScheduledThreadPool(2);
+<pre class='line-numbers language-java'><code class='language-java'>ScheduledExecutorService stpe = Executors.newScheduledThreadPool(2);
 
 final Runnable msgReader = new Runnable() {
     public void run() {
@@ -1285,7 +1285,7 @@ ScheduledFuture&lt;?&gt; hndl = stpe.scheduleAtFixedRate(msgReader, 10, 10, Time
 
 <p>这个框架的关键特性之一就是这些轻量的任务都能生成新的ForkJoinTask实例，而这些实例将仍由执行它们父任务的线程池来安排调度。这就是分而治之。例如在归并算法中，就可以将左侧、右侧的排序任务视为一个ForkJoinTask，在递归过程中，不断产生小型任务执行。下面的示例是一个对微博按时间归并排序的例子：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//RecursiveAction继承自ForkJoinTask&lt;Void&gt;
+<pre class='line-numbers language-java'><code class='language-java'>//RecursiveAction继承自ForkJoinTask&lt;Void&gt;
 public class MicroBlogUpdateSorter extends RecursiveAction {
   private static final int SMALL_ENOUGH = 32;
   private final Update[] updates;
@@ -1408,7 +1408,7 @@ public class MicroBlogUpdateSorter extends RecursiveAction {
 
 <p>Path不仅用于传统的文件系统，也能表示zip或jar这样的文件系统。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//创建Path
+<pre class='line-numbers language-java'><code class='language-java'>//创建Path
 Path listing = Paths.get("/user/bin/zip")；
 //相当于
 Path listing = FileSystems.getDefault().getPath("/user/bin/zip");
@@ -1423,7 +1423,7 @@ listing.getRoot(): /</code></pre>
 
 <p>如果Path是一个文件的路径，有时需要去除冗余信息。例如去除表示当前路径的<code>./</code>，或者该文件只是个符号链接，指向了另一个真正的位置，此时需要得到真实路径。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//移除冗余
+<pre class='line-numbers language-java'><code class='language-java'>//移除冗余
 Path testPath = Paths.get("./test.java");
 Path normalizedPath = testPath.normalize();
 
@@ -1435,7 +1435,7 @@ Path realPath = testPath.toRealPath();</code></pre>
 
 <p>合并路径与路径比较。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//合并
+<pre class='line-numbers language-java'><code class='language-java'>//合并
 Path prefix = Paths.get("/usr");
 Path completePath = prefix.resolve("mxs");
 //completePath: /usr/mxs
@@ -1449,7 +1449,7 @@ path2.relativize(path1): Documents/Blog</code></pre>
 
 <p>新的API完全替换了java.io.File类，在处理遗留代码时，可能将其进行互换：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>File file = new File("../abcd.txt");
+<pre class='line-numbers language-java'><code class='language-java'>File file = new File("../abcd.txt");
 Path listing = file.toPath();
 file = listing.toFile();</code></pre>
 
@@ -1467,7 +1467,7 @@ file = listing.toFile();</code></pre>
 
 <p><strong>在目录中查找文件：</strong></p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path dir = Paths.get("/user/mxs/Documents");
+<pre class='line-numbers language-java'><code class='language-java'>Path dir = Paths.get("/user/mxs/Documents");
 
 try(DirectoryStream&lt;Path&gt; stream = Files.newDirectoryStream(dir, "*.properties")) {
     for(Path entry : stream){
@@ -1485,7 +1485,7 @@ try(DirectoryStream&lt;Path&gt; stream = Files.newDirectoryStream(dir, "*.proper
 
 <p>其中Visitor是一个接口，包括5个方法，但一般使用Java的默认实现SimpleFileVisitor就可以了。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public void walk() {
+<pre class='line-numbers language-java'><code class='language-java'>public void walk() {
     Path dir = Paths.get("/code/src");
     Files.walkFileTree(dir, new FindJavaVisitor());
 }
@@ -1510,13 +1510,13 @@ private static class FindJavaVisitor extends SimpleFileVisitor&lt;Path&gt; {
 
 <h3>3.1 创建和删除文件</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path target = Paths.get("/Users/mxs/Document/mystuff.txt");
+<pre class='line-numbers language-java'><code class='language-java'>Path target = Paths.get("/Users/mxs/Document/mystuff.txt");
 Path file = Files.createFile(target);</code></pre>
 
 
 <p>如果需要设置文件属性，如读、写和执行的权限，则需要设置FileAttribute，但文件属性与操作系统相关，因此要使用与操作系统相关的文件权限类。以下是POSIX文件系统的示例(其它文件系统参考java.nio.file.attribute.*FilePermission类)：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Set&lt;PosixFilePermission&gt; perms = PosixFilePermissions.fromString("rw-rw-rw-");
+<pre class='line-numbers language-java'><code class='language-java'>Set&lt;PosixFilePermission&gt; perms = PosixFilePermissions.fromString("rw-rw-rw-");
 FileAttribute&lt;Set&lt;PosixFilePermission&gt;&gt; attr = PosixFilePermissions.asFileAttribute(perms);
 Files.createFile(target, attr);</code></pre>
 
@@ -1525,7 +1525,7 @@ Files.createFile(target, attr);</code></pre>
 
 <h3>3.2 文件复制与移动</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path source = Paths.get("c:\\My Documents\\stuff.txt");
+<pre class='line-numbers language-java'><code class='language-java'>Path source = Paths.get("c:\\My Documents\\stuff.txt");
 Path target = Paths.get("D:\backup\stuff.txt");
 Files.copy(source, target);
 
@@ -1542,7 +1542,7 @@ Files.move(source, target, CopyOptions);</code></pre>
 
 <p>由于不同的文件系统属性不同，因此Java中的文件属性分为基本文件属性、特定文件属性。前者是各文件系统通用的文件属性。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path zip = Paths.get("/usr/bin/zip");
+<pre class='line-numbers language-java'><code class='language-java'>Path zip = Paths.get("/usr/bin/zip");
 Files.getLastModifiedTime(zip);
 Files.size(zip);
 Files.isSymbolicLink(zip);
@@ -1552,7 +1552,7 @@ Files.readAttributes(zip, "*"); //批量读取属性</code></pre>
 
 <p>特定文件属性独立于某个操作系统。以POSIX文件系统为例：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//获取文件属性
+<pre class='line-numbers language-java'><code class='language-java'>//获取文件属性
 PosixFileAttributes attrs = Files.readAttributes(zip, PosixFileAttributes.class);
 
 //修改属性
@@ -1565,7 +1565,7 @@ Files.setPosixFilePermissions(zip, permissions);</code></pre>
 
 <p>符号链接的处理：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path file = Paths.get("/opt/platform/java");
+<pre class='line-numbers language-java'><code class='language-java'>Path file = Paths.get("/opt/platform/java");
 if (Files.isSymbolicLink(file)) {
     file = Files.readSymbolicLink(file);
 }
@@ -1577,7 +1577,7 @@ Files.readAttributes(file, BasicFileAttributes.class);</code></pre>
 
 <p>Files工具类提供了更方便的方法来读写数据：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path logFile = Paths.get("/tmp/app.log");
+<pre class='line-numbers language-java'><code class='language-java'>Path logFile = Paths.get("/tmp/app.log");
 try(BufferedReader reader = 
     Files.newBufferedReader(logFile, StandardCharsets.UTF_8)) {
     String line;
@@ -1596,7 +1596,7 @@ try(BufferedWriter writer =
 
 <p>Files工具类提供的方法还有<code>newInputStream()</code>, <code>newOutputStream()</code>等方法，用于配合现有IO类。还有更方便的方式：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>List&lt;String&gt; lines = Files.readAllLines(logFile, StandardCharsets.UTF_8);
+<pre class='line-numbers language-java'><code class='language-java'>List&lt;String&gt; lines = Files.readAllLines(logFile, StandardCharsets.UTF_8);
 byte[] bytes = Files.readAllBytes(logFile);</code></pre>
 
 
@@ -1604,7 +1604,7 @@ byte[] bytes = Files.readAllBytes(logFile);</code></pre>
 
 <p>WatchService可用于监测文件或目录的变化，可监测的事件包括：ENTRY_CREATE, ENTRY_DELETE, OVERFLOW(事件已经丢弃或丢失)。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>import static java.nio.file.StandardWatchEventKinds.*;
+<pre class='line-numbers language-java'><code class='language-java'>import static java.nio.file.StandardWatchEventKinds.*;
 
 try {
     WatchService watcher = FileSystems.getDefault().newWatchService();
@@ -1629,7 +1629,7 @@ try {
 
 <p>这是Java 7引入的新接口，用于改变字节通道的位置和大小。例如用多个线程去分析一个大型日志文件的字节通道。FileChannel是这个接口的一种实现，下面的示例读取日志文件的最后1000个字符：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path logFile = Paths.get("c:\\temp.log");
+<pre class='line-numbers language-java'><code class='language-java'>Path logFile = Paths.get("c:\\temp.log");
 ByteBuffer buffer = ByteBuffer.allocate(1024);
 FileChannel channel = FileChannel.open(logFile, StandardOpenOption.READ);
 channel.read(buffer, channel.size() - 1000);</code></pre>
@@ -1648,7 +1648,7 @@ channel.read(buffer, channel.size() - 1000);</code></pre>
 
 <h3>4.1 Future方式</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>try {
+<pre class='line-numbers language-java'><code class='language-java'>try {
     Path file = Paths.get("/usr/mxs/foobar.txt");
     AsynchronousFileChannel channel = AsynchronousFileChannel.open(file);
     
@@ -1672,7 +1672,7 @@ channel.read(buffer, channel.size() - 1000);</code></pre>
 
 <p>CompletionHandler&lt;V, A>是回调的接口。V表示结果类型，A是提供结果的附着对象。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>try {
+<pre class='line-numbers language-java'><code class='language-java'>try {
     Path file = Paths.get("/usr/mxs/foobar.txt");
     AsynchronousFileChannel channel = AsynchronousFileChannel.open(file);
     //读取100 000字节
@@ -1710,7 +1710,7 @@ channel.read(buffer, channel.size() - 1000);</code></pre>
 
 <h2>1. switch语句支持String</h2>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public void printDay(String dayOfWeek) {
+<pre class='line-numbers language-java'><code class='language-java'>public void printDay(String dayOfWeek) {
     switch(dayOfWeek) {
         case "Sunday": System.out.println("周日"); break;
         case "Saturday": System.out.println("周六"); break;
@@ -1722,14 +1722,14 @@ channel.read(buffer, channel.size() - 1000);</code></pre>
 
 <h2>2. 更强的数值文本表示法</h2>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>int x = 0b1100110; //0b表示二进制
+<pre class='line-numbers language-java'><code class='language-java'>int x = 0b1100110; //0b表示二进制
 int bitPattern = 0b0001_1100_0011; //也可以加下划线
 long longValue = 2_111_000_888L; //加下划线便于阅读</code></pre>
 
 
 <h2>3. 改善的异常处理</h2>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>try {
+<pre class='line-numbers language-java'><code class='language-java'>try {
     String fileText = getFile(fileName);
     cfg = verifyConfig(parseConfig(fileText));
 } catch(FileNotFoundException | ParseException | ConfigurationException e) {
@@ -1742,7 +1742,7 @@ long longValue = 2_111_000_888L; //加下划线便于阅读</code></pre>
 
 <p>另一个新语法对需要重新抛出异常时很有用：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>try {
+<pre class='line-numbers language-java'><code class='language-java'>try {
     doSomethingWhichMightThrowIOException();
     doSomethingElseWhichMightThrowSQLException();
 } catch (final Exception e) {
@@ -1757,7 +1757,7 @@ long longValue = 2_111_000_888L; //加下划线便于阅读</code></pre>
 
 <p>这个很有用，特别是io操作时，可以抛掉大串丑陋的代码了。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>try (
+<pre class='line-numbers language-java'><code class='language-java'>try (
     OutputStream out = new FileOutputStream(file);
     InputStream is = url.openStream()
 ) {
@@ -1770,7 +1770,7 @@ long longValue = 2_111_000_888L; //加下划线便于阅读</code></pre>
 
 <p>上面的代码将资源放在try的圆括号内，当处理完后会自动关闭！但一定要注意不要嵌套创建，否则可能无法正确关闭。一定要声明变量。例如下面的代码就应该修改：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>try (ObjectInputStream in = 
+<pre class='line-numbers language-java'><code class='language-java'>try (ObjectInputStream in = 
     new ObjectInputStream(
         new FileInputStream("someFile.bin"))) {
     ...
@@ -1789,7 +1789,7 @@ try (
 
 <h2>5. 钻石语法</h2>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//不用这么麻烦了：
+<pre class='line-numbers language-java'><code class='language-java'>//不用这么麻烦了：
 Map&lt;Integer, Map&lt;String, String&gt;&gt; userList = new HashMap&lt;Integer, Map&lt;String, String&gt;&gt;();
 
 //可以直接写成：
@@ -1800,14 +1800,14 @@ Map&lt;Integer, Map&lt;String, String&gt;&gt; userList = new HashMap&lt;&gt;();<
 
 <p>在Java 7之前，如果泛型和变参结合起来会怎么样？</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public static &lt;T&gt; Collection&lt;T&gt; doSomething(T... entries) {
+<pre class='line-numbers language-java'><code class='language-java'>public static &lt;T&gt; Collection&lt;T&gt; doSomething(T... entries) {
     ...
 }</code></pre>
 
 
 <p>Java处理变参实际上是把它放到一个编译器自动创建的数组中。但我们知道泛型的实现其实是通过<a href="http://blog.ubone.com/blog/2014/07/02/javafan-xing/">擦拭法</a>实现的。所以Java数组不支持泛型:</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>HashMap&lt;String, String&gt;[] a = new HashMap&lt;String, String&gt;[3]; //编译错误
+<pre class='line-numbers language-java'><code class='language-java'>HashMap&lt;String, String&gt;[] a = new HashMap&lt;String, String&gt;[3]; //编译错误
 
 HashMap&lt;String, String&gt;[] a = new HashMap[3]; //编译可通过，但会有警告：
 //Type safety: The expression of type HashMap[] needs unchecked conversion to conform to HashMap&lt;String,String&gt;[]</code></pre>
@@ -1917,7 +1917,7 @@ HashMap&lt;String, String&gt;[] a = new HashMap[3]; //编译可通过，但会�
 
 <p>有了Page，B树集合的实现就简单了：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class BTreeSET&lt;Key extends Comparable&lt;Key&gt;&gt; {
+<pre class='line-numbers language-java'><code class='language-java'>public class BTreeSET&lt;Key extends Comparable&lt;Key&gt;&gt; {
     private Page root = new Page(true);
     
     public BTreeSET(Key sentinel) {
@@ -2074,7 +2074,7 @@ HashMap&lt;String, String&gt;[] a = new HashMap[3]; //编译可通过，但会�
 
 <h3>1.4 实现</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class TrieST&lt;Value&gt; {
+<pre class='line-numbers language-java'><code class='language-java'>public class TrieST&lt;Value&gt; {
     private static final int R = 256;        // extended ASCII
 
 
@@ -2327,7 +2327,7 @@ HashMap&lt;String, String&gt;[] a = new HashMap[3]; //编译可通过，但会�
 
 <h3>2.2 实现</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class TST&lt;Value&gt; {
+<pre class='line-numbers language-java'><code class='language-java'>public class TST&lt;Value&gt; {
     private int N;       // size
     private Node root;   // root of TST
 
@@ -2670,7 +2670,7 @@ HashMap&lt;String, String&gt;[] a = new HashMap[3]; //编译可通过，但会�
 <p><strong>第一步，频率统计</strong>
 使用一个int数组count[]来计算每个键（组号）出现的频率。遍历一遍数组，如果键为r，则将count[r+1]加1。因此对第1组的学生，将会把count[2]++。（在第二步的代码中可以看到为什么是r+1）</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>for (int i = 0; i &lt; N; i++) {
+<pre class='line-numbers language-java'><code class='language-java'>for (int i = 0; i &lt; N; i++) {
     count[a[i].key() + 1]++;
 }</code></pre>
 
@@ -2678,7 +2678,7 @@ HashMap&lt;String, String&gt;[] a = new HashMap[3]; //编译可通过，但会�
 <p><strong>第二步，将频率转换为索引</strong>
 有了count[]中每个键出现的次数，就可以得到每个键在排序结果中的起始索引位置。假如第1组3个人，第2组5个人，那么第三种的同学在排序结果中的起始位置就是8. 因此可以将count[]转化为一张索引表。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>for (int r= 0; r &lt; R; r++) {
+<pre class='line-numbers language-java'><code class='language-java'>for (int r= 0; r &lt; R; r++) {
     count[r+1] += count[r];
 }</code></pre>
 
@@ -2686,7 +2686,7 @@ HashMap&lt;String, String&gt;[] a = new HashMap[3]; //编译可通过，但会�
 <p><strong>第三步，数据分类</strong>
 在第二步中，得到了每个键的起始序号。我们就可以将所有元素（学生）移动到一个辅助数组aux[]。元素在aux[]中的位置由count[]值决定，在移动的过程中将count[]中对应的元素值加1。这个过程只需要遍历一遍数据就可以产生排序结果。并且这种方式是稳定的！键相同的元素在排序后会被聚集到一起，而且相对顺序没有变化。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>for (int i = 0; i &lt; N; i++) {
+<pre class='line-numbers language-java'><code class='language-java'>for (int i = 0; i &lt; N; i++) {
     aux[count[a[i].key()]++]  = a[i];
 }</code></pre>
 
@@ -2694,7 +2694,7 @@ HashMap&lt;String, String&gt;[] a = new HashMap[3]; //编译可通过，但会�
 <p><strong>第四步，回写</strong>
 在第三步已经完成了排序，只需要将排序结果复制回原数组。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>for(int i = 0; i &lt; N; i++) {
+<pre class='line-numbers language-java'><code class='language-java'>for(int i = 0; i &lt; N; i++) {
     a[i] = aux[i];
 }</code></pre>
 
@@ -2711,7 +2711,7 @@ HashMap&lt;String, String&gt;[] a = new HashMap[3]; //编译可通过，但会�
 
 <p>如果字符串的长度均为W，在排序的过程中，从右向左，将每个位置的字符作为键，用键索引计数法将字符串排序W遍。理解了键索引计数法，实现低位优先的字符串排序就很容易了：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class LSD {
+<pre class='line-numbers language-java'><code class='language-java'>public class LSD {
     public static void sort(String[] a, int W) {
         int N = a.length;
         int R = 256;   // extend ASCII alphabet size
@@ -2754,7 +2754,7 @@ HashMap&lt;String, String&gt;[] a = new HashMap[3]; //编译可通过，但会�
 
 <p>对于很小的子数组（15个以内），采用插入排序更快。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class MSD {
+<pre class='line-numbers language-java'><code class='language-java'>public class MSD {
     private static final int R             = 256;   // 基数 extended ASCII alphabet size
     private static final int CUTOFF        =  15;   // 小数组的切换阈值 cutoff to insertion sort
 
@@ -2863,7 +2863,7 @@ HashMap&lt;String, String&gt;[] a = new HashMap[3]; //编译可通过，但会�
 
 <p>和快速排序一样，最好在排序之前将数组打乱，或者将第一个元素和一个随机位置的元素交换以得到一个随机的切分元素。这么做主要是预防数组已经有序或者接近有序的最坏情况。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Quick3string {
+<pre class='line-numbers language-java'><code class='language-java'>public class Quick3string {
     private static final int CUTOFF =  15;   // cutoff to insertion sort
 
     // sort the array a[] of strings
@@ -2972,7 +2972,7 @@ HashMap&lt;String, String&gt;[] a = new HashMap[3]; //编译可通过，但会�
 
 <p>如果你是一名幸运的Android应用开发者，正在开发一个前景广阔的应用，不断地加入新功能、添加新的类库，那么终有一天，你会不幸遇到这个错误：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>Conversion to Dalvik format failed:
+<pre  class='line-numbers language-bash'><code class='language-bash'>Conversion to Dalvik format failed:
 Unable to execute dex: method ID not in [0, 0xffff]: 65536</code></pre>
 
 
@@ -2986,7 +2986,7 @@ Unable to execute dex: method ID not in [0, 0xffff]: 65536</code></pre>
 
 <p>1.修改Gradle配置文件，启用MultiDex并包含MultiDex支持：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>android {
+<pre  class='line-numbers language-bash'><code class='language-bash'>android {
     compileSdkVersion 21
     buildToolsVersion "21.1.0"
 
@@ -3016,7 +3016,7 @@ dependencies {
 </ul>
 
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>@Override
+<pre  class='line-numbers language-bash'><code class='language-bash'>@Override
 protected void attachBaseContext(Context base) {
     super.attachBaseContext(base);
     MultiDex.install(this);
@@ -3092,7 +3092,7 @@ protected void attachBaseContext(Context base) {
 
 <p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-11-04-directed-edge-api.png" alt="image" /></p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class DirectedEdge { 
+<pre class='line-numbers language-java'><code class='language-java'>public class DirectedEdge { 
     private final int v;                //边的起点
     private final int w;                //边的终点
     private final double weight;        //边的权重
@@ -3120,7 +3120,7 @@ protected void attachBaseContext(Context base) {
 
 <p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-11-04-edge-weighted-digraph-api.png" alt="image" /></p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class EdgeWeightedDigraph {
+<pre class='line-numbers language-java'><code class='language-java'>public class EdgeWeightedDigraph {
     private final int V;                    //顶点总数
     private int E;                          //边的总数
     private Bag&lt;DirectedEdge&gt;[] adj;      //邻接表
@@ -3207,7 +3207,7 @@ protected void attachBaseContext(Context base) {
 
 <p>Dijkstra算法实现时，除了要distTo[]和edgeTo[]之外，还需要一条索引优先队列pa，以保存需要被放松的顶点并确认下一个被放松的顶点。只要将v和distTo[v]关联起来放入队列就可以立即实现Dijkstra算法。Prim算法每次添加的都是离树最近的非树顶点，而Dijkstra算法每次添加的都是离起点最近的非树顶点。如果将加权无向图看成加权有向图，对无向图中的每条边都相应地创建方向相反的有向边，最短路径的问题是等价的。Dijkstra算法实现实现如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class DijkstraSP {
+<pre class='line-numbers language-java'><code class='language-java'>public class DijkstraSP {
     private double[] distTo;          // distTo[v] = distance  of shortest s-&gt;v path
     private DirectedEdge[] edgeTo;    // edgeTo[v] = last edge on shortest s-&gt;v path
     private IndexMinPQ&lt;Double&gt; pq;    // priority queue of vertices
@@ -3298,7 +3298,7 @@ protected void attachBaseContext(Context base) {
 
 <p>根据在<a href="http://blog.ubone.com/blog/2014/10/30/you-xiang-tu/">有向图</a>中学习的拓扑顺序知识，我们知道一幅有向无环图的拓扑顺序就是所有顶点的逆后序排列。如果我们按照拓扑顺序放松顶点，就能在E+V成正比的时间内解决无环加权有向图的单点最短路径问题。代码实现如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class AcyclicSP {
+<pre class='line-numbers language-java'><code class='language-java'>public class AcyclicSP {
     private double[] distTo;         // distTo[v] = distance  of shortest s-&gt;v path
     private DirectedEdge[] edgeTo;   // edgeTo[v] = last edge on shortest s-&gt;v path
 
@@ -3414,7 +3414,7 @@ protected void attachBaseContext(Context base) {
 
 <p>Bellman-Ford算法所需的时间和EV成正比，空间和V成正比。因为每一轮算法都会放松E条边，共重复了V轮。把这个算法稍加改进可以提高效率。每一轮放松所有边的过程中，许多边的放松都不会成功。只有上一轮中的distTo[]值发生变化的顶点指出的边才能够改变其他distTo[]元素的值。因此可以用FIFO队列记录这样的顶点，不需要放松所有边。代码实现如下（先忽略负权重环的代码）：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class BellmanFordSP {
+<pre class='line-numbers language-java'><code class='language-java'>public class BellmanFordSP {
     private double[] distTo;               // distTo[v] = 从起点到某个顶点的路径长度
     private DirectedEdge[] edgeTo;         // edgeTo[v] = 从起点到某个顶点的最后一条边
     private boolean[] onQueue;             // onQueue[v] = 该顶点是否存在于队列中
@@ -3547,7 +3547,7 @@ protected void attachBaseContext(Context base) {
 
 <p>BellmanFordSP的实现会检测负权重环来避免陷入无限循环。当BellmanFordSP构造函数运行之后，将所有边放松V轮之后当且仅当队列非空时有向图中才存在从起点可达的负权重环。如果是这样，edgeTo[]数组中所表示的子图必然含有这个负权重环。因此nagativeCycle()的实现中，会根据edgeTo[]中的边构造一幅加权有向图并在该图中检测环。我们修改DirectedCycle类来在加权有向图中寻找环：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class EdgeWeightedDirectedCycle {
+<pre class='line-numbers language-java'><code class='language-java'>public class EdgeWeightedDirectedCycle {
     private boolean[] marked;             // marked[v] = has vertex v been marked?
     private DirectedEdge[] edgeTo;        // edgeTo[v] = previous edge on path to v
     private boolean[] onStack;            // onStack[v] = is vertex on the stack?
@@ -3721,7 +3721,7 @@ protected void attachBaseContext(Context base) {
 
 <p>代码实现如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Edge implements Comparable&lt;Edge&gt; { 
+<pre class='line-numbers language-java'><code class='language-java'>public class Edge implements Comparable&lt;Edge&gt; { 
     private final int v;
     private final int w;
     private final double weight;
@@ -3763,7 +3763,7 @@ protected void attachBaseContext(Context base) {
 
 
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class EdgeWeightedGraph {
+<pre class='line-numbers language-java'><code class='language-java'>public class EdgeWeightedGraph {
     private final int V;
     private int E;
     private Bag&lt;Edge&gt;[] adj;
@@ -3932,7 +3932,7 @@ protected void attachBaseContext(Context base) {
 
 <p>这两种实现所需的时间都与ElogE成正比（最坏情况下），延时实现所需的空间与E成正比，瓶颈在于优先队列的insert()和delMin()中比较边的权重次数。而即时实现所需空间的上限与V成正比，比延时实现有优势。两种实现代码如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class LazyPrimMST {
+<pre class='line-numbers language-java'><code class='language-java'>public class LazyPrimMST {
     private double weight;       // total weight of MST
     private Queue&lt;Edge&gt; mst;     // edges in the MST
     private boolean[] marked;    // marked[v] = true if v on tree
@@ -3987,7 +3987,7 @@ protected void attachBaseContext(Context base) {
 
 
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class PrimMST {
+<pre class='line-numbers language-java'><code class='language-java'>public class PrimMST {
     private Edge[] edgeTo;        // 距离树最近的边，edgeTo[v] = shortest edge from tree vertex to non-tree vertex
     private double[] distTo;      // distTo[v] = weight of shortest such edge
     private boolean[] marked;     // marked[v] = true if v on tree, false otherwise
@@ -4065,7 +4065,7 @@ protected void attachBaseContext(Context base) {
 
 <p>实现时，采用优先队列将边按照权重排序，用一个union-find数据结构识别会形成环的边，以及一个队列来保存最小生成树的所有边。代码实现如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class KruskalMST {
+<pre class='line-numbers language-java'><code class='language-java'>public class KruskalMST {
     private double weight;  // weight of MST
     private Queue&lt;Edge&gt; mst = new Queue&lt;Edge&gt;();  // edges in MST
 
@@ -4163,7 +4163,7 @@ protected void attachBaseContext(Context base) {
 
 <p>API定义和实现如下：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>public class DirectedDFS {
+<pre  class='line-numbers language-bash'><code class='language-bash'>public class DirectedDFS {
     private boolean[] marked;
     
     //在G中找到从s可达的所有顶点
@@ -4218,7 +4218,7 @@ protected void attachBaseContext(Context base) {
 
 <p>有向环的检测可以通过深度优先搜索来解决。用一个栈表示正在遍历的有向路径，一旦找到一条有向边v->w且w已经在堆栈中，就找到了一个环。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class DirectedCycle {
+<pre class='line-numbers language-java'><code class='language-java'>public class DirectedCycle {
     private boolean[] marked;        // marked[v] = 顶点v是否已经访问过?
     private int[] edgeTo;            // edgeTo[v] = 指向v的前一个顶点
     private boolean[] onStack;       // onStack[v] = 顶点v在递归调用的堆栈上吗？
@@ -4290,7 +4290,7 @@ protected void attachBaseContext(Context base) {
 
 <p>下面实现的DepthFirstOrder实现了这三种排序：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class DepthFirstOrder {
+<pre class='line-numbers language-java'><code class='language-java'>public class DepthFirstOrder {
     private boolean[] marked;          // marked[v] = has v been marked in dfs?
     private Queue&lt;Integer&gt; pre;                 // pre[v]    = preorder  number of v
     private Queue&lt;Integer&gt; post;                // post[v]   = postorder number of v
@@ -4335,7 +4335,7 @@ protected void attachBaseContext(Context base) {
 
 <p>DepthFirstOrder提供了三种排序的顶点列表：pre, post, reversePost，因此拓扑排序就非常简单了：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Topological {
+<pre class='line-numbers language-java'><code class='language-java'>public class Topological {
     private Iterable&lt;Integer&gt; order;    // topological order
 
     public Topological(Digraph G) {
@@ -4402,7 +4402,7 @@ protected void attachBaseContext(Context base) {
 
 <p>第一种情况不可能出现，因为在G<sup>R</sup>中存在一条从v到s的路径；而第二种情况说明G<sup>R</sup>中存在一条从s到v的路径。证毕。</p></blockquote>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class KosarajuSharirSCC {
+<pre class='line-numbers language-java'><code class='language-java'>public class KosarajuSharirSCC {
     private boolean[] marked;     //已访问过的顶点
     private int[] id;             //强连通分量的标识符
     private int count;            //强连通分量的数量
@@ -4454,7 +4454,7 @@ protected void attachBaseContext(Context base) {
 
 <p>下面的算法只是简单地实现了可达性，但不适用于处理大型有向图，因为它所需的空间与V<sup>2</sup>成正比，所需时间和V(V+E)成正比。但如果图小的话，仍然是一个理想的解决办法。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class TransitiveClosure {
+<pre class='line-numbers language-java'><code class='language-java'>public class TransitiveClosure {
     private DirectedDFS[] tc;  // tc[v] = reachable from v
 
     //预处理的构造方法
@@ -4540,17 +4540,17 @@ protected void attachBaseContext(Context base) {
 
 <p>在Github上找到了一个项目<a href="https://github.com/lmullen/jekyll-ebook">Jekyll E-book</a>，支持将Jekyll博客转换成EPUB电子书。按照其说明，以管理员身份安装：</p>
 
-<pre class='line-numbers language-bash'><code class='line-numbers language-bash'>gem install jekyll-ebook</code></pre>
+<pre class='line-numbers language-bash'><code class='language-bash'>gem install jekyll-ebook</code></pre>
 
 
 <p>然后安装Pandoc，打开<a href="https://github.com/jgm/pandoc/releases">下载页面</a>，下载相应系统的安装包，安装完成后，确保命令能够识别：</p>
 
-<pre class='line-numbers language-bash'><code class='line-numbers language-bash'>pandoc --version</code></pre>
+<pre class='line-numbers language-bash'><code class='language-bash'>pandoc --version</code></pre>
 
 
 <p>现在就可以开始准备生成EPUB电子书了。需要先定义这本书的标题等信息，以及书中包括哪些博客。这些信息都保存在manifest.yml中，这是一个YAML格式的文件。分两部分说明这个文件的内容，我们先看第一部分：文件的定义。</p>
 
-<pre class='line-numbers language-yaml'><code class='line-numbers language-yaml'>title: meixuesong blog
+<pre class='line-numbers language-bash'><code class='language-bash'>title: meixuesong blog
 author: Jason Mei
 date: October 2014
 epub-filename: /Users/mxs/Documents/jasonblog.epub
@@ -4567,7 +4567,7 @@ header-items:
 
 <p>其中要注意的是路径，<code>epub-dir</code>是博客资源的根路径，其中文件夹如<code>epub-cover-image</code>, <code>epub-stylesheet</code>和<code>epub-metadata</code>都是相对根路径的相对路径。<code>metadata.xml</code>是EPUB文件所需的文件，可以是个空文件。为了美观，我们稍微修改了stylesheet.css：</p>
 
-<pre class='line-numbers language-css'><code class='line-numbers language-css'>/*stylesheet.css*/
+<pre class='line-numbers language-css'><code class='language-css'>/*stylesheet.css*/
 body { margin: 5%; text-align: justify; font-size: medium; }
 code { font-family: monospace; font-size:0.75em;}
 h1 { text-align: center; margin:0px; padding:0px;font-size:1.5em; border-bottom: black solid 1px;}
@@ -4585,7 +4585,7 @@ ol.toc li { list-style-type: none; margin: 0; padding: 0; }</code></pre>
 
 <p>开始定义第二部分，章节定义。这部分比较简单，就是定义书中包含哪几章，名字是什么，每章包括哪些博客。示例如下：</p>
 
-<pre class='line-numbers language-css'><code class='line-numbers language-css'>content-dir: _posts/   #博客所在的相对路径
+<pre class='line-numbers language-css'><code class='language-css'>content-dir: _posts/   #博客所在的相对路径
 contents: 
   - section-title: Articles   #章节名称
     files:                    #该章以下包括哪些内容
@@ -4600,14 +4600,14 @@ contents:
 
 <p>完成<code>manifest.yml</code>的定义之后，就可以开始生成电子书了：</p>
 
-<pre class='line-numbers language-bash'><code class='line-numbers language-bash'>jekyll-ebook manifest.yml</code></pre>
+<pre class='line-numbers language-bash'><code class='language-bash'>jekyll-ebook manifest.yml</code></pre>
 
 
 <p>EPUB电子书就这样生成了，字体完美，甚至还有代码高亮显示功能，电子书的目录默认显示到第三级，在Kindle上看显得多了，需要改为只显示第1级，即目录只显示文章标题，而不用详细到每章的<code>h3</code>级内容。另外图片显示不正常，应该是路径不正确。</p>
 
 <p>先来解决第一个问题，将目录级别改为只显示第1级标题。可以修改文件<code>ebook.rb</code>，在Mac OSX下，这个文件位于：</p>
 
-<pre class='line-numbers language-ruby'><code class='line-numbers language-ruby'>#文件路径：
+<pre class='line-numbers language-ruby'><code class='language-ruby'>#文件路径：
 /Library/Ruby/Gems/2.0.0/gems/jekyll-ebook-0.0.2/lib/jekyll-ebook/ebook.rb
 
 # 修改代码，加上：'toc-depth' =&gt; 1,
@@ -4626,10 +4626,12 @@ PandocRuby.new( self.generate_content ,
 
 <p>Amazon提供了一个工具包<a href="http://www.amazon.com/gp/feature.html?docId=1000765211">KindleGen</a>。该工具可以将html、EPUB等转换成Mobi格式。下载解压缩后，就可以执行命令转换了：</p>
 
-<pre class='line-numbers language-bash'><code class='line-numbers language-bash'>./kindlegen -locale zh aaa.epub</code></pre>
+<pre class='line-numbers language-bash'><code class='language-bash'>./kindlegen -locale zh aaa.epub</code></pre>
 
 
 <p>分别在原生Kindle和多看系统下查看这个mobi电子书，整体效果还是不错的，但是相比EPUB来说，还是差了那么一点点。例如h1到h3的标题下方空白的内容太多，也就是CSS中的margin-bottom值太大，但不论怎么修改，Mobi格式的显示效果好像都没有变化。最后还是选择继续使用多看系统，阅读EPUB格式的电子书。</p>
+
+<p>【Update,2014-12-21】现在使用<a href="http://rss2epub.appspot.com/">RSS2EPUB</a>已经可以直接生成Epub或Kindle电子书了。</p>
 ]]></content>
   </entry>
   
@@ -4682,7 +4684,7 @@ PandocRuby.new( self.generate_content ,
 
 <p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-04_graph-api.png" alt="image" /></p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//////////////////常用的图处理代码//////////////////
+<pre class='line-numbers language-java'><code class='language-java'>//////////////////常用的图处理代码//////////////////
 
 //计算v的度数
 public static int degree(Graph G, int v) {
@@ -4734,7 +4736,7 @@ public static int numberOfSelfLoops(Graph G) {
 
 <p>代码实现示意如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Graph {
+<pre class='line-numbers language-java'><code class='language-java'>public class Graph {
     private final int V;        //顶点数目
     private int E;              //边的数目
     private Bag&lt;Integer&gt;[] adj; //邻接表
@@ -4765,7 +4767,7 @@ public static int numberOfSelfLoops(Graph G) {
 </ul>
 
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//深度优先搜索
+<pre class='line-numbers language-java'><code class='language-java'>//深度优先搜索
 public class DepthFirstSearch {
     private boolean[] marked;
     private int count;
@@ -4796,7 +4798,7 @@ public class DepthFirstSearch {
 
 <p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-04_paths-api.png" alt="image" /></p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//使用深度优先搜索查找图的路径
+<pre class='line-numbers language-java'><code class='language-java'>//使用深度优先搜索查找图的路径
 public class DepthFirstPaths {
     private boolean[] marked;   //这个顶点上调用过dfs()吗？
     private int[] edgeTo;       //从起点到一个顶点的已知路径上的最后一个顶点
@@ -4835,7 +4837,7 @@ public class DepthFirstPaths {
 
 <p>广度优先搜索可以解决单点最短路径的问题，即“从s到给定目的顶点v是否存在一条路径？如果有，找出其中最短的那条。”要找到从s到v的最短路径，从s开始，在所有由一条边就可以到达的顶点中寻找v，如果找不到就继续在与s距离两条边的所有顶点中找v，如此一直进行。实现广度优先搜索时，可以使用先进先出（FIFO）队列。代码示意如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class BreadthFirstPaths {
+<pre class='line-numbers language-java'><code class='language-java'>public class BreadthFirstPaths {
     private boolean[] marked;  //到达该顶点的最短路径已知吗？
     private int[] edgeTo;      //到达该顶点的已知路径上的最后一个顶点
     private final int s;       //起点
@@ -4876,7 +4878,7 @@ public class DepthFirstPaths {
 
 <p>递归的深度优先搜索第一次调用的参数是顶点0，它会标记所有与0连通的顶点。然后构造函数中的for循环会查找每个没有被标记的顶点并递归调用dfs()来标记和它相邻的所有顶点。代码如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class CC {
+<pre class='line-numbers language-java'><code class='language-java'>public class CC {
     private boolean[] marked;
     private int[] id;
     private int count = 0;
@@ -5119,7 +5121,7 @@ public class DepthFirstPaths {
 
 <p>树结点的实现：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>private class Node {
+<pre class='line-numbers language-java'><code class='language-java'>private class Node {
     private Key key;           // sorted by key
     private Value val;         // associated data
     private Node left, right;  // left and right subtrees
@@ -5137,7 +5139,7 @@ public class DepthFirstPaths {
 
 <p>可以使用递归算法在二叉查找树中查找一个键：如果树是空的，则查找未命中；如果被查找的键和根结点的键相等，查找命中；否则就（递归地）在某个子树中继续查找。如果被查找的键较小就选择左子树，较大则选择右子树。查找过程与二分查找一样简单，代码实现如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public Value get(Key key) {
+<pre class='line-numbers language-java'><code class='language-java'>public Value get(Key key) {
     return get(root, key);
 }
 
@@ -5154,7 +5156,7 @@ private Value get(Node x, Key key) {
 
 <p>二叉查找树的插入实现难度和查找差不多。当查找到一个不存在于树中的结点并结束于一条空链接时，我们需要做的就是将链接指向一个含有被查找的键的新结点。代码实现如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public void put(Key key, Value val) {
+<pre class='line-numbers language-java'><code class='language-java'>public void put(Key key, Value val) {
     if (val == null) { delete(key); return; }
     root = put(root, key, val);
 }
@@ -5251,7 +5253,7 @@ private Node put(Node x, Key key, Value val) {
 
 <p>因此在节点类（Node）中，增加一个属性color表示从父结点指向自己的链接是否为红链接：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>private class Node {
+<pre class='line-numbers language-java'><code class='language-java'>private class Node {
     private Key key;           // sorted by key
     private Value val;         // associated data
     private Node left, right;  // left and right subtrees
@@ -5306,7 +5308,7 @@ private Node put(Node x, Key key, Value val) {
 
 <p>以下为红黑树的插入算法：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
+<pre class='line-numbers language-java'><code class='language-java'>public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 
     private static final boolean RED   = true;
     private static final boolean BLACK = false;

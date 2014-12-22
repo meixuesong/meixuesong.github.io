@@ -155,7 +155,7 @@ var _hmt = _hmt || [];
 
 <p>代码实现如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Edge implements Comparable&lt;Edge&gt; { 
+<pre class='line-numbers language-java'><code class='language-java'>public class Edge implements Comparable&lt;Edge&gt; { 
     private final int v;
     private final int w;
     private final double weight;
@@ -197,7 +197,7 @@ var _hmt = _hmt || [];
 
 
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class EdgeWeightedGraph {
+<pre class='line-numbers language-java'><code class='language-java'>public class EdgeWeightedGraph {
     private final int V;
     private int E;
     private Bag&lt;Edge&gt;[] adj;
@@ -366,7 +366,7 @@ var _hmt = _hmt || [];
 
 <p>这两种实现所需的时间都与ElogE成正比（最坏情况下），延时实现所需的空间与E成正比，瓶颈在于优先队列的insert()和delMin()中比较边的权重次数。而即时实现所需空间的上限与V成正比，比延时实现有优势。两种实现代码如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class LazyPrimMST {
+<pre class='line-numbers language-java'><code class='language-java'>public class LazyPrimMST {
     private double weight;       // total weight of MST
     private Queue&lt;Edge&gt; mst;     // edges in the MST
     private boolean[] marked;    // marked[v] = true if v on tree
@@ -421,7 +421,7 @@ var _hmt = _hmt || [];
 
 
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class PrimMST {
+<pre class='line-numbers language-java'><code class='language-java'>public class PrimMST {
     private Edge[] edgeTo;        // 距离树最近的边，edgeTo[v] = shortest edge from tree vertex to non-tree vertex
     private double[] distTo;      // distTo[v] = weight of shortest such edge
     private boolean[] marked;     // marked[v] = true if v on tree, false otherwise
@@ -499,7 +499,7 @@ var _hmt = _hmt || [];
 
 <p>实现时，采用优先队列将边按照权重排序，用一个union-find数据结构识别会形成环的边，以及一个队列来保存最小生成树的所有边。代码实现如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class KruskalMST {
+<pre class='line-numbers language-java'><code class='language-java'>public class KruskalMST {
     private double weight;  // weight of MST
     private Queue&lt;Edge&gt; mst = new Queue&lt;Edge&gt;();  // edges in MST
 

@@ -125,7 +125,7 @@ var _hmt = _hmt || [];
 
 <p>Accountable接口:</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public interface Accountable {
+<pre class='line-numbers language-java'><code class='language-java'>public interface Accountable {
     public BigDecimal getBalance() ;
     public String getBankAba() ;
     public void setBankAba(String bankAba) ;
@@ -141,7 +141,7 @@ var _hmt = _hmt || [];
 
 <p>静态工厂方法封装具体的接口实现，客户端并不关心实现类是Account还是SecureProxy类。代码如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class AccountFactory {
+<pre class='line-numbers language-java'><code class='language-java'>public class AccountFactory {
     private AccountFactory() {
         throw new AssertionError("作为静态工厂，不允许实例化！");
     }
@@ -181,7 +181,7 @@ var _hmt = _hmt || [];
 
 <p>SecureProxy的实现：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class SecureProxy implements InvocationHandler {
+<pre class='line-numbers language-java'><code class='language-java'>public class SecureProxy implements InvocationHandler {
     //需要授权的方法
     private List&lt;String&gt; secureMethods;
     //被代理对象

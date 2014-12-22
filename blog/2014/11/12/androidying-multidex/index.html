@@ -123,7 +123,7 @@ var _hmt = _hmt || [];
 
 <p>如果你是一名幸运的Android应用开发者，正在开发一个前景广阔的应用，不断地加入新功能、添加新的类库，那么终有一天，你会不幸遇到这个错误：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>Conversion to Dalvik format failed:
+<pre  class='line-numbers language-bash'><code class='language-bash'>Conversion to Dalvik format failed:
 Unable to execute dex: method ID not in [0, 0xffff]: 65536</code></pre>
 
 
@@ -137,7 +137,7 @@ Unable to execute dex: method ID not in [0, 0xffff]: 65536</code></pre>
 
 <p>1.修改Gradle配置文件，启用MultiDex并包含MultiDex支持：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>android {
+<pre  class='line-numbers language-bash'><code class='language-bash'>android {
     compileSdkVersion 21
     buildToolsVersion "21.1.0"
 
@@ -167,7 +167,7 @@ dependencies {
 </ul>
 
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>@Override
+<pre  class='line-numbers language-bash'><code class='language-bash'>@Override
 protected void attachBaseContext(Context base) {
     super.attachBaseContext(base);
     MultiDex.install(this);

@@ -161,7 +161,7 @@ var _hmt = _hmt || [];
 
 <p><img src="/myresource/images/image_blog_2014-10-04_graph-api.png" alt="image" /></p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//////////////////常用的图处理代码//////////////////
+<pre class='line-numbers language-java'><code class='language-java'>//////////////////常用的图处理代码//////////////////
 
 //计算v的度数
 public static int degree(Graph G, int v) {
@@ -213,7 +213,7 @@ public static int numberOfSelfLoops(Graph G) {
 
 <p>代码实现示意如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Graph {
+<pre class='line-numbers language-java'><code class='language-java'>public class Graph {
     private final int V;        //顶点数目
     private int E;              //边的数目
     private Bag&lt;Integer&gt;[] adj; //邻接表
@@ -244,7 +244,7 @@ public static int numberOfSelfLoops(Graph G) {
 </ul>
 
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//深度优先搜索
+<pre class='line-numbers language-java'><code class='language-java'>//深度优先搜索
 public class DepthFirstSearch {
     private boolean[] marked;
     private int count;
@@ -275,7 +275,7 @@ public class DepthFirstSearch {
 
 <p><img src="/myresource/images/image_blog_2014-10-04_paths-api.png" alt="image" /></p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//使用深度优先搜索查找图的路径
+<pre class='line-numbers language-java'><code class='language-java'>//使用深度优先搜索查找图的路径
 public class DepthFirstPaths {
     private boolean[] marked;   //这个顶点上调用过dfs()吗？
     private int[] edgeTo;       //从起点到一个顶点的已知路径上的最后一个顶点
@@ -314,7 +314,7 @@ public class DepthFirstPaths {
 
 <p>广度优先搜索可以解决单点最短路径的问题，即“从s到给定目的顶点v是否存在一条路径？如果有，找出其中最短的那条。”要找到从s到v的最短路径，从s开始，在所有由一条边就可以到达的顶点中寻找v，如果找不到就继续在与s距离两条边的所有顶点中找v，如此一直进行。实现广度优先搜索时，可以使用先进先出（FIFO）队列。代码示意如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class BreadthFirstPaths {
+<pre class='line-numbers language-java'><code class='language-java'>public class BreadthFirstPaths {
     private boolean[] marked;  //到达该顶点的最短路径已知吗？
     private int[] edgeTo;      //到达该顶点的已知路径上的最后一个顶点
     private final int s;       //起点
@@ -355,7 +355,7 @@ public class DepthFirstPaths {
 
 <p>递归的深度优先搜索第一次调用的参数是顶点0，它会标记所有与0连通的顶点。然后构造函数中的for循环会查找每个没有被标记的顶点并递归调用dfs()来标记和它相邻的所有顶点。代码如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class CC {
+<pre class='line-numbers language-java'><code class='language-java'>public class CC {
     private boolean[] marked;
     private int[] id;
     private int count = 0;

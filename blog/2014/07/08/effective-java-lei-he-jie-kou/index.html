@@ -127,7 +127,7 @@ var _hmt = _hmt || [];
 
 <p>长度非零的数组总是可变的，所以，类具有公有的静态final数组域，或者返回这种域的访问方法，这几乎总是错误的！</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>
+<pre class='line-numbers language-java'><code class='language-java'>
 //潜在安全漏洞
 public static final Thing[] VALUES = {...};
 
@@ -203,7 +203,7 @@ public static final Thing[] values {
 </ul>
 
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class PhysicalConstants {
+<pre class='line-numbers language-java'><code class='language-java'>public class PhysicalConstants {
     private PhysicalConstants() {} //避免实例化
     public static final double AVOGADROS_NUMBER = 6.0221419e23;
     ...
@@ -220,7 +220,7 @@ public static final Thing[] values {
 
 <p>如果一个类，它的方法执行其他对象的操作，这个类仅导出一个这样的方法，它的实例就等同于一个指向该方法的指针。这样的实例就称为函数对象（function object）。例如：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>class StringLengthComparator {
+<pre class='line-numbers language-java'><code class='language-java'>class StringLengthComparator {
     public int compare(String s1, String s2) {
         return s1.length() - s2.length();
     }
@@ -229,7 +229,7 @@ public static final Thing[] values {
 
 <p>上面这个类没有属性，因此适合于单例。为了把该类的实例传递给方法，应该定义一个接口，并让类实现这个接口。这就是一个策略接口：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public interface Comparator&lt;T&gt; {
+<pre class='line-numbers language-java'><code class='language-java'>public interface Comparator&lt;T&gt; {
     public int compare(T t1, T t2);
 }</code></pre>
 

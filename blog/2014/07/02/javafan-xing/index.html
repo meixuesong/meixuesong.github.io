@@ -121,14 +121,14 @@ var _hmt = _hmt || [];
 
 <p>参数化类型，也就是泛型。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>List&lt;String&gt; list = new ArrayList&lt;String&gt;();
+<pre class='line-numbers language-java'><code class='language-java'>List&lt;String&gt; list = new ArrayList&lt;String&gt;();
 
 Map&lt;String, Date&gt; map = new HaspMap&lt;String, Date&gt;();</code></pre>
 
 
 <p>上面这些都是很常见的用法。或者我们创建一个参数化的类型：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class MultiHashMap&lt;K, V&gt; {
+<pre class='line-numbers language-java'><code class='language-java'>public class MultiHashMap&lt;K, V&gt; {
     private Map&lt;K, List&lt;V&gt;&gt; map = new HashMap&lt;&gt;();  //Java 7中可以省略类型了。   
     public void put(K key, V value) {
         List&lt;V&gt; values = map.get(key);
@@ -141,7 +141,7 @@ Map&lt;String, Date&gt; map = new HaspMap&lt;String, Date&gt;();</code></pre>
 
 <p>要实现参数化类型，有多种方法。C++采用的方法是为每种参数化类都创建一个全新的类型定义。例如<code>MultiHashMap&lt;Date, String&gt;</code>将会创建一个新类：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//注：这不是Java的做法。
+<pre class='line-numbers language-java'><code class='language-java'>//注：这不是Java的做法。
 public class MultiHashMap&lt;Date, String&gt; {
     ...
 }
@@ -150,7 +150,7 @@ public class MultiHashMap&lt;Date, String&gt; {
 
 <p>但这不是Java的做法。Java使用一种叫做“擦拭法”的方法。每个类型参数缺省使用顶级类如Object，客户端的绑定信息被擦去。例如MultiHashMap会被翻译成：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class MultiHashMap {
+<pre class='line-numbers language-java'><code class='language-java'>public class MultiHashMap {
     private Map map = new HashMap();
     
     public void put(K key, V value) {
@@ -162,7 +162,7 @@ public class MultiHashMap&lt;Date, String&gt; {
 
 <p>这个上限也可以指定，例如：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class EventMap&lt;K extends java.util.Date, V&gt; {
+<pre class='line-numbers language-java'><code class='language-java'>public class EventMap&lt;K extends java.util.Date, V&gt; {
 
 }</code></pre>
 
@@ -173,14 +173,14 @@ public class MultiHashMap&lt;Date, String&gt; {
 
 <p>假设你有个方法想对某种类型的List进行遍历处理：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public static String concatenate(List&lt;Object&gt; list) {
+<pre class='line-numbers language-java'><code class='language-java'>public static String concatenate(List&lt;Object&gt; list) {
     
 ｝   </code></pre>
 
 
 <p>一旦你如上面一样定义了<code>List&lt;Object&gt;</code>参数，则无法将其它类型的列表传入。你可以向<code>List&lt;Object&gt;</code>加入Object及其子类的对象，例如：<code>list.add(new Date())</code>。因为Date是Object的子类。但是，当一个方法的参数是<code>List&lt;Object&gt;</code>时，你不能将<code>List&lt;Date&gt;</code>类型的变量作为参数传入这个方法。原因是<code>List&lt;Date&gt;</code>不是<code>List&lt;Object&gt;</code>的子类！例如将<code>List&lt;String&gt;</code>类型作为参数传入将导致无法编译。这时候你可以使用通配符：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public static String concatenate(List&lt;?&gt; list) {
+<pre class='line-numbers language-java'><code class='language-java'>public static String concatenate(List&lt;?&gt; list) {
     //遍历时就可以使用Object了。
     for(Object item : list) {
         ...
@@ -190,7 +190,7 @@ public class MultiHashMap&lt;Date, String&gt; {
 
 <p>但通配符也隐含了一些问题。例如，下面的代码编译错误：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public static void pad(List&lt;?&gt; list, Object object, int count) {
+<pre class='line-numbers language-java'><code class='language-java'>public static void pad(List&lt;?&gt; list, Object object, int count) {
     for (int i = 0; i &lt; count; i ++) {
         list.add(object);
     }
@@ -203,7 +203,7 @@ public class MultiHashMap&lt;Date, String&gt; {
 
 <p>那么应该如何解决这个问题呢？可以使用泛型方法：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class SomeClass {
+<pre class='line-numbers language-java'><code class='language-java'>public class SomeClass {
     public static &lt;T&gt; void pad(List&lt;T&gt; list, T object, int count) {
         for(int i = 0; i &lt; count; i++) {
             list.add(object);
@@ -224,7 +224,7 @@ public class MultiHashMap&lt;Date, String&gt; {
 
 <p>再来个例子，将通配符与泛型方法结合起来用，将一个List从头至尾交换一遍：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>static void inPlaceReverse(List&lt;?&gt; list) {
+<pre class='line-numbers language-java'><code class='language-java'>static void inPlaceReverse(List&lt;?&gt; list) {
     int len = list.size();
     for(int i = 0; i &lt; len; i++) {
         swap(list, i, len - 1 - i);

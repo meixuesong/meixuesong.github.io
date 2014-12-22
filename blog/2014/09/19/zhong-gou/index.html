@@ -219,7 +219,7 @@ var _hmt = _hmt || [];
 
 <p>JUnit就是一个测试框架，其用途是单元测试。关于JUnit，必须知道的知识包括：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//必须继承TestCase
+<pre class='line-numbers language-java'><code class='language-java'>//必须继承TestCase
 class FileReaderTest extends TestCase {
     protected void setUp() {...} //用于在每次测试前准备相应环境
     protected void tearDown() {...} //用于测试完后大扫除，例如关闭文件。
@@ -234,7 +234,7 @@ class FileReaderTest extends TestCase {
 
 <p>别忘了检查预期的异常是否如期出现，例如，如果尝试在关闭流后再读取它，就应该得到一个IOException，这也应该被测试出来：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>_input.close();
+<pre class='line-numbers language-java'><code class='language-java'>_input.close();
 try{
     _input.read();
     fail("no exception for read past end");
@@ -246,7 +246,7 @@ try{
 
 <p>当测试类越来越多，就用得上TestSuite了。TestSuite可以用于只执行某一些测试类，或者某一些测试方法。示例如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class TestAllSort {
+<pre class='line-numbers language-java'><code class='language-java'>public class TestAllSort {
     public static Test suite() {
         TestSuite suite = new TestSuite("测试分组名称");
         
@@ -295,7 +295,7 @@ public class SortTest extends TestCase {
 
 <p>关键点：函数名和函数本体之间的语义要匹配。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 void printOwing(double amount) {
     printBanner();
     
@@ -321,7 +321,7 @@ void printDetails(double amount) {
 
 <p>如果函数内容和其名称同样清晰，就应该去掉这个函数。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 int getRating() {
     return (moreThanFiveLateDeliveries()) ? 2 : 1;
 }
@@ -340,7 +340,7 @@ int getRating() {
 
 <p>适用于一个临时变量，只被一个简单表达式赋值一次，而它妨碍了其他重构手法。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 double basePrice = anOrder.basePrice();
 return (basePrice &gt; 1000);
 
@@ -352,7 +352,7 @@ return (anOrder.basePrice() &gt; 1000);</code></pre>
 
 <p>你的程序以一个临时变量保存某一表达式的运算结果。将这个表达式提炼到一个独立函数中。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 double basePrice = quantity * itemPrice;
 if (basePrice &gt; 1000) 
     return basePrice * 0.95;
@@ -378,7 +378,7 @@ double basePrice() {
 
 <p>你有一个复杂的表达式，可以将该复杂表达式（或其中一部分）的结果放进一临时变量，以此变量名称来解释用途。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 if ((platform.toUpperCase().indexOf("MAC") &gt; -1) &&
         (browser.toUpperCase().indexOf("IE") &gt; -1) &&
         wasInitialized() && resize &gt; 0) {
@@ -401,7 +401,7 @@ if (isMacOs && isIEBrowser && wasInitialized() && wasResized) {
 
 <p>如果某个临时变量被赋值超过一次，即不是循环变量，也不是用于收集计算结果，那么可以针对每次赋值创建一个独立的临时变量。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>// before
+<pre class='line-numbers language-java'><code class='language-java'>// before
 double temp = 2 * (height + width);
 System.out.println(temp);
 temp = height * widht;
@@ -420,7 +420,7 @@ System.out.println(area);</code></pre>
 
 <p>不要对参数赋值。因为Java对于参数传递的处理方式是按值传递。对参数赋值同样容易让人犯糊涂。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 int discount(int inputVal, int quantity, int yearToDate) {
     if (inputVal &gt; 50) inputVal -= 2;
 }
@@ -436,7 +436,7 @@ int discount(int inputVal, int quantity, int yearToDate) {
 
 <p>对于一个大型函数，其中的局域变量使你无法采用Extract Method时，可以将这个函数放进一个单独对象中。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>class Order...
+<pre class='line-numbers language-java'><code class='language-java'>class Order...
     double price() {
         double basePrice;
         double secondPrice;
@@ -453,7 +453,7 @@ int discount(int inputVal, int quantity, int yearToDate) {
 
 <p>如果发现一件事可以有更清晰的方式（更好的解决方案/算法），就应该以较清晰的方式取代复杂的方式。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 String foundPerson(String[] people) {
     for (int i = 0; i &lt; people.length; i++) {
         if (people[i].equals("Don")) {
@@ -525,7 +525,7 @@ String foundPerson(String[] people) {
 
 <p>你需要为提供服务的类增加一个函数，但你无法修改这个类。此时，可以在客户类中建立一个函数，并以第一个参数形式传入一个服务类实例。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 Date newStart = new Date(previousEnd.getYear(), previousEnd.getMonth(), previousEnd.getDate() + 1);
 
 //after
@@ -586,7 +586,7 @@ private static Date nextDay(Date arg) {
 
 <p>以字面常量取代魔法数。魔法数是指拥有特殊意义，却又不能明确表现出这种意义的数字。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 double potentialEnergy(double mass, double height) {
     return mass * 9.81 * height;
 }
@@ -637,7 +637,7 @@ double potentialEnergy(double mass, double height) {
 
 <p>从if, then, else三个段落中分别提炼出独立函数：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 if (date.before(SUMMER_START) || date.after(SUMMER_END))
     charge = quantity * _winterRate + _winterServiceCharge;
 else
@@ -656,7 +656,7 @@ else
 
 <p>如果有一系列条件测试，都得到相同的结果，你可以将它们合并为一个表达式，并提炼成一个函数。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 double disabilityAmount() {
     if (_seniority &lt; 2) return 0;
     if (_monthsDisabled &gt; 12) return 0;
@@ -675,7 +675,7 @@ double disabilityAmount() {
 
 <p>合并重复的条件片段。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 if (isSpecialDeal()) {
     total = price * 0.95;
     send();
@@ -697,7 +697,7 @@ send();</code></pre>
 
 <p>类似下面的代码，应该以break或return语句取代控制标记。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>set done to false
+<pre class='line-numbers language-java'><code class='language-java'>set done to false
 while not down
     if (condition)
         do something
@@ -707,7 +707,7 @@ while not down
 
 <h3>6.5 Replace Nested Conditional with Guard Clauses</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 double getPayAmount() {
     double result;
     if (_isDead) 
@@ -739,7 +739,7 @@ double getPayAmount() {
 
 <p>用多态取代条件表达式。例如下面的类</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 double getSpeed() {
     switch(type) {
         case EUROPEAN:
@@ -758,7 +758,7 @@ double getSpeed() {
 
 <p>如果你需要再三检查某个对象是否为null，可以将null值替换为null对象。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>if (customer == null) 
+<pre class='line-numbers language-java'><code class='language-java'>if (customer == null) 
     plan = BillingPlan.basic();
 else
     plan = customer.getPlan();</code></pre>
@@ -800,7 +800,7 @@ else
 
 <p>如果一个函数，其行为取决于参数值，那么可以考虑针对该参数的每一个可能值，建立一个独立函数。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 void setValue(String name, int value) {
     if (name.equals("height")) {
         height = value;
@@ -827,7 +827,7 @@ void setWidth(int value) {
 
 <p>如果你从某个对象中取出若干值，将它们作为某一次函数调用时的参数，可以考虑改为传递整个对象。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 int low = daysTempRange().getLow();
 int hight = daysTempRange().getHigh();
 withinPlan = plan.withinRange(low, high);
@@ -840,7 +840,7 @@ withinPlan = plan.withinRange(daysTempRange());</code></pre>
 
 <p>对象调用某个函数，并将所得结果作为参数，传递给另一个函数。而接受该参数的函数本身也能调用前一个函数。那么<strong>让参数接受者去除该项参数，并直接调用前一个函数。</strong></p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 int basePrice = quantity * itemPrice;
 discountLevel = getDiscountLevel();
 double finalPrice = discountedPrice(basePrice, discountLevel);
@@ -874,7 +874,7 @@ double finalPrice = discountedPrice(basePrice);</code></pre>
 
 <p>封装向下转型。如果某个函数返回的对象，需要由函数调用者执行向下转型，可以将向下转型动作移到函数中。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 Object lastReading() {
     return readings.lastElement();
 }
@@ -894,7 +894,7 @@ Reading lastReading() {
 
 <p>某个函数返回一个特定的代码，用以表示错误情况，这种情况可以改用异常。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//before
+<pre class='line-numbers language-java'><code class='language-java'>//before
 int withdraw(int amount) {
     if (amount &gt; balance)
         return -1;

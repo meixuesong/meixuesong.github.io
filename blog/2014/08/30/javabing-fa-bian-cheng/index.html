@@ -123,7 +123,7 @@ var _hmt = _hmt || [];
 
 <h3>1.1 定义任务</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class LiftOff implements Runnable {
+<pre class='line-numbers language-java'><code class='language-java'>public class LiftOff implements Runnable {
      public void run() {
           //...
           Thread.yield(); //声明，我已经干完重要的事，可以把CPU让给其他任务了。
@@ -133,13 +133,13 @@ var _hmt = _hmt || [];
 
 <h3>1.2 Thread类</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Thread t = new Thread(new LiftOff());
+<pre class='line-numbers language-java'><code class='language-java'>Thread t = new Thread(new LiftOff());
 t.start();</code></pre>
 
 
 <h3>1.3 使用Executor</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>ExecutorService exec = Executors.newCachedThreadPool(); //or newFixedThreadPool, newSingleThreadExecutor
+<pre class='line-numbers language-java'><code class='language-java'>ExecutorService exec = Executors.newCachedThreadPool(); //or newFixedThreadPool, newSingleThreadExecutor
 exec.execute(new LiftOff());
 
 exec.shutdown(); //防止加入新任务。</code></pre>
@@ -149,7 +149,7 @@ exec.shutdown(); //防止加入新任务。</code></pre>
 
 <p>Runnable不返回任何值，Callable接口可以返回值。两者的区别只是后者的方法是call()而不是run()。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>class TaskWithResult implements Callable&lt;String&gt; {
+<pre class='line-numbers language-java'><code class='language-java'>class TaskWithResult implements Callable&lt;String&gt; {
      public String call() {
           return "result";
      }
@@ -162,7 +162,7 @@ String result = future.get(); //get方法会一直等线程结束后返回结果
 
 <h3>1.5 休眠</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class SleepingTask extends LiftOff {
+<pre class='line-numbers language-java'><code class='language-java'>public class SleepingTask extends LiftOff {
      public void run() {
           try {
                while(countDown-- &gt; 0) {
@@ -178,7 +178,7 @@ String result = future.get(); //get方法会一直等线程结束后返回结果
 
 <h3>1.6 优先级</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'> public void run() {
+<pre class='line-numbers language-java'><code class='language-java'> public void run() {
       Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
  }</code></pre>
 
@@ -191,14 +191,14 @@ String result = future.get(); //get方法会一直等线程结束后返回结果
 
 <p>要设置为后台线程，必须在线程启动之前调用setDaemon()方法。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'> Thread daemon = new Thread(new LiftOff() );
+<pre class='line-numbers language-java'><code class='language-java'> Thread daemon = new Thread(new LiftOff() );
  daemon.setDaemon(true); //必须在start()方法前调用
  daemon.start(); </code></pre>
 
 
 <p>可以通过定制的ThreadFactory创建后台线程，例如：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class DaemonThreadFactory implements ThreadFactory {
+<pre class='line-numbers language-java'><code class='language-java'>public class DaemonThreadFactory implements ThreadFactory {
      public Thread newThread(Runnable r) {
           Thread t = new Thread(r);
           t.setDaemon(true);
@@ -216,7 +216,7 @@ exec.execute(new LiftOff()); </code></pre>
 
 <p>注意！对于后台线程，在不会执行<code>finally</code>子句的情况下就会终止其<code>run()</code>方法：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>class ADaemon implements Runnable {
+<pre class='line-numbers language-java'><code class='language-java'>class ADaemon implements Runnable {
     public void run() {
         try {
             //...
@@ -246,7 +246,7 @@ public class DaemonsDontRunFinally {
 
 <p>除了实现Runnable，也可以直接继承Thread类。但是由于Java不支持多重继承，所以继承自Thread适应的场景要少一些。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>private class SampleThread extends Thread{
+<pre class='line-numbers language-java'><code class='language-java'>private class SampleThread extends Thread{
     public SampleThread() {
         super("线程名称");  //线程名称可通过getName()获取。
     }
@@ -259,7 +259,7 @@ public class DaemonsDontRunFinally {
 
 <p>自管理的Runnable</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class SelfManaged implements Runnable {
+<pre class='line-numbers language-java'><code class='language-java'>public class SelfManaged implements Runnable {
     private Thread t = new Thread(this);
     public SelfManaged() {
         t.start();  //注，不建议在构造器中启动线程，可能会有问题，建议使用Executor
@@ -283,7 +283,7 @@ public class DaemonsDontRunFinally {
 
 <p>线程中的未捕获的异常会导致系统不稳定，但常规方法并不能在外面捕获这些异常，因此需要借助特殊处理。下面的例子创建了一个新类型的ThreadFactory，它将在每个新创建的Thread对象上附着一个Thread.UncaughtExceptionHandler。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>class MyUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
+<pre class='line-numbers language-java'><code class='language-java'>class MyUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
     @Override
     public void uncaughtException(Thread t, Throwable e) {
         // TODO Auto-generated method stub
@@ -307,7 +307,7 @@ exec.execute(new SomeThread());</code></pre>
 
 <p>如果你知道将要在代码中处处使用相同的异常处理器，那么更简单的方式是在Thread类中设置一个表态域，示例如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler());</code></pre>
+<pre class='line-numbers language-java'><code class='language-java'>Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler());</code></pre>
 
 
 <h2>2. 共享受限资源</h2>
@@ -324,7 +324,7 @@ exec.execute(new SomeThread());</code></pre>
 
 <p>Lock对象也用于解决共享资源竞争。它必须被显式地创建、锁定和释放。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class MutexEvenGenerator extends IntGenerator {
+<pre class='line-numbers language-java'><code class='language-java'>public class MutexEvenGenerator extends IntGenerator {
     private Lock lock = new ReentrantLock();
     public int next() {
         lock.lock();
@@ -344,7 +344,7 @@ exec.execute(new SomeThread());</code></pre>
 
 <p>Lock提供了更细粒度的控制能力。使用Lock，可以更加自由地控制锁。例如尝试获得锁，如果获取不到，可以先干点别的事：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>boolean captured = lock.tryLock();
+<pre class='line-numbers language-java'><code class='language-java'>boolean captured = lock.tryLock();
 
 //设置超时时间，超时则触发异常。
 try {
@@ -372,7 +372,7 @@ try {
 
 <p>以下同步控制块就是临界区：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>synchronized(synObject) {
+<pre class='line-numbers language-java'><code class='language-java'>synchronized(synObject) {
     //这部分代码一次只能被一个线程访问
 }</code></pre>
 
@@ -385,7 +385,7 @@ try {
 
 <p>ThreadLocal对象通常当作静态域存储。示例如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class ThreadLocalVariableHolder {
+<pre class='line-numbers language-java'><code class='language-java'>public class ThreadLocalVariableHolder {
     private static final ThreadLocal&lt;Integer&gt; value = new ThreadLocal&lt;Integer&gt;() {
         @Override
         protected synchronized Integer initialValue() {
@@ -416,13 +416,13 @@ public class Accessor implements Runnable {
 
 <p>在并发编程时，延迟初始化可能导致问题。除非绝对必要，否则就不要使用延迟初始化。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//正常的初始化
+<pre class='line-numbers language-java'><code class='language-java'>//正常的初始化
 private final FieldType field = computeFieldValue();</code></pre>
 
 
 <p>如果要使用延迟初始化，就要使用同步方法，例如：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>private FieldType field;
+<pre class='line-numbers language-java'><code class='language-java'>private FieldType field;
 
 synchronized FieldType getField() {
      if (field == null) {
@@ -435,7 +435,7 @@ synchronized FieldType getField() {
 
 <p>如果出于性能考虑，需要对静态域使用延迟初始化，就使用<strong>Lazy initialization holder class</strong>模式：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>private static Class FieldHolder {
+<pre class='line-numbers language-java'><code class='language-java'>private static Class FieldHolder {
      static final FieldType field = computefieldValue();
 }
 
@@ -444,7 +444,7 @@ static FieldType getField() { return FieldHolder.field; }</code></pre>
 
 <p>如果出于性能考虑，需要对实例域使用延迟初始化，就使用双重检查模式(Double check idiom)：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>private volatile FieldType field;
+<pre class='line-numbers language-java'><code class='language-java'>private volatile FieldType field;
 FieldType getField() {
 FieldType result = field;
 if (result == null) {

@@ -174,7 +174,7 @@ var _hmt = _hmt || [];
 
 <p>树结点的实现：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>private class Node {
+<pre class='line-numbers language-java'><code class='language-java'>private class Node {
     private Key key;           // sorted by key
     private Value val;         // associated data
     private Node left, right;  // left and right subtrees
@@ -192,7 +192,7 @@ var _hmt = _hmt || [];
 
 <p>可以使用递归算法在二叉查找树中查找一个键：如果树是空的，则查找未命中；如果被查找的键和根结点的键相等，查找命中；否则就（递归地）在某个子树中继续查找。如果被查找的键较小就选择左子树，较大则选择右子树。查找过程与二分查找一样简单，代码实现如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public Value get(Key key) {
+<pre class='line-numbers language-java'><code class='language-java'>public Value get(Key key) {
     return get(root, key);
 }
 
@@ -209,7 +209,7 @@ private Value get(Node x, Key key) {
 
 <p>二叉查找树的插入实现难度和查找差不多。当查找到一个不存在于树中的结点并结束于一条空链接时，我们需要做的就是将链接指向一个含有被查找的键的新结点。代码实现如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public void put(Key key, Value val) {
+<pre class='line-numbers language-java'><code class='language-java'>public void put(Key key, Value val) {
     if (val == null) { delete(key); return; }
     root = put(root, key, val);
 }
@@ -306,7 +306,7 @@ private Node put(Node x, Key key, Value val) {
 
 <p>因此在节点类（Node）中，增加一个属性color表示从父结点指向自己的链接是否为红链接：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>private class Node {
+<pre class='line-numbers language-java'><code class='language-java'>private class Node {
     private Key key;           // sorted by key
     private Value val;         // associated data
     private Node left, right;  // left and right subtrees
@@ -361,7 +361,7 @@ private Node put(Node x, Key key, Value val) {
 
 <p>以下为红黑树的插入算法：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
+<pre class='line-numbers language-java'><code class='language-java'>public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 
     private static final boolean RED   = true;
     private static final boolean BLACK = false;

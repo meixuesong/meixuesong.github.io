@@ -153,7 +153,7 @@ var _hmt = _hmt || [];
 
 <p>它是对可直接执行的方法（或域、构造方法等）的类型化引用，是一个有能力安全调用方法的对象。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>MethodHandle mh = getTwoArgMH();
+<pre class='line-numbers language-java'><code class='language-java'>MethodHandle mh = getTwoArgMH();
 MyType ret;
 try {
     //调用obj对象的句柄，传入参数arg0, arg1
@@ -167,7 +167,7 @@ try {
 
 <p>它表示方法签名类型的不可变对象。每个方法句柄都有一个MethodType实例，用来指明方法的返回类型和参数类型。但它没有方法的名称和接收者类型。通过工厂方法可以得到MethodType实例：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//第一个参数为返回类型，随后是方法参数的类型。
+<pre class='line-numbers language-java'><code class='language-java'>//第一个参数为返回类型，随后是方法参数的类型。
 //toString()
 MethodType mtToString = MethodType.methodType(String.class);
 //setter方法
@@ -180,7 +180,7 @@ MethodType mtStringComparator = MethodType.methodType(int.class, String.Class, S
 
 <p>通过lookup对象，你给出持有所需方法的类、方法名称以及你所需方法签名相匹配的MethodType，就可以得到方法句柄：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public MethodHandle getToStringMH() {
+<pre class='line-numbers language-java'><code class='language-java'>public MethodHandle getToStringMH() {
     MethodHandle mh;
     MethodType mt = MethodType.methodType(String.class);
     MethodHandles.Lookup lk = MethodHandles.lookup();
@@ -203,7 +203,7 @@ MethodType mtStringComparator = MethodType.methodType(int.class, String.Class, S
 
 <p>现在通过一个实例来对比这三种方法。下面的代码演示了如何通过这三种方法来访问私有方法cancel()：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class ThreadPoolManager {
+<pre class='line-numbers language-java'><code class='language-java'>public class ThreadPoolManager {
     //...
     private void cancel(final ScheduledFuture&lt;?&gt; hndl) {
         //...
@@ -298,7 +298,7 @@ MethodType mtStringComparator = MethodType.methodType(int.class, String.Class, S
 
 <p>方法句柄还有一个特性，可以在静态上下文中确定当前类。例如下面的代码改写了logger的创建方式，可以不用将类名写死：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Logger logger = LoggerFactory.getLogger(MyClass.class);
+<pre class='line-numbers language-java'><code class='language-java'>Logger logger = LoggerFactory.getLogger(MyClass.class);
 //可改为：
 Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());</code></pre>
 
@@ -309,7 +309,7 @@ Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());</
 
 <p>我们以一个简单的Java类作为示例：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Sample {
+<pre class='line-numbers language-java'><code class='language-java'>public class Sample {
     private byte b;
     private char c;
     private double d;
@@ -326,7 +326,7 @@ Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());</
 
 <h3>查看类文件的方法和属性</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>$ javap  Sample.class 
+<pre class='line-numbers language-java'><code class='language-java'>$ javap  Sample.class 
 Compiled from "Sample.java"
 public class com.ubone.tdd.chapter1.javaio.Sample {
   public com.ubone.tdd.chapter1.javaio.Sample();
@@ -359,7 +359,7 @@ public class com.ubone.tdd.chapter1.javaio.Sample {
 
 <p>使用javap -s可以输出签名的类型描述符：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>$ javap -s Sample.class 
+<pre class='line-numbers language-java'><code class='language-java'>$ javap -s Sample.class 
 Compiled from "Sample.java"
 public class com.ubone.tdd.chapter1.javaio.Sample {
   public com.ubone.tdd.chapter1.javaio.Sample();
@@ -431,7 +431,7 @@ public class com.ubone.tdd.chapter1.javaio.Sample {
 
 <p>常量池是为类文件中的其他（常量）元素提供快捷访问方式的区域。通过javap -v可以查看常量池的信息：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Constant pool:
+<pre class='line-numbers language-java'><code class='language-java'>Constant pool:
    #1 = Class              #2             //  com/ubone/tdd/chapter1/javaio/Sample
    #2 = Utf8               com/ubone/tdd/chapter1/javaio/Sample
    #3 = Class              #4             //  java/lang/Object
@@ -481,7 +481,7 @@ public class com.ubone.tdd.chapter1.javaio.Sample {
 
 <p>javap可以用于反编译类：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>$ javap -c -p Sample.class 
+<pre class='line-numbers language-java'><code class='language-java'>$ javap -c -p Sample.class 
 Compiled from "Sample.java"
 public class com.ubone.tdd.chapter1.javaio.Sample {
   private byte b;

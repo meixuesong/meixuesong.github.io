@@ -167,7 +167,7 @@ var _hmt = _hmt || [];
 
 <p>下面的代码执行结果可能与预期不同：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public static String classify(List&lt;?&gt; list) {
+<pre class='line-numbers language-java'><code class='language-java'>public static String classify(List&lt;?&gt; list) {
      return "List";
 }
 
@@ -190,7 +190,7 @@ public static void main(String[] args) {
 
 <p>Java 1.5的自动装箱出现之后，重载也导致了一些麻烦。例如下面的代码：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>List&lt;Integer&gt; list = new ArrayList&lt;Integer&gt;();
+<pre class='line-numbers language-java'><code class='language-java'>List&lt;Integer&gt; list = new ArrayList&lt;Integer&gt;();
 for(int i = -3; i &lt; 3; i++) {
      list.add(i);
 }
@@ -211,7 +211,7 @@ System.out.println("list: " + list);
 
 <p>可变参数接受0或多个指定类型的参数。如果希望参数最少要1个，则可以这样定义方法：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public void someOperation(int a, int... otherArgs) {
+<pre class='line-numbers language-java'><code class='language-java'>public void someOperation(int a, int... otherArgs) {
 }</code></pre>
 
 

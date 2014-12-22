@@ -206,18 +206,18 @@ var _hmt = _hmt || [];
 
 <p>第二步是生成Keystore文件。利用java的keytool工具：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>//XXXXXX为密码
+<pre  class='line-numbers language-bash'><code class='language-bash'>//XXXXXX为密码
 keytool -importkeystore -deststorepass  XXXXXX -destkeystore mykeystore.jks -srckeystore out.p12 -srcstoretype PKCS12 -srcstorepass XXXXXX</code></pre>
 
 
 <p>第三步，导入CA证书：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>keytool -import -alias startsslca -file a.class1.server.ca.pem -keystore mykeystore.jks</code></pre>
+<pre  class='line-numbers language-bash'><code class='language-bash'>keytool -import -alias startsslca -file a.class1.server.ca.pem -keystore mykeystore.jks</code></pre>
 
 
 <p>最后一步，配置Tomcat，修改server.xml，将8443端口取消注释：</p>
 
-<pre class='line-numbers language-xml'><code class='line-numbers language-xml'>&lt;Connector port="8443" protocol="HTTP/1.1" 
+<pre class='line-numbers language-xml'><code class='language-xml'>&lt;Connector port="8443" protocol="HTTP/1.1" 
     SSLEnabled="true" maxThreads="150" 
     scheme="https" secure="true" 
     clientAuth="false" sslProtocol="TLS" 
@@ -227,7 +227,7 @@ keytool -importkeystore -deststorepass  XXXXXX -destkeystore mykeystore.jks -src
 
 <p>如果启动时报apr错误，可修改server.xml，加上注释：</p>
 
-<pre class='line-numbers language-xml'><code class='line-numbers language-xml'>&lt;!--&lt;Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" /&gt;--&gt;</code></pre>
+<pre class='line-numbers language-xml'><code class='language-xml'>&lt;!--&lt;Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" /&gt;--&gt;</code></pre>
 
 
 <h2>文件类型说明</h2>

@@ -123,7 +123,7 @@ var _hmt = _hmt || [];
 
 <p>Java的Object类提供了<code>protected Object clone()</code>方法，用于复制对象。而<code>Cloneable</code>接口用于在运行期告诉JVM可以安全地使用<code>clone()</code>方法，否则JVM将会抛出<code>CloneNotSupportedException</code>异常。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//复制一个pandaA
+<pre class='line-numbers language-java'><code class='language-java'>//复制一个pandaA
 pandaB = pandaA.clone();</code></pre>
 
 
@@ -146,7 +146,7 @@ pandaB = pandaA.clone();</code></pre>
 
 <p><code>clone()</code>方法是浅复制，而深复制可以通过序列化实现。例如：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class DeepCloneDemo implements Serializable {
+<pre class='line-numbers language-java'><code class='language-java'>public class DeepCloneDemo implements Serializable {
     private String name;
 
     public String getName() {

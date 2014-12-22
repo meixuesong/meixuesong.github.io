@@ -145,7 +145,7 @@ var _hmt = _hmt || [];
 
 <p>RandomAccessFile并不支持保存对象，需要将它们转换成字节数组。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>private byte[] getBytes(Object object) throws IOException {
+<pre class='line-numbers language-java'><code class='language-java'>private byte[] getBytes(Object object) throws IOException {
     ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
     //写入ObjectOutputStream的对象，被管接到ByteArrayOutputStream
     ObjectOutputStream outputStream = new ObjectOutputStream(byteStream);
@@ -158,7 +158,7 @@ var _hmt = _hmt || [];
 
 <p>写入代码：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>RandomAccessFile db = new RandomAccessFile(new File(fileName), "rw");
+<pre class='line-numbers language-java'><code class='language-java'>RandomAccessFile db = new RandomAccessFile(new File(fileName), "rw");
 
 //在文件最后写入对象
 db.seek(db.length());
@@ -175,7 +175,7 @@ db.close();
 
 <p>下面的示例代码读取指定长度（通常需要记录对象的长度，此处略去）的字节并转换成对象：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>
+<pre class='line-numbers language-java'><code class='language-java'>
     private Object read(RandomAccessFile db, int length) throws IOException {
         byte[] bytes = new byte[length];
         db.readFully(bytes);

@@ -120,7 +120,7 @@ var _hmt = _hmt || [];
 
 
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>INFO: Starting service Catalina
+<pre  class='line-numbers language-bash'><code class='language-bash'>INFO: Starting service Catalina
 Dec 19, 2014 9:56:33 AM org.apache.catalina.core.StandardEngine startInternal
 INFO: Starting Servlet Engine: Apache Tomcat/7.0.52 (Ubuntu)
 Dec 19, 2014 9:56:33 AM org.apache.catalina.startup.HostConfig deployWAR
@@ -129,7 +129,7 @@ INFO: Deploying web application archive /usr/mxs/kindleinstance/webapps/kindlege
 
 <p>难道是war文件有问题？检查了md5校验码，尝试了解压缩，完全没问题啊！到底是什么原因呢？等了十分钟后，发现Tomcat已经启动完成，可以使用了。再次查看日志：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>INFO: Deploying web application archive /usr/mxs/kindleinstance/webapps/kindlegen.war
+<pre  class='line-numbers language-bash'><code class='language-bash'>INFO: Deploying web application archive /usr/mxs/kindleinstance/webapps/kindlegen.war
 Dec 19, 2014 10:11:25 AM org.apache.catalina.util.SessionIdGenerator createSecureRandom
 INFO: Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [888,934] milliseconds.
 Dec 19, 2014 10:11:25 AM org.apache.coyote.AbstractProtocol start
@@ -158,13 +158,13 @@ INFO: Server startup in 892334 ms</code></pre>
 
 <p>按照前文<a href="http://wiki.apache.org/tomcat/HowTo/FasterStartUp">How do I make Tomcat startup faster?</a>中给出的次安全的解决办法，改为使用<code>-Djava.security.egd=file:/dev/./urandom</code>，即在setenv.sh中加入一行：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>#!/bin/sh
+<pre  class='line-numbers language-bash'><code class='language-bash'>#!/bin/sh
 export CATALINA_OPTS="-Djava.security.egd=file:/dev/./urandom"</code></pre>
 
 
 <p>然后再重启Tomcat，这次非常快了，整个启动只用了3秒多：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>INFO: Starting service Catalina
+<pre  class='line-numbers language-bash'><code class='language-bash'>INFO: Starting service Catalina
 Dec 19, 2014 10:51:55 PM org.apache.catalina.core.StandardEngine startInternal
 INFO: Starting Servlet Engine: Apache Tomcat/7.0.52 (Ubuntu)
 Dec 19, 2014 10:51:55 PM org.apache.catalina.startup.HostConfig deployWAR

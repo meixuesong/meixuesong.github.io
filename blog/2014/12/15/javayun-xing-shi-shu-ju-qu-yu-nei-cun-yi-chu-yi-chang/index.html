@@ -151,7 +151,7 @@ var _hmt = _hmt || [];
 
 <p>栈虽然有两个异常，但实验时，如果是单线程操作，无论是栈帧太大还是虚拟机栈容量太小，基本只会出现StackOverflowError，示例如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>/**
+<pre class='line-numbers language-java'><code class='language-java'>/**
 * -Xss128k
 */
 public class JavaVMStackSOF {
@@ -182,7 +182,7 @@ public class JavaVMStackSOF {
 
 <p>堆涉及的内存异常为OutOfMemoryError，如果堆中没有内存用于实例分配并且无法再扩展时，就会抛出此异常。堆内存溢出很容易模拟，示例如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>/**
+<pre class='line-numbers language-java'><code class='language-java'>/**
 * -Xms20m -Xmx20m
 */
 public static void main(String[] args) {

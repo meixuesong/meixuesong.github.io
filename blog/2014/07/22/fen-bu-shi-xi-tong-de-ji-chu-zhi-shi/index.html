@@ -121,7 +121,7 @@ var _hmt = _hmt || [];
 
 <p>阿姆达尔定律（Amdahl&rsquo;s law）说明程序中可以并行的代码的比例，决定了你增加处理器能带来的速度提升的上限。</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>S(N) = 1 / ((1 - P) + P / N)
+<pre  class='line-numbers language-bash'><code class='language-bash'>S(N) = 1 / ((1 - P) + P / N)
 
 P: 可并行的程序在单核上执行时间的占比
 N: 处理器的个数
@@ -155,7 +155,7 @@ S(N): 程序在N个处理器（总核心数）相对于单个处理器中的速�
 
 <p>某个线程需要等到某个状态或者事件发生后才能继续自己的工作，而这个状态或者事件与另一个线程有关，这时候就需要完成线程间的协调。<strong>为了防止死锁，一般要原子性地获取所需的多个锁，或者注意以相同的顺序获取多个锁。</strong></p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//原子性地获取多个锁
+<pre class='line-numbers language-java'><code class='language-java'>//原子性地获取多个锁
 Thread 1
 GetLocks(A, B); //伪代码，一次性获取两个锁，不同平台支持不同。
 

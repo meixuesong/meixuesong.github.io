@@ -133,7 +133,7 @@ var _hmt = _hmt || [];
 
 <p>Path不仅用于传统的文件系统，也能表示zip或jar这样的文件系统。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//创建Path
+<pre class='line-numbers language-java'><code class='language-java'>//创建Path
 Path listing = Paths.get("/user/bin/zip")；
 //相当于
 Path listing = FileSystems.getDefault().getPath("/user/bin/zip");
@@ -148,7 +148,7 @@ listing.getRoot(): /</code></pre>
 
 <p>如果Path是一个文件的路径，有时需要去除冗余信息。例如去除表示当前路径的<code>./</code>，或者该文件只是个符号链接，指向了另一个真正的位置，此时需要得到真实路径。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//移除冗余
+<pre class='line-numbers language-java'><code class='language-java'>//移除冗余
 Path testPath = Paths.get("./test.java");
 Path normalizedPath = testPath.normalize();
 
@@ -160,7 +160,7 @@ Path realPath = testPath.toRealPath();</code></pre>
 
 <p>合并路径与路径比较。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//合并
+<pre class='line-numbers language-java'><code class='language-java'>//合并
 Path prefix = Paths.get("/usr");
 Path completePath = prefix.resolve("mxs");
 //completePath: /usr/mxs
@@ -174,7 +174,7 @@ path2.relativize(path1): Documents/Blog</code></pre>
 
 <p>新的API完全替换了java.io.File类，在处理遗留代码时，可能将其进行互换：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>File file = new File("../abcd.txt");
+<pre class='line-numbers language-java'><code class='language-java'>File file = new File("../abcd.txt");
 Path listing = file.toPath();
 file = listing.toFile();</code></pre>
 
@@ -192,7 +192,7 @@ file = listing.toFile();</code></pre>
 
 <p><strong>在目录中查找文件：</strong></p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path dir = Paths.get("/user/mxs/Documents");
+<pre class='line-numbers language-java'><code class='language-java'>Path dir = Paths.get("/user/mxs/Documents");
 
 try(DirectoryStream&lt;Path&gt; stream = Files.newDirectoryStream(dir, "*.properties")) {
     for(Path entry : stream){
@@ -210,7 +210,7 @@ try(DirectoryStream&lt;Path&gt; stream = Files.newDirectoryStream(dir, "*.proper
 
 <p>其中Visitor是一个接口，包括5个方法，但一般使用Java的默认实现SimpleFileVisitor就可以了。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public void walk() {
+<pre class='line-numbers language-java'><code class='language-java'>public void walk() {
     Path dir = Paths.get("/code/src");
     Files.walkFileTree(dir, new FindJavaVisitor());
 }
@@ -235,13 +235,13 @@ private static class FindJavaVisitor extends SimpleFileVisitor&lt;Path&gt; {
 
 <h3>3.1 创建和删除文件</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path target = Paths.get("/Users/mxs/Document/mystuff.txt");
+<pre class='line-numbers language-java'><code class='language-java'>Path target = Paths.get("/Users/mxs/Document/mystuff.txt");
 Path file = Files.createFile(target);</code></pre>
 
 
 <p>如果需要设置文件属性，如读、写和执行的权限，则需要设置FileAttribute，但文件属性与操作系统相关，因此要使用与操作系统相关的文件权限类。以下是POSIX文件系统的示例(其它文件系统参考java.nio.file.attribute.*FilePermission类)：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Set&lt;PosixFilePermission&gt; perms = PosixFilePermissions.fromString("rw-rw-rw-");
+<pre class='line-numbers language-java'><code class='language-java'>Set&lt;PosixFilePermission&gt; perms = PosixFilePermissions.fromString("rw-rw-rw-");
 FileAttribute&lt;Set&lt;PosixFilePermission&gt;&gt; attr = PosixFilePermissions.asFileAttribute(perms);
 Files.createFile(target, attr);</code></pre>
 
@@ -250,7 +250,7 @@ Files.createFile(target, attr);</code></pre>
 
 <h3>3.2 文件复制与移动</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path source = Paths.get("c:\\My Documents\\stuff.txt");
+<pre class='line-numbers language-java'><code class='language-java'>Path source = Paths.get("c:\\My Documents\\stuff.txt");
 Path target = Paths.get("D:\backup\stuff.txt");
 Files.copy(source, target);
 
@@ -267,7 +267,7 @@ Files.move(source, target, CopyOptions);</code></pre>
 
 <p>由于不同的文件系统属性不同，因此Java中的文件属性分为基本文件属性、特定文件属性。前者是各文件系统通用的文件属性。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path zip = Paths.get("/usr/bin/zip");
+<pre class='line-numbers language-java'><code class='language-java'>Path zip = Paths.get("/usr/bin/zip");
 Files.getLastModifiedTime(zip);
 Files.size(zip);
 Files.isSymbolicLink(zip);
@@ -277,7 +277,7 @@ Files.readAttributes(zip, "*"); //批量读取属性</code></pre>
 
 <p>特定文件属性独立于某个操作系统。以POSIX文件系统为例：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>//获取文件属性
+<pre class='line-numbers language-java'><code class='language-java'>//获取文件属性
 PosixFileAttributes attrs = Files.readAttributes(zip, PosixFileAttributes.class);
 
 //修改属性
@@ -290,7 +290,7 @@ Files.setPosixFilePermissions(zip, permissions);</code></pre>
 
 <p>符号链接的处理：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path file = Paths.get("/opt/platform/java");
+<pre class='line-numbers language-java'><code class='language-java'>Path file = Paths.get("/opt/platform/java");
 if (Files.isSymbolicLink(file)) {
     file = Files.readSymbolicLink(file);
 }
@@ -302,7 +302,7 @@ Files.readAttributes(file, BasicFileAttributes.class);</code></pre>
 
 <p>Files工具类提供了更方便的方法来读写数据：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path logFile = Paths.get("/tmp/app.log");
+<pre class='line-numbers language-java'><code class='language-java'>Path logFile = Paths.get("/tmp/app.log");
 try(BufferedReader reader = 
     Files.newBufferedReader(logFile, StandardCharsets.UTF_8)) {
     String line;
@@ -321,7 +321,7 @@ try(BufferedWriter writer =
 
 <p>Files工具类提供的方法还有<code>newInputStream()</code>, <code>newOutputStream()</code>等方法，用于配合现有IO类。还有更方便的方式：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>List&lt;String&gt; lines = Files.readAllLines(logFile, StandardCharsets.UTF_8);
+<pre class='line-numbers language-java'><code class='language-java'>List&lt;String&gt; lines = Files.readAllLines(logFile, StandardCharsets.UTF_8);
 byte[] bytes = Files.readAllBytes(logFile);</code></pre>
 
 
@@ -329,7 +329,7 @@ byte[] bytes = Files.readAllBytes(logFile);</code></pre>
 
 <p>WatchService可用于监测文件或目录的变化，可监测的事件包括：ENTRY_CREATE, ENTRY_DELETE, OVERFLOW(事件已经丢弃或丢失)。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>import static java.nio.file.StandardWatchEventKinds.*;
+<pre class='line-numbers language-java'><code class='language-java'>import static java.nio.file.StandardWatchEventKinds.*;
 
 try {
     WatchService watcher = FileSystems.getDefault().newWatchService();
@@ -354,7 +354,7 @@ try {
 
 <p>这是Java 7引入的新接口，用于改变字节通道的位置和大小。例如用多个线程去分析一个大型日志文件的字节通道。FileChannel是这个接口的一种实现，下面的示例读取日志文件的最后1000个字符：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>Path logFile = Paths.get("c:\\temp.log");
+<pre class='line-numbers language-java'><code class='language-java'>Path logFile = Paths.get("c:\\temp.log");
 ByteBuffer buffer = ByteBuffer.allocate(1024);
 FileChannel channel = FileChannel.open(logFile, StandardOpenOption.READ);
 channel.read(buffer, channel.size() - 1000);</code></pre>
@@ -373,7 +373,7 @@ channel.read(buffer, channel.size() - 1000);</code></pre>
 
 <h3>4.1 Future方式</h3>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>try {
+<pre class='line-numbers language-java'><code class='language-java'>try {
     Path file = Paths.get("/usr/mxs/foobar.txt");
     AsynchronousFileChannel channel = AsynchronousFileChannel.open(file);
     
@@ -397,7 +397,7 @@ channel.read(buffer, channel.size() - 1000);</code></pre>
 
 <p>CompletionHandler&lt;V, A>是回调的接口。V表示结果类型，A是提供结果的附着对象。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>try {
+<pre class='line-numbers language-java'><code class='language-java'>try {
     Path file = Paths.get("/usr/mxs/foobar.txt");
     AsynchronousFileChannel channel = AsynchronousFileChannel.open(file);
     //读取100 000字节

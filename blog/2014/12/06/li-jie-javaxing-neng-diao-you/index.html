@@ -251,7 +251,7 @@ var _hmt = _hmt || [];
 
 <p>jmap最简单的用法是查看连接到进程里的本地类库。用处不大，用得最多的是后面两种视图。</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>$ jmap 25154
+<pre  class='line-numbers language-bash'><code class='language-bash'>$ jmap 25154
 Attaching to process ID 25154, please wait...
 Debugger attached successfully.
 Server compiler detected.
@@ -262,7 +262,7 @@ JVM version is 24.65-b04</code></pre>
 
 <p>使用-heap选项，jmap会抓取进程当前的堆快照。以下是输出结果示例：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>$ jmap -heap 25164
+<pre  class='line-numbers language-bash'><code class='language-bash'>$ jmap -heap 25164
 Attaching to process ID 25164, please wait...
 Debugger attached successfully.
 Server compiler detected.
@@ -321,7 +321,7 @@ PS Perm Generation
 
 <p>柱状视图显示了系统中每个类型的实例占用的内存量，并按占用内存倒序排序，非常直观：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>$ jmap -histo 25164 | head -30
+<pre  class='line-numbers language-bash'><code class='language-bash'>$ jmap -histo 25164 | head -30
 
  num     #instances         #bytes  class name
 ----------------------------------------------
@@ -358,7 +358,7 @@ PS Perm Generation
 
 <p>使用-histo:live选项，jmap将只处理活对象，而不是整个堆：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>$ jmap -histo:live 25164 | head -7
+<pre  class='line-numbers language-bash'><code class='language-bash'>$ jmap -histo:live 25164 | head -7
 
  num     #instances         #bytes  class name
 ----------------------------------------------
@@ -374,7 +374,7 @@ PS Perm Generation
 
 <p>jmap能创建导出文件：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>$ jmap -dump:live,format=b,file=heap.hprof 25164
+<pre  class='line-numbers language-bash'><code class='language-bash'>$ jmap -dump:live,format=b,file=heap.hprof 25164
 Dumping heap to /Users/mxs/Documents/blog/heap.hprof ...
 Heap dump file created</code></pre>
 
@@ -385,7 +385,7 @@ Heap dump file created</code></pre>
 
 <p>Oracle JVM自带的jstat可以查看内存和垃圾收集的活动，并能循环显示。下例以每秒一次的频率显示内存状况：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>meixuesongdeMacBook-Pro:blog mxs$ jstat -gc 25164 1000
+<pre  class='line-numbers language-bash'><code class='language-bash'>meixuesongdeMacBook-Pro:blog mxs$ jstat -gc 25164 1000
  S0C    S1C    S0U    S1U      EC       EU        OC         OU       PC     PU    YGC     YGCT    FGC    FGCT     GCT   
 14336.0 13312.0  0.0    0.0   133632.0 85887.5   52224.0    10313.5   33280.0 15221.9      7    0.064   3      0.171    0.236
 14336.0 13312.0  0.0    0.0   133632.0 85887.5   52224.0    10313.5   33280.0 15221.9      7    0.064   3      0.171    0.236</code></pre>
@@ -524,7 +524,7 @@ Heap dump file created</code></pre>
 
 <p>独占调用是大胆优化的例子之一，只有服务端编译器才会做这种大胆优化，实时和客户端编译器都不会这样做。它是基于大量观察做出的优化，以下面的代码为例：</p>
 
-<pre  class='line-numbers language-'><code class='line-numbers language-'>MyActualClassNotInterface obj = getInstance();
+<pre  class='line-numbers language-bash'><code class='language-bash'>MyActualClassNotInterface obj = getInstance();
 obj.callMyMethod();</code></pre>
 
 

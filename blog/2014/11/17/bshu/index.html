@@ -207,7 +207,7 @@ var _hmt = _hmt || [];
 
 <p>有了Page，B树集合的实现就简单了：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class BTreeSET&lt;Key extends Comparable&lt;Key&gt;&gt; {
+<pre class='line-numbers language-java'><code class='language-java'>public class BTreeSET&lt;Key extends Comparable&lt;Key&gt;&gt; {
     private Page root = new Page(true);
     
     public BTreeSET(Key sentinel) {

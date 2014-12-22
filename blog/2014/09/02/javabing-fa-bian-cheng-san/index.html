@@ -127,7 +127,7 @@ var _hmt = _hmt || [];
 
 <p>示例代码：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class LatchDemo {
+<pre class='line-numbers language-java'><code class='language-java'>public class LatchDemo {
     private static class Latch implements Runnable {
         private CountDownLatch latch;
         Latch(CountDownLatch latch) {
@@ -189,7 +189,7 @@ var _hmt = _hmt || [];
 
 <p>CyclicBarrier适用于有一组任务，它们并行工作，直到它们全部完成后，才一起向前移动。与CountDownLatch只会触发一次不同，CyclicBarrier可以多次重用。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class CyclicBarrierDemo {
+<pre class='line-numbers language-java'><code class='language-java'>public class CyclicBarrierDemo {
     private static class Horse implements Runnable {
         private CyclicBarrier barrier;
         private String id;
@@ -294,7 +294,7 @@ All Thread has done.1
 
 <p>这是一个很基础的优先级队列，具有可阻塞的读取操作。放入该队列的对象实现Comparable接口就可以轻松实现优先级调度了，优先级越小则优先级越高。代码示例：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>PriorityBlockingQueue&lt;Runnable&gt; queue = 
+<pre class='line-numbers language-java'><code class='language-java'>PriorityBlockingQueue&lt;Runnable&gt; queue = 
         new PriorityBlockingQueue&lt;Runnable&gt;();
 ExecutorService exec = Executors.newCachedThreadPool();
 exec.execute(new Producer(queue, exec));
@@ -305,7 +305,7 @@ exec.execute(new Consumer(queue));</code></pre>
 
 <p>通过使用ScheduledExecutor.schedule()（运行一次任务）或者scheduleAtFixedRate()（每隔规则的时间重复执行任务），你可以将Runnable对象设置为在将来的某个时刻执行。代码示例：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class SheduledThreadDemo {
+<pre class='line-numbers language-java'><code class='language-java'>public class SheduledThreadDemo {
     ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(10);
     
     public void repeat(Runnable event, long initialDelay, long period) {
@@ -326,7 +326,7 @@ exec.execute(new Consumer(queue));</code></pre>
 
 <p>Semaphore实现的功能就类似厕所有5个坑，假如有10个人要上厕所，那么同时只能有多少个人去上厕所呢？同时只能有5个人能够占用，当5个人中 的任何一个人让开后，其中等待的另外5个人中又有一个人可以占用了。另外等待的5个人中可以是随机获得优先机会，也可以是按照先来后到的顺序获得机会，这取决于构造Semaphore对象时传入的参数选项。单个信号量的Semaphore对象可以实现互斥锁的功能，并且可以是由一个线程获得了“锁”，再由另一个线程释放“锁”，这可应用于死锁恢复的一些场合。</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class Pool&lt;T&gt; {
+<pre class='line-numbers language-java'><code class='language-java'>public class Pool&lt;T&gt; {
     private int size;
     private List&lt;T&gt; items = new ArrayList&lt;T&gt;();
     private volatile boolean[] checkedOut; //跟踪被签出的对象
@@ -389,7 +389,7 @@ exec.execute(new Consumer(queue));</code></pre>
 
 <p>示例代码如下和运行结果如下：</p>
 
-<pre class='line-numbers language-java'><code class='line-numbers language-java'>public class ExchangerTest {
+<pre class='line-numbers language-java'><code class='language-java'>public class ExchangerTest {
     public static void main(String[] args) {
         ExecutorService service = Executors.newCachedThreadPool();
         final Exchanger&lt;String&gt; exchanger = new Exchanger&lt;String&gt;();
