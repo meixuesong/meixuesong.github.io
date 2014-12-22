@@ -29,10 +29,10 @@ module BacktickCodeBlock
         #mxs comment code = tableize_code(str.gsub('<','&lt;').gsub('>','&gt;'))
         #mxs comment "<figure class='code'>#{@caption}#{code}</figure>"
         mxscode = str.gsub('<','&lt;').gsub('>','&gt;')
-        "<pre  class='line-numbers language-'><code class='line-numbers language-'>#{mxscode}</code></pre>" 
+        "<pre  class='line-numbers language-bash'><code class='language-bash'>#{mxscode}</code></pre>" 
       else
         mxscode = str.gsub('<','&lt;').gsub('>','&gt;')
-        "<pre class='line-numbers language-#{@lang}'><code class='line-numbers language-#{@lang}'>#{mxscode}</code></pre>" 
+        "<pre class='line-numbers language-#{@lang}'><code class='language-#{@lang}'>#{mxscode}</code></pre>" 
 # mxs comment        
 #        if @lang.include? "-raw"
 #          raw = "``` #{@options.sub('-raw', '')}\n"

@@ -27,7 +27,7 @@ pandoc --version
 
 现在就可以开始准备生成EPUB电子书了。需要先定义这本书的标题等信息，以及书中包括哪些博客。这些信息都保存在manifest.yml中，这是一个YAML格式的文件。分两部分说明这个文件的内容，我们先看第一部分：文件的定义。
 
-```yaml
+```
 title: meixuesong blog
 author: Jason Mei
 date: October 2014
@@ -112,4 +112,4 @@ Amazon提供了一个工具包[KindleGen](http://www.amazon.com/gp/feature.html?
 ```
 分别在原生Kindle和多看系统下查看这个mobi电子书，整体效果还是不错的，但是相比EPUB来说，还是差了那么一点点。例如h1到h3的标题下方空白的内容太多，也就是CSS中的margin-bottom值太大，但不论怎么修改，Mobi格式的显示效果好像都没有变化。最后还是选择继续使用多看系统，阅读EPUB格式的电子书。
 
-
+【Update,2014-12-21】现在使用[RSS2EPUB](http://rss2epub.appspot.com/)已经可以直接生成Epub或Kindle电子书了。
