@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="1. 什么是垃圾 Java并没有使用引用计数法来识别对象是否为垃圾，而是采用可达性分析（Reachability Analysis）判断对象是否存活。其基本思路就是通过GC Roots对象为起点，搜索其引用链，只要是通过它们可达的对象就是活对象。GC Roots对象包括以下几种： 虚拟机栈（ &hellip;">
+  <meta name="description" content="在理解Java性能调优中，了解了Java的内存管理和垃圾收集。本文再深入学习垃圾收集算法和HotSpot中垃圾收集的实现。 1. 什么是垃圾 Java并没有使用引用计数法来识别对象是否为垃圾，而是采用可达性分析（Reachability Analysis）判断对象是否存活。其基本思路就是通过GC &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -112,7 +112,9 @@ var _hmt = _hmt || [];
   </header>
 
 
-<div class="entry-content"><!--more-->
+<div class="entry-content"><p>在<a href="/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">理解Java性能调优</a>中，了解了Java的内存管理和垃圾收集。本文再深入学习垃圾收集算法和HotSpot中垃圾收集的实现。</p>
+
+<!--more-->
 
 
 <h2>1. 什么是垃圾</h2>

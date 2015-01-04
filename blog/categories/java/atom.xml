@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-01-04T21:14:36+08:00</updated>
+  <updated>2015-01-04T21:26:32+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -18,7 +18,9 @@
     <link href="http://blog.ubone.com/blog/2014/12/26/la-ji-shou-ji-qi-yu-nei-cun-fen-pei-ce-lue/"/>
     <updated>2014-12-26T20:20:12+08:00</updated>
     <id>http://blog.ubone.com/blog/2014/12/26/la-ji-shou-ji-qi-yu-nei-cun-fen-pei-ce-lue</id>
-    <content type="html"><![CDATA[<!--more-->
+    <content type="html"><![CDATA[<p>在<a href="/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">理解Java性能调优</a>中，了解了Java的内存管理和垃圾收集。本文再深入学习垃圾收集算法和HotSpot中垃圾收集的实现。</p>
+
+<!--more-->
 
 
 <h2>1. 什么是垃圾</h2>
