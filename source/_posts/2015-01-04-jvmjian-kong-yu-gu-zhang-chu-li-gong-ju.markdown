@@ -56,12 +56,11 @@ categories:
 
 ### 2.2 [VisualVM](http://visualvm.java.net/)，多合一故障处理工具
 
-VisualVM Is Designed For You
->**Application Developer**: Monitor, profile, take thread dumps, browse heap dumps
+VisualVM Is Designed For You:
 
->**System Administrator**: Monitor and control Java applications across the entire network
-
->**Java Application User**: Create bug reports containing all the necessary information
+* **Application Developer**: Monitor, profile, take thread dumps, browse heap dumps
+* **System Administrator**: Monitor and control Java applications across the entire network
+* **Java Application User**: Create bug reports containing all the necessary information
 
 在命令行执行`jvisualvm`即可
 
