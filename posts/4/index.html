@@ -9,7 +9,14 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="这是一篇《程序员的数学》读书笔记。这本书没有讲高深的数学理论，而是用浅显易懂的道理推导出一些数学知识。整本书浅显易懂，学不了太多东西，但对启发数学思维有一点用处。 ">
+  <meta name="description" content="Effective Java 通用程序设计，读书笔记： 只对异常情况才使用异常
+对可恢复的情况使用受检异常，对编程错误使用运行时异常
+避免不必要地使用受检的异常
+优先使用标准的异常
+抛出与抽象相对应的异常
+每个方法抛出的异常都要有文档
+在细节消息中包含能捕获失败的消息
+努力使失败保持原子性 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +90,63 @@ var _hmt = _hmt || [];
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/28/effective-java-yi-chang/">Effective Java - 异常</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-28T23:15:18+08:00" pubdate data-updated="true">2014-08-28</time>
+        
+           | <a href="/blog/2014/08/28/effective-java-yi-chang/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/28/effective-java-yi-chang/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Effective Java 通用程序设计，读书笔记：</p>
+
+<ol>
+<li>只对异常情况才使用异常</li>
+<li>对可恢复的情况使用受检异常，对编程错误使用运行时异常</li>
+<li>避免不必要地使用受检的异常</li>
+<li>优先使用标准的异常</li>
+<li>抛出与抽象相对应的异常</li>
+<li>每个方法抛出的异常都要有文档</li>
+<li>在细节消息中包含能捕获失败的消息</li>
+<li>努力使失败保持原子性</li>
+<li>不要忽略异常</li>
+</ol>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/28/effective-java-yi-chang/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -520,52 +584,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/10/she-ji-mo-shi-die-dai-zi-mo-shi/">设计模式:迭代子模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-10T12:18:42+08:00" pubdate data-updated="true">2014-08-10</time>
-        
-           | <a href="/blog/2014/08/10/she-ji-mo-shi-die-dai-zi-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/10/she-ji-mo-shi-die-dai-zi-mo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>迭代子模式是最常见的几个设计模式之一，Java Collection广泛使用迭代子来遍历其元素。之所以需要迭代子模式，是因为它将迭代逻辑与聚集对象分离，两者可以自由演变。其结构示意图如下：</p>
-
-<p><img src="/myresource/images/image_blog_20140810_163841.jpg" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/08/10/she-ji-mo-shi-die-dai-zi-mo-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/5">&larr; Older</a>
@@ -587,10 +605,14 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (24)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (25)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/26/la-ji-shou-ji-qi-yu-nei-cun-fen-pei-ce-lue/">Java垃圾收集与内存分配</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/12/20/%5B%3F%5D-ci-jie-jue-tomcatqi-dong-guo-man-de-jing-li/">SecureRandom导致Tomcat启动过慢</a>
@@ -608,10 +630,6 @@ var _hmt = _hmt || [];
         <a href="/blog/2014/12/04/lei-wen-jian-yu-zi-jie-ma/">类文件与字节码</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2014/12/01/javabing-fa-bian-cheng-si/">Java并发编程(四)</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -625,7 +643,7 @@ var _hmt = _hmt || [];
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - 梅雪松 -
+  Copyright &copy; 2015 - 梅雪松 -
   <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
 </p>
 </footer>

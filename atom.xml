@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2014-12-22T20:40:05+08:00</updated>
+  <updated>2015-01-04T21:14:36+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,172 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Java垃圾收集与内存分配]]></title>
+    <link href="http://blog.ubone.com/blog/2014/12/26/la-ji-shou-ji-qi-yu-nei-cun-fen-pei-ce-lue/"/>
+    <updated>2014-12-26T20:20:12+08:00</updated>
+    <id>http://blog.ubone.com/blog/2014/12/26/la-ji-shou-ji-qi-yu-nei-cun-fen-pei-ce-lue</id>
+    <content type="html"><![CDATA[<!--more-->
+
+
+<h2>1. 什么是垃圾</h2>
+
+<p>Java并没有使用引用计数法来识别对象是否为垃圾，而是采用可达性分析（Reachability Analysis）判断对象是否存活。其基本思路就是通过GC Roots对象为起点，搜索其引用链，只要是通过它们可达的对象就是活对象。GC Roots对象包括以下几种：</p>
+
+<ul>
+<li>虚拟机栈（栈帧中的本地变量表）中引用的对象</li>
+<li>方法区中类静态属性引用的对象</li>
+<li>方法区中常量引用的对象</li>
+<li>本地方法栈中JNI(即Native方法)引用的对象</li>
+</ul>
+
+
+<p>而Java的引用又分为多种类型，对象是否存活也与引用类型有关：</p>
+
+<ul>
+<li>强引用：普通引用都是强引用，只要强引用还存在，对象就不会被回收。</li>
+<li>软引用：SoftReference关联的对象是还有用，但不是必须的对象。在系统将要发生内存溢出异常之前，会把这些对象列入回收范围进行第二次回收。</li>
+<li>弱引用：WeakReference与SoftReference更弱，它关联的对象只能生成到下一次垃圾收集发生之前（无论内存是否足够，都会被回收）。</li>
+<li>虚引用：PhantomReference是最弱的一种引用，对生存时间完全没有影响，也无法通过虚引用来取得一个对象实例。其唯一目的就是在回收时收到一个系统通知。</li>
+</ul>
+
+
+<p>真正宣告一个对象的死亡，要经历至少两次标记过程。当扫描发现对象与GC Roots没有引用链，将进行第一次标记，并判断对象是否有必要执行finalize()方法（如果对象没有覆盖该方法，或者方法已经被调用过，视为没有必要执行）。如果有必要执行finalize()方法，虚拟机将该对象放入F-Queue队列，稍后自动由低优先级的Finalizer线程执行该方法。之后GC还会对F-Queue中的对象进行第二次标记，如果对象在finalize()方法中重新建立了一个有效引用，就会被移除出“即将回收”的集合，逃脱回收。</p>
+
+<p>但注意finalize()方法是没有保障的，JVM只会触发它执行，并不保证它会运行结束。试想如果finalize()方法中有死循环，会造成整个内存回收系统崩溃。所以正如<a href="http://blog.ubone.com/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">Effective Java-创建和销毁对象</a>中提到的，你就当Java没有finalize()方法吧!</p>
+
+<p>方法区（通常所指的永久代）也是<strong>可以（非必须）</strong>垃圾收集的。主要回收废弃常量和无用的类。对于常量，例如“abc”已经进入常量池，但当前没有任何一个String对象是“abc”，那么这个常量可能会被清理出去。如何判断无用的类则要苛刻许多，需要同时满足以下条件：</p>
+
+<ul>
+<li>该类所有的实例都已经被回收，即Java堆中不存在该类的任何实例。</li>
+<li>加载该类的ClassLoader已经被回收</li>
+<li>该类对应的java.lang.Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。</li>
+</ul>
+
+
+<p>方法区的对象仅仅是可以回收，并不是必然会回收。在大量使用反射、动态代理、CGLib等字节码框架、动态JSP和OSGi这类频繁自定义ClassLoader场景下，虚拟机需要具备类卸载的功能。</p>
+
+<p>HotSpot提供了参数<code>-Xnoclassgc</code>参数控制方法区回收。在Product版JVM中还可以使用<code>-verbose:class</code>和<code>-XX:+TraceClassLoading</code>查看类加载信息。FastDebug版的JVM还支持<code>-XX:+TraceClassUnLoading</code>查看卸载信息。</p>
+
+<h2>2. 垃圾收集算法</h2>
+
+<p>各平台的虚拟机操作内存的方法各不相同，常见的垃圾收集算法说明如下：</p>
+
+<h3>2.1 常见的垃圾收集算法</h3>
+
+<h4>标记-清除算法(Mark-Sweep)</h4>
+
+<p>这是最基础的收集算法，分为标记和清除两个阶段。首先标记出所有需要回收的对象，标记完成后统一回收所有被标记的对象。它有两个主要问题：一是效率不高，另一个是空间问题，会产生大量不连续的内存碎片。</p>
+
+<h4>复制算法(Copying)</h4>
+
+<p>复制算法的思路是将内存分为大小相等的两块，每次只使用其中一块，永远有一块是空的。当一块用完了，就将存活对象复制到另一块上，把前者内存空间一次清理掉。</p>
+
+<p>复制算法特别适合那些短命的对象，现代虚拟机都采用这个算法来回收新生代。将内存分为较大的Eden区和两个较小的Survivor，每次使用Eden和其中一个Survivor。回收时，将Eden和Survivor存活的对象复制到另一个Survivor，最后清理掉Eden和前一个Survivor空间。HotSpot默认的Eden和Survivor比例是8：1. 如果另一个Survivor空间不足以放下存活对象，那些经历多少GC仍存活的对象会被放入老年代。</p>
+
+<h4>标记-整理算法（Mark-Compact）</h4>
+
+<p>对于长命的对象，复制算法的效率就变得太低。标记-整理算法就适合老年代。其思路是标记后，将活对象向一端移动，然后清理掉边界以外的内存。</p>
+
+<h4>分代收集算法(Generational Collection)</h4>
+
+<p>这个算法没有特殊之处，就是将堆分为新生代和老年代，然后根据各年代的特点选择最适当的算法。在新生代使用复制算法，在老年代使用“标记-清理”或者“标记-整理”算法。</p>
+
+<h3>2.2 HotSpot的算法实现</h3>
+
+<p>结合前面的垃圾收集算法，看看HotSpot是如何实现的。</p>
+
+<h4>2.2.1 枚举GC Roots</h4>
+
+<p>前面说到GC Roots主要是在全局性的引用和执行上下文（如栈帧中的本地变量表）中，但HotSpot并不需要逐个检查这里面的引用，因为这样的效率太低了。</p>
+
+<p>HotSpot使用一组称为OopMap的数据结构，在类加载完成时，就把对象内各偏移量上是什么类型的数据计算出来了，因此GC扫描时，可以直接得到这些信息，并准确判断堆上的数据是否还可能被使用。</p>
+
+<h4>2.2.2 安全点</h4>
+
+<p>当GC时，线程会停在安全点，常见的安全点包括方法调用、循环跳转、异常跳转等。如何让线程停在安全点，有两种方案：抢先式中断和主动式中断。抢先式指中断所有线程，如果发现某个线程不在安全点，则恢复线程让它跑到安全点。但几乎所有虚拟机都没有采用这个方法。</p>
+
+<p>主动式中断的思路是GC需要中断线程时，设置一个标志，各线程执行时会在安全点和创建对象需要分配内存的地方轮询这个标志，如果为真就把自己挂起。</p>
+
+<p>对于那些处于Sleep或Blocked状态的线程，无法跑到安全点，则需要安全区域来解决。安全区域中任何地方GC都是安全的。当线程执行到安全区域中的代码时，先标识自己已经进入安全区，这时GC就不管这些线程了。当线程要离开安全区时，它要检查系统是否已经完成了根节点枚举或GC过程，如果完成则继续执行，否则继续等待直到收到可安全离开的信号。</p>
+
+<h4>2.2.3 垃圾收集器</h4>
+
+<p><a href="https://blogs.oracle.com/jonthecollector/entry/our_collectors">下图</a>展示了HotSpot用于不同年代的7种收集器，如果两个收集器间有连线，说明它们可以搭配使用。</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-12-26-Collectors.jpg" alt="image" /></p>
+
+<h5>Serial收集器</h5>
+
+<p>这是一个单线程的收集器，工作于年轻代，使用复制算法。当它工作时，会把所有用户线程全部停下来。它现在仍然是Client模式下的默认收集器。它比其他收集器简单但高效，没有了线程交互的开销。桌面应用由于分配的内存相对较少，收集时停顿时间可控制在几十到一百多毫秒，对桌面应用是可以接受的。</p>
+
+<h5>ParNew收集器</h5>
+
+<p>它其实就是Serial收集器的多线程版本，对于单核CPU的环境下，绝对不会比Serial更好。但它适合于在服务端模式时与CMS配合(CMS用于老年代，ParNew用于年轻代)。</p>
+
+<h5>Parallel Scavenge收集器</h5>
+
+<p>这是一个年轻代的收集器，使用复制算法，是并行的多线程收集器。</p>
+
+<ul>
+<li>并行(Parallel):指多条垃圾收集线程并行工作，但此时用户线程仍然处于等待状态。</li>
+<li>并发(Concurrent): 指用户线程与垃圾收集线程同时执行（但不一定是并行的，可能会交替执行）。</li>
+</ul>
+
+
+<p>Parallel Scavenge收集器与其它收集器不同，它的目标是达到一个可控制的吞吐量，即CPU用于运行用户代码的时间与CPU总消耗时间的比值。因此适合于不需要太多交互，主要是后台运算的场景。</p>
+
+<h5>Serial Old收集器</h5>
+
+<p>这是Serial收集器的老年代版本，同样是单线程收集器，使用“标记-整理”算法。其主要意义也是Client模式的虚拟机中使用。如果在Server模式下，主要是在JDK1.5及之前的版本中与Parallel Scavenge搭配使用，以及作为CMS的后备预案。</p>
+
+<h5>Parallel Old收集器</h5>
+
+<p>这是Parallel Scavenge收集器的老年代版本，使用多线程和“标记-整理”算法。从JDK1.6开始提供，主要用于与Parallel Scavenge搭配使用，作为“吞吐量优先”的组合。</p>
+
+<h5>CMS收集器(Concurrent Mark Sweep)</h5>
+
+<p>这是一种以获取最短回收停顿时间为目标的收集器。也是基于“标记-清除”算法实现，整个过程分为4步：</p>
+
+<ol>
+<li>初始标记：标记GC Roots能直接关联到的对象，时间很快。</li>
+<li>并发标记：进行GC Roots Tracing，时间很长。</li>
+<li>重新标记：修正并发标记期间因用户程序继续运行而导致标记发生变化的那一部分对象的标记记录，比第一步稍长。</li>
+<li>并发清除</li>
+</ol>
+
+
+<p>第1、3步需要Stop the World，而耗时最长的第2、4步可以与用户线程一起工作。</p>
+
+<p>CMS是非常优秀的垃圾收集器，是Java 5推荐的高性能收集器，在Java 6仍保持了旺盛的生命力。但它的主要缺点是：</p>
+
+<ol>
+<li>对CPU资源非常敏感。在并发标记阶段，虽然用户程序不用停顿，但CMS占用了一部分CPU资源而导致应用变慢，总吞吐量降低。</li>
+<li>无法处理浮动垃圾，可能出现“Concurrent Mode Failure”，导致另一次Full GC。浮动垃圾就是在并发清除阶段，用户线程还在运行并产生新的垃圾。CMS需要预留一部分内存空间给用户线程使用。如果预留的空间无法满足程序需要，就会出现“Concurrent Mode Failure”，导致JVM临时启用Serial Old收集器来重新进行老年代收集，停顿时间就很长了。</li>
+<li>由于使用“标记-清除”算法，因此会有碎片产生，有时不得不提前触发一次Full GC。</li>
+</ol>
+
+
+<h5>G1收集器</h5>
+
+<p>这是面向服务端应用的垃圾收集器，可用于替换CMS。具备如下特点：</p>
+
+<ol>
+<li>并行与并发：充分利用多CPU、多核优势，缩短Stop the world时间。</li>
+<li>分代收集：仍保留分代概念，可以独立管理整个GC堆。</li>
+<li>空间整合：G1整体上是基于“标记-清除”，但从局部看是基于“复制”算法，不会产生内存碎片。</li>
+<li>可预测的停顿：G1能建立可预测的停顿时间模型，可指定一个长度为M毫秒的时间片段，G1分将停顿时间尽量控制在该时间范围内。</li>
+</ol>
+
+
+<p>G1将整个堆划分为多个大小相等的独立区域（Region），虽然保留分代概念，但新生代和老年代不是物理隔离的，它们是一部分Region的集合（不需要连续）。</p>
+
+<p>它的实现方式是跟踪每个Region里面的垃圾堆积的价值大小（回收所获得的空间大小以及所需时间的经验值），维护一个优先列表，每次根据停顿目标值，回收价值最大的Region。保证在有限的时间内获得尽可能高的收集效率。</p>
+
+<p>每个Region都有一个对应的Remembered Set，用于记录跨Region的引用。因此进行内存回收时，只需要在GC Roots枚举范围内加入Remembered Set即可保证不对全堆扫描也不会有遗漏。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[SecureRandom导致Tomcat启动过慢]]></title>
@@ -5052,346 +5218,6 @@ public class DepthFirstPaths {
 <p>Q: 散列表的查找比红黑树更快吗？</p>
 
 <blockquote><p>取决于键的类型，也就是hashCode()的计算成本是否大于compareTo()的比较成本。但通常散列表会比红黑树快得多。但散列表无法高效支持有序性相关的操作。</p></blockquote>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[符号表]]></title>
-    <link href="http://blog.ubone.com/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao/"/>
-    <updated>2014-10-02T11:26:20+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/10/02/cha-zhao-suan-fa-fu-hao-biao</id>
-    <content type="html"><![CDATA[<p>符号表就是用键和值的方式来存储和检索数据。其关键点在于如何快速检索和高效插入。本章介绍了符号表的简单实现、二叉查找树、红黑树的实现。</p>
-
-<!--more-->
-
-
-<p>首先还是来定义一下简单的符号表API：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_20141002_170641.jpg" alt="image" /></p>
-
-<h2>1. API定义</h2>
-
-<p>符号表遵循以下规则：</p>
-
-<ul>
-<li>每个键只对应一个值；</li>
-<li>当存入的键值对和表中已有的键冲突时，新的值会替代旧的值；</li>
-<li>键不能为空；</li>
-<li>值不允许为空；</li>
-</ul>
-
-
-<p>在简单的符号表中，键的等价性由equals()方法保证。而很多典型应用中，键都是Comparable对象，因此有序符号表可以保持键的有序并扩展其API：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_20141002_170651.jpg" alt="image" /></p>
-
-<ul>
-<li>floor：向下取整，找出小于等于该键的最大键；</li>
-<li>ceiling：向上取整，找出大于等于该键的最小键；</li>
-<li>rank：小于key的键的数量；</li>
-<li>select：获得排名为第k的键。</li>
-</ul>
-
-
-<p>对于0到size()-1的所有i都有：i == rank(select(i))，且所有键都满足：key == select(rank(key))。</p>
-
-<h2>2. 实现</h2>
-
-<h3>2.1 无序链表的顺序查找</h3>
-
-<p>可以用链表来实现符号表，每个结点存储一个键值对，并保持一个链接指向下一个结点。这种方式非常简单，但是效率非常低。不论是get方法还是put方法，都需要从首节点开始一个一个地遍历。</p>
-
-<h3>2.2 有序数组中的二分查找</h3>
-
-<p>另一种实现方法是通过两个平行的数组来存储符号表。一个储存键，一个存储值。二分法可以用于保证数组中Comparable类型的键有序，并高效地实现get和其他操作(如select)。</p>
-
-<p>对N个键的有序数组进行二分查找最多需要（lgN + 1）次比较。然而put方法却仍然很慢，向大小为N的有序数组插入一个新的元素，在最坏的情况下需要访问约2N次数组。因此向一个空的符号表插入N个元素时，最坏的情况下需要访问约N<sup>2</sup>次数组。</p>
-
-<p>因此，我们需要一种结构，能够同时拥有二分法的查找效率和链表的插入效率。这就是二叉查找树。</p>
-
-<h3>2.3 二叉查找树(BST)</h3>
-
-<p>二叉查找树的定义：它是一棵二叉树，其中每个结点都含有一个Comparable的键以及相关联的值，每个结点的键都大于其左子树任意结点的键，同时小于右子树任意结点的键。</p>
-
-<h4>2.3.1 基本实现</h4>
-
-<p>如果将一棵二叉查找树的所有键投影到一条直线上，我们可以得到一条有序的键列，如下图所示：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-02_15.10.37.png" alt="image" /></p>
-
-<p>树结点的实现：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>private class Node {
-    private Key key;           // sorted by key
-    private Value val;         // associated data
-    private Node left, right;  // left and right subtrees
-    private int N;             // number of nodes in subtree
-
-    public Node(Key key, Value val, int N) {
-        this.key = key;
-        this.val = val;
-        this.N = N;
-    }
-}</code></pre>
-
-
-<h5>查找</h5>
-
-<p>可以使用递归算法在二叉查找树中查找一个键：如果树是空的，则查找未命中；如果被查找的键和根结点的键相等，查找命中；否则就（递归地）在某个子树中继续查找。如果被查找的键较小就选择左子树，较大则选择右子树。查找过程与二分查找一样简单，代码实现如下：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public Value get(Key key) {
-    return get(root, key);
-}
-
-private Value get(Node x, Key key) {
-    if (x == null) return null;
-    int cmp = key.compareTo(x.key);
-    if      (cmp &lt; 0) return get(x.left, key);
-    else if (cmp &gt; 0) return get(x.right, key);
-    else              return x.val;
-}</code></pre>
-
-
-<h5>插入</h5>
-
-<p>二叉查找树的插入实现难度和查找差不多。当查找到一个不存在于树中的结点并结束于一条空链接时，我们需要做的就是将链接指向一个含有被查找的键的新结点。代码实现如下：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public void put(Key key, Value val) {
-    if (val == null) { delete(key); return; }
-    root = put(root, key, val);
-}
-
-private Node put(Node x, Key key, Value val) {
-    if (x == null) return new Node(key, val, 1);
-    int cmp = key.compareTo(x.key);
-    if      (cmp &lt; 0) x.left  = put(x.left,  key, val);
-    else if (cmp &gt; 0) x.right = put(x.right, key, val);
-    else              x.val   = val;
-    x.N = 1 + size(x.left) + size(x.right);
-    return x;
-}</code></pre>
-
-
-<h5>分析</h5>
-
-<p>二叉查找树的算法效率取决于树的形状。在最好的情况下，树是完全平衡的，此时查找和插入的效率都非常高。</p>
-
-<p>但是，树的结构与结点插入的顺序是相关的。在最坏的情况下（例如升序队列中的元素按顺序插入）可能形成一条单边的树，就变成了链表的结构。这种不平衡的树完全失去了二分查找的效率。</p>
-
-<p>因此，如何保持树的平衡是一个重要问题。要在二叉树动态插入中保证树的完美平衡，代价太高了。因此需要对结构进行一些调整，这就是平衡查找树。</p>
-
-<h3>2.4 2-3查找树</h3>
-
-<p>所谓2-3查找树，是指它或者为一棵空树，或者由以下结点组成：</p>
-
-<ul>
-<li>2-结点，含有一个键（及其对应的值）和两条链接，左链接指向的树的所有键都小于该结点，右链接指向的树的所有键都大于该结点。</li>
-<li>3-结点，含有两个键（及其对应的值）和两条链接，左链接指向的树的所有键都小于该结点，中链接指向的树的所有键都位于该结点的两个键之间，右链接指向的树的所有键都大于该结点。</li>
-</ul>
-
-
-<p>利用2-3查找树，可以方便地实现完美平衡的查找树，2-3查找树示意图如下：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-02_17_49.png" alt="image" /></p>
-
-<h4>2.4.1 查找</h4>
-
-<p>查找的过程与二叉查找树类似，区别仅在于3-结点树多了一个中链接。</p>
-
-<h4>2.4.2 插入</h4>
-
-<p>2-3查找树实现平衡的关键是插入过程，插入时先进行查找，如果未命中，将根据结束位置的多种情况，采用不同的方法。详细说明如下：</p>
-
-<h5>向2-结点插入新键</h5>
-
-<p>如果查找结束于一个2-结点，只要把这个2-结点替换为一个3-结点，将要插入的键保存在其中即可。如下图所示：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-02_23tree-insert2.png" alt="image" /></p>
-
-<h5>向一棵只含有一个3-结点的树中插入新键</h5>
-
-<p>向3-结点的树中插入新键，也有多种情况，先看最简单的这种。如下图所示，先将3-结点变成4-结点，然后再分解为2-3树。</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-02_23tree-insert3a.png" alt="image" /></p>
-
-<h5>向一个父结点为2-结点的3-结点插入新键</h5>
-
-<p>如果父结点为2-结点，则先把3-结点变成4-结点，然后将2-结点变成3-结点，如下图所示：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-02_23tree-insert3b.png" alt="image" /></p>
-
-<h5>向一个父结点为3-结点的3-结点插入新键</h5>
-
-<p>跟前一步一样，先变成4-结点并分解它，然后再将它的中键插入它的父结点中。但其父结点也是3-结点，因此再用这个中键构造一个临时的4-结点，进行相同的变化，直到遇到一个2-结点将它变成3-结点。如果一直到根结点都是3-结点，则需要分解根结点。插入新键的过程如下图所示：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10_02_23tree-insert3c.png" alt="image" /></p>
-
-<h5>分解根结点</h5>
-
-<p>在上一步中，根结点变成了一个临时的4-结点，此时我们按照向一棵只有一个3-结点的树中插入新键的方法处理此问题。将4-结点分解成3个2-结点，树高加1。如下图所示：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-02_23tree-split.png" alt="image" /></p>
-
-<h4>2.4.3 性能分析</h4>
-
-<p>从上面这些情况可以看出，插入过程都是进行局部变换，除了相关的结点和链接之外不必修改或检查树的其他部分，因此效率非常高。经过变换后，保持了树的有序性和平衡性。因此在一棵大小为N的2-3树中，查找和插入操作访问的结点必然不超过lgN个！例如含有10亿个结点的一棵2-3树的高度仅在19-30之间，最多只需要访问30个结点就能够在10亿个键中进行任意查找和插入操作，这是多么惊人！这也是<a href="http://blog.ubone.com/blog/2014/08/25/cheng-xu-yuan-de-shu-zi/">程序员的数学</a>中提到的利用指数爆炸解决问题。</p>
-
-<h3>2.5 红黑二叉查找树</h3>
-
-<p>2-3查找树很容易理解，现在我们通过红黑二叉树来表达并实现它。其关键是3-结点如何实现。我们将树中的链接分为两种类型：红链接将两个2-结点连接起来构成一个3-结点，黑链接则是普通链接。如下图所示：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-02_redblack-encoding.png" alt="image" /></p>
-
-<p>红黑树是含有红黑链接并满足以下条件的二叉查找树：</p>
-
-<ul>
-<li>红链接均为左链接；</li>
-<li>没有任何一个结点同时和两条红链接相连；</li>
-<li>该树是完美黑色平衡的，即任意空链接到根结点的路径上的黑链接数量相同。</li>
-</ul>
-
-
-<p>因此在节点类（Node）中，增加一个属性color表示从父结点指向自己的链接是否为红链接：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>private class Node {
-    private Key key;           // sorted by key
-    private Value val;         // associated data
-    private Node left, right;  // left and right subtrees
-    private int N;             // number of nodes in subtree
-    boolean color;             //是否红链接    
-
-    public Node(Key key, Value val, int N, boolean color) {
-        this.key = key;
-        this.val = val;
-        this.N = N;
-        this.color = color;
-    }
-}</code></pre>
-
-
-<p>在进一步实现红黑树之前，要了解几个基本的动作：左旋转、右旋转和颜色转换。</p>
-
-<h4>2.5.1 旋转</h4>
-
-<p>左旋转是将一条红色的右链接转化为左链接。转换的过程为：将两个键中的较小者作为根结点变为将较大者作为根结点。如下图所示：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-02_redblack-left-rotate.png" alt="image" /></p>
-
-<p>右旋转是将一条红色的左链接转化为右链接，实现过程与左旋转相似，只需要将left和right互换即可：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-02_redblack-right-rotate.png" alt="image" /></p>
-
-<h4>2.5.2 颜色转换</h4>
-
-<p>颜色转换是对一个结点的两个红色子结点的颜色进行转换。除了将子结点的颜色由红变黑外，还要同时将父结点的颜色由黑变红。如下图所示：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-02_color-flip.png" alt="image" /></p>
-
-<h4>2.5.3 插入处理过程</h4>
-
-<p>插入新键时，都使用红链接与父结点相连，然后谨慎地使用左旋转、右旋转和颜色转换这三个简单的操作，就能够保证操作后的红黑树与2-3树一一对应的关系。在沿着插入点到根结点的路径向上移动时在所经过的每个结点中顺序完成以下操作，我们就能完成插入操作：</p>
-
-<ol>
-<li>如果右子结点是红色，而左子结点是黑色，进行左旋转；</li>
-<li>如果左子结点是红色，且它的左子结点也是红色，进行右旋转；</li>
-<li>如果左右子结点都是红色，进行颜色转换。</li>
-</ol>
-
-
-<p>下面是各种情况的示例：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/IMG_20141002_222628.jpg" alt="image" /></p>
-
-<p><img src="http://blog.ubone.com/myresource/images/IMG_20141002_222714.jpg" alt="image" /></p>
-
-<h4>2.5.4 插入算法的实现</h4>
-
-<p>以下为红黑树的插入算法：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
-
-    private static final boolean RED   = true;
-    private static final boolean BLACK = false;
-
-    private Node root;     // root of the BST
-
-    // BST helper node data type
-    private class Node {
-        private Key key;           // key
-        private Value val;         // associated data
-        private Node left, right;  // links to left and right subtrees
-        private boolean color;     // color of parent link
-        private int N;             // subtree count
-
-        public Node(Key key, Value val, boolean color, int N) {
-            this.key = key;
-            this.val = val;
-            this.color = color;
-            this.N = N;
-        }
-    }
-
-    // insert the key-value pair; overwrite the old value with the new value
-    // if the key is already present
-    public void put(Key key, Value val) {
-        root = put(root, key, val);
-        root.color = BLACK;
-    }
-
-    // insert the key-value pair in the subtree rooted at h
-    private Node put(Node h, Key key, Value val) { 
-        if (h == null) return new Node(key, val, RED, 1);
-
-        int cmp = key.compareTo(h.key);
-        if      (cmp &lt; 0) h.left  = put(h.left,  key, val); 
-        else if (cmp &gt; 0) h.right = put(h.right, key, val); 
-        else              h.val   = val;
-
-        // fix-up any right-leaning links
-        if (isRed(h.right) && !isRed(h.left))      h = rotateLeft(h);
-        if (isRed(h.left)  &&  isRed(h.left.left)) h = rotateRight(h);
-        if (isRed(h.left)  &&  isRed(h.right))     flipColors(h);
-        h.N = size(h.left) + size(h.right) + 1;
-
-        return h;
-    }
-}</code></pre>
-
-
-<h4>2.5.5 删除操作</h4>
-
-<h5>删除最小键</h5>
-
-<p>先来看删除最小键。从树底部的3-结点删除键很简单，但2-结点则不然。为了保证我们不会删除一个2-结点，我们沿着左链接向下进行变换，确保当前结点不是2-结点。在沿着左链接向下的过程中，保证以下情况之一成立：</p>
-
-<ul>
-<li>如果当前结点的左子结点不是2-结点，完成；</li>
-<li>如果当前结点的左子结点是2-结点而它的亲兄弟结点不是2-结点，将左子结点的兄弟结点中的一个键移到左子结点；</li>
-<li>如果当前结点的左子结点和它的亲兄弟结点都是2-结点，将左子结点、父结点中的最小键和左子结点最近的兄弟结点合并为一个4-结点，使父结点由3-结点变为2-结点或者4-结点变为3-结点。</li>
-</ul>
-
-
-<p>在遍历的过程中执行这个过程，最后能够得到一个含有最小键的3-结点或者4-结点，然后我们就可以直接从中将其删除，将3-结点变为2-结点，或者将4-结点变为3-结点。然后我们再回头向上分解所有临时的4-结点。</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/IMG_20141002_232607.jpg" alt="image" /></p>
-
-<h5>删除操作</h5>
-
-<p>在查找路径上进行和删除最小键相同的变换同样可以保证在查找过程中任意当前结点均不是2-结点。如果被查找的键在树的底部，我们可以直接删除它。如果不在，我们需要将它和它的后续结点交换，就和二叉查找树一样。因为当前结点必然不是2-结点，问题已经转化为在一棵根结点不是2-结点的子树中删除最小键，我们可以在这棵子树中使用上面的算法。删除之后，同样需要向上回溯并分解余下的4-结点。</p>
-
-<p><a href="http://blog.ubone.com/myresource/code/RedBlackBST.java">红黑树完整代码</a></p>
-
-<h4>2.5.6 红黑树的性能</h4>
-
-<p>一棵大小为N的红黑树的高度不会超过2lgN，根结点到任意结点的平均路径长度为1.00lgN，以下操作在最坏的情况下所需的时间是对数级别的：get, put, min, max, floor, ceiling, rank, select, deleteMin, deleteMax, delete, range。</p>
-
-<h2>总结</h2>
-
-<p>各种符号表实现的性能总结：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/IMG_20141002_233353.jpg" alt="image" /></p>
-
-<p>在信息世界的汪洋大海中，表的大小可能是上千亿，但我们仍然能够确保在几十次比较之内就完成这些操作！</p>
 ]]></content>
   </entry>
   
