@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-01-04T21:26:32+08:00</updated>
+  <updated>2015-01-04T22:14:28+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,118 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[JVM监控与故障处理工具]]></title>
+    <link href="http://blog.ubone.com/blog/2015/01/04/jvmjian-kong-yu-gu-zhang-chu-li-gong-ju/"/>
+    <updated>2015-01-04T21:42:42+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/01/04/jvmjian-kong-yu-gu-zhang-chu-li-gong-ju</id>
+    <content type="html"><![CDATA[<p>本文介绍常用的Java虚拟机性能监控与故障处理工具。</p>
+
+<!--more-->
+
+
+<h2>1. JDK命令行工具</h2>
+
+<h3>1.1 <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jps.html">jps</a></h3>
+
+<p>与Unix下的ps命令相似，可以列出正在运行的虚拟机进程并显示主类（main()函数所在类）类名以及LVMID(Local Virtual Machine Identifier)。LVMID与PID是一致的。命令格式：</p>
+
+<p><code>jps [options] [hostid]</code></p>
+
+<table>
+<thead>
+<tr>
+<th>选项 </th>
+<th> 用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-q </td>
+<td> 只输出LVMID</td>
+</tr>
+<tr>
+<td>-m </td>
+<td> 输出JVM启动时传递给主类main()函数的参数</td>
+</tr>
+<tr>
+<td>-l </td>
+<td> 输出主类全名</td>
+</tr>
+<tr>
+<td>-v </td>
+<td> 输出JVM启动时的JVM参数</td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>1.2 <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jstat.html">jstat</a>，虚拟机统计信息监视工具</h3>
+
+<p>在<a href="http://blog.ubone.com/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">理解Java性能调优</a>中已经有描述。</p>
+
+<h3>1.3 <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jinfo.html">jinfo</a>, Java配置信息工具</h3>
+
+<p>用于实时查看和调整虚拟机各项参数。</p>
+
+<h3>1.4 <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jmap.html">jmap</a>, Java内存映像工具</h3>
+
+<p>在<a href="http://blog.ubone.com/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">理解Java性能调优</a>中已经有描述。</p>
+
+<h3>1.5 <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jhat.html">jhat</a>， 堆转储快照分析工具</h3>
+
+<p>用于分析堆转储快照，内置一个微型HTTP服务器，分析结果后可在浏览器中查看。但这个工具并不常用。</p>
+
+<h3>1.6 <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jstack.html">jstack</a>, Java堆栈跟踪工具</h3>
+
+<p>用于生成虚拟机当前时刻的线程快照（threaddump），即当前每一条线程正在执行的方法堆栈集合。主要目的是定位线程出现长时间停顿的原因，如死锁、死循环、请求外部资源等。</p>
+
+<p>当线程出现停顿时，通过jstack查看各线程的调用堆栈，就可以知道没有响应的线程到底在后台做什么。</p>
+
+<table>
+<thead>
+<tr>
+<th>选项 </th>
+<th> 用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-F </td>
+<td> 当正常输出的请求不被响应时，强制输出线程堆栈</td>
+</tr>
+<tr>
+<td>-l </td>
+<td> 除堆栈外，显示关于锁的附加信息</td>
+</tr>
+<tr>
+<td>-m </td>
+<td> 如果调用本地方法的话，显示C/C++堆栈</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>2. JDK的可视化工具</h2>
+
+<h3>2.1 JConsole</h3>
+
+<p>基于JMX的可视化监视、管理工具。直接通过集令后运行jconsol。</p>
+
+<h3>2.2 <a href="http://visualvm.java.net/">VisualVM</a>，多合一故障处理工具</h3>
+
+<p>VisualVM Is Designed For You</p>
+
+<blockquote><p><strong>Application Developer</strong>: Monitor, profile, take thread dumps, browse heap dumps</p>
+
+<p><strong>System Administrator</strong>: Monitor and control Java applications across the entire network</p>
+
+<p><strong>Java Application User</strong>: Create bug reports containing all the necessary information</p></blockquote>
+
+<p>在命令行执行<code>jvisualvm</code>即可</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Java垃圾收集与内存分配]]></title>
@@ -5115,111 +5227,6 @@ public class DepthFirstPaths {
 
 
 <p>参考：<a href="http://algs4.cs.princeton.edu/41undirected/">http://algs4.cs.princeton.edu/41undirected/</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[散列表(HashTable)]]></title>
-    <link href="http://blog.ubone.com/blog/2014/10/03/san-lie-biao/"/>
-    <updated>2014-10-03T10:03:40+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/10/03/san-lie-biao</id>
-    <content type="html"><![CDATA[<p>散列表也是一种符号表，它通过算法将键转化为数组的索引来访问数组中的键值对。散列表查找的第一步是用散列函数将被查找的键转化为一数组索引，第二步是处理碰撞冲突。解决碰撞冲突的方法有拉链法和线性探测法。</p>
-
-<!--more-->
-
-
-<h2>1. 散列函数</h2>
-
-<p>散列函数用于将键转化为数组的索引，它应该易于计算并且能够均匀分布所有的键。散列函数和键的类型有关，对于每种类型的键都需要一个与之对应的散列函数。</p>
-
-<p>Java对正整数采用除留余数法计算散列值。选择大小为素数M的数组，对于任意正整数k，计算余数：<code>k%M</code>，能够有效地将键散布在0到M-1的范围内。素数又称为质数，是一个大于1的自然数，除了1和它本身外，不能被其他自然数整除（除0以外）的数。Java对浮点数会将键表示为二进制数然后再使用除留余数法。对字符串采用类似Homer方法，用N次乘法、加法和取余来计算散列值。</p>
-
-<p>对Java程序，<code>hashCode()</code>和<code>equals()</code>方法必须一致。如果<code>equals()</code>返回<code>true</code>那么<code>hashCode()</code>返回值必须一致，反过来则可以不同。</p>
-
-<h2>2. 基于拉链法的散列表</h2>
-
-<p>当<code>hashCode()</code>返回值相同，但<code>equals()</code>为false时，就发生了碰撞。解决碰撞的一种方法是拉链法。拉链法是指数组中的每个元素都指向一个链表，链表中的每个结点都存储了散列值为该元素的索引的键值对。因此这样的散列表由数组+链表构成。查找时先根据散列值找到对应的链表，然后沿着链表顺序查找相应的键。</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-03_separate-chaining.png" alt="image" /></p>
-
-<p>可以看出，散列表的查找性能与散列表的大小有很大关系，对N个元素来说，当散列表的大小M过小时，碰撞机率就会增加，链表的长度必然增加，从而降低了查找效率。因此在内存不紧张时，可以选择一个足够大的M，内存紧张时，选择尽量大的M。另一种方法是动态调整数据的大小以保持短小的链表。</p>
-
-<p>执行删除操作时，先用散列值找到索引及对应的链表，然后调用链表的删除方法即可。</p>
-
-<p>对于有序性相关的符号表操作，散列表都不是合适的选择，因为这些操作的运行时间都是线性的。</p>
-
-<p>Java的TreeMap和HashMap分别是基于红黑树和拉链法的散列表的符号表实现。</p>
-
-<h2>3. 基于线性探测法的散列表</h2>
-
-<p>实现散列表的另一种方式是用大小为M的数组保存N个键值对，其中M>N。依靠数据中的空位解决碰撞冲突。基于这种策略的所有方法都统称为开放地址散列表。其中最简单的方法叫做线性探测法：当碰撞发生时，直接检查散列表的下一个位置（索引加1），可能产生三种结果：</p>
-
-<ul>
-<li>命中，该位置的键和被查找的键相同；</li>
-<li>未命中，键为空（该位置没有键）；</li>
-<li>继续查找，该位置的键和被查找的键不同。</li>
-</ul>
-
-
-<p>其核心思想是与其将内存用作链表，不如将它们作为散列表的空元素。即用散列函数找到索引，检查其中的键和被查找的键是否相同。如果不同则继续查找（增加索引，到达数组结尾后再折回数组开头），直到找到该键或者遇到一个空元素。过程如下图所示：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-03_linear-probing.png" alt="image" /></p>
-
-<p>在基于线性探测法的散列表中执行删除操作比较复杂，如果将该键所在位置为为null是不行的。需要将簇中被删除键的右侧的所有键重新插入散列表。</p>
-
-<p>这种散列表的性能也依赖于N/M，但在这里表示散列表的利用率。如果利用率达到1，即散列表满了，会造成未命中的查找无限循环。为了保证性能，要动态调整数组的大小来保证利用率在1/8到1/2之间。</p>
-
-<h2>4. 数组的大小和内存使用</h2>
-
-<p>对于线性探测法，调整数组的大小是必需的。对于拉链法，如果你能准确估计所需的散列表大小N，调整数据的工作不是必需的，只需要根据查找耗时和<code>(1+N/M)</code>成正比来选取一个适当的M即可。</p>
-
-<p>符号表的内存使用：</p>
-
-<table>
-<thead>
-<tr>
-<th>方法 </th>
-<th> N个元素所需的内存（引用类型）</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>基于拉链法的散列表 </td>
-<td> ~48N + 32M</td>
-</tr>
-<tr>
-<td>基于线性探测的散列表 </td>
-<td> 在~32N和~128N之间</td>
-</tr>
-<tr>
-<td>各种二叉查找树 </td>
-<td> ~56N</td>
-</tr>
-</tbody>
-</table>
-
-
-<h2>Q&amp;A</h2>
-
-<p>Q: Java的Integer, Double和Long类型的hashCode()是如何实现的？</p>
-
-<blockquote><p>Integer类型直接返回该整数的32位值。对Double和Long返回机器表示的前32位和后32位异或的结果。</p></blockquote>
-
-<p>Q: 为什么不将<code>hash(x)</code>实现为<code>x.hashCode() % M</code>?</p>
-
-<blockquote><p>Java中，取余的结果可能是负数。</p></blockquote>
-
-<p>Q: 为什么不将<code>hash(x)</code>实现为<code>Math.abs(x.hashCode()) % M</code>?</p>
-
-<blockquote><p>对于最大的整数<code>Math.abs()</code>会返回一个负值，这种溢出可能使程序崩溃。</p></blockquote>
-
-<p>Q: 在拉链法中，链表是否可以使用二叉查找树或者红黑树？</p>
-
-<blockquote><p>一般来说，散列表碰撞机率越少越好，因此链表越短越好。所以链表的初级实现的性能一般会更好，特殊情况下最好由专家进行这种调优。</p></blockquote>
-
-<p>Q: 散列表的查找比红黑树更快吗？</p>
-
-<blockquote><p>取决于键的类型，也就是hashCode()的计算成本是否大于compareTo()的比较成本。但通常散列表会比红黑树快得多。但散列表无法高效支持有序性相关的操作。</p></blockquote>
 ]]></content>
   </entry>
   
