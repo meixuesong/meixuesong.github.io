@@ -7,6 +7,7 @@ categories:
 - java
 ---
 
+在[理解Java性能调优](/blog/2014/12/06/li-jie-javaxing-neng-diao-you/)中，了解了Java的内存管理和垃圾收集。本文再深入学习垃圾收集算法和HotSpot中垃圾收集的实现。
 
 <!--more-->
 ## 1. 什么是垃圾
