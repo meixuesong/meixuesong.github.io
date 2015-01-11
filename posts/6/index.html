@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="代理模式是对象的结构模式。代理模式给某一个对象提供一个代理对象，并由代理对象控制对原对象的引用。代理模式的结构如下图： ">
+  <meta name="description" content="门面(Facade)模式的作用是屏蔽众多子系统的复杂性，为客户端提供一个统一的门面(Facade)对象，方便客户端调用。门面模式没有统一的结构。一般是一个子系统提供一个门面。要注意的是门面只负责协调子系统去服务客户端的请求，不能在门面类中增加功能和职责。 什么情况下使用门面模式？ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -27,7 +27,7 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="/stylesheets/prism-coy.css" rel="stylesheet" />
+<link href="/stylesheets/prism-default.css" rel="stylesheet" />
 <script src="/javascripts/prism.js"></script>
 <style>
 article blockquote {
@@ -83,6 +83,95 @@ var _hmt = _hmt || [];
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi/">设计模式:门面模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-03T21:59:42+08:00" pubdate data-updated="true">2014-08-03</time>
+        
+           | <a href="/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>门面(Facade)模式的作用是屏蔽众多子系统的复杂性，为客户端提供一个统一的门面(Facade)对象，方便客户端调用。门面模式没有统一的结构。一般是一个子系统提供一个门面。要注意的是门面只负责协调子系统去服务客户端的请求，不能在门面类中增加功能和职责。</p>
+
+<p>什么情况下使用门面模式？如果子系统演化得越来越复杂，客户端的调用变得很复杂，产生很大的依赖性，则可以引入门面模式将一个子系统与它的客户端以及其他子系统分离。</p>
+
+<p>这与迪米特法则也是相符的，该法则要求不要与陌生人说话，只与你直接朋友通信。采用门面模式，客户端只要与门面打交道，不需要去协调多个子系统。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/">设计模式:享元模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-03T19:10:40+08:00" pubdate data-updated="true">2014-08-03</time>
+        
+           | <a href="/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>享元模式以共享的方式支持大量的细粒度对象。Java的String类型其实就使用了享元模式。享元对象具有内部状态(Internal State)和外部状态(External State)。内部状态是享元对象内部的，一旦创建就不会再改变，因此具有内部状态的享元对象可以进行共享。外部状态是随环境改变而改变的，是不可以共享的状态。享元对象的外部状态必须由客户端保存，通常以方法参数的方式传给享元对象，以改变方法的行为，但不会改变内在状态。享元模式可以分为单纯享元模式和复合享元模式。结构图如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140803_193842.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/03/she-ji-mo-shi-xiang-yuan-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -462,98 +551,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/">设计模式:抽象工厂方法模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-28T19:45:29+08:00" pubdate data-updated="true">2014-07-28</time>
-        
-           | <a href="/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>简单工厂方法模式采用静态方法创建产品，工厂方式模式通过多层级的工厂方法创建一种产品等级结构。而抽象工厂方法模式则可以用于创建多个产品等级结构。因此，其类图示意如下：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-28_20.03.46.jpg" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/28/she-ji-mo-shi-chou-xiang-gong-han-fang-fa-mo-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">设计模式:工厂方法模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-27T22:11:04+08:00" pubdate data-updated="true">2014-07-27</time>
-        
-           | <a href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/#disqus_thread"
-             data-disqus-identifier="http://blog.ubone.com/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>前文说到简单工厂方法的工厂类，对“开－闭”原则支持不够，当有新产品时，需要修改工厂类。而工厂方法模式可以解决这个问题。工厂方法模式的用意是定义一个创建产品对象的工厂接口，将实际创建工作推迟到子类中。其结构可表示为：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-27_22.10.30.jpg" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/27/she-ji-mo-shi-gong-han-fang-fa/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/7">&larr; Older</a>
@@ -575,10 +572,18 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (26)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (3)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (26)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (5)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/01/11/titanium-alloy-mvc/">Titanium Alloy MVC</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/10/titaniumxue-xi-bi-ji/">Titanium Alloy基础</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/01/04/jvmjian-kong-yu-gu-zhang-chu-li-gong-ju/">JVM监控与故障处理工具</a>
@@ -590,14 +595,6 @@ var _hmt = _hmt || [];
     
       <li class="post">
         <a href="/blog/2014/12/20/%5B%3F%5D-ci-jie-jue-tomcatqi-dong-guo-man-de-jing-li/">SecureRandom导致Tomcat启动过慢</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/12/15/javayun-xing-shi-shu-ju-qu-yu-nei-cun-yi-chu-yi-chang/">Java运行时数据区与内存溢出异常</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">理解Java性能调优</a>
       </li>
     
   </ul>
@@ -617,7 +614,13 @@ var _hmt = _hmt || [];
   <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
 </p>
 </footer>
-  
+  <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1942741"></script>
+<!-- UY END -->
+
+<!--以下为disqus的代码，因为被墙，改用上面的国内代码
+
 
 <script type="text/javascript">
       var disqus_shortname = 'meixuesong';
@@ -632,7 +635,7 @@ var _hmt = _hmt || [];
     }());
 </script>
 
-
+-->
 
 
 

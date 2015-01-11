@@ -1,0 +1,850 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Titanium Alloy基础 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="这是一篇学习笔记，主要内容是Alloy的基础概念。 1. Alloy框架 1.1 Alloy相关概念 Alloy models are built on top of Backbone.js, taking advantage of Backbone&rsquo;s rich Model and &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2015/01/10/titaniumxue-xi-bi-ji">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="/stylesheets/prism-default.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
+<style>
+article blockquote {
+  font-size: 0.9em;
+}
+</style>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?28583ca12a9f673dc8d86501f8d02bbe";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Titanium Alloy基础</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-10T20:32:42+08:00" pubdate data-updated="true">2015-01-10</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>这是一篇学习笔记，主要内容是Alloy的基础概念。</p>
+
+<!--more-->
+
+
+<h2>1. Alloy框架</h2>
+
+<h3>1.1 Alloy相关概念</h3>
+
+<p><strong>Alloy models</strong> are built on top of <a href="http://backbonejs.org/">Backbone.js</a>, taking advantage of Backbone&rsquo;s rich Model and Collection APIs.</p>
+
+<p><strong>Alloy views</strong> are built from Titanium UI components.</p>
+
+<p><strong>Alloy controllers</strong> generally have a one-to-one relationship with Alloy views.</p>
+
+<p>Additionally, Alloy provides built-in support for <a href="http://underscorejs.org/">Underscore.js</a>, which provides a set of utility functions, such as array and iterative helpers.</p>
+
+<p>资源文件放于app/assets/android or app/assets/iphone folder.</p>
+
+<p>Titanium代码与Alloy XML:</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var button = Titanium.UI.createButton({
+    text: "Foobar",
+    top: 0,
+    width: Ti.UI.SIZE
+});
+
+button.addEventListener('click', doClick);</code></pre>
+
+
+<p>等价于：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>&lt;Button title="Foobar" top="0" width="Ti.UI.SIZE"  onClick="doClick"/&gt;</code></pre>
+
+
+<p>Alloy项目文件夹：</p>
+
+<table>
+<thead>
+<tr>
+<th>文件夹</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>app </td>
+<td> Contains the models, views, controllers and assets of the application. All work should be done here. See folder descriptions below.</td>
+</tr>
+<tr>
+<td><code>app/alloy.jmk</code> </td>
+<td> Build configuration file.</td>
+</tr>
+<tr>
+<td><code>app/alloy.js</code> </td>
+<td> Initializer file used to preconfigure components or override Alloy methods before the main controller is executed. </td>
+</tr>
+<tr>
+<td><code>app/config.json</code> </td>
+<td> Project configuration file.</td>
+</tr>
+<tr>
+<td><code>app/assets</code> </td>
+<td> Contains image assets and other files that need to be copied into the Resources directory. Reference these files in the code without the &lsquo;app/assets&rsquo; path and without the platform-specific if it is inside one.</td>
+</tr>
+<tr>
+<td><code>app/controllers</code> </td>
+<td> Contains controllers in the format filename.js to a corresponding view file <code>app/views/filename.xml</code>.</td>
+</tr>
+<tr>
+<td><code>app/lib</code> </td>
+<td> Contains application-specific library code, typically in the CommonJS format.</td>
+</tr>
+<tr>
+<td>app/migrations </td>
+<td> Contains database migration files in the format <code>&lt;DATETIME&gt;_filename.js</code>.</td>
+</tr>
+<tr>
+<td><code>app/models</code> </td>
+<td> Contains model files in the format filename.js.</td>
+</tr>
+<tr>
+<td><code>app/styles</code> </td>
+<td> Contains view styling in the format filename.tss, which is applied to a corresponding view file <code>app/views/filename.xml</code>.</td>
+</tr>
+<tr>
+<td><code>app/themes</code> </td>
+<td> Contains themes to customize the assets and styles of the entire GUI.</td>
+</tr>
+<tr>
+<td><code>app/views</code> </td>
+<td> Contains views in the format filename.xml with the optional corresponding files <code>app/controllers/filename.js</code> and <code>app/styles/filename.tss</code>.</td>
+</tr>
+<tr>
+<td><code>app/widgets</code> </td>
+<td> Contains widget files. Each widget will have its own app-like directory structure.</td>
+</tr>
+<tr>
+<td>i18n </td>
+<td> Contains internationalization and localization files. Same usage as with a Titanium application.</td>
+</tr>
+<tr>
+<td>Resources </td>
+<td> Contains the Titanium files generated by the Alloy interface from the app directory. All files will be overwritten each time the application is built. Since Alloy 1.3.0, Alloy creates a separate Titanium project for each platform you build for in the <code>Resources/&lt;platform&gt;</code> folder.</td>
+</tr>
+</tbody>
+</table>
+
+
+<p><strong>Widgets</strong> are self-contained components that can be easily dropped into Alloy-powered Titanium projects.</p>
+
+<p>Alloy comes with additional utilities used to simplify certain functions, such as animations, string manipulation, and display unit conversion. These utilities are referred to as &lsquo;<strong>builtins</strong>.&rsquo;</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var animation = require('alloy/animation');
+$.shake.addEventListener('click', function(e) {
+    animation.shake($.view);
+});</code></pre>
+
+
+<h3>1.2 Alloy Views</h3>
+
+<h4>1.2.1 XML Markup</h4>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>//app/views/index.xml
+&lt;Alloy&gt;
+    &lt;Window class="container"&gt;
+        &lt;Label id="labelId" onClick="doClick"&gt;Hello, World&lt;/Label&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;</code></pre>
+
+
+<p>可以使用<code>$.labelId</code>引用上面的label，对于根视图可以使用<code>$.index</code>（文件名）。</p>
+
+<p>XML中可以使用的属性：</p>
+
+<table>
+<thead>
+<tr>
+<th>属性名 </th>
+<th> 描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id </td>
+<td> Identifies UI elements in the controller (prefixed with &lsquo;$.&rsquo;) and style sheet (prefixed with &lsquo;#&rsquo;).</td>
+</tr>
+<tr>
+<td>class </td>
+<td> Applies additional styles (prefixed with &lsquo;.&rsquo; in the TSS file)</td>
+</tr>
+<tr>
+<td>autoStyle </td>
+<td> 是否动态样式，当class动态变化时，控件样式动态变化。对性能有影响</td>
+</tr>
+<tr>
+<td>formFactor </td>
+<td> handheld or tablet</td>
+</tr>
+<tr>
+<td>if </td>
+<td> 使用条件表达式。See <a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Alloy_XML_Markup-section-35621528_AlloyXMLMarkup-ConditionalCode">Conditional Code</a> and <a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Alloy_Styles_and_Themes-section-35621526_AlloyStylesandThemes-CustomQueryStyles">Alloy Styles and Themes: Custom Query Styles</a> for more details.</td>
+</tr>
+<tr>
+<td>module </td>
+<td> Requires in a CommonJS module </td>
+</tr>
+<tr>
+<td>ns </td>
+<td> Overrides the default Titanium.UI namespace. See Namespace for more details.</td>
+</tr>
+<tr>
+<td>platform </td>
+<td> android, blackberry, ios, or mobileweb。如果多个可以使用逗号分隔。</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>除了上述属性，各组件还可以包括自己特有的属性和事件。另外还有一些特殊的元素：</p>
+
+<table>
+<thead>
+<tr>
+<th>Element </th>
+<th> Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alloy </td>
+<td>Root element for all view XML files. Required in all views.</td>
+</tr>
+<tr>
+<td>Collection </td>
+<td> Creates a singleton or instance of the specified collection. </td>
+</tr>
+<tr>
+<td>Model </td>
+<td> Creates a singleton or instance of the specified model. </td>
+</tr>
+<tr>
+<td>Module </td>
+<td> Imports a module view inside this view (since Alloy 1.2.0). </td>
+</tr>
+<tr>
+<td>Require </td>
+<td> Imports a widget or includes another view inside this view. </td>
+</tr>
+<tr>
+<td>Widget </td>
+<td> Imports a widget inside this view. Same as the Require Element with the type specified to &lsquo;widget&rsquo;. </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>index.xml是一个特殊情况，只接受以下根节点：</p>
+
+<ul>
+<li>Ti.UI.Window or <code>&lt;Window&gt;</code></li>
+<li>Ti.UI.TabGroup or <code>&lt;TabGroup&gt;</code></li>
+<li>Ti.UI.iOS.NavigationWindow or <code>&lt;NavigationWindow&gt;</code></li>
+<li>Ti.UI.iPad.SplitWindow or <code>&lt;SplitWindow&gt;</code></li>
+</ul>
+
+
+<p><strong>XML中的Collection节点</strong></p>
+
+<p>The Collection XML element creates a singleton or instance of a collection.</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>&lt;Alloy&gt;
+    &lt;Collection src="book" /&gt;
+    &lt;Window&gt;
+        &lt;TableView id="table" /&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;</code></pre>
+
+
+<p>上面的代码创建了一个单例集合，对应的model为book.js。在controller中可以这样访问：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var library = Alloy.Collections.book;
+library.fetch();</code></pre>
+
+
+<p>上面的例子 Alloy.Collections.book是全局的，但也可以创建只用于一个Controller的Collection：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>&lt;Alloy&gt;
+    &lt;Collection id="localLibrary" src="book" instance="true"/&gt;
+    &lt;Window&gt;
+        &lt;TableView id="table" /&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;</code></pre>
+
+
+<p>注意上面的src和instance。在代码中通过id来引用：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var library = $.localLibrary;
+library.fetch();</code></pre>
+
+
+<p><strong>Model Element</strong>
+与Collection类似，XML中也可以创建Model单例，或者用于某个Controller的一个实例。</p>
+
+<p>单例：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>&lt;Alloy&gt;
+    &lt;Model src="book" /&gt;
+    &lt;Window&gt;
+        &lt;TableView id="table" /&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;
+
+var drama = Alloy.Models.book;
+drama.set('title', 'Hamlet');
+drama.set('author', 'William Shakespeare');</code></pre>
+
+
+<p>某个Controller的实例：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>&lt;Alloy&gt;
+    &lt;Model id="myBook" src="book" instance="true"/&gt;
+    &lt;Window&gt;
+        &lt;TableView id="table" /&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;
+
+var drama = $.myBook;
+drama.set('title', 'Hamlet');
+drama.set('author', 'William Shakespeare');</code></pre>
+
+
+<p>注意前述的Collection和Model都要放在Alloy节点下。</p>
+
+<p><strong>Module Attribute</strong>
+XML中可以引入CommonJS module。首先，module要放入<code>app/lib</code>，并且有一个public方法createXXX，返回一个UI对象。然后，将XXX用于xml节点元素，并设置module路径(基于<code>app/lib</code>)，元素的其它属性将作为参数传入createXXX方法。示例如下：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>//app/lib/foo.js
+// XML attributes are passed to the function
+exports.createFoo = function (args) {
+    var viewArgs = {
+        backgroundColor: args.color || 'white',
+        width: '100dp',
+        height: '100dp'
+    };
+    var view = Ti.UI.createView(viewArgs);
+    var labelArgs = {
+        color: args.textColor || 'black',
+        text: args.text || 'Foobar' 
+    };
+    var label = Ti.UI.createLabel(labelArgs);
+    view.add(label);
+ // Return a UI object that can be added to a view
+ return view;
+}; 
+
+//app/views/index.xml
+&lt;Alloy&gt;
+    &lt;Window backgroundColor="white"&gt;
+        &lt;!-- Requires in the lib/foo.js module and calls the createFoo method --&gt;
+        &lt;Foo module="foo" color="blue" textColor="orange" text="Hello, World!"/&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;</code></pre>
+
+
+<p>对于Native开发的Module，也可以引入XML中，分为5步：</p>
+
+<ol>
+<li>将module引入项目</li>
+<li>在XML中的View或Window的下级加入Module</li>
+<li>设置属性module为module名称</li>
+<li>设置属性method为创建方法名称，如果没设置则默认为createView</li>
+<li>如果方法参数只需要一个简单的Javascript对象，则可以将值inline写入或者使用TSS文件。</li>
+</ol>
+
+
+<p>Paint Module的示例如下：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>&lt;Alloy&gt;
+    &lt;Window&gt;
+        &lt;Module id="paint" module="ti.paint" method="createPaintView"
+            eraseMode="false" strokeWidth="1.0" strokeColor="red" strokeAlpha="100" /&gt;
+        &lt;Button onClick="eraseMe" bottom="0"&gt;Erase&lt;/Button&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;
+
+function eraseMe(){
+    $.paint.clear();
+}</code></pre>
+
+
+<p><strong>Require Element</strong>
+require元素主要有两个用途：including external views and importing widgets into the current view.</p>
+
+<p>including external views示例：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>//index.xml
+&lt;Alloy&gt;
+    &lt;TabGroup&gt;
+        &lt;Tab id="leftTab"&gt;
+            &lt;Require type="view" src="rss" id="rssTab"/&gt;
+        &lt;/Tab&gt;
+    &lt;/TabGroup&gt;
+&lt;/Alloy&gt;
+
+//rss.xml
+&lt;Alloy&gt;
+    &lt;Window id='rssWindow'&gt;
+        &lt;WebView id='rssView' /&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt; 
+
+var rssView = $.rssTab.getView('rssView'); 
+rssView.url = 'http://www.google.com'; </code></pre>
+
+
+<p><strong>Importing Widgets，</strong>引入Widgets只需要三步：</p>
+
+<ol>
+<li>将Widget放入app/widgets文件夹</li>
+<li>在config.json中添加依赖</li>
+<li>在XML中加入<code>&lt;Widget&gt;</code>，可以设置id和name属性。id属性用于引用并调用方法，name属性用于指定view对应的Controller，而不是使用默认的widget.js。</li>
+</ol>
+
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>app/views/index.xml
+&lt;Alloy&gt;
+    &lt;Window&gt;
+        &lt;Widget src="mywidget" id="foo" name="foo" /&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;
+
+$.foo.myMethod();</code></pre>
+
+
+<p>config.json中的依赖：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'> "dependencies": {
+    "mywidget":"1.0"
+  }</code></pre>
+
+
+<p></p>
+
+<p>可以直接在XML中设置属性，用于传参。与代码具有等同效果：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>&lt;Require id="foobar" src="foo" customTitle="Hello" customImage="hello.png"/&gt; 
+
+var foobar = Alloy.createController('foo', { 
+    id: "foobar", 
+    customTitle: "Hello", 
+    customImage: "hello.png" 
+});</code></pre>
+
+
+<p>对于required view，可以<strong>绑定事件</strong>。下面的例子中，parent视图引入了button视图，并绑定了回调方法：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>//Parent View:
+&lt;Require id="fooButton" src="button" onClick="doClick" /&gt; 
+
+function doClick(e) {...}
+
+//Button View:
+&lt;Alloy&gt;
+    &lt;Button id="button"&gt;Click Me!&lt;/Button&gt;
+&lt;/Alloy&gt;
+
+//在子视图中trigger click事件
+$.button.addEventListener('click', function(e) { 
+    $.trigger('click', e); 
+}); </code></pre>
+
+
+<p><strong>Adding Children Views。</strong>用于将parent view中的数据传给required view。下面的例子实现了这样一个场景：index.xml require info.xml，index.xml可以将子元素传给info.xml展示，info.js可以通过<code>arguments[0].children</code>访问这些子元素。</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>//app/views/info.xml
+&lt;Alloy&gt;
+    &lt;View backgroundColor="yellow" borderWidth="0.5" borderColor="brown"/&gt;
+&lt;/Alloy&gt;
+
+//controllers/info.js
+var args = arguments[0] || {};
+// add children if there are any
+_.each(args.children || [], function(child) {
+    $.info.add(child);
+});
+$.info.height = Ti.UI.SIZE; 
+
+//app/views/index.xml
+&lt;Alloy&gt;
+    &lt;Window class="container"&gt;
+        &lt;Require src="info"&gt;
+            &lt;Label&gt;I am an info box.&lt;/Label&gt;
+        &lt;/Require&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;</code></pre>
+
+
+<p><strong>Namespace</strong></p>
+
+<p>XML中的控件默认为Titanium.UI，如果组件不是这个命名空间，可以设置ns属性：</p>
+
+<p><code>&lt;View ns="Ti.Map" id="map"/&gt;</code></p>
+
+<h4>1.2.2 Alloy Styles and Themes</h4>
+
+<h5>Titanium Style Sheets (TSS)</h5>
+
+<p>Titanium Style Sheets (TSS) file uses a JSON-like syntax. the class name prefixed with a period (.), or the id name prefixed with a hash tag (#) 。也可以使用条件表达式。值可以是以下类型：</p>
+
+<ul>
+<li>JSON values, that is, Strings, Numbers, Objects, Array, Booleans and null</li>
+<li>undefined to unset a property (do not place undefined in quotes) (since Alloy 1.4.0)</li>
+<li>Titanium SDK constants, for example, Ti.UI.SIZE</li>
+<li>Localization functions, either Ti.Locale.getString() and its shorthand L()</li>
+<li>Variables from the Alloy.CFG or Alloy.Globals namespaces</li>
+<li>Bitwise operators, which includes bit shifting (&lsquo;>>&rsquo;, &lsquo;&lt;&lt;&rsquo;, and &lsquo;>>>&rsquo;), bitwise AND (&lsquo;&amp;&rsquo;), bitwise OR (&lsquo;|&rsquo;) and bitwise XOR (&lsquo;^&rsquo;) (since Alloy 1.3.0)</li>
+</ul>
+
+
+<p>注释方法： //comment and multiline comments <code>/* comment */</code></p>
+
+<p>Alloy不支持：Alloy does not support the CSS concept of child or descendent selectors</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>// 如果不使用.和#，这表示适用于所有Lable
+"Label": {
+    width: Ti.UI.SIZE,
+    height: Ti.UI.SIZE,
+    color: "#000", // black
+    transform: Alloy.Globals.rotateLeft // value is defined in the alloy.js file      
+},</code></pre>
+
+
+<p>注意上面的transform使用了全局方法：<code>Alloy.Globals.rotateLeft = Ti.UI.create2DMatrix().rotate(-90);</code></p>
+
+<p>app.tss中定义的是全局样式。样式的优先权：XML中输入的 <code>&gt;</code> 当前View对应的TSS <code>&gt;</code> 全局样式。</p>
+
+<p>样式可以加平台条件，用中括号，注意中括号和平台代码间<strong>不要用空格！</strong>:</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>// iPad and iPad mini
+"Label[platform=ios formFactor=tablet]": { 
+    backgroundColor: "#0f0",
+    text: 'iPad'
+},
+
+还可以： 
+[platform=ios,android] //android, blackberry, ios, or mobileweb
+[platform=!ios]
+</code></pre>
+
+
+<p><strong>Custom Query Styles</strong>
+Custom query styles override all styles, that is, class, id, and markup element styles, except the ones defined as attributes in the XML file.</p>
+
+<ol>
+<li>使用Alloy.Globals定义一个返回boolean的方法，或者通过Alloy.createController中传入boolean属性，然后在xml或tss文件中使用。</li>
+<li>在xml和tss中使用if属性。</li>
+</ol>
+
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>apps/controllers/index.js
+function openBar (e) {
+    Alloy.createController('win2', {'fooBar': true}).getView().open();
+};
+
+app/styles/win2.tss
+"#label[if=$.args.fooBar]" : {
+ 'text' : 'Foobar',
+ 'color' : 'blue'
+}
+
+app/views/win2.xml
+&lt;Alloy&gt;
+    &lt;Window&gt;
+        &lt;Label if="$.args.fooBar" color="blue"&gt;Foobar&lt;/Label&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;</code></pre>
+
+
+<p>另一个例子：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>Alloy.Globals.isIos7Plus = (OS_IOS && parseInt(Ti.Platform.version.split(".")[0]) &gt;= 7);
+
+//index.tss
+// Query styles
+"#info[if=Alloy.Globals.isIos7Plus]" : {
+    font : { textStyle : Ti.UI.TEXT_STYLE_FOOTNOTE }
+},</code></pre>
+
+
+<h5>Themes</h5>
+
+<p>使用Theme的方法。首先在app下建立themes文件夹，并在其下级以各主题名建立子文件夹，如:app-themes-mytheme, 在mytheme下分别建立assets(放图片资源)和styles(放tss文件，还可以再包含平台子文件夹)。在config.json设置当前主题：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>{
+ "global": {
+ "theme":"mytheme"
+    }, 
+ "env:development": {}, 
+ "env:test": {}, 
+ "env:production": {}, 
+ "os:ios": {
+ "theme":"green"
+    }, 
+ "os:android": {
+ "theme":"blue"
+    }, 
+ "dependencies": {}
+}</code></pre>
+
+
+<p>打包时，主题下的assets资源和样式将覆盖app下的资源与样式。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-10T20:32:42+08:00" pubdate data-updated="true">2015-01-10</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/yi-dong-kai-fa/'>移动开发</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/01/04/jvmjian-kong-yu-gu-zhang-chu-li-gong-ju/" title="Previous Post: JVM监控与故障处理工具">&laquo; JVM监控与故障处理工具</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/01/11/titanium-alloy-mvc/" title="Next Post: Titanium Alloy MVC">Titanium Alloy MVC &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (26)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (5)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/01/11/titanium-alloy-mvc/">Titanium Alloy MVC</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/10/titaniumxue-xi-bi-ji/">Titanium Alloy基础</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/04/jvmjian-kong-yu-gu-zhang-chu-li-gong-ju/">JVM监控与故障处理工具</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/26/la-ji-shou-ji-qi-yu-nei-cun-fen-pei-ce-lue/">Java垃圾收集与内存分配</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/20/%5B%3F%5D-ci-jie-jue-tomcatqi-dong-guo-man-de-jing-li/">SecureRandom导致Tomcat启动过慢</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+</footer>
+  <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1942741"></script>
+<!-- UY END -->
+
+<!--以下为disqus的代码，因为被墙，改用上面的国内代码
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2015/01/10/titaniumxue-xi-bi-ji/';
+        var disqus_url = 'http://blog.ubone.com/blog/2015/01/10/titaniumxue-xi-bi-ji/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+-->
+
+
+
+
+
+
+
+
+</body>
+</html>

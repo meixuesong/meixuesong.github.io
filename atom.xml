@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-01-04T22:16:56+08:00</updated>
+  <updated>2015-01-11T19:55:28+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,1116 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Titanium Alloy MVC]]></title>
+    <link href="http://blog.ubone.com/blog/2015/01/11/titanium-alloy-mvc/"/>
+    <updated>2015-01-11T19:25:14+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/01/11/titanium-alloy-mvc</id>
+    <content type="html"><![CDATA[<p>这是一篇学习笔记，主要内容是Alloy的Controller, Model, Collection, View以及Widget.</p>
+
+<!--more-->
+
+
+<h2>1. Alloy Controllers</h2>
+
+<p>创建Controller和获得View: Alloy.createController and Controller.getView.</p>
+
+<p>可以继承：exports.baseController = &lsquo;baseControllerName&#8217;，子类继承父类export的方法，并可以重写。</p>
+
+<p>可以在Controller中判断当前平台：OS_ANDROID, OS_BLACKBERRY, OS_IOS, OS_MOBILEWEB, ENV_DEV, ENV_TEST, ENV_PRODUCTION, DIST_ADHOC, DIST_STORE:</p>
+
+<p><code>if (OS_IOS) {...}</code></p>
+
+<p>传参：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>//index.js
+var arg = {
+        title: source[i].postTitle,
+        url: source[i].postLink
+    };
+    data.push(Alloy.createController('row', arg).getView());
+
+//row.js
+var args = arguments[0] || {};
+$.rowView.title = args.title || '';
+$.rowView.url = args.url || '';
+</code></pre>
+
+
+<p>使用Alloy.Globals命名空间可以保存全局变量：<code>Alloy.Globals.xxx = ...</code></p>
+
+<p>alloy.js运行于应用的生命周期之前，会在index.js加载之前调用，也就是任何UI加载之前。</p>
+
+<p>lib文件夹用于类库，也可以建立平台子文件夹（如ios）。但require时，不需要指定平台名。</p>
+
+<p>当前，Controller已经默认加载了Alloy, Underscore.js和Backbone.js，但以后可能需要自己加载：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var Alloy = require('alloy'), _ = require("alloy/underscore")._, Backbone = require("alloy/backbone");</code></pre>
+
+
+<h2>2. Alloy Models</h2>
+
+<h3>2.1 Alloy Collection and Model Objexts</h3>
+
+<h4>2.1.1 Models</h4>
+
+<p>In Alloy, models inherit from the <a href="http://docs.appcelerator.com/backbone/0.9.2/#Model">Backbone.Model</a> class.</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>exports.definition = {
+    config : {
+ // table schema and adapter information
+    },
+    extendModel: function(Model) {      
+        _.extend(Model.prototype, {
+ // Extend, override or implement Backbone.Model 
+        });
+ 
+ return Model;
+    },
+    extendCollection: function(Collection) {        
+        _.extend(Collection.prototype, {
+ // Extend, override or implement Backbone.Collection 
+        });
+ 
+ return Collection;
+    }
+}</code></pre>
+
+
+<p>在Controller中访问Model:</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var book = Alloy.createModel('book', {title:'Green Eggs and Ham', author:'Dr. Seuss'}); 
+var title = book.get('title');
+var author = book.get('author');
+// Label object in the view with id = 'label'
+$.label.text = title + ' by ' + author;</code></pre>
+
+
+<p>全局Model单例：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>// This will create a singleton if it has not been previously created,
+// or retrieves the singleton if it already exists.
+var book = Alloy.Models.instance('book');</code></pre>
+
+
+<h5>2.1.1.1 定义表结构</h5>
+
+<p>config对象有三部分：columns, defaults和adapter.</p>
+
+<p>columns定义表结构。对应SQLite，支持以下类型：string, varchar, int, tinyint, smallint, bigint, double, float, decimal, number, date, datetime and boolean，其它未知类型将视为TEXT。</p>
+
+<p>defaults对象用于设置默认值。</p>
+
+<p>adapter对象定义存储接口。</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>exports.definition = {
+    config: {
+ "columns": {
+ "title": "String",
+ "author": "String",
+ "book_id": "INTEGER PRIMARY KEY AUTOINCREMENT" //自增长
+        },
+ "defaults": { //默认值
+ "title": "-",
+ "author": "-"
+        },
+ "adapter": { 
+ "type": "sql", //存储类型SQLite
+ "collection_name": "books", //表名
+  "idAttribute": "book_id" //主键
+        }
+    }
+}</code></pre>
+
+
+<h5>2.1.1.2 Extending the Backbone.Model Class</h5>
+
+<p>在extendModel中扩展方法，例如validate方法.</p>
+
+<h4>2.1.2 Collections</h4>
+
+<p>在Controller中创建Collection，作用域为本Controller:</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var library = Alloy.createCollection('book'); 
+library.fetch(); // Grab data from persistent storage </code></pre>
+
+
+<p>创建全局单例Collection:</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>// This will create a singleton if it has not been previously created,
+// or retrieves the singleton if it already exists.
+var library = Alloy.Collections.instance('book');</code></pre>
+
+
+<p>在extendCollection中定义扩展Backbone的方法，例如：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>// Implement the comparator method.
+comparator : function(book) {
+    return book.get('title');
+}</code></pre>
+
+
+<p></p>
+
+<p>Backbone.Collection继承了underscore的一些集合操作方法，例如迭代：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var data = [];
+library.map(function(book) {
+ // The book argument is an individual model object in the collection
+    var title = book.get('title');
+    var row = Ti.UI.createTableViewRow({"title":title});
+    data.push(row);
+});
+// TableView object in the view with id = 'table'
+$.table.setData(data);</code></pre>
+
+
+<p>事件处理：use the Backbone.Events on, off and trigger methods</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var library = Alloy.createCollection('book');
+function event_callback (context) {
+    var output = context || 'change is bad.';
+    Ti.API.info(output);
+};
+// Bind the callback to the change event of the collection.
+library.on('change', event_callback);
+// Trigger the change event and pass context to the handler.
+library.trigger('change', 'change is good.');
+// Passing no parameters to the off method unbinds all event callbacks to the object.
+library.off();
+// This trigger does not have a response.
+library.trigger('change');</code></pre>
+
+
+<p>注意：如果事件名称不要使用空格。因为Backbone使用了空格来处理多事件。</p>
+
+<h3>2.2 Alloy Data Binding</h3>
+
+<p>当Collection或Model变化时，View也跟随变化，这就是绑定.</p>
+
+<p><strong>注意：如果使用绑定，必须在controller关闭时，调用<code>$.destroy()</code>方法，以避免内存泄露:</strong></p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>$.win.addEventListener("close", function(){
+    $.destroy();
+} </code></pre>
+
+
+<h4>2.2.1 Collection-View Binding</h4>
+
+<p>以下View对象支持Collection绑定：</p>
+
+<table>
+<thead>
+<tr>
+<th>View Object </th>
+<th> Add data binding attributes to&hellip; </th>
+<th> Repeater Object</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ButtonBar </td>
+<td> <code>&lt;Labels&gt;</code> </td>
+<td> <code>&lt;Label/&gt;</code></td>
+</tr>
+<tr>
+<td>CoverFlowView </td>
+<td> <code>&lt;Images&gt;</code> </td>
+<td> <code>&lt;Image/&gt;</code></td>
+</tr>
+<tr>
+<td>ListView </td>
+<td> <code>&lt;ListSection&gt;</code> </td>
+<td> <code>&lt;ListItem/&gt;</code></td>
+</tr>
+<tr>
+<td>Map Module </td>
+<td> <code>&lt;Module module="ti.map" method="createView"&gt;</code>  </td>
+<td> <code>&lt;Annotation/&gt;</code></td>
+</tr>
+<tr>
+<td>Picker </td>
+<td> <code>&lt;PickerColumn&gt;</code> or <code>&lt;Column&gt;</code> </td>
+<td> <code>&lt;PickerRow/&gt;</code> or <code>&lt;Row/&gt;</code></td>
+</tr>
+<tr>
+<td>ScrollableView </td>
+<td> <code>&lt;ScrollableView&gt;</code> </td>
+<td> <code>&lt;View/&gt;</code></td>
+</tr>
+<tr>
+<td>TableView </td>
+<td> <code>&lt;TableView&gt;</code> </td>
+<td> <code>&lt;TableViewRow/&gt;</code></td>
+</tr>
+<tr>
+<td>TabbedBar </td>
+<td> <code>&lt;Labels&gt;</code> </td>
+<td> <code>&lt;Label/&gt;</code></td>
+</tr>
+<tr>
+<td>Toolbar </td>
+<td> <code>&lt;Items&gt;</code> </td>
+<td> <code>&lt;Item/&gt;</code></td>
+</tr>
+<tr>
+<td>View </td>
+<td> <code>&lt;View&gt;</code> </td>
+<td> 除了Window和TabGroup之外的View对象</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>在XML中定义以下元素，其中只有dataCollection是必须的：</p>
+
+<ul>
+<li>dataCollection: 指定一个Collection</li>
+<li>dataTransform: 回调方法，传入model，返回修改的JSON对象</li>
+<li>dataFilter: 过滤collection, 传入collection, 返回model数组</li>
+<li>dataFunction: 指定一个方法名，controller使用这个方法来更新view。这个方法不是controller中声明的方法。该属性创建一个别名访问内在的绑定方法。（<a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Alloy_Data_Binding-section-36739592_AlloyDataBinding-BackboneBinding">没搞懂</a>）</li>
+</ul>
+
+
+<p>对于Collection中的model，xml中可以使用<code>{}</code>来获取model的值，例如：<code>&lt;Label text="{title} by {author}" /&gt;</code>。</p>
+
+<p>在repeater对象的controller中，可以使用<code>$model</code>来引用当前model。如<code>$model.title</code></p>
+
+<p>Collection绑定示例：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>app/views/index.xml
+&lt;Alloy&gt;
+    &lt;Collection src="book"/&gt;
+    &lt;Window backgroundColor="white" onClose="cleanup"&gt;
+        &lt;ScrollableView dataCollection="book"&gt;
+            &lt;View layout="vertical"&gt;
+                &lt;ImageView image="{cover}" /&gt;
+                &lt;Label text="{title} by {artist}" /&gt;
+            &lt;/View&gt;
+        &lt;/ScrollableView&gt; 
+    &lt;/Window&gt;
+&lt;/Alloy&gt;
+
+app/controllers/index.js
+$.index.open();
+Alloy.Collections.album.fetch();
+ 
+function cleanup() {
+    $.destroy();
+}
+</code></pre>
+
+
+<h4>2.2.2 Model-View Binding</h4>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>&lt;Alloy&gt;
+    &lt;Model src="settings"/&gt;
+    &lt;Window backgroundColor="white" onClose="cleanup"&gt;
+        &lt;View layout="vertical"&gt;
+            &lt;Label text="Text Size" /&gt;
+            &lt;Slider value="{settings.textsize}" max="5" min="1"/&gt;
+            &lt;Label text="Bold"/&gt;
+            &lt;Switch value="{settings.bold}" /&gt;
+            &lt;Label text="Italics"/&gt;
+            &lt;Switch value="{settings.italics}" /&gt;
+        &lt;/View&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;</code></pre>
+
+
+<p>上例中，获取值使用的格式为：<code>{modelName.attrName}</code></p>
+
+<h4>2.2.3 Collection方法示例</h4>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>app/views/index.xml
+&lt;Alloy&gt;
+    &lt;Collection src="book" /&gt;
+    &lt;Window class="container"&gt;
+        &lt;TableView dataCollection="book"
+                   dataTransform="transformFunction"
+                   dataFilter="filterFunction"
+                   dataFunction="updateUI"
+                   onDragEnd="refreshTable"&gt;
+            &lt;!-- Also can use Require --&gt;
+            &lt;TableViewRow title="{title}" /&gt;
+        &lt;/TableView&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;
+
+app/controllers/index.js
+$.index.open();
+ 
+// Encase the title attribute in square brackets
+function transformFunction(model) {
+ // Need to convert the model to a JSON object
+    var transform = model.toJSON();
+    transform.title = '[' + transform.title + ']';
+ // Example of creating a custom attribute, reference in the view using {custom}
+    transform.custom = transform.title + " by " + transform.author;
+ return transform;
+}
+// Show only book models by Mark Twain
+function filterFunction(collection) {
+ return collection.where({author:'Mark Twain'});
+}
+ 
+function refreshTable(){
+ // Trigger the binding function identified by the dataFunction attribute
+    updateUI();
+}
+// Trigger the synchronization
+var library = Alloy.Collections.book;
+library.fetch();
+ 
+// Free model-view data binding resources when this view-controller closes
+$.index.addEventListener('close', function() {
+    $.destroy();
+});</code></pre>
+
+
+<p>当数据变化时，上面的例子中的界面会跟着变化。如果想避免发生变化，可以在调用Backbone方法修改model数据时指定参数：<code>{silent:true}</code>.</p>
+
+<h3>2.3 Alloy数据持久化与升级</h3>
+
+<p>Model数据可以同步到本地或远程服务器。这项功能使用的是Backbone sync方法。</p>
+
+<h4>2.3.1 Backbone同步方式</h4>
+
+<p>Backbone sync时，默认会执行RESTful JSON请求到Model.urlRoot或者Collection.url。读操作使用GET方法，写操作使用POST方法。不论Model是否定义了自己的主键，Backbone都会创建Client ID(cid)。在未保存前，可以使用Model.cid或者Collection.getByCid方法来存取数据。Backbone同步示例：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>// Since the urlRoot attribute is defined, all HTTP commands are to /library
+var Book = Backbone.Model.extend({urlRoot:'/library'})
+var book = new Book();
+ 
+// Performs a POST on /library with the arguments as a payload and the server returns the id as 1
+book.save({title:'Bossypants',author:'Tina Fey',checkout:false}) 
+ 
+// Performs a GET on /library/1
+book.fetch({id:1}); 
+ 
+// Performs a PUT on /library/1 with the entire modified object as a payload.
+book.save({checkout:true});
+ 
+// Performs a DELETE on /library/1
+book.destroy();</code></pre>
+
+
+<h4>2.3.2Alloy的同步方式</h4>
+
+<p>Alloy支持SQLite或者properties来保存数据。Alloy查询SQLite时，可以使用简单查询或者prepared statement:</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var library = Alloy.createCollection('book');
+// The table name is the same as the collection_name value from the 'config.adapter' object. This may be different from the model name.
+var table = library.config.adapter.collection_name;
+// use a simple query
+library.fetch({query:'SELECT * from ' + table + ' where author="' + searchAuthor + '"'});
+// or a prepared statement
+library.fetch({query: { statement: 'SELECT * from ' + table + ' where author = ?', params: [searchAuthor] }});
+
+//查询1条记录：
+myModel.fetch({id: 123});
+// is equivalent to
+myModel.fetch({query: 'select * from ... where id = ' + 123 });</code></pre>
+
+
+<h4>2.3.3 数据库迁移（升级或降级）</h4>
+
+<p>Alloy采用migration对象来迁移数据库。首先，要将相应的JavaScript文件放在app/migrations文件夹下。文件名采用以下格式：<code>YYYYMMDDHHmmss_MODELNAME.js</code>，例如20150120160155_book.js。Alloy将升序执行js文件以完成数据库迁移。</p>
+
+<p>JavaScript文件中要实现两个方法：migration.up(migrator) 和 migration.down(migrator)。migrator对象的值如下：</p>
+
+<table>
+<thead>
+<tr>
+<th>Key </th>
+<th> Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>db </td>
+<td> Ti.Database实例，可以调用db.execute方法执行SQL。<strong>注意不要关闭或打开另一个实例。</strong></td>
+</tr>
+<tr>
+<td>dbname </td>
+<td> 数据库名</td>
+</tr>
+<tr>
+<td>table </td>
+<td> table名，也就是Model的config.adapter.collection_name值</td>
+</tr>
+<tr>
+<td>idAttribute </td>
+<td> 主键字段名</td>
+</tr>
+<tr>
+<td>createTable </td>
+<td> 创建表的方法，参数为Model config.columns</td>
+</tr>
+<tr>
+<td>dropTable </td>
+<td> 删除表</td>
+</tr>
+<tr>
+<td>insertRow </td>
+<td> 插入行, 参数为待插入的数据对象</td>
+</tr>
+<tr>
+<td>deleteRow </td>
+<td> 删除行，参数为待删除的数据对象</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>下面的示例先创建表将初始数据，之后进行了升级:</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>app/migrations/20120610049877_book.js
+var preload_data = [
+    {title: 'To Kill a Mockingbird', author:'Harper Lee'}
+];
+ 
+migration.up = function(migrator)
+{
+    migrator.createTable({
+ "columns":
+        {
+ "book": "TEXT",
+ "author": "TEXT"
+        }
+    });
+ for (var i = 0; i &lt; preload_data.length; i++) { 
+        migrator.insertRow(preload_data[i]);
+    }
+};
+ 
+migration.down = function(migrator)
+{
+    migrator.dropTable();
+};
+
+//升级app/migrations/20130118069778_book.js
+migration.up = function(migrator) {
+    migrator.db.execute('ALTER TABLE ' + migrator.table + ' ADD COLUMN isbn INT;');
+};
+migration.down = function(migrator) {
+    var db = migrator.db;
+    var table = migrator.table;
+    db.execute('CREATE TEMPORARY TABLE book_backup(title,author,alloy_id);')
+    db.execute('INSERT INTO book_backup SELECT title,author,alloy_id FROM ' + table + ';');
+    migrator.dropTable();
+    migrator.createTable({
+        columns: {
+            title:"TEXT",
+            author:"TEXT",
+        },
+    });
+    db.execute('INSERT INTO ' + table + ' SELECT title,author,alloy_id FROM book_backup;');
+    db.execute('DROP TABLE book_backup;');
+};</code></pre>
+
+
+<h2>3. Alloy Widgets</h2>
+
+<p>在Alloy XML Markup中已经介绍了如何使用Widgets，这里主要介绍如何创建Widgets。</p>
+
+<p>Widgets应放在app/Widgets文件夹下，与app文件夹一相，每个Widget也有自己的views, controllers, models, styles and assets等。在Widget中不能访问除了i18n之外的文件。其它主要区别如下：</p>
+
+<ul>
+<li>使用WPATH()来自动处理assets和libs的路径总是。例如要在Widget中require <code>app/widgets/foo/lib/helper.js</code>，可以<code>require(WPATH('helper'))</code>。对于<code>app/widgets/foo/assets/images/foo.png</code>使用<code>WPATH('images/foo.png')</code>。</li>
+<li>Widgets使用自己的配置文件widget.json</li>
+<li>Widgets的主controller是widget.js，而不是index.js。创建widget内的另一个controller需要使用Widget.createController方法。</li>
+<li>所有Widget控制器中的方法均为私有方法，除非使用$，例如<code>$.init=function(){...}</code>，然后就可以在项目中调用：<code>$.fooWidget.init()</code>.</li>
+<li>Widget中也可以创建Model和Collection, 但要使用Widget.createModel和Widget.createCollection方法。</li>
+<li>样式文件为widget.tss</li>
+<li>Widget同样可以有Theme, 相关样式和资源要放到：<code>app/themes/&lt;THEME_NAME&gt;/&lt;WIDGET_NAME&gt;</code>。</li>
+<li>Widget的主View是widget.xml而不是index.xml。当Widget中的某个view指定了id(eg. buttonId)时，在项目中可以这样引用：<code>$.fooWidget.buttonId.xxx</code></li>
+<li>Widget可以包含其它Widget。需要在widget.json中定义依赖。在controller中可以调用：<code>Widget.createWidget(widget_name, [controller_name])</code></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Titanium Alloy基础]]></title>
+    <link href="http://blog.ubone.com/blog/2015/01/10/titaniumxue-xi-bi-ji/"/>
+    <updated>2015-01-10T20:32:42+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/01/10/titaniumxue-xi-bi-ji</id>
+    <content type="html"><![CDATA[<p>这是一篇学习笔记，主要内容是Alloy的基础概念。</p>
+
+<!--more-->
+
+
+<h2>1. Alloy框架</h2>
+
+<h3>1.1 Alloy相关概念</h3>
+
+<p><strong>Alloy models</strong> are built on top of <a href="http://backbonejs.org/">Backbone.js</a>, taking advantage of Backbone&rsquo;s rich Model and Collection APIs.</p>
+
+<p><strong>Alloy views</strong> are built from Titanium UI components.</p>
+
+<p><strong>Alloy controllers</strong> generally have a one-to-one relationship with Alloy views.</p>
+
+<p>Additionally, Alloy provides built-in support for <a href="http://underscorejs.org/">Underscore.js</a>, which provides a set of utility functions, such as array and iterative helpers.</p>
+
+<p>资源文件放于app/assets/android or app/assets/iphone folder.</p>
+
+<p>Titanium代码与Alloy XML:</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var button = Titanium.UI.createButton({
+    text: "Foobar",
+    top: 0,
+    width: Ti.UI.SIZE
+});
+
+button.addEventListener('click', doClick);</code></pre>
+
+
+<p>等价于：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>&lt;Button title="Foobar" top="0" width="Ti.UI.SIZE"  onClick="doClick"/&gt;</code></pre>
+
+
+<p>Alloy项目文件夹：</p>
+
+<table>
+<thead>
+<tr>
+<th>文件夹</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>app </td>
+<td> Contains the models, views, controllers and assets of the application. All work should be done here. See folder descriptions below.</td>
+</tr>
+<tr>
+<td><code>app/alloy.jmk</code> </td>
+<td> Build configuration file.</td>
+</tr>
+<tr>
+<td><code>app/alloy.js</code> </td>
+<td> Initializer file used to preconfigure components or override Alloy methods before the main controller is executed. </td>
+</tr>
+<tr>
+<td><code>app/config.json</code> </td>
+<td> Project configuration file.</td>
+</tr>
+<tr>
+<td><code>app/assets</code> </td>
+<td> Contains image assets and other files that need to be copied into the Resources directory. Reference these files in the code without the &lsquo;app/assets&rsquo; path and without the platform-specific if it is inside one.</td>
+</tr>
+<tr>
+<td><code>app/controllers</code> </td>
+<td> Contains controllers in the format filename.js to a corresponding view file <code>app/views/filename.xml</code>.</td>
+</tr>
+<tr>
+<td><code>app/lib</code> </td>
+<td> Contains application-specific library code, typically in the CommonJS format.</td>
+</tr>
+<tr>
+<td>app/migrations </td>
+<td> Contains database migration files in the format <code>&lt;DATETIME&gt;_filename.js</code>.</td>
+</tr>
+<tr>
+<td><code>app/models</code> </td>
+<td> Contains model files in the format filename.js.</td>
+</tr>
+<tr>
+<td><code>app/styles</code> </td>
+<td> Contains view styling in the format filename.tss, which is applied to a corresponding view file <code>app/views/filename.xml</code>.</td>
+</tr>
+<tr>
+<td><code>app/themes</code> </td>
+<td> Contains themes to customize the assets and styles of the entire GUI.</td>
+</tr>
+<tr>
+<td><code>app/views</code> </td>
+<td> Contains views in the format filename.xml with the optional corresponding files <code>app/controllers/filename.js</code> and <code>app/styles/filename.tss</code>.</td>
+</tr>
+<tr>
+<td><code>app/widgets</code> </td>
+<td> Contains widget files. Each widget will have its own app-like directory structure.</td>
+</tr>
+<tr>
+<td>i18n </td>
+<td> Contains internationalization and localization files. Same usage as with a Titanium application.</td>
+</tr>
+<tr>
+<td>Resources </td>
+<td> Contains the Titanium files generated by the Alloy interface from the app directory. All files will be overwritten each time the application is built. Since Alloy 1.3.0, Alloy creates a separate Titanium project for each platform you build for in the <code>Resources/&lt;platform&gt;</code> folder.</td>
+</tr>
+</tbody>
+</table>
+
+
+<p><strong>Widgets</strong> are self-contained components that can be easily dropped into Alloy-powered Titanium projects.</p>
+
+<p>Alloy comes with additional utilities used to simplify certain functions, such as animations, string manipulation, and display unit conversion. These utilities are referred to as &lsquo;<strong>builtins</strong>.&rsquo;</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var animation = require('alloy/animation');
+$.shake.addEventListener('click', function(e) {
+    animation.shake($.view);
+});</code></pre>
+
+
+<h3>1.2 Alloy Views</h3>
+
+<h4>1.2.1 XML Markup</h4>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>//app/views/index.xml
+&lt;Alloy&gt;
+    &lt;Window class="container"&gt;
+        &lt;Label id="labelId" onClick="doClick"&gt;Hello, World&lt;/Label&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;</code></pre>
+
+
+<p>可以使用<code>$.labelId</code>引用上面的label，对于根视图可以使用<code>$.index</code>（文件名）。</p>
+
+<p>XML中可以使用的属性：</p>
+
+<table>
+<thead>
+<tr>
+<th>属性名 </th>
+<th> 描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id </td>
+<td> Identifies UI elements in the controller (prefixed with &lsquo;$.&rsquo;) and style sheet (prefixed with &lsquo;#&rsquo;).</td>
+</tr>
+<tr>
+<td>class </td>
+<td> Applies additional styles (prefixed with &lsquo;.&rsquo; in the TSS file)</td>
+</tr>
+<tr>
+<td>autoStyle </td>
+<td> 是否动态样式，当class动态变化时，控件样式动态变化。对性能有影响</td>
+</tr>
+<tr>
+<td>formFactor </td>
+<td> handheld or tablet</td>
+</tr>
+<tr>
+<td>if </td>
+<td> 使用条件表达式。See <a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Alloy_XML_Markup-section-35621528_AlloyXMLMarkup-ConditionalCode">Conditional Code</a> and <a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Alloy_Styles_and_Themes-section-35621526_AlloyStylesandThemes-CustomQueryStyles">Alloy Styles and Themes: Custom Query Styles</a> for more details.</td>
+</tr>
+<tr>
+<td>module </td>
+<td> Requires in a CommonJS module </td>
+</tr>
+<tr>
+<td>ns </td>
+<td> Overrides the default Titanium.UI namespace. See Namespace for more details.</td>
+</tr>
+<tr>
+<td>platform </td>
+<td> android, blackberry, ios, or mobileweb。如果多个可以使用逗号分隔。</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>除了上述属性，各组件还可以包括自己特有的属性和事件。另外还有一些特殊的元素：</p>
+
+<table>
+<thead>
+<tr>
+<th>Element </th>
+<th> Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alloy </td>
+<td>Root element for all view XML files. Required in all views.</td>
+</tr>
+<tr>
+<td>Collection </td>
+<td> Creates a singleton or instance of the specified collection. </td>
+</tr>
+<tr>
+<td>Model </td>
+<td> Creates a singleton or instance of the specified model. </td>
+</tr>
+<tr>
+<td>Module </td>
+<td> Imports a module view inside this view (since Alloy 1.2.0). </td>
+</tr>
+<tr>
+<td>Require </td>
+<td> Imports a widget or includes another view inside this view. </td>
+</tr>
+<tr>
+<td>Widget </td>
+<td> Imports a widget inside this view. Same as the Require Element with the type specified to &lsquo;widget&rsquo;. </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>index.xml是一个特殊情况，只接受以下根节点：</p>
+
+<ul>
+<li>Ti.UI.Window or <code>&lt;Window&gt;</code></li>
+<li>Ti.UI.TabGroup or <code>&lt;TabGroup&gt;</code></li>
+<li>Ti.UI.iOS.NavigationWindow or <code>&lt;NavigationWindow&gt;</code></li>
+<li>Ti.UI.iPad.SplitWindow or <code>&lt;SplitWindow&gt;</code></li>
+</ul>
+
+
+<p><strong>XML中的Collection节点</strong></p>
+
+<p>The Collection XML element creates a singleton or instance of a collection.</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>&lt;Alloy&gt;
+    &lt;Collection src="book" /&gt;
+    &lt;Window&gt;
+        &lt;TableView id="table" /&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;</code></pre>
+
+
+<p>上面的代码创建了一个单例集合，对应的model为book.js。在controller中可以这样访问：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var library = Alloy.Collections.book;
+library.fetch();</code></pre>
+
+
+<p>上面的例子 Alloy.Collections.book是全局的，但也可以创建只用于一个Controller的Collection：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>&lt;Alloy&gt;
+    &lt;Collection id="localLibrary" src="book" instance="true"/&gt;
+    &lt;Window&gt;
+        &lt;TableView id="table" /&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;</code></pre>
+
+
+<p>注意上面的src和instance。在代码中通过id来引用：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var library = $.localLibrary;
+library.fetch();</code></pre>
+
+
+<p><strong>Model Element</strong>
+与Collection类似，XML中也可以创建Model单例，或者用于某个Controller的一个实例。</p>
+
+<p>单例：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>&lt;Alloy&gt;
+    &lt;Model src="book" /&gt;
+    &lt;Window&gt;
+        &lt;TableView id="table" /&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;
+
+var drama = Alloy.Models.book;
+drama.set('title', 'Hamlet');
+drama.set('author', 'William Shakespeare');</code></pre>
+
+
+<p>某个Controller的实例：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>&lt;Alloy&gt;
+    &lt;Model id="myBook" src="book" instance="true"/&gt;
+    &lt;Window&gt;
+        &lt;TableView id="table" /&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;
+
+var drama = $.myBook;
+drama.set('title', 'Hamlet');
+drama.set('author', 'William Shakespeare');</code></pre>
+
+
+<p>注意前述的Collection和Model都要放在Alloy节点下。</p>
+
+<p><strong>Module Attribute</strong>
+XML中可以引入CommonJS module。首先，module要放入<code>app/lib</code>，并且有一个public方法createXXX，返回一个UI对象。然后，将XXX用于xml节点元素，并设置module路径(基于<code>app/lib</code>)，元素的其它属性将作为参数传入createXXX方法。示例如下：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>//app/lib/foo.js
+// XML attributes are passed to the function
+exports.createFoo = function (args) {
+    var viewArgs = {
+        backgroundColor: args.color || 'white',
+        width: '100dp',
+        height: '100dp'
+    };
+    var view = Ti.UI.createView(viewArgs);
+    var labelArgs = {
+        color: args.textColor || 'black',
+        text: args.text || 'Foobar' 
+    };
+    var label = Ti.UI.createLabel(labelArgs);
+    view.add(label);
+ // Return a UI object that can be added to a view
+ return view;
+}; 
+
+//app/views/index.xml
+&lt;Alloy&gt;
+    &lt;Window backgroundColor="white"&gt;
+        &lt;!-- Requires in the lib/foo.js module and calls the createFoo method --&gt;
+        &lt;Foo module="foo" color="blue" textColor="orange" text="Hello, World!"/&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;</code></pre>
+
+
+<p>对于Native开发的Module，也可以引入XML中，分为5步：</p>
+
+<ol>
+<li>将module引入项目</li>
+<li>在XML中的View或Window的下级加入Module</li>
+<li>设置属性module为module名称</li>
+<li>设置属性method为创建方法名称，如果没设置则默认为createView</li>
+<li>如果方法参数只需要一个简单的Javascript对象，则可以将值inline写入或者使用TSS文件。</li>
+</ol>
+
+
+<p>Paint Module的示例如下：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>&lt;Alloy&gt;
+    &lt;Window&gt;
+        &lt;Module id="paint" module="ti.paint" method="createPaintView"
+            eraseMode="false" strokeWidth="1.0" strokeColor="red" strokeAlpha="100" /&gt;
+        &lt;Button onClick="eraseMe" bottom="0"&gt;Erase&lt;/Button&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;
+
+function eraseMe(){
+    $.paint.clear();
+}</code></pre>
+
+
+<p><strong>Require Element</strong>
+require元素主要有两个用途：including external views and importing widgets into the current view.</p>
+
+<p>including external views示例：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>//index.xml
+&lt;Alloy&gt;
+    &lt;TabGroup&gt;
+        &lt;Tab id="leftTab"&gt;
+            &lt;Require type="view" src="rss" id="rssTab"/&gt;
+        &lt;/Tab&gt;
+    &lt;/TabGroup&gt;
+&lt;/Alloy&gt;
+
+//rss.xml
+&lt;Alloy&gt;
+    &lt;Window id='rssWindow'&gt;
+        &lt;WebView id='rssView' /&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt; 
+
+var rssView = $.rssTab.getView('rssView'); 
+rssView.url = 'http://www.google.com'; </code></pre>
+
+
+<p><strong>Importing Widgets，</strong>引入Widgets只需要三步：</p>
+
+<ol>
+<li>将Widget放入app/widgets文件夹</li>
+<li>在config.json中添加依赖</li>
+<li>在XML中加入<code>&lt;Widget&gt;</code>，可以设置id和name属性。id属性用于引用并调用方法，name属性用于指定view对应的Controller，而不是使用默认的widget.js。</li>
+</ol>
+
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>app/views/index.xml
+&lt;Alloy&gt;
+    &lt;Window&gt;
+        &lt;Widget src="mywidget" id="foo" name="foo" /&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;
+
+$.foo.myMethod();</code></pre>
+
+
+<p>config.json中的依赖：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'> "dependencies": {
+    "mywidget":"1.0"
+  }</code></pre>
+
+
+<p></p>
+
+<p>可以直接在XML中设置属性，用于传参。与代码具有等同效果：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>&lt;Require id="foobar" src="foo" customTitle="Hello" customImage="hello.png"/&gt; 
+
+var foobar = Alloy.createController('foo', { 
+    id: "foobar", 
+    customTitle: "Hello", 
+    customImage: "hello.png" 
+});</code></pre>
+
+
+<p>对于required view，可以<strong>绑定事件</strong>。下面的例子中，parent视图引入了button视图，并绑定了回调方法：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>//Parent View:
+&lt;Require id="fooButton" src="button" onClick="doClick" /&gt; 
+
+function doClick(e) {...}
+
+//Button View:
+&lt;Alloy&gt;
+    &lt;Button id="button"&gt;Click Me!&lt;/Button&gt;
+&lt;/Alloy&gt;
+
+//在子视图中trigger click事件
+$.button.addEventListener('click', function(e) { 
+    $.trigger('click', e); 
+}); </code></pre>
+
+
+<p><strong>Adding Children Views。</strong>用于将parent view中的数据传给required view。下面的例子实现了这样一个场景：index.xml require info.xml，index.xml可以将子元素传给info.xml展示，info.js可以通过<code>arguments[0].children</code>访问这些子元素。</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>//app/views/info.xml
+&lt;Alloy&gt;
+    &lt;View backgroundColor="yellow" borderWidth="0.5" borderColor="brown"/&gt;
+&lt;/Alloy&gt;
+
+//controllers/info.js
+var args = arguments[0] || {};
+// add children if there are any
+_.each(args.children || [], function(child) {
+    $.info.add(child);
+});
+$.info.height = Ti.UI.SIZE; 
+
+//app/views/index.xml
+&lt;Alloy&gt;
+    &lt;Window class="container"&gt;
+        &lt;Require src="info"&gt;
+            &lt;Label&gt;I am an info box.&lt;/Label&gt;
+        &lt;/Require&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;</code></pre>
+
+
+<p><strong>Namespace</strong></p>
+
+<p>XML中的控件默认为Titanium.UI，如果组件不是这个命名空间，可以设置ns属性：</p>
+
+<p><code>&lt;View ns="Ti.Map" id="map"/&gt;</code></p>
+
+<h4>1.2.2 Alloy Styles and Themes</h4>
+
+<h5>Titanium Style Sheets (TSS)</h5>
+
+<p>Titanium Style Sheets (TSS) file uses a JSON-like syntax. the class name prefixed with a period (.), or the id name prefixed with a hash tag (#) 。也可以使用条件表达式。值可以是以下类型：</p>
+
+<ul>
+<li>JSON values, that is, Strings, Numbers, Objects, Array, Booleans and null</li>
+<li>undefined to unset a property (do not place undefined in quotes) (since Alloy 1.4.0)</li>
+<li>Titanium SDK constants, for example, Ti.UI.SIZE</li>
+<li>Localization functions, either Ti.Locale.getString() and its shorthand L()</li>
+<li>Variables from the Alloy.CFG or Alloy.Globals namespaces</li>
+<li>Bitwise operators, which includes bit shifting (&lsquo;>>&rsquo;, &lsquo;&lt;&lt;&rsquo;, and &lsquo;>>>&rsquo;), bitwise AND (&lsquo;&amp;&rsquo;), bitwise OR (&lsquo;|&rsquo;) and bitwise XOR (&lsquo;^&rsquo;) (since Alloy 1.3.0)</li>
+</ul>
+
+
+<p>注释方法： //comment and multiline comments <code>/* comment */</code></p>
+
+<p>Alloy不支持：Alloy does not support the CSS concept of child or descendent selectors</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>// 如果不使用.和#，这表示适用于所有Lable
+"Label": {
+    width: Ti.UI.SIZE,
+    height: Ti.UI.SIZE,
+    color: "#000", // black
+    transform: Alloy.Globals.rotateLeft // value is defined in the alloy.js file      
+},</code></pre>
+
+
+<p>注意上面的transform使用了全局方法：<code>Alloy.Globals.rotateLeft = Ti.UI.create2DMatrix().rotate(-90);</code></p>
+
+<p>app.tss中定义的是全局样式。样式的优先权：XML中输入的 <code>&gt;</code> 当前View对应的TSS <code>&gt;</code> 全局样式。</p>
+
+<p>样式可以加平台条件，用中括号，注意中括号和平台代码间<strong>不要用空格！</strong>:</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>// iPad and iPad mini
+"Label[platform=ios formFactor=tablet]": { 
+    backgroundColor: "#0f0",
+    text: 'iPad'
+},
+
+还可以： 
+[platform=ios,android] //android, blackberry, ios, or mobileweb
+[platform=!ios]
+</code></pre>
+
+
+<p><strong>Custom Query Styles</strong>
+Custom query styles override all styles, that is, class, id, and markup element styles, except the ones defined as attributes in the XML file.</p>
+
+<ol>
+<li>使用Alloy.Globals定义一个返回boolean的方法，或者通过Alloy.createController中传入boolean属性，然后在xml或tss文件中使用。</li>
+<li>在xml和tss中使用if属性。</li>
+</ol>
+
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>apps/controllers/index.js
+function openBar (e) {
+    Alloy.createController('win2', {'fooBar': true}).getView().open();
+};
+
+app/styles/win2.tss
+"#label[if=$.args.fooBar]" : {
+ 'text' : 'Foobar',
+ 'color' : 'blue'
+}
+
+app/views/win2.xml
+&lt;Alloy&gt;
+    &lt;Window&gt;
+        &lt;Label if="$.args.fooBar" color="blue"&gt;Foobar&lt;/Label&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;</code></pre>
+
+
+<p>另一个例子：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>Alloy.Globals.isIos7Plus = (OS_IOS && parseInt(Ti.Platform.version.split(".")[0]) &gt;= 7);
+
+//index.tss
+// Query styles
+"#info[if=Alloy.Globals.isIos7Plus]" : {
+    font : { textStyle : Ti.UI.TEXT_STYLE_FOOTNOTE }
+},</code></pre>
+
+
+<h5>Themes</h5>
+
+<p>使用Theme的方法。首先在app下建立themes文件夹，并在其下级以各主题名建立子文件夹，如:app-themes-mytheme, 在mytheme下分别建立assets(放图片资源)和styles(放tss文件，还可以再包含平台子文件夹)。在config.json设置当前主题：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>{
+ "global": {
+ "theme":"mytheme"
+    }, 
+ "env:development": {}, 
+ "env:test": {}, 
+ "env:production": {}, 
+ "os:ios": {
+ "theme":"green"
+    }, 
+ "os:android": {
+ "theme":"blue"
+    }, 
+ "dependencies": {}
+}</code></pre>
+
+
+<p>打包时，主题下的assets资源和样式将覆盖app下的资源与样式。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[JVM监控与故障处理工具]]></title>
@@ -4802,432 +5912,6 @@ protected void attachBaseContext(Context base) {
 <p>项目地址：<a href="http://rss2epub.appspot.com/">http://rss2epub.appspot.com</a></p>
 
 <p>使用方法参考：<a href="https://github.com/meixuesong/rss2epub">RSS2EPUB</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[基于Jekyll(Octopress)将博客生成EPUB和Mobi电子书]]></title>
-    <link href="http://blog.ubone.com/blog/2014/10/05/ji-yu-jekyll-sheng-cheng-dian-zi-shu/"/>
-    <updated>2014-10-05T21:03:50+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/10/05/ji-yu-jekyll-sheng-cheng-dian-zi-shu</id>
-    <content type="html"><![CDATA[<p>采用Octopress，基于Jekyll，<a href="http://blog.ubone.com/blog/2014/06/25/zai-githubshang-xie-bo-ke/">在GitHub上写博客</a>已经快一年了。随着博客的增多，有了一个想法，如果能将这些博客整理成册，变成电子书放入Kindle，有空时温习一下，那该多好。今天进行了尝试，效果还不错。</p>
-
-<!--more-->
-
-
-<p>Kindle默认支持的电子书格式是Mobi，但开源软件很少支持这种格式。电子书格式最普及的还是EPUB，而Amazon提供了从EPUB转为Mobi的支持。因此我们的第一步是将博客转换成EPUB格式的电子书。</p>
-
-<h2>1. 准备工作</h2>
-
-<p>在Github上找到了一个项目<a href="https://github.com/lmullen/jekyll-ebook">Jekyll E-book</a>，支持将Jekyll博客转换成EPUB电子书。按照其说明，以管理员身份安装：</p>
-
-<pre class='line-numbers language-bash'><code class='language-bash'>gem install jekyll-ebook</code></pre>
-
-
-<p>然后安装Pandoc，打开<a href="https://github.com/jgm/pandoc/releases">下载页面</a>，下载相应系统的安装包，安装完成后，确保命令能够识别：</p>
-
-<pre class='line-numbers language-bash'><code class='language-bash'>pandoc --version</code></pre>
-
-
-<p>现在就可以开始准备生成EPUB电子书了。需要先定义这本书的标题等信息，以及书中包括哪些博客。这些信息都保存在manifest.yml中，这是一个YAML格式的文件。分两部分说明这个文件的内容，我们先看第一部分：文件的定义。</p>
-
-<pre class='line-numbers language-bash'><code class='language-bash'>title: meixuesong blog
-author: Jason Mei
-date: October 2014
-epub-filename: /Users/mxs/Documents/jasonblog.epub
-epub-cover-image: myresource/epub/cover.jpg
-epub-stylesheet: myresource/epub/stylesheet.css
-epub-metadata: myresource/epub/metadata.xml
-epub-dir: /Users/mxs/Documents/blog/
-header-items:
-- title: meixuesong blog
-- author: meixuesong
-- author-note: na
-- citation: na</code></pre>
-
-
-<p>其中要注意的是路径，<code>epub-dir</code>是博客资源的根路径，其中文件夹如<code>epub-cover-image</code>, <code>epub-stylesheet</code>和<code>epub-metadata</code>都是相对根路径的相对路径。<code>metadata.xml</code>是EPUB文件所需的文件，可以是个空文件。为了美观，我们稍微修改了stylesheet.css：</p>
-
-<pre class='line-numbers language-css'><code class='language-css'>/*stylesheet.css*/
-body { margin: 5%; text-align: justify; font-size: medium; }
-code { font-family: monospace; font-size:0.75em;}
-h1 { text-align: center; margin:0px; padding:0px;font-size:1.5em; border-bottom: black solid 1px;}
-h2 { text-align: left; margin:0px; padding:0px;font-size:1.2em;}
-h3 { text-align: left; margin:0px; padding:0px;font-size:1.1em;}
-h4 { text-align: left; margin:0px; padding:0px; font-size:1em;}
-h5 { text-align: left; }
-h6 { text-align: left; }
-h1.title { }
-h2.author { }
-h3.date { }
-ol.toc { padding: 0; margin-left: 1em; }
-ol.toc li { list-style-type: none; margin: 0; padding: 0; }</code></pre>
-
-
-<p>开始定义第二部分，章节定义。这部分比较简单，就是定义书中包含哪几章，名字是什么，每章包括哪些博客。示例如下：</p>
-
-<pre class='line-numbers language-css'><code class='language-css'>content-dir: _posts/   #博客所在的相对路径
-contents: 
-  - section-title: Articles   #章节名称
-    files:                    #该章以下包括哪些内容
-    - article1.markdown
-    - article2.markdown
-  - section-title: Reviews
-    files:
-    - review.markdown</code></pre>
-
-
-<h2>2. 生成EPUB电子书</h2>
-
-<p>完成<code>manifest.yml</code>的定义之后，就可以开始生成电子书了：</p>
-
-<pre class='line-numbers language-bash'><code class='language-bash'>jekyll-ebook manifest.yml</code></pre>
-
-
-<p>EPUB电子书就这样生成了，字体完美，甚至还有代码高亮显示功能，电子书的目录默认显示到第三级，在Kindle上看显得多了，需要改为只显示第1级，即目录只显示文章标题，而不用详细到每章的<code>h3</code>级内容。另外图片显示不正常，应该是路径不正确。</p>
-
-<p>先来解决第一个问题，将目录级别改为只显示第1级标题。可以修改文件<code>ebook.rb</code>，在Mac OSX下，这个文件位于：</p>
-
-<pre class='line-numbers language-ruby'><code class='language-ruby'>#文件路径：
-/Library/Ruby/Gems/2.0.0/gems/jekyll-ebook-0.0.2/lib/jekyll-ebook/ebook.rb
-
-# 修改代码，加上：'toc-depth' =&gt; 1,
-PandocRuby.new( self.generate_content ,
-                   {:f =&gt; :markdown, :to =&gt; :epub},
-                   'smart', 'o' =&gt; self.manifest['epub-filename'],
-                   'toc-depth' =&gt; 1,
-</code></pre>
-
-
-<p>再来解决图片不显示的问题。该问题主要是因为写博客时，图片的地址为<code>/myresource/images/</code>，因此在生成电子书无法找到这个绝对路径。解决办法使用<code>ln</code>命令在根文件夹下建立一个符号连接myresource，Windows下好像是<code>mklink</code>命令。重新生成电子书，问题解决。</p>
-
-<p>现在，我们的EPUB电子书通过Kindle多看系统阅读已经非常完美了。接下来我们尝试一下Mobi格式的电子书。</p>
-
-<h2>3. 生成Mobi电子书</h2>
-
-<p>Amazon提供了一个工具包<a href="http://www.amazon.com/gp/feature.html?docId=1000765211">KindleGen</a>。该工具可以将html、EPUB等转换成Mobi格式。下载解压缩后，就可以执行命令转换了：</p>
-
-<pre class='line-numbers language-bash'><code class='language-bash'>./kindlegen -locale zh aaa.epub</code></pre>
-
-
-<p>分别在原生Kindle和多看系统下查看这个mobi电子书，整体效果还是不错的，但是相比EPUB来说，还是差了那么一点点。例如h1到h3的标题下方空白的内容太多，也就是CSS中的margin-bottom值太大，但不论怎么修改，Mobi格式的显示效果好像都没有变化。最后还是选择继续使用多看系统，阅读EPUB格式的电子书。</p>
-
-<p>【Update,2014-12-21】现在使用<a href="http://rss2epub.appspot.com/">RSS2EPUB</a>已经可以直接生成Epub或Kindle电子书了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[无向图]]></title>
-    <link href="http://blog.ubone.com/blog/2014/10/03/wu-xiang-tu/"/>
-    <updated>2014-10-03T18:18:44+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/10/03/wu-xiang-tu</id>
-    <content type="html"><![CDATA[<p>无向图由一组顶点(Vertex)和一组能够将两个顶点相连的边(Edge)组成。本章学习无向图的邻接表实现，以及相关的搜索和应用，例如深度优先和广度优先搜索，路径查找和最短路径计算，连通分量和符号图。本文要解决的无向图问题包括：</p>
-
-<ol>
-<li>单点连通性</li>
-<li>单点路径</li>
-<li>单点最短路径</li>
-<li>连通性</li>
-<li>检测环</li>
-<li>双色问题（图的二分性）</li>
-</ol>
-
-
-<!--more-->
-
-
-<h2>1. 术语</h2>
-
-<p>v-w表示连接v和w的边。自环和平行边是两种特殊的图。<strong>自环</strong>即一条连接一个顶点和其自身的边；<strong>平行边</strong>是连接同一对顶点的两条边。含有平行边的图称为多重图，没有平行边和自环的图称为<strong>简单图</strong>。</p>
-
-<p>当两个顶点通过一条边相连时，这两个顶点是<strong>相邻的</strong>。某个顶点的<strong>度数(Degree)</strong>即为依附于它的边的总数。<strong>子图</strong>是由一幅图的所有边的一个子集（以及它们所依附的所有顶点）组成的图。</p>
-
-<p>在图中，<strong>路径</strong>是由边顺序连接的一系列顶点。<strong>简单路径</strong>是一条没有重复顶点的路径。<strong>环</strong>是一条至少含有一条边，并且起点和终点相同的路径。<strong>简单环</strong>是一条（除了起点和终点必须相同之外）不含有重复顶点和边的环。路径或环的<strong>长度</strong>为其中所包含的边数。</p>
-
-<p>如果从任意一个顶点都存在一条路径到达另一个任意顶点，这幅图就是<strong>连通图</strong>。一幅非连通的图由若干连通的部分组成，它们都是其极大连通子图。</p>
-
-<p>树是一幅无环(Acyclic)连通图。互不相连的树组成的集合称为<strong>森林</strong>。连通图的<strong>生成树</strong>是它的一幅子图，它含有图中的所有顶点且是一棵树。图的<strong>生成树森林</strong>是它的所有连通子图的生成树的集合。</p>
-
-<p>当且仅当一幅含有V个顶点的图G满足下列5个条件之一时，它就是一棵树：</p>
-
-<ul>
-<li>G有V-1条边且不含有环；</li>
-<li>G有V-1条边且是连通的；</li>
-<li>G是连通的，但删除任意一条边都会使它不再连通；</li>
-<li>G是无环图，但添加任意一条边都会产生一条环；</li>
-<li>G中的任意一对顶点之间仅存在一条简单路径。</li>
-</ul>
-
-
-<h2>2. API</h2>
-
-<p>先看一份定义了无向图的基本操作的API：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-04_graph-api.png" alt="image" /></p>
-
-<pre class='line-numbers language-java'><code class='language-java'>//////////////////常用的图处理代码//////////////////
-
-//计算v的度数
-public static int degree(Graph G, int v) {
-    int degree = 0;
-    for(int w: G.adj(v)) degree++;
-    return degree;
-}
-
-//计算所有顶点的最大度数
-public static int maxDegree(Graph G) {
-    int max = 0;
-    for(int v = 0; v &lt; G.V(); v++) 
-        if (degree(G, v) &gt; max)
-            max = degree(G, v);
-    return max;
-}
-
-//计算所有顶点的平均度数
-public static double avgDegree(Graph G) {
-    return 2.0 * G.E() / G.V(); 
-}
-
-//计算自环的个数
-public static int numberOfSelfLoops(Graph G) {
-    int count = 0;
-    for(int v = 0; v &lt; G.V(); v++)
-        for(int w : G.adj(v))
-            if (v == w) count++;
-    return count / 2; //每条边都被记过2次
-}</code></pre>
-
-
-<h3>2.1 邻接表</h3>
-
-<p>图有多种表示方法，包括邻接矩阵（V乘V的布尔矩阵，占用空间过大），边的数组（边类含有两个int实例变量，实现adj方法需要检查图中的所有边）和邻接表数组。</p>
-
-<p>邻接表数组是以顶点为索引的列表数组，例如第0个顶点的列表中每个元素都是和顶点0相邻的顶点。示意图如下：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-03_adjacency-lists.png" alt="image" /></p>
-
-<p>它具有以下特点：</p>
-
-<ul>
-<li>使用的空间和V+E成正比；</li>
-<li>添加一条边所需的时间为常数；</li>
-<li>遍历顶点v的所有相邻顶点所需的时间和v的度数成正比。</li>
-</ul>
-
-
-<p>代码实现示意如下：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public class Graph {
-    private final int V;        //顶点数目
-    private int E;              //边的数目
-    private Bag&lt;Integer&gt;[] adj; //邻接表
-    
-    public void addEdge(int v, int w) {
-        adj[v].add(w);
-        adj[w].add(v);
-        E++;
-    }
-    
-    public Iterable&lt;Integer&gt; adj(int v) {
-        return adj[v];
-    }
-}</code></pre>
-
-
-<h3>2.2 图的处理算法API</h3>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-04_search-api.png" alt="image" /></p>
-
-<h2>3. 深度优先搜索(DFS)</h2>
-
-<p>深度优先搜索一幅图，只需要一个递归方法来遍历所有顶点。在访问其中一个顶点时：</p>
-
-<ul>
-<li>将它标记为已访问；</li>
-<li>递归地访问它的所有没有被标记过的邻居顶点。</li>
-</ul>
-
-
-<pre class='line-numbers language-java'><code class='language-java'>//深度优先搜索
-public class DepthFirstSearch {
-    private boolean[] marked;
-    private int count;
-    
-    public DepthFirstSearch(Graph G, int s) {
-        marked = new boolean[G.V()];
-        dfs(G, s);
-    }
-    
-    private void dfs(Graph G, int v) {
-        marked[v] = true;
-        count++;
-        for(int w : G.adj(v))
-            if (!marked[w]) dfs(G, w);
-    }
-    
-    public boolean marked(int w) {return marked[w];}
-    
-    public int count() {return count;}
-}</code></pre>
-
-
-<p>利用深度优先搜索很容易找到一些问题的答案。例如“两个给定的顶点是否连通？有多少个连通子图？从s到给定目的顶点v是否存在一条路径？如果有，找到这条路径。”</p>
-
-<h2>4. 寻找路径</h2>
-
-<p>路径的API:</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-04_paths-api.png" alt="image" /></p>
-
-<pre class='line-numbers language-java'><code class='language-java'>//使用深度优先搜索查找图的路径
-public class DepthFirstPaths {
-    private boolean[] marked;   //这个顶点上调用过dfs()吗？
-    private int[] edgeTo;       //从起点到一个顶点的已知路径上的最后一个顶点
-    private final int s;        //起点
-    
-    public DepthFirstPaths(Graph G, int s) {
-        marked = new boolean[G.V()];
-        edgeTo = new int[G.V()];
-        this.s = s;
-        dfs(G, s);
-    }
-    
-    private void dfs(Graph G, int v) {
-        marked[v] = true;
-        for(int w : G.adj(v))
-            if (!marked[w]) {
-                edgeTo[w] = v;
-                dfs(G, w);
-            }
-    }
-    
-    public boolean hasPathTo(int v) {return marked[v];}
-    
-    public Iterable&lt;Integer&gt; pathTo(int v) {
-        if (!hasPathTo(v)) return null;
-        Stack&lt;Integer&gt; path = new Stack&lt;Integer&gt;();
-        for(int x = v; x != s; x = edgeTo[x])
-            path.push(x);
-        path.push(s);
-        return path;
-    }
-}</code></pre>
-
-
-<h2>5. 广度优先搜索(BFS)</h2>
-
-<p>广度优先搜索可以解决单点最短路径的问题，即“从s到给定目的顶点v是否存在一条路径？如果有，找出其中最短的那条。”要找到从s到v的最短路径，从s开始，在所有由一条边就可以到达的顶点中寻找v，如果找不到就继续在与s距离两条边的所有顶点中找v，如此一直进行。实现广度优先搜索时，可以使用先进先出（FIFO）队列。代码示意如下：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public class BreadthFirstPaths {
-    private boolean[] marked;  //到达该顶点的最短路径已知吗？
-    private int[] edgeTo;      //到达该顶点的已知路径上的最后一个顶点
-    private final int s;       //起点
-    
-    public BreadthFirstPaths(Graph G, int s) {
-        marked = new boolean[G.V()];
-        edgeTo = new int[G.v()];
-        this.s = s;
-        bfs(G, s);
-    }
-    
-    private void bfs(Grapth G, int s) {
-        Queue&lt;Integer&gt; queue = new Queue&lt;Integer&gt;();
-        marked[s] = true;  //标记起点
-        queue.enqueue(s);  //入列
-        while (!queue.isEmpty()) {
-            int v = queue.dequeue();
-            for(int w : G.adj(v))
-                if (!marked[w]) {
-                    edgeTo[w] = v;
-                    marked[w] = true;
-                    queue.enqueue(w);
-                }
-        }
-    }
-    
-    public boolean hasPathTo(int v) {return marked[v];}
-    
-    public Iterable&lt;Integer&gt; pathTo(int v) {//与深度优先实现相同}
-}</code></pre>
-
-
-<h2>6. 连通分量</h2>
-
-<p>所谓连通分量就是连通子图，深度优先搜索可用于找出一幅图的所有连通分量。其API定义如下：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-04_cc-api.png" alt="image" /></p>
-
-<p>递归的深度优先搜索第一次调用的参数是顶点0，它会标记所有与0连通的顶点。然后构造函数中的for循环会查找每个没有被标记的顶点并递归调用dfs()来标记和它相邻的所有顶点。代码如下：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public class CC {
-    private boolean[] marked;
-    private int[] id;
-    private int count = 0;
-    
-    public CC(Graph G) {
-        marked = new boolean[G.V()];
-        id = new int[G.V()];
-        for(int s = 0; s &lt; G.V(); s++)
-            if (!marked[s]) {
-                dfs(G, s);
-                count++;
-            }
-    }
-    
-    private void dfs(Graph G, int v) {
-        marked[v] = true;
-        id[v] = count;
-        for(int w : G.adj(v))
-            if (!marked[w])
-                dfs(G, w);
-    }
-    
-    public boolean connected(int v, int w) { return id[v] == id[w]; }
-    
-    public int id(int v) {return id[v]; }
-    
-    public int count() {return count;}
-}</code></pre>
-
-
-<p>深度优先搜索还可用于解决两个问题：1. 给定的图是无环图吗（假定不存在自环和平行边）？<a href="http://algs4.cs.princeton.edu/41undirected/Cycle.java.html">代码实现</a> 2. 这是一幅二分图吗？也就是说能够用两种颜色将图的所有顶点着色，使得任意一条边的两个端点的颜色都不相同。<a href="http://baike.baidu.com/view/501081.htm">二分图</a>，<a href="http://algs4.cs.princeton.edu/41undirected/Bipartite.java.html">代码实现</a></p>
-
-<h2>7. 符号图</h2>
-
-<p>在典型应用中，通常使用字符串而非整数来表示和指代顶点。为了适应这样的应用，需要符号图。符号图使用字符串代替整数索引。其API定义如下：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-04_symbol-graph-api.png" alt="image" /></p>
-
-<p>符号图的实现可以在无向图的基础上增加一个符号表和反向索引。符号表完成符号到邻接表索引的映射，键为String(顶点名)，值的类型为int(邻接表的索引)。反向索引是一个数组keys[]，保存每个顶点索引所对应的顶点名。结构如下图：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-04_symbol-graph.png" alt="image" /></p>
-
-<p>其实现较为简单，<a href="http://algs4.cs.princeton.edu/41undirected/SymbolGraph.java.html">查看代码</a>。</p>
-
-<p><strong>利用符号图可以处理一个经典问题，找到一个社交网络中两个人间隔的度数。这其实就是用符号图+广度优先求最短路径的用例。</strong></p>
-
-<h2>总结</h2>
-
-<p>本文主要学习无向图的邻接表实现，以及深度、广度优先算法及其应用：</p>
-
-<p>深度优先：</p>
-
-<ol>
-<li>两个顶点是否连通？如果有，给出路径。</li>
-<li>有多少个连通子图？找出所有连通分量。</li>
-<li>给定的图是无环图吗？</li>
-<li>是一幅二分图吗？</li>
-</ol>
-
-
-<p>广度优先：</p>
-
-<ol>
-<li>找出两个顶点间的最短路径。</li>
-</ol>
-
-
-<p>参考：<a href="http://algs4.cs.princeton.edu/41undirected/">http://algs4.cs.princeton.edu/41undirected/</a></p>
 ]]></content>
   </entry>
   

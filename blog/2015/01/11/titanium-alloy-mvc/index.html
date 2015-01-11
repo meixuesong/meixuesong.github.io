@@ -1,0 +1,798 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Titanium Alloy MVC - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="这是一篇学习笔记，主要内容是Alloy的Controller, Model, Collection, View以及Widget. 1. Alloy Controllers 创建Controller和获得View: Alloy.createController and Controller. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2015/01/11/titanium-alloy-mvc">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="/stylesheets/prism-default.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
+<style>
+article blockquote {
+  font-size: 0.9em;
+}
+</style>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?28583ca12a9f673dc8d86501f8d02bbe";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">InfoQ译文</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Titanium Alloy MVC</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-11T19:25:14+08:00" pubdate data-updated="true">2015-01-11</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://blog.ubone.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>这是一篇学习笔记，主要内容是Alloy的Controller, Model, Collection, View以及Widget.</p>
+
+<!--more-->
+
+
+<h2>1. Alloy Controllers</h2>
+
+<p>创建Controller和获得View: Alloy.createController and Controller.getView.</p>
+
+<p>可以继承：exports.baseController = &lsquo;baseControllerName&#8217;，子类继承父类export的方法，并可以重写。</p>
+
+<p>可以在Controller中判断当前平台：OS_ANDROID, OS_BLACKBERRY, OS_IOS, OS_MOBILEWEB, ENV_DEV, ENV_TEST, ENV_PRODUCTION, DIST_ADHOC, DIST_STORE:</p>
+
+<p><code>if (OS_IOS) {...}</code></p>
+
+<p>传参：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>//index.js
+var arg = {
+        title: source[i].postTitle,
+        url: source[i].postLink
+    };
+    data.push(Alloy.createController('row', arg).getView());
+
+//row.js
+var args = arguments[0] || {};
+$.rowView.title = args.title || '';
+$.rowView.url = args.url || '';
+</code></pre>
+
+
+<p>使用Alloy.Globals命名空间可以保存全局变量：<code>Alloy.Globals.xxx = ...</code></p>
+
+<p>alloy.js运行于应用的生命周期之前，会在index.js加载之前调用，也就是任何UI加载之前。</p>
+
+<p>lib文件夹用于类库，也可以建立平台子文件夹（如ios）。但require时，不需要指定平台名。</p>
+
+<p>当前，Controller已经默认加载了Alloy, Underscore.js和Backbone.js，但以后可能需要自己加载：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var Alloy = require('alloy'), _ = require("alloy/underscore")._, Backbone = require("alloy/backbone");</code></pre>
+
+
+<h2>2. Alloy Models</h2>
+
+<h3>2.1 Alloy Collection and Model Objexts</h3>
+
+<h4>2.1.1 Models</h4>
+
+<p>In Alloy, models inherit from the <a href="http://docs.appcelerator.com/backbone/0.9.2/#Model">Backbone.Model</a> class.</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>exports.definition = {
+    config : {
+ // table schema and adapter information
+    },
+    extendModel: function(Model) {      
+        _.extend(Model.prototype, {
+ // Extend, override or implement Backbone.Model 
+        });
+ 
+ return Model;
+    },
+    extendCollection: function(Collection) {        
+        _.extend(Collection.prototype, {
+ // Extend, override or implement Backbone.Collection 
+        });
+ 
+ return Collection;
+    }
+}</code></pre>
+
+
+<p>在Controller中访问Model:</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var book = Alloy.createModel('book', {title:'Green Eggs and Ham', author:'Dr. Seuss'}); 
+var title = book.get('title');
+var author = book.get('author');
+// Label object in the view with id = 'label'
+$.label.text = title + ' by ' + author;</code></pre>
+
+
+<p>全局Model单例：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>// This will create a singleton if it has not been previously created,
+// or retrieves the singleton if it already exists.
+var book = Alloy.Models.instance('book');</code></pre>
+
+
+<h5>2.1.1.1 定义表结构</h5>
+
+<p>config对象有三部分：columns, defaults和adapter.</p>
+
+<p>columns定义表结构。对应SQLite，支持以下类型：string, varchar, int, tinyint, smallint, bigint, double, float, decimal, number, date, datetime and boolean，其它未知类型将视为TEXT。</p>
+
+<p>defaults对象用于设置默认值。</p>
+
+<p>adapter对象定义存储接口。</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>exports.definition = {
+    config: {
+ "columns": {
+ "title": "String",
+ "author": "String",
+ "book_id": "INTEGER PRIMARY KEY AUTOINCREMENT" //自增长
+        },
+ "defaults": { //默认值
+ "title": "-",
+ "author": "-"
+        },
+ "adapter": { 
+ "type": "sql", //存储类型SQLite
+ "collection_name": "books", //表名
+  "idAttribute": "book_id" //主键
+        }
+    }
+}</code></pre>
+
+
+<h5>2.1.1.2 Extending the Backbone.Model Class</h5>
+
+<p>在extendModel中扩展方法，例如validate方法.</p>
+
+<h4>2.1.2 Collections</h4>
+
+<p>在Controller中创建Collection，作用域为本Controller:</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var library = Alloy.createCollection('book'); 
+library.fetch(); // Grab data from persistent storage </code></pre>
+
+
+<p>创建全局单例Collection:</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>// This will create a singleton if it has not been previously created,
+// or retrieves the singleton if it already exists.
+var library = Alloy.Collections.instance('book');</code></pre>
+
+
+<p>在extendCollection中定义扩展Backbone的方法，例如：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>// Implement the comparator method.
+comparator : function(book) {
+    return book.get('title');
+}</code></pre>
+
+
+<p></p>
+
+<p>Backbone.Collection继承了underscore的一些集合操作方法，例如迭代：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var data = [];
+library.map(function(book) {
+ // The book argument is an individual model object in the collection
+    var title = book.get('title');
+    var row = Ti.UI.createTableViewRow({"title":title});
+    data.push(row);
+});
+// TableView object in the view with id = 'table'
+$.table.setData(data);</code></pre>
+
+
+<p>事件处理：use the Backbone.Events on, off and trigger methods</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var library = Alloy.createCollection('book');
+function event_callback (context) {
+    var output = context || 'change is bad.';
+    Ti.API.info(output);
+};
+// Bind the callback to the change event of the collection.
+library.on('change', event_callback);
+// Trigger the change event and pass context to the handler.
+library.trigger('change', 'change is good.');
+// Passing no parameters to the off method unbinds all event callbacks to the object.
+library.off();
+// This trigger does not have a response.
+library.trigger('change');</code></pre>
+
+
+<p>注意：如果事件名称不要使用空格。因为Backbone使用了空格来处理多事件。</p>
+
+<h3>2.2 Alloy Data Binding</h3>
+
+<p>当Collection或Model变化时，View也跟随变化，这就是绑定.</p>
+
+<p><strong>注意：如果使用绑定，必须在controller关闭时，调用<code>$.destroy()</code>方法，以避免内存泄露:</strong></p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>$.win.addEventListener("close", function(){
+    $.destroy();
+} </code></pre>
+
+
+<h4>2.2.1 Collection-View Binding</h4>
+
+<p>以下View对象支持Collection绑定：</p>
+
+<table>
+<thead>
+<tr>
+<th>View Object </th>
+<th> Add data binding attributes to&hellip; </th>
+<th> Repeater Object</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ButtonBar </td>
+<td> <code>&lt;Labels&gt;</code> </td>
+<td> <code>&lt;Label/&gt;</code></td>
+</tr>
+<tr>
+<td>CoverFlowView </td>
+<td> <code>&lt;Images&gt;</code> </td>
+<td> <code>&lt;Image/&gt;</code></td>
+</tr>
+<tr>
+<td>ListView </td>
+<td> <code>&lt;ListSection&gt;</code> </td>
+<td> <code>&lt;ListItem/&gt;</code></td>
+</tr>
+<tr>
+<td>Map Module </td>
+<td> <code>&lt;Module module="ti.map" method="createView"&gt;</code>  </td>
+<td> <code>&lt;Annotation/&gt;</code></td>
+</tr>
+<tr>
+<td>Picker </td>
+<td> <code>&lt;PickerColumn&gt;</code> or <code>&lt;Column&gt;</code> </td>
+<td> <code>&lt;PickerRow/&gt;</code> or <code>&lt;Row/&gt;</code></td>
+</tr>
+<tr>
+<td>ScrollableView </td>
+<td> <code>&lt;ScrollableView&gt;</code> </td>
+<td> <code>&lt;View/&gt;</code></td>
+</tr>
+<tr>
+<td>TableView </td>
+<td> <code>&lt;TableView&gt;</code> </td>
+<td> <code>&lt;TableViewRow/&gt;</code></td>
+</tr>
+<tr>
+<td>TabbedBar </td>
+<td> <code>&lt;Labels&gt;</code> </td>
+<td> <code>&lt;Label/&gt;</code></td>
+</tr>
+<tr>
+<td>Toolbar </td>
+<td> <code>&lt;Items&gt;</code> </td>
+<td> <code>&lt;Item/&gt;</code></td>
+</tr>
+<tr>
+<td>View </td>
+<td> <code>&lt;View&gt;</code> </td>
+<td> 除了Window和TabGroup之外的View对象</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>在XML中定义以下元素，其中只有dataCollection是必须的：</p>
+
+<ul>
+<li>dataCollection: 指定一个Collection</li>
+<li>dataTransform: 回调方法，传入model，返回修改的JSON对象</li>
+<li>dataFilter: 过滤collection, 传入collection, 返回model数组</li>
+<li>dataFunction: 指定一个方法名，controller使用这个方法来更新view。这个方法不是controller中声明的方法。该属性创建一个别名访问内在的绑定方法。（<a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Alloy_Data_Binding-section-36739592_AlloyDataBinding-BackboneBinding">没搞懂</a>）</li>
+</ul>
+
+
+<p>对于Collection中的model，xml中可以使用<code>{}</code>来获取model的值，例如：<code>&lt;Label text="{title} by {author}" /&gt;</code>。</p>
+
+<p>在repeater对象的controller中，可以使用<code>$model</code>来引用当前model。如<code>$model.title</code></p>
+
+<p>Collection绑定示例：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>app/views/index.xml
+&lt;Alloy&gt;
+    &lt;Collection src="book"/&gt;
+    &lt;Window backgroundColor="white" onClose="cleanup"&gt;
+        &lt;ScrollableView dataCollection="book"&gt;
+            &lt;View layout="vertical"&gt;
+                &lt;ImageView image="{cover}" /&gt;
+                &lt;Label text="{title} by {artist}" /&gt;
+            &lt;/View&gt;
+        &lt;/ScrollableView&gt; 
+    &lt;/Window&gt;
+&lt;/Alloy&gt;
+
+app/controllers/index.js
+$.index.open();
+Alloy.Collections.album.fetch();
+ 
+function cleanup() {
+    $.destroy();
+}
+</code></pre>
+
+
+<h4>2.2.2 Model-View Binding</h4>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>&lt;Alloy&gt;
+    &lt;Model src="settings"/&gt;
+    &lt;Window backgroundColor="white" onClose="cleanup"&gt;
+        &lt;View layout="vertical"&gt;
+            &lt;Label text="Text Size" /&gt;
+            &lt;Slider value="{settings.textsize}" max="5" min="1"/&gt;
+            &lt;Label text="Bold"/&gt;
+            &lt;Switch value="{settings.bold}" /&gt;
+            &lt;Label text="Italics"/&gt;
+            &lt;Switch value="{settings.italics}" /&gt;
+        &lt;/View&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;</code></pre>
+
+
+<p>上例中，获取值使用的格式为：<code>{modelName.attrName}</code></p>
+
+<h4>2.2.3 Collection方法示例</h4>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>app/views/index.xml
+&lt;Alloy&gt;
+    &lt;Collection src="book" /&gt;
+    &lt;Window class="container"&gt;
+        &lt;TableView dataCollection="book"
+                   dataTransform="transformFunction"
+                   dataFilter="filterFunction"
+                   dataFunction="updateUI"
+                   onDragEnd="refreshTable"&gt;
+            &lt;!-- Also can use Require --&gt;
+            &lt;TableViewRow title="{title}" /&gt;
+        &lt;/TableView&gt;
+    &lt;/Window&gt;
+&lt;/Alloy&gt;
+
+app/controllers/index.js
+$.index.open();
+ 
+// Encase the title attribute in square brackets
+function transformFunction(model) {
+ // Need to convert the model to a JSON object
+    var transform = model.toJSON();
+    transform.title = '[' + transform.title + ']';
+ // Example of creating a custom attribute, reference in the view using {custom}
+    transform.custom = transform.title + " by " + transform.author;
+ return transform;
+}
+// Show only book models by Mark Twain
+function filterFunction(collection) {
+ return collection.where({author:'Mark Twain'});
+}
+ 
+function refreshTable(){
+ // Trigger the binding function identified by the dataFunction attribute
+    updateUI();
+}
+// Trigger the synchronization
+var library = Alloy.Collections.book;
+library.fetch();
+ 
+// Free model-view data binding resources when this view-controller closes
+$.index.addEventListener('close', function() {
+    $.destroy();
+});</code></pre>
+
+
+<p>当数据变化时，上面的例子中的界面会跟着变化。如果想避免发生变化，可以在调用Backbone方法修改model数据时指定参数：<code>{silent:true}</code>.</p>
+
+<h3>2.3 Alloy数据持久化与升级</h3>
+
+<p>Model数据可以同步到本地或远程服务器。这项功能使用的是Backbone sync方法。</p>
+
+<h4>2.3.1 Backbone同步方式</h4>
+
+<p>Backbone sync时，默认会执行RESTful JSON请求到Model.urlRoot或者Collection.url。读操作使用GET方法，写操作使用POST方法。不论Model是否定义了自己的主键，Backbone都会创建Client ID(cid)。在未保存前，可以使用Model.cid或者Collection.getByCid方法来存取数据。Backbone同步示例：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>// Since the urlRoot attribute is defined, all HTTP commands are to /library
+var Book = Backbone.Model.extend({urlRoot:'/library'})
+var book = new Book();
+ 
+// Performs a POST on /library with the arguments as a payload and the server returns the id as 1
+book.save({title:'Bossypants',author:'Tina Fey',checkout:false}) 
+ 
+// Performs a GET on /library/1
+book.fetch({id:1}); 
+ 
+// Performs a PUT on /library/1 with the entire modified object as a payload.
+book.save({checkout:true});
+ 
+// Performs a DELETE on /library/1
+book.destroy();</code></pre>
+
+
+<h4>2.3.2Alloy的同步方式</h4>
+
+<p>Alloy支持SQLite或者properties来保存数据。Alloy查询SQLite时，可以使用简单查询或者prepared statement:</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var library = Alloy.createCollection('book');
+// The table name is the same as the collection_name value from the 'config.adapter' object. This may be different from the model name.
+var table = library.config.adapter.collection_name;
+// use a simple query
+library.fetch({query:'SELECT * from ' + table + ' where author="' + searchAuthor + '"'});
+// or a prepared statement
+library.fetch({query: { statement: 'SELECT * from ' + table + ' where author = ?', params: [searchAuthor] }});
+
+//查询1条记录：
+myModel.fetch({id: 123});
+// is equivalent to
+myModel.fetch({query: 'select * from ... where id = ' + 123 });</code></pre>
+
+
+<h4>2.3.3 数据库迁移（升级或降级）</h4>
+
+<p>Alloy采用migration对象来迁移数据库。首先，要将相应的JavaScript文件放在app/migrations文件夹下。文件名采用以下格式：<code>YYYYMMDDHHmmss_MODELNAME.js</code>，例如20150120160155_book.js。Alloy将升序执行js文件以完成数据库迁移。</p>
+
+<p>JavaScript文件中要实现两个方法：migration.up(migrator) 和 migration.down(migrator)。migrator对象的值如下：</p>
+
+<table>
+<thead>
+<tr>
+<th>Key </th>
+<th> Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>db </td>
+<td> Ti.Database实例，可以调用db.execute方法执行SQL。<strong>注意不要关闭或打开另一个实例。</strong></td>
+</tr>
+<tr>
+<td>dbname </td>
+<td> 数据库名</td>
+</tr>
+<tr>
+<td>table </td>
+<td> table名，也就是Model的config.adapter.collection_name值</td>
+</tr>
+<tr>
+<td>idAttribute </td>
+<td> 主键字段名</td>
+</tr>
+<tr>
+<td>createTable </td>
+<td> 创建表的方法，参数为Model config.columns</td>
+</tr>
+<tr>
+<td>dropTable </td>
+<td> 删除表</td>
+</tr>
+<tr>
+<td>insertRow </td>
+<td> 插入行, 参数为待插入的数据对象</td>
+</tr>
+<tr>
+<td>deleteRow </td>
+<td> 删除行，参数为待删除的数据对象</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>下面的示例先创建表将初始数据，之后进行了升级:</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>app/migrations/20120610049877_book.js
+var preload_data = [
+    {title: 'To Kill a Mockingbird', author:'Harper Lee'}
+];
+ 
+migration.up = function(migrator)
+{
+    migrator.createTable({
+ "columns":
+        {
+ "book": "TEXT",
+ "author": "TEXT"
+        }
+    });
+ for (var i = 0; i &lt; preload_data.length; i++) { 
+        migrator.insertRow(preload_data[i]);
+    }
+};
+ 
+migration.down = function(migrator)
+{
+    migrator.dropTable();
+};
+
+//升级app/migrations/20130118069778_book.js
+migration.up = function(migrator) {
+    migrator.db.execute('ALTER TABLE ' + migrator.table + ' ADD COLUMN isbn INT;');
+};
+migration.down = function(migrator) {
+    var db = migrator.db;
+    var table = migrator.table;
+    db.execute('CREATE TEMPORARY TABLE book_backup(title,author,alloy_id);')
+    db.execute('INSERT INTO book_backup SELECT title,author,alloy_id FROM ' + table + ';');
+    migrator.dropTable();
+    migrator.createTable({
+        columns: {
+            title:"TEXT",
+            author:"TEXT",
+        },
+    });
+    db.execute('INSERT INTO ' + table + ' SELECT title,author,alloy_id FROM book_backup;');
+    db.execute('DROP TABLE book_backup;');
+};</code></pre>
+
+
+<h2>3. Alloy Widgets</h2>
+
+<p>在Alloy XML Markup中已经介绍了如何使用Widgets，这里主要介绍如何创建Widgets。</p>
+
+<p>Widgets应放在app/Widgets文件夹下，与app文件夹一相，每个Widget也有自己的views, controllers, models, styles and assets等。在Widget中不能访问除了i18n之外的文件。其它主要区别如下：</p>
+
+<ul>
+<li>使用WPATH()来自动处理assets和libs的路径总是。例如要在Widget中require <code>app/widgets/foo/lib/helper.js</code>，可以<code>require(WPATH('helper'))</code>。对于<code>app/widgets/foo/assets/images/foo.png</code>使用<code>WPATH('images/foo.png')</code>。</li>
+<li>Widgets使用自己的配置文件widget.json</li>
+<li>Widgets的主controller是widget.js，而不是index.js。创建widget内的另一个controller需要使用Widget.createController方法。</li>
+<li>所有Widget控制器中的方法均为私有方法，除非使用$，例如<code>$.init=function(){...}</code>，然后就可以在项目中调用：<code>$.fooWidget.init()</code>.</li>
+<li>Widget中也可以创建Model和Collection, 但要使用Widget.createModel和Widget.createCollection方法。</li>
+<li>样式文件为widget.tss</li>
+<li>Widget同样可以有Theme, 相关样式和资源要放到：<code>app/themes/&lt;THEME_NAME&gt;/&lt;WIDGET_NAME&gt;</code>。</li>
+<li>Widget的主View是widget.xml而不是index.xml。当Widget中的某个view指定了id(eg. buttonId)时，在项目中可以这样引用：<code>$.fooWidget.buttonId.xxx</code></li>
+<li>Widget可以包含其它Widget。需要在widget.json中定义依赖。在controller中可以调用：<code>Widget.createWidget(widget_name, [controller_name])</code></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-11T19:25:14+08:00" pubdate data-updated="true">2015-01-11</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/yi-dong-kai-fa/'>移动开发</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/01/10/titaniumxue-xi-bi-ji/" title="Previous Post: Titanium Alloy基础">&laquo; Titanium Alloy基础</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (26)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (5)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/01/11/titanium-alloy-mvc/">Titanium Alloy MVC</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/10/titaniumxue-xi-bi-ji/">Titanium Alloy基础</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/04/jvmjian-kong-yu-gu-zhang-chu-li-gong-ju/">JVM监控与故障处理工具</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/26/la-ji-shou-ji-qi-yu-nei-cun-fen-pei-ce-lue/">Java垃圾收集与内存分配</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/20/%5B%3F%5D-ci-jie-jue-tomcatqi-dong-guo-man-de-jing-li/">SecureRandom导致Tomcat启动过慢</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+</footer>
+  <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1942741"></script>
+<!-- UY END -->
+
+<!--以下为disqus的代码，因为被墙，改用上面的国内代码
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'meixuesong';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.ubone.com/blog/2015/01/11/titanium-alloy-mvc/';
+        var disqus_url = 'http://blog.ubone.com/blog/2015/01/11/titanium-alloy-mvc/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+-->
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 移动开发 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/yi-dong-kai-fa/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-01-04T22:16:56+08:00</updated>
+  <updated>2015-01-11T19:55:28+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,1330 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Titanium Alloy MVC]]></title>
+    <link href="http://blog.ubone.com/blog/2015/01/11/titanium-alloy-mvc/"/>
+    <updated>2015-01-11T19:25:14+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/01/11/titanium-alloy-mvc</id>
+    <content type="html"><![CDATA[<p>这是一篇学习笔记，主要内容是Alloy的Controller, Model, Collection, View以及Widget.</p>
+
+<!--more-->
+
+
+<h2>1. Alloy Controllers</h2>
+
+<p>创建Controller和获得View: Alloy.createController and Controller.getView.</p>
+
+<p>可以继承：exports.baseController = &lsquo;baseControllerName'，子类继承父类export的方法，并可以重写。</p>
+
+<p>可以在Controller中判断当前平台：OS_ANDROID, OS_BLACKBERRY, OS_IOS, OS_MOBILEWEB, ENV_DEV, ENV_TEST, ENV_PRODUCTION, DIST_ADHOC, DIST_STORE:</p>
+
+<p><code>if (OS_IOS) {...}</code></p>
+
+<p>传参：</p>
+
+<p>```javascript
+//index.js
+var arg = {</p>
+
+<pre><code>    title: source[i].postTitle,
+    url: source[i].postLink
+};
+data.push(Alloy.createController('row', arg).getView());
+</code></pre>
+
+<p>//row.js
+var args = arguments[0] || {};
+$.rowView.title = args.title || &lsquo;&rsquo;;
+$.rowView.url = args.url || &lsquo;&rsquo;;</p>
+
+<p>```</p>
+
+<p>使用Alloy.Globals命名空间可以保存全局变量：<code>Alloy.Globals.xxx = ...</code></p>
+
+<p>alloy.js运行于应用的生命周期之前，会在index.js加载之前调用，也就是任何UI加载之前。</p>
+
+<p>lib文件夹用于类库，也可以建立平台子文件夹（如ios）。但require时，不需要指定平台名。</p>
+
+<p>当前，Controller已经默认加载了Alloy, Underscore.js和Backbone.js，但以后可能需要自己加载：</p>
+
+<p><code>javascript
+var Alloy = require('alloy'), _ = require("alloy/underscore")._, Backbone = require("alloy/backbone");
+</code></p>
+
+<h2>2. Alloy Models</h2>
+
+<h3>2.1 Alloy Collection and Model Objexts</h3>
+
+<h4>2.1.1 Models</h4>
+
+<p>In Alloy, models inherit from the <a href="http://docs.appcelerator.com/backbone/0.9.2/#Model">Backbone.Model</a> class.</p>
+
+<p>```javascript
+exports.definition = {</p>
+
+<pre><code>config : {
+</code></pre>
+
+<p> // table schema and adapter information</p>
+
+<pre><code>},
+extendModel: function(Model) {      
+    _.extend(Model.prototype, {
+</code></pre>
+
+<p> // Extend, override or implement Backbone.Model</p>
+
+<pre><code>    });
+</code></pre>
+
+<p> return Model;</p>
+
+<pre><code>},
+extendCollection: function(Collection) {        
+    _.extend(Collection.prototype, {
+</code></pre>
+
+<p> // Extend, override or implement Backbone.Collection</p>
+
+<pre><code>    });
+</code></pre>
+
+<p> return Collection;</p>
+
+<pre><code>}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>在Controller中访问Model:</p>
+
+<p><code>javascript
+var book = Alloy.createModel('book', {title:'Green Eggs and Ham', author:'Dr. Seuss'});
+var title = book.get('title');
+var author = book.get('author');
+// Label object in the view with id = 'label'
+$.label.text = title + ' by ' + author;
+</code></p>
+
+<p>全局Model单例：</p>
+
+<p><code>javascript
+// This will create a singleton if it has not been previously created,
+// or retrieves the singleton if it already exists.
+var book = Alloy.Models.instance('book');
+</code></p>
+
+<h5>2.1.1.1 定义表结构</h5>
+
+<p>config对象有三部分：columns, defaults和adapter.</p>
+
+<p>columns定义表结构。对应SQLite，支持以下类型：string, varchar, int, tinyint, smallint, bigint, double, float, decimal, number, date, datetime and boolean，其它未知类型将视为TEXT。</p>
+
+<p>defaults对象用于设置默认值。</p>
+
+<p>adapter对象定义存储接口。</p>
+
+<p>```
+exports.definition = {</p>
+
+<pre><code>config: {
+</code></pre>
+
+<p> &ldquo;columns&rdquo;: {
+ &ldquo;title&rdquo;: &ldquo;String&rdquo;,
+ &ldquo;author&rdquo;: &ldquo;String&rdquo;,
+ &ldquo;book_id&rdquo;: &ldquo;INTEGER PRIMARY KEY AUTOINCREMENT&rdquo; //自增长</p>
+
+<pre><code>    },
+</code></pre>
+
+<p> &ldquo;defaults&rdquo;: { //默认值
+ &ldquo;title&rdquo;: &ldquo;&ndash;&rdquo;,
+ &ldquo;author&rdquo;: &ldquo;&ndash;&rdquo;</p>
+
+<pre><code>    },
+</code></pre>
+
+<p> &ldquo;adapter&rdquo;: {
+ &ldquo;type&rdquo;: &ldquo;sql&rdquo;, //存储类型SQLite
+ &ldquo;collection_name&rdquo;: &ldquo;books&rdquo;, //表名
+  &ldquo;idAttribute&rdquo;: &ldquo;book_id&rdquo; //主键</p>
+
+<pre><code>    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h5>2.1.1.2 Extending the Backbone.Model Class</h5>
+
+<p>在extendModel中扩展方法，例如validate方法.</p>
+
+<h4>2.1.2 Collections</h4>
+
+<p>在Controller中创建Collection，作用域为本Controller:</p>
+
+<p><code>
+var library = Alloy.createCollection('book');
+library.fetch(); // Grab data from persistent storage
+</code></p>
+
+<p>创建全局单例Collection:</p>
+
+<p><code>
+// This will create a singleton if it has not been previously created,
+// or retrieves the singleton if it already exists.
+var library = Alloy.Collections.instance('book');
+</code></p>
+
+<p>在extendCollection中定义扩展Backbone的方法，例如：</p>
+
+<p>```
+// Implement the comparator method.
+comparator : function(book) {</p>
+
+<pre><code>return book.get('title');
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Backbone.Collection继承了underscore的一些集合操作方法，例如迭代：</p>
+
+<p>```
+var data = [];
+library.map(function(book) {
+ // The book argument is an individual model object in the collection</p>
+
+<pre><code>var title = book.get('title');
+var row = Ti.UI.createTableViewRow({"title":title});
+data.push(row);
+</code></pre>
+
+<p>});
+// TableView object in the view with id = &lsquo;table&rsquo;
+$.table.setData(data);
+```</p>
+
+<p>事件处理：use the Backbone.Events on, off and trigger methods</p>
+
+<p>```
+var library = Alloy.createCollection(&lsquo;book&rsquo;);
+function event_callback (context) {</p>
+
+<pre><code>var output = context || 'change is bad.';
+Ti.API.info(output);
+</code></pre>
+
+<p>};
+// Bind the callback to the change event of the collection.
+library.on(&lsquo;change&rsquo;, event_callback);
+// Trigger the change event and pass context to the handler.
+library.trigger(&lsquo;change&rsquo;, &lsquo;change is good.&rsquo;);
+// Passing no parameters to the off method unbinds all event callbacks to the object.
+library.off();
+// This trigger does not have a response.
+library.trigger(&lsquo;change&rsquo;);
+```</p>
+
+<p>注意：如果事件名称不要使用空格。因为Backbone使用了空格来处理多事件。</p>
+
+<h3>2.2 Alloy Data Binding</h3>
+
+<p>当Collection或Model变化时，View也跟随变化，这就是绑定.</p>
+
+<p><strong>注意：如果使用绑定，必须在controller关闭时，调用<code>$.destroy()</code>方法，以避免内存泄露:</strong></p>
+
+<p>```
+$.win.addEventListener(&ldquo;close&rdquo;, function(){</p>
+
+<pre><code>$.destroy();
+</code></pre>
+
+<p>}
+```</p>
+
+<h4>2.2.1 Collection-View Binding</h4>
+
+<p>以下View对象支持Collection绑定：</p>
+
+<table>
+<thead>
+<tr>
+<th>View Object </th>
+<th> Add data binding attributes to&hellip; </th>
+<th> Repeater Object</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ButtonBar </td>
+<td> <code>&lt;Labels&gt;</code> </td>
+<td> <code>&lt;Label/&gt;</code></td>
+</tr>
+<tr>
+<td>CoverFlowView </td>
+<td> <code>&lt;Images&gt;</code> </td>
+<td> <code>&lt;Image/&gt;</code></td>
+</tr>
+<tr>
+<td>ListView </td>
+<td> <code>&lt;ListSection&gt;</code> </td>
+<td> <code>&lt;ListItem/&gt;</code></td>
+</tr>
+<tr>
+<td>Map Module </td>
+<td> <code>&lt;Module module="ti.map" method="createView"&gt;</code>  </td>
+<td> <code>&lt;Annotation/&gt;</code></td>
+</tr>
+<tr>
+<td>Picker </td>
+<td> <code>&lt;PickerColumn&gt;</code> or <code>&lt;Column&gt;</code> </td>
+<td> <code>&lt;PickerRow/&gt;</code> or <code>&lt;Row/&gt;</code></td>
+</tr>
+<tr>
+<td>ScrollableView </td>
+<td> <code>&lt;ScrollableView&gt;</code> </td>
+<td> <code>&lt;View/&gt;</code></td>
+</tr>
+<tr>
+<td>TableView </td>
+<td> <code>&lt;TableView&gt;</code> </td>
+<td> <code>&lt;TableViewRow/&gt;</code></td>
+</tr>
+<tr>
+<td>TabbedBar </td>
+<td> <code>&lt;Labels&gt;</code> </td>
+<td> <code>&lt;Label/&gt;</code></td>
+</tr>
+<tr>
+<td>Toolbar </td>
+<td> <code>&lt;Items&gt;</code> </td>
+<td> <code>&lt;Item/&gt;</code></td>
+</tr>
+<tr>
+<td>View </td>
+<td> <code>&lt;View&gt;</code> </td>
+<td> 除了Window和TabGroup之外的View对象</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>在XML中定义以下元素，其中只有dataCollection是必须的：</p>
+
+<ul>
+<li>dataCollection: 指定一个Collection</li>
+<li>dataTransform: 回调方法，传入model，返回修改的JSON对象</li>
+<li>dataFilter: 过滤collection, 传入collection, 返回model数组</li>
+<li>dataFunction: 指定一个方法名，controller使用这个方法来更新view。这个方法不是controller中声明的方法。该属性创建一个别名访问内在的绑定方法。（<a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Alloy_Data_Binding-section-36739592_AlloyDataBinding-BackboneBinding">没搞懂</a>）</li>
+</ul>
+
+
+<p>对于Collection中的model，xml中可以使用<code>{}</code>来获取model的值，例如：<code>&lt;Label text="{title} by {author}" /&gt;</code>。</p>
+
+<p>在repeater对象的controller中，可以使用<code>$model</code>来引用当前model。如<code>$model.title</code></p>
+
+<p>Collection绑定示例：</p>
+
+<p>```
+app/views/index.xml
+<Alloy></p>
+
+<pre><code>&lt;Collection src="book"/&gt;
+&lt;Window backgroundColor="white" onClose="cleanup"&gt;
+    &lt;ScrollableView dataCollection="book"&gt;
+        &lt;View layout="vertical"&gt;
+            &lt;ImageView image="{cover}" /&gt;
+            &lt;Label text="{title} by {artist}" /&gt;
+        &lt;/View&gt;
+    &lt;/ScrollableView&gt;   
+&lt;/Window&gt;
+</code></pre>
+
+<p></Alloy></p>
+
+<p>app/controllers/index.js
+$.index.open();
+Alloy.Collections.album.fetch();</p>
+
+<p>function cleanup() {</p>
+
+<pre><code>$.destroy();
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<h4>2.2.2 Model-View Binding</h4>
+
+<p>```
+<Alloy></p>
+
+<pre><code>&lt;Model src="settings"/&gt;
+&lt;Window backgroundColor="white" onClose="cleanup"&gt;
+    &lt;View layout="vertical"&gt;
+        &lt;Label text="Text Size" /&gt;
+        &lt;Slider value="{settings.textsize}" max="5" min="1"/&gt;
+        &lt;Label text="Bold"/&gt;
+        &lt;Switch value="{settings.bold}" /&gt;
+        &lt;Label text="Italics"/&gt;
+        &lt;Switch value="{settings.italics}" /&gt;
+    &lt;/View&gt;
+&lt;/Window&gt;
+</code></pre>
+
+<p></Alloy>
+```</p>
+
+<p>上例中，获取值使用的格式为：<code>{modelName.attrName}</code></p>
+
+<h4>2.2.3 Collection方法示例</h4>
+
+<p>```
+app/views/index.xml
+<Alloy></p>
+
+<pre><code>&lt;Collection src="book" /&gt;
+&lt;Window class="container"&gt;
+    &lt;TableView dataCollection="book"
+               dataTransform="transformFunction"
+               dataFilter="filterFunction"
+               dataFunction="updateUI"
+               onDragEnd="refreshTable"&gt;
+        &lt;!-- Also can use Require --&gt;
+        &lt;TableViewRow title="{title}" /&gt;
+    &lt;/TableView&gt;
+&lt;/Window&gt;
+</code></pre>
+
+<p></Alloy></p>
+
+<p>app/controllers/index.js
+$.index.open();</p>
+
+<p>// Encase the title attribute in square brackets
+function transformFunction(model) {
+ // Need to convert the model to a JSON object</p>
+
+<pre><code>var transform = model.toJSON();
+transform.title = '[' + transform.title + ']';
+</code></pre>
+
+<p> // Example of creating a custom attribute, reference in the view using {custom}</p>
+
+<pre><code>transform.custom = transform.title + " by " + transform.author;
+</code></pre>
+
+<p> return transform;
+}
+// Show only book models by Mark Twain
+function filterFunction(collection) {
+ return collection.where({author:&lsquo;Mark Twain&rsquo;});
+}</p>
+
+<p>function refreshTable(){
+ // Trigger the binding function identified by the dataFunction attribute</p>
+
+<pre><code>updateUI();
+</code></pre>
+
+<p>}
+// Trigger the synchronization
+var library = Alloy.Collections.book;
+library.fetch();</p>
+
+<p>// Free model-view data binding resources when this view-controller closes
+$.index.addEventListener(&lsquo;close&rsquo;, function() {</p>
+
+<pre><code>$.destroy();
+</code></pre>
+
+<p>});
+```</p>
+
+<p>当数据变化时，上面的例子中的界面会跟着变化。如果想避免发生变化，可以在调用Backbone方法修改model数据时指定参数：<code>{silent:true}</code>.</p>
+
+<h3>2.3 Alloy数据持久化与升级</h3>
+
+<p>Model数据可以同步到本地或远程服务器。这项功能使用的是Backbone sync方法。</p>
+
+<h4>2.3.1 Backbone同步方式</h4>
+
+<p>Backbone sync时，默认会执行RESTful JSON请求到Model.urlRoot或者Collection.url。读操作使用GET方法，写操作使用POST方法。不论Model是否定义了自己的主键，Backbone都会创建Client ID(cid)。在未保存前，可以使用Model.cid或者Collection.getByCid方法来存取数据。Backbone同步示例：</p>
+
+<p>```
+// Since the urlRoot attribute is defined, all HTTP commands are to /library
+var Book = Backbone.Model.extend({urlRoot:&lsquo;/library&rsquo;})
+var book = new Book();</p>
+
+<p>// Performs a POST on /library with the arguments as a payload and the server returns the id as 1
+book.save({title:&lsquo;Bossypants&rsquo;,author:&lsquo;Tina Fey&rsquo;,checkout:false})</p>
+
+<p>// Performs a GET on /library/1
+book.fetch({id:1});</p>
+
+<p>// Performs a PUT on /library/1 with the entire modified object as a payload.
+book.save({checkout:true});</p>
+
+<p>// Performs a DELETE on /library/1
+book.destroy();
+```</p>
+
+<h4>2.3.2Alloy的同步方式</h4>
+
+<p>Alloy支持SQLite或者properties来保存数据。Alloy查询SQLite时，可以使用简单查询或者prepared statement:</p>
+
+<p>```javascript
+var library = Alloy.createCollection(&lsquo;book&rsquo;);
+// The table name is the same as the collection_name value from the &lsquo;config.adapter&rsquo; object. This may be different from the model name.
+var table = library.config.adapter.collection_name;
+// use a simple query
+library.fetch({query:&lsquo;SELECT * from &rsquo; + table + &lsquo; where author=&ldquo;&rsquo; + searchAuthor + &lsquo;&rdquo;&rsquo;});
+// or a prepared statement
+library.fetch({query: { statement: &lsquo;SELECT * from &rsquo; + table + &lsquo; where author = ?&rsquo;, params: [searchAuthor] }});</p>
+
+<p>//查询1条记录：
+myModel.fetch({id: 123});
+// is equivalent to
+myModel.fetch({query: &lsquo;select * from &hellip; where id = &rsquo; + 123 });
+```</p>
+
+<h4>2.3.3 数据库迁移（升级或降级）</h4>
+
+<p>Alloy采用migration对象来迁移数据库。首先，要将相应的JavaScript文件放在app/migrations文件夹下。文件名采用以下格式：<code>YYYYMMDDHHmmss_MODELNAME.js</code>，例如20150120160155_book.js。Alloy将升序执行js文件以完成数据库迁移。</p>
+
+<p>JavaScript文件中要实现两个方法：migration.up(migrator) 和 migration.down(migrator)。migrator对象的值如下：</p>
+
+<table>
+<thead>
+<tr>
+<th>Key </th>
+<th> Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>db </td>
+<td> Ti.Database实例，可以调用db.execute方法执行SQL。<strong>注意不要关闭或打开另一个实例。</strong></td>
+</tr>
+<tr>
+<td>dbname </td>
+<td> 数据库名</td>
+</tr>
+<tr>
+<td>table </td>
+<td> table名，也就是Model的config.adapter.collection_name值</td>
+</tr>
+<tr>
+<td>idAttribute </td>
+<td> 主键字段名</td>
+</tr>
+<tr>
+<td>createTable </td>
+<td> 创建表的方法，参数为Model config.columns</td>
+</tr>
+<tr>
+<td>dropTable </td>
+<td> 删除表</td>
+</tr>
+<tr>
+<td>insertRow </td>
+<td> 插入行, 参数为待插入的数据对象</td>
+</tr>
+<tr>
+<td>deleteRow </td>
+<td> 删除行，参数为待删除的数据对象</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>下面的示例先创建表将初始数据，之后进行了升级:</p>
+
+<p>```
+app/migrations/20120610049877_book.js
+var preload_data = [</p>
+
+<pre><code>{title: 'To Kill a Mockingbird', author:'Harper Lee'}
+</code></pre>
+
+<p>];</p>
+
+<p>migration.up = function(migrator)
+{</p>
+
+<pre><code>migrator.createTable({
+</code></pre>
+
+<p> &ldquo;columns&rdquo;:</p>
+
+<pre><code>    {
+</code></pre>
+
+<p> &ldquo;book&rdquo;: &ldquo;TEXT&rdquo;,
+ &ldquo;author&rdquo;: &ldquo;TEXT&rdquo;</p>
+
+<pre><code>    }
+});
+</code></pre>
+
+<p> for (var i = 0; i &lt; preload_data.length; i++) {</p>
+
+<pre><code>    migrator.insertRow(preload_data[i]);
+}
+</code></pre>
+
+<p>};</p>
+
+<p>migration.down = function(migrator)
+{</p>
+
+<pre><code>migrator.dropTable();
+</code></pre>
+
+<p>};</p>
+
+<p>//升级app/migrations/20130118069778_book.js
+migration.up = function(migrator) {</p>
+
+<pre><code>migrator.db.execute('ALTER TABLE ' + migrator.table + ' ADD COLUMN isbn INT;');
+</code></pre>
+
+<p>};
+migration.down = function(migrator) {</p>
+
+<pre><code>var db = migrator.db;
+var table = migrator.table;
+db.execute('CREATE TEMPORARY TABLE book_backup(title,author,alloy_id);')
+db.execute('INSERT INTO book_backup SELECT title,author,alloy_id FROM ' + table + ';');
+migrator.dropTable();
+migrator.createTable({
+    columns: {
+        title:"TEXT",
+        author:"TEXT",
+    },
+});
+db.execute('INSERT INTO ' + table + ' SELECT title,author,alloy_id FROM book_backup;');
+db.execute('DROP TABLE book_backup;');
+</code></pre>
+
+<p>};
+```</p>
+
+<h2>3. Alloy Widgets</h2>
+
+<p>在Alloy XML Markup中已经介绍了如何使用Widgets，这里主要介绍如何创建Widgets。</p>
+
+<p>Widgets应放在app/Widgets文件夹下，与app文件夹一相，每个Widget也有自己的views, controllers, models, styles and assets等。在Widget中不能访问除了i18n之外的文件。其它主要区别如下：</p>
+
+<ul>
+<li>使用WPATH()来自动处理assets和libs的路径总是。例如要在Widget中require <code>app/widgets/foo/lib/helper.js</code>，可以<code>require(WPATH('helper'))</code>。对于<code>app/widgets/foo/assets/images/foo.png</code>使用<code>WPATH('images/foo.png')</code>。</li>
+<li>Widgets使用自己的配置文件widget.json</li>
+<li>Widgets的主controller是widget.js，而不是index.js。创建widget内的另一个controller需要使用Widget.createController方法。</li>
+<li>所有Widget控制器中的方法均为私有方法，除非使用$，例如<code>$.init=function(){...}</code>，然后就可以在项目中调用：<code>$.fooWidget.init()</code>.</li>
+<li>Widget中也可以创建Model和Collection, 但要使用Widget.createModel和Widget.createCollection方法。</li>
+<li>样式文件为widget.tss</li>
+<li>Widget同样可以有Theme, 相关样式和资源要放到：<code>app/themes/&lt;THEME_NAME&gt;/&lt;WIDGET_NAME&gt;</code>。</li>
+<li>Widget的主View是widget.xml而不是index.xml。当Widget中的某个view指定了id(eg. buttonId)时，在项目中可以这样引用：<code>$.fooWidget.buttonId.xxx</code></li>
+<li>Widget可以包含其它Widget。需要在widget.json中定义依赖。在controller中可以调用：<code>Widget.createWidget(widget_name, [controller_name])</code></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Titanium Alloy基础]]></title>
+    <link href="http://blog.ubone.com/blog/2015/01/10/titaniumxue-xi-bi-ji/"/>
+    <updated>2015-01-10T20:32:42+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/01/10/titaniumxue-xi-bi-ji</id>
+    <content type="html"><![CDATA[<p>这是一篇学习笔记，主要内容是Alloy的基础概念。</p>
+
+<!--more-->
+
+
+<h2>1. Alloy框架</h2>
+
+<h3>1.1 Alloy相关概念</h3>
+
+<p><strong>Alloy models</strong> are built on top of <a href="http://backbonejs.org/">Backbone.js</a>, taking advantage of Backbone&rsquo;s rich Model and Collection APIs.</p>
+
+<p><strong>Alloy views</strong> are built from Titanium UI components.</p>
+
+<p><strong>Alloy controllers</strong> generally have a one-to-one relationship with Alloy views.</p>
+
+<p>Additionally, Alloy provides built-in support for <a href="http://underscorejs.org/">Underscore.js</a>, which provides a set of utility functions, such as array and iterative helpers.</p>
+
+<p>资源文件放于app/assets/android or app/assets/iphone folder.</p>
+
+<p>Titanium代码与Alloy XML:</p>
+
+<p>```javascript
+var button = Titanium.UI.createButton({</p>
+
+<pre><code>text: "Foobar",
+top: 0,
+width: Ti.UI.SIZE
+</code></pre>
+
+<p>});</p>
+
+<p>button.addEventListener(&lsquo;click&rsquo;, doClick);
+```</p>
+
+<p>等价于：</p>
+
+<p><code>
+&lt;Button title="Foobar" top="0" width="Ti.UI.SIZE"  onClick="doClick"/&gt;
+</code></p>
+
+<p>Alloy项目文件夹：</p>
+
+<table>
+<thead>
+<tr>
+<th>文件夹</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>app </td>
+<td> Contains the models, views, controllers and assets of the application. All work should be done here. See folder descriptions below.</td>
+</tr>
+<tr>
+<td><code>app/alloy.jmk</code> </td>
+<td> Build configuration file.</td>
+</tr>
+<tr>
+<td><code>app/alloy.js</code> </td>
+<td> Initializer file used to preconfigure components or override Alloy methods before the main controller is executed. </td>
+</tr>
+<tr>
+<td><code>app/config.json</code> </td>
+<td> Project configuration file.</td>
+</tr>
+<tr>
+<td><code>app/assets</code> </td>
+<td> Contains image assets and other files that need to be copied into the Resources directory. Reference these files in the code without the &lsquo;app/assets&rsquo; path and without the platform-specific if it is inside one.</td>
+</tr>
+<tr>
+<td><code>app/controllers</code> </td>
+<td> Contains controllers in the format filename.js to a corresponding view file <code>app/views/filename.xml</code>.</td>
+</tr>
+<tr>
+<td><code>app/lib</code> </td>
+<td> Contains application-specific library code, typically in the CommonJS format.</td>
+</tr>
+<tr>
+<td>app/migrations </td>
+<td> Contains database migration files in the format <code>&lt;DATETIME&gt;_filename.js</code>.</td>
+</tr>
+<tr>
+<td><code>app/models</code> </td>
+<td> Contains model files in the format filename.js.</td>
+</tr>
+<tr>
+<td><code>app/styles</code> </td>
+<td> Contains view styling in the format filename.tss, which is applied to a corresponding view file <code>app/views/filename.xml</code>.</td>
+</tr>
+<tr>
+<td><code>app/themes</code> </td>
+<td> Contains themes to customize the assets and styles of the entire GUI.</td>
+</tr>
+<tr>
+<td><code>app/views</code> </td>
+<td> Contains views in the format filename.xml with the optional corresponding files <code>app/controllers/filename.js</code> and <code>app/styles/filename.tss</code>.</td>
+</tr>
+<tr>
+<td><code>app/widgets</code> </td>
+<td> Contains widget files. Each widget will have its own app-like directory structure.</td>
+</tr>
+<tr>
+<td>i18n </td>
+<td> Contains internationalization and localization files. Same usage as with a Titanium application.</td>
+</tr>
+<tr>
+<td>Resources </td>
+<td> Contains the Titanium files generated by the Alloy interface from the app directory. All files will be overwritten each time the application is built. Since Alloy 1.3.0, Alloy creates a separate Titanium project for each platform you build for in the <code>Resources/&lt;platform&gt;</code> folder.</td>
+</tr>
+</tbody>
+</table>
+
+
+<p><strong>Widgets</strong> are self-contained components that can be easily dropped into Alloy-powered Titanium projects.</p>
+
+<p>Alloy comes with additional utilities used to simplify certain functions, such as animations, string manipulation, and display unit conversion. These utilities are referred to as &lsquo;<strong>builtins</strong>.&rsquo;</p>
+
+<p>```javascript
+var animation = require(&lsquo;alloy/animation&rsquo;);
+$.shake.addEventListener(&lsquo;click&rsquo;, function(e) {</p>
+
+<pre><code>animation.shake($.view);
+</code></pre>
+
+<p>});
+```</p>
+
+<h3>1.2 Alloy Views</h3>
+
+<h4>1.2.1 XML Markup</h4>
+
+<p>```
+//app/views/index.xml
+<Alloy></p>
+
+<pre><code>&lt;Window class="container"&gt;
+    &lt;Label id="labelId" onClick="doClick"&gt;Hello, World&lt;/Label&gt;
+&lt;/Window&gt;
+</code></pre>
+
+<p></Alloy>
+```</p>
+
+<p>可以使用<code>$.labelId</code>引用上面的label，对于根视图可以使用<code>$.index</code>（文件名）。</p>
+
+<p>XML中可以使用的属性：</p>
+
+<table>
+<thead>
+<tr>
+<th>属性名 </th>
+<th> 描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id </td>
+<td> Identifies UI elements in the controller (prefixed with &lsquo;$.&rsquo;) and style sheet (prefixed with &lsquo;#&rsquo;).</td>
+</tr>
+<tr>
+<td>class </td>
+<td> Applies additional styles (prefixed with &lsquo;.&rsquo; in the TSS file)</td>
+</tr>
+<tr>
+<td>autoStyle </td>
+<td> 是否动态样式，当class动态变化时，控件样式动态变化。对性能有影响</td>
+</tr>
+<tr>
+<td>formFactor </td>
+<td> handheld or tablet</td>
+</tr>
+<tr>
+<td>if </td>
+<td> 使用条件表达式。See <a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Alloy_XML_Markup-section-35621528_AlloyXMLMarkup-ConditionalCode">Conditional Code</a> and <a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Alloy_Styles_and_Themes-section-35621526_AlloyStylesandThemes-CustomQueryStyles">Alloy Styles and Themes: Custom Query Styles</a> for more details.</td>
+</tr>
+<tr>
+<td>module </td>
+<td> Requires in a CommonJS module </td>
+</tr>
+<tr>
+<td>ns </td>
+<td> Overrides the default Titanium.UI namespace. See Namespace for more details.</td>
+</tr>
+<tr>
+<td>platform </td>
+<td> android, blackberry, ios, or mobileweb。如果多个可以使用逗号分隔。</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>除了上述属性，各组件还可以包括自己特有的属性和事件。另外还有一些特殊的元素：</p>
+
+<table>
+<thead>
+<tr>
+<th>Element </th>
+<th> Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alloy </td>
+<td>Root element for all view XML files. Required in all views.</td>
+</tr>
+<tr>
+<td>Collection </td>
+<td> Creates a singleton or instance of the specified collection. </td>
+</tr>
+<tr>
+<td>Model </td>
+<td> Creates a singleton or instance of the specified model. </td>
+</tr>
+<tr>
+<td>Module </td>
+<td> Imports a module view inside this view (since Alloy 1.2.0). </td>
+</tr>
+<tr>
+<td>Require </td>
+<td> Imports a widget or includes another view inside this view. </td>
+</tr>
+<tr>
+<td>Widget </td>
+<td> Imports a widget inside this view. Same as the Require Element with the type specified to &lsquo;widget&rsquo;. </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>index.xml是一个特殊情况，只接受以下根节点：</p>
+
+<ul>
+<li>Ti.UI.Window or <code>&lt;Window&gt;</code></li>
+<li>Ti.UI.TabGroup or <code>&lt;TabGroup&gt;</code></li>
+<li>Ti.UI.iOS.NavigationWindow or <code>&lt;NavigationWindow&gt;</code></li>
+<li>Ti.UI.iPad.SplitWindow or <code>&lt;SplitWindow&gt;</code></li>
+</ul>
+
+
+<p><strong>XML中的Collection节点</strong></p>
+
+<p>The Collection XML element creates a singleton or instance of a collection.</p>
+
+<p>```
+<Alloy></p>
+
+<pre><code>&lt;Collection src="book" /&gt;
+&lt;Window&gt;
+    &lt;TableView id="table" /&gt;
+&lt;/Window&gt;
+</code></pre>
+
+<p></Alloy>
+```</p>
+
+<p>上面的代码创建了一个单例集合，对应的model为book.js。在controller中可以这样访问：</p>
+
+<p><code>javascript
+var library = Alloy.Collections.book;
+library.fetch();
+</code></p>
+
+<p>上面的例子 Alloy.Collections.book是全局的，但也可以创建只用于一个Controller的Collection：</p>
+
+<p>```
+<Alloy></p>
+
+<pre><code>&lt;Collection id="localLibrary" src="book" instance="true"/&gt;
+&lt;Window&gt;
+    &lt;TableView id="table" /&gt;
+&lt;/Window&gt;
+</code></pre>
+
+<p></Alloy>
+```</p>
+
+<p>注意上面的src和instance。在代码中通过id来引用：</p>
+
+<p><code>javascript
+var library = $.localLibrary;
+library.fetch();
+</code></p>
+
+<p><strong>Model Element</strong>
+与Collection类似，XML中也可以创建Model单例，或者用于某个Controller的一个实例。</p>
+
+<p>单例：</p>
+
+<p>```
+<Alloy></p>
+
+<pre><code>&lt;Model src="book" /&gt;
+&lt;Window&gt;
+    &lt;TableView id="table" /&gt;
+&lt;/Window&gt;
+</code></pre>
+
+<p></Alloy></p>
+
+<p>var drama = Alloy.Models.book;
+drama.set(&lsquo;title&rsquo;, &lsquo;Hamlet&rsquo;);
+drama.set(&lsquo;author&rsquo;, &lsquo;William Shakespeare&rsquo;);
+```</p>
+
+<p>某个Controller的实例：</p>
+
+<p>```
+<Alloy></p>
+
+<pre><code>&lt;Model id="myBook" src="book" instance="true"/&gt;
+&lt;Window&gt;
+    &lt;TableView id="table" /&gt;
+&lt;/Window&gt;
+</code></pre>
+
+<p></Alloy></p>
+
+<p>var drama = $.myBook;
+drama.set(&lsquo;title&rsquo;, &lsquo;Hamlet&rsquo;);
+drama.set(&lsquo;author&rsquo;, &lsquo;William Shakespeare&rsquo;);
+```</p>
+
+<p>注意前述的Collection和Model都要放在Alloy节点下。</p>
+
+<p><strong>Module Attribute</strong>
+XML中可以引入CommonJS module。首先，module要放入<code>app/lib</code>，并且有一个public方法createXXX，返回一个UI对象。然后，将XXX用于xml节点元素，并设置module路径(基于<code>app/lib</code>)，元素的其它属性将作为参数传入createXXX方法。示例如下：</p>
+
+<p>```
+//app/lib/foo.js
+// XML attributes are passed to the function
+exports.createFoo = function (args) {</p>
+
+<pre><code>var viewArgs = {
+    backgroundColor: args.color || 'white',
+    width: '100dp',
+    height: '100dp'
+};
+var view = Ti.UI.createView(viewArgs);
+var labelArgs = {
+    color: args.textColor || 'black',
+    text: args.text || 'Foobar' 
+};
+var label = Ti.UI.createLabel(labelArgs);
+view.add(label);
+</code></pre>
+
+<p> // Return a UI object that can be added to a view
+ return view;
+};</p>
+
+<p>//app/views/index.xml
+<Alloy></p>
+
+<pre><code>&lt;Window backgroundColor="white"&gt;
+    &lt;!-- Requires in the lib/foo.js module and calls the createFoo method --&gt;
+    &lt;Foo module="foo" color="blue" textColor="orange" text="Hello, World!"/&gt;
+&lt;/Window&gt;
+</code></pre>
+
+<p></Alloy>
+```</p>
+
+<p>对于Native开发的Module，也可以引入XML中，分为5步：</p>
+
+<ol>
+<li>将module引入项目</li>
+<li>在XML中的View或Window的下级加入Module</li>
+<li>设置属性module为module名称</li>
+<li>设置属性method为创建方法名称，如果没设置则默认为createView</li>
+<li>如果方法参数只需要一个简单的Javascript对象，则可以将值inline写入或者使用TSS文件。</li>
+</ol>
+
+
+<p>Paint Module的示例如下：</p>
+
+<p>```
+<Alloy></p>
+
+<pre><code>&lt;Window&gt;
+    &lt;Module id="paint" module="ti.paint" method="createPaintView"
+        eraseMode="false" strokeWidth="1.0" strokeColor="red" strokeAlpha="100" /&gt;
+    &lt;Button onClick="eraseMe" bottom="0"&gt;Erase&lt;/Button&gt;
+&lt;/Window&gt;
+</code></pre>
+
+<p></Alloy></p>
+
+<p>function eraseMe(){</p>
+
+<pre><code>$.paint.clear();
+</code></pre>
+
+<p>}
+```</p>
+
+<p><strong>Require Element</strong>
+require元素主要有两个用途：including external views and importing widgets into the current view.</p>
+
+<p>including external views示例：</p>
+
+<p>```
+//index.xml
+<Alloy></p>
+
+<pre><code>&lt;TabGroup&gt;
+    &lt;Tab id="leftTab"&gt;
+        &lt;Require type="view" src="rss" id="rssTab"/&gt;
+    &lt;/Tab&gt;
+&lt;/TabGroup&gt;
+</code></pre>
+
+<p></Alloy></p>
+
+<p>//rss.xml
+<Alloy></p>
+
+<pre><code>&lt;Window id='rssWindow'&gt;
+    &lt;WebView id='rssView' /&gt;
+&lt;/Window&gt;
+</code></pre>
+
+<p></Alloy></p>
+
+<p>var rssView = $.rssTab.getView(&lsquo;rssView&rsquo;);
+rssView.url = &lsquo;<a href="http://www.google.com">http://www.google.com</a>&rsquo;;
+```</p>
+
+<p><strong>Importing Widgets，</strong>引入Widgets只需要三步：</p>
+
+<ol>
+<li>将Widget放入app/widgets文件夹</li>
+<li>在config.json中添加依赖</li>
+<li>在XML中加入<code>&lt;Widget&gt;</code>，可以设置id和name属性。id属性用于引用并调用方法，name属性用于指定view对应的Controller，而不是使用默认的widget.js。</li>
+</ol>
+
+
+<p>```
+app/views/index.xml
+<Alloy></p>
+
+<pre><code>&lt;Window&gt;
+    &lt;Widget src="mywidget" id="foo" name="foo" /&gt;
+&lt;/Window&gt;
+</code></pre>
+
+<p></Alloy></p>
+
+<p>$.foo.myMethod();
+```</p>
+
+<p>config.json中的依赖：</p>
+
+<p>```
+ &ldquo;dependencies&rdquo;: {</p>
+
+<pre><code>"mywidget":"1.0"
+</code></pre>
+
+<p>  }
+```</p>
+
+<p>可以直接在XML中设置属性，用于传参。与代码具有等同效果：</p>
+
+<p>```
+<Require id="foobar" src="foo" customTitle="Hello" customImage="hello.png"/></p>
+
+<p>var foobar = Alloy.createController(&lsquo;foo&rsquo;, {</p>
+
+<pre><code>id: "foobar", 
+customTitle: "Hello", 
+customImage: "hello.png" 
+</code></pre>
+
+<p>});
+```</p>
+
+<p>对于required view，可以<strong>绑定事件</strong>。下面的例子中，parent视图引入了button视图，并绑定了回调方法：</p>
+
+<p>```
+//Parent View:
+<Require id="fooButton" src="button" onClick="doClick" /></p>
+
+<p>function doClick(e) {&hellip;}</p>
+
+<p>//Button View:
+<Alloy></p>
+
+<pre><code>&lt;Button id="button"&gt;Click Me!&lt;/Button&gt;
+</code></pre>
+
+<p></Alloy></p>
+
+<p>//在子视图中trigger click事件
+$.button.addEventListener(&lsquo;click&rsquo;, function(e) {</p>
+
+<pre><code>$.trigger('click', e); 
+</code></pre>
+
+<p>});
+```</p>
+
+<p><strong>Adding Children Views。</strong>用于将parent view中的数据传给required view。下面的例子实现了这样一个场景：index.xml require info.xml，index.xml可以将子元素传给info.xml展示，info.js可以通过<code>arguments[0].children</code>访问这些子元素。</p>
+
+<p>```
+//app/views/info.xml
+<Alloy></p>
+
+<pre><code>&lt;View backgroundColor="yellow" borderWidth="0.5" borderColor="brown"/&gt;
+</code></pre>
+
+<p></Alloy></p>
+
+<p>//controllers/info.js
+var args = arguments[0] || {};
+// add children if there are any
+_.each(args.children || [], function(child) {</p>
+
+<pre><code>$.info.add(child);
+</code></pre>
+
+<p>});
+$.info.height = Ti.UI.SIZE;</p>
+
+<p>//app/views/index.xml
+<Alloy></p>
+
+<pre><code>&lt;Window class="container"&gt;
+    &lt;Require src="info"&gt;
+        &lt;Label&gt;I am an info box.&lt;/Label&gt;
+    &lt;/Require&gt;
+&lt;/Window&gt;
+</code></pre>
+
+<p></Alloy>
+```</p>
+
+<p><strong>Namespace</strong></p>
+
+<p>XML中的控件默认为Titanium.UI，如果组件不是这个命名空间，可以设置ns属性：</p>
+
+<p><code>&lt;View ns="Ti.Map" id="map"/&gt;</code></p>
+
+<h4>1.2.2 Alloy Styles and Themes</h4>
+
+<h5>Titanium Style Sheets (TSS)</h5>
+
+<p>Titanium Style Sheets (TSS) file uses a JSON-like syntax. the class name prefixed with a period (.), or the id name prefixed with a hash tag (#) 。也可以使用条件表达式。值可以是以下类型：</p>
+
+<ul>
+<li>JSON values, that is, Strings, Numbers, Objects, Array, Booleans and null</li>
+<li>undefined to unset a property (do not place undefined in quotes) (since Alloy 1.4.0)</li>
+<li>Titanium SDK constants, for example, Ti.UI.SIZE</li>
+<li>Localization functions, either Ti.Locale.getString() and its shorthand L()</li>
+<li>Variables from the Alloy.CFG or Alloy.Globals namespaces</li>
+<li>Bitwise operators, which includes bit shifting (&lsquo;>>&rsquo;, &lsquo;&lt;&lt;&rsquo;, and &lsquo;>>>&rsquo;), bitwise AND (&lsquo;&amp;&rsquo;), bitwise OR (&lsquo;|&rsquo;) and bitwise XOR (&lsquo;^&rsquo;) (since Alloy 1.3.0)</li>
+</ul>
+
+
+<p>注释方法： //comment and multiline comments <code>/* comment */</code></p>
+
+<p>Alloy不支持：Alloy does not support the CSS concept of child or descendent selectors</p>
+
+<p>```
+// 如果不使用.和#，这表示适用于所有Lable
+&ldquo;Label&rdquo;: {</p>
+
+<pre><code>width: Ti.UI.SIZE,
+height: Ti.UI.SIZE,
+color: "#000", // black
+transform: Alloy.Globals.rotateLeft // value is defined in the alloy.js file      
+</code></pre>
+
+<p>},
+```</p>
+
+<p>注意上面的transform使用了全局方法：<code>Alloy.Globals.rotateLeft = Ti.UI.create2DMatrix().rotate(-90);</code></p>
+
+<p>app.tss中定义的是全局样式。样式的优先权：XML中输入的 <code>&gt;</code> 当前View对应的TSS <code>&gt;</code> 全局样式。</p>
+
+<p>样式可以加平台条件，用中括号，注意中括号和平台代码间<strong>不要用空格！</strong>:</p>
+
+<p>```
+// iPad and iPad mini
+&ldquo;Label[platform=ios formFactor=tablet]&rdquo;: {</p>
+
+<pre><code>backgroundColor: "#0f0",
+text: 'iPad'
+</code></pre>
+
+<p>},</p>
+
+<p>还可以：
+[platform=ios,android] //android, blackberry, ios, or mobileweb
+[platform=!ios]</p>
+
+<p>```</p>
+
+<p><strong>Custom Query Styles</strong>
+Custom query styles override all styles, that is, class, id, and markup element styles, except the ones defined as attributes in the XML file.</p>
+
+<ol>
+<li>使用Alloy.Globals定义一个返回boolean的方法，或者通过Alloy.createController中传入boolean属性，然后在xml或tss文件中使用。</li>
+<li>在xml和tss中使用if属性。</li>
+</ol>
+
+
+<p>```
+apps/controllers/index.js
+function openBar (e) {</p>
+
+<pre><code>Alloy.createController('win2', {'fooBar': true}).getView().open();
+</code></pre>
+
+<p>};</p>
+
+<p>app/styles/win2.tss
+&ldquo;#label[if=$.args.fooBar]&rdquo; : {
+ &lsquo;text&rsquo; : &lsquo;Foobar&rsquo;,
+ &lsquo;color&rsquo; : &lsquo;blue&rsquo;
+}</p>
+
+<p>app/views/win2.xml
+<Alloy></p>
+
+<pre><code>&lt;Window&gt;
+    &lt;Label if="$.args.fooBar" color="blue"&gt;Foobar&lt;/Label&gt;
+&lt;/Window&gt;
+</code></pre>
+
+<p></Alloy>
+```</p>
+
+<p>另一个例子：</p>
+
+<p>```
+Alloy.Globals.isIos7Plus = (OS_IOS &amp;&amp; parseInt(Ti.Platform.version.split(&ldquo;.&rdquo;)[0]) >= 7);</p>
+
+<p>//index.tss
+// Query styles
+&ldquo;#info[if=Alloy.Globals.isIos7Plus]&rdquo; : {</p>
+
+<pre><code>font : { textStyle : Ti.UI.TEXT_STYLE_FOOTNOTE }
+</code></pre>
+
+<p>},
+```</p>
+
+<h5>Themes</h5>
+
+<p>使用Theme的方法。首先在app下建立themes文件夹，并在其下级以各主题名建立子文件夹，如:app-themes-mytheme, 在mytheme下分别建立assets(放图片资源)和styles(放tss文件，还可以再包含平台子文件夹)。在config.json设置当前主题：</p>
+
+<p>```
+{
+ &ldquo;global&rdquo;: {
+ &ldquo;theme&rdquo;:&ldquo;mytheme&rdquo;</p>
+
+<pre><code>}, 
+</code></pre>
+
+<p> &ldquo;env:development&rdquo;: {},
+ &ldquo;env:test&rdquo;: {},
+ &ldquo;env:production&rdquo;: {},
+ &ldquo;os:ios&rdquo;: {
+ &ldquo;theme&rdquo;:&ldquo;green&rdquo;</p>
+
+<pre><code>}, 
+</code></pre>
+
+<p> &ldquo;os:android&rdquo;: {
+ &ldquo;theme&rdquo;:&ldquo;blue&rdquo;</p>
+
+<pre><code>}, 
+</code></pre>
+
+<p> &ldquo;dependencies&rdquo;: {}
+}
+```</p>
+
+<p>打包时，主题下的assets资源和样式将覆盖app下的资源与样式。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Android应用打破65K方法数限制]]></title>
