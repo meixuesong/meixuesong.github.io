@@ -239,9 +239,9 @@ var myValue = (function() {
 })();
 ```
 
-**提高遍历的效率**，缓存数组的length:
+**提高遍历的效率**，通过保存数组的length:
 
-```var names = ['Jeff','Nolan','Marshall','Don']; for(var i=0;i<names.length;i++){	process(names[i]);} // I can check the array length only once
+```var names = ['Jeff','Nolan','Marshall','Don']; for(var i=0;i<names.length;i++){	process(names[i]);} // I can check the array length only once
 var names = ['Jeff','Nolan','Marshall','Don']; for(var i=0,j=names.length;i<j;i++){    process(names[i]);}```
 
 ### 2.2 CommonJS Module
