@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-01-13T21:21:28+08:00</updated>
+  <updated>2015-01-13T21:24:12+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -357,128 +357,115 @@ var myValue = (function() {
 
 <p><strong>提高遍历的效率</strong>，通过保存数组的length:</p>
 
-<pre class='line-numbers language-javascript'><code class='language-javascript'>
-### 2.2 CommonJS Module
-主要有两种方式来创建CommonJS Module。方式一采用exports方法：
-</code></pre>
+<h3>2.2 CommonJS Module</h3>
 
+<p>主要有两种方式来创建CommonJS Module。方式一采用exports方法：</p>
 
-<p>exports.sayHello = function(name) {</p>
-
-<pre><code>Ti.API.info('Hello '+name+'!');
-</code></pre>
-
-<p>};
+<pre class='line-numbers language-javascript'><code class='language-javascript'>exports.sayHello = function(name) {
+    Ti.API.info('Hello '+name+'!');
+};
 exports.version = 1.4;
-exports.author = &lsquo;Don Thorp&rsquo;;</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>
-另一种方式公开的方法主要以对象构造器的方式：
-</code></pre>
+exports.author = 'Don Thorp';</code></pre>
 
 
-<p>function Person(firstName,lastName) {
+<p>另一种方式公开的方法主要以对象构造器的方式：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>function Person(firstName,lastName) {
  this.firstName = firstName;
  this.lastName = lastName;
 }
 Person.prototype.fullName = function() {
- return this.firstName+&lsquo; &rsquo;+this.lastName;
+ return this.firstName+' '+this.lastName;
 };
 //注意是module.exports
-module.exports = Person;</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>
-前者使用`exports.xxx`，后者使用`module.exports`，这两种方式不要在同一个module中混合使用！
-
-每个module都有自己的scope，只有export的方法才是公开的。注意如果exports属性，该值可能不会改变：
-</code></pre>
+module.exports = Person;</code></pre>
 
 
-<p>//statefulModule.js
-var <em>stepVal = 5; // default
+<p>前者使用<code>exports.xxx</code>，后者使用<code>module.exports</code>，这两种方式不要在同一个module中混合使用！</p>
+
+<p>每个module都有自己的scope，只有export的方法才是公开的。注意如果exports属性，该值可能不会改变：</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>//statefulModule.js
+var _stepVal = 5; // default
 exports.setPointStep = function(value) {
-  </em>stepVal = value;
+  _stepVal = value;
 };
 exports.getPointStep = function() {
- return <em>stepVal;
+ return _stepVal;
 };
-exports.stepVal = </em>stepVal;</p>
+exports.stepVal = _stepVal;
 
-<p>//app.js
-var stateful = require(&lsquo;statefulModule&rsquo;);
+//app.js
+var stateful = require('statefulModule');
 stateful.setPointStep(10);
 stateful.getPointStep(); //10
-stateful.stepVal //值永远是初始值5.</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>
-### 2.3 数据库
-**每次操作都打开并关闭数据库和resultset**
-</code></pre>
+stateful.stepVal //值永远是初始值5.</code></pre>
 
 
-<p>cityWeatherRS.close(); // close the resultset when you&rsquo;re done reading from it
-db.close(); // and close the database connection</p>
+<h3>2.3 数据库</h3>
 
-<pre class='line-numbers language-javascript'><code class='language-javascript'>
-**批量操作时，使用事务**
-</code></pre>
+<p><strong>每次操作都打开并关闭数据库和resultset</strong></p>
 
-
-<p>var db = Ti.Database.open(&lsquo;myDatabase&rsquo;);
-db.execute(&lsquo;BEGIN&rsquo;); // begin the transaction
-for(var i=0, var j=playlist.length; i &lt; j; i++) {</p>
-
-<pre><code>var item = playlist[i];
-db.execute('INSERT INTO albums (disc, artist, rating) VALUES (?, ?, ?)', item.disc, item.artist, item.comment);
-</code></pre>
-
-<p>}
-db.execute(&lsquo;COMMIT&rsquo;);
-db.close();</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>
-### 2.4 图片
-* PNG – PNG images are in a lossless-compressed format that can support high-color images. This format is best suited to line-art, text, and icons. It is a better choice than GIF in almost all cases.
-* JPG – JPG (or JPEG) is lossy-compressed file format best suited for photographs. It is not well-suited for text, line drawings, or icons because of visual artifacts created during the compression process that will reduce quality and readability.
-
-* Photos? Use JPG
-* Text, line drawings, icons, button graphics? Use PNG
-* Flip-book style animations (for which animated GIFs would be the traditional choice)? Use the ImageView's images property and pass to it an array of PNG or optimized JPG files.
+<pre class='line-numbers language-javascript'><code class='language-javascript'>cityWeatherRS.close(); // close the resultset when you're done reading from it
+db.close(); // and close the database connection</code></pre>
 
 
-注意：显示JPG图片时，会在内存中解压缩，因此不要一次创建太多的JPG ImageView，否则将耗尽内存。将imageView从view中移除并不会回收内存，还要将imageView设置为null.
+<p><strong>批量操作时，使用事务</strong></p>
 
-为了减少ipa/apk的大小，需要对图片进行优化。见[Titanium文档](http://docs.appcelerator.com/titanium/latest/#!/guide/Image_Best_Practices)。
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var db = Ti.Database.open('myDatabase');
+db.execute('BEGIN'); // begin the transaction
+for(var i=0, var j=playlist.length; i &lt; j; i++) {
+    var item = playlist[i];
+    db.execute('INSERT INTO albums (disc, artist, rating) VALUES (?, ?, ?)', item.disc, item.artist, item.comment);
+}
+db.execute('COMMIT');
+db.close();</code></pre>
 
-ImageView已经能够显示本地和远程的图片。显示远程图片时，可以先设置defaultImage，下载成功后会自动显示远程图片。这些图片会缓存，对于Android会缓存到应用退出。要自己控制缓存到本地目录，参考[文档](http://docs.appcelerator.com/titanium/latest/#!/guide/Image_Best_Practices)。
 
-### 2.5 管理内存
+<h3>2.4 图片</h3>
 
-除了把View移除外，还需要将它设置为null.
-</code></pre>
+<ul>
+<li>PNG – PNG images are in a lossless-compressed format that can support high-color images. This format is best suited to line-art, text, and icons. It is a better choice than GIF in almost all cases.</li>
+<li><p>JPG – JPG (or JPEG) is lossy-compressed file format best suited for photographs. It is not well-suited for text, line drawings, or icons because of visual artifacts created during the compression process that will reduce quality and readability.</p></li>
+<li><p>Photos? Use JPG</p></li>
+<li>Text, line drawings, icons, button graphics? Use PNG</li>
+<li>Flip-book style animations (for which animated GIFs would be the traditional choice)? Use the ImageView&rsquo;s images property and pass to it an array of PNG or optimized JPG files.</li>
+</ul>
 
 
-<p>var button = Ti.UI.createButton({
- // parameters go here&hellip;
+<p>注意：显示JPG图片时，会在内存中解压缩，因此不要一次创建太多的JPG ImageView，否则将耗尽内存。将imageView从view中移除并不会回收内存，还要将imageView设置为null.</p>
+
+<p>为了减少ipa/apk的大小，需要对图片进行优化。见<a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Image_Best_Practices">Titanium文档</a>。</p>
+
+<p>ImageView已经能够显示本地和远程的图片。显示远程图片时，可以先设置defaultImage，下载成功后会自动显示远程图片。这些图片会缓存，对于Android会缓存到应用退出。要自己控制缓存到本地目录，参考<a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Image_Best_Practices">文档</a>。</p>
+
+<h3>2.5 管理内存</h3>
+
+<p>除了把View移除外，还需要将它设置为null.</p>
+
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var button = Ti.UI.createButton({
+ // parameters go here...
 });
 var view = Ti.UI.createView({
- // some parameters here&hellip;
+ // some parameters here...
 });
 view.add(button);
-// &hellip; later
-win.remove(view);  // view &amp; button still exist
+// ... later
+win.remove(view);  // view & button still exist
 view = null; // deletes the view and its proxy, but not the button!
 // compare that to:
 var view = Ti.UI.createView({
- // some parameters here&hellip;
+ // some parameters here...
 });
 view.add(Ti.UI.createButton({
- // parameters go here&hellip;
+ // parameters go here...
 }));
-// &hellip; later
+// ... later
 win.remove(view);
-view = null; // deletes the view, button, and their proxies
-&#8220;`</p>
+view = null; // deletes the view, button, and their proxies</code></pre>
+
+
+
 ]]></content>
   </entry>
   
