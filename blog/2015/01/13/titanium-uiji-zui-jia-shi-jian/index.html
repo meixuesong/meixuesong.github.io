@@ -455,8 +455,7 @@ var myValue = (function() {
 
 <p><strong>提高遍历的效率</strong>，通过保存数组的length:</p>
 
-<pre class='line-numbers language-var'><code class='language-var'>var names = ['Jeff','Nolan','Marshall','Don']; for(var i=0,j=names.length;i&lt;j;i++){    process(names[i]);}```
-
+<pre class='line-numbers language-javascript'><code class='language-javascript'>
 ### 2.2 CommonJS Module
 主要有两种方式来创建CommonJS Module。方式一采用exports方法：
 </code></pre>
@@ -471,7 +470,7 @@ var myValue = (function() {
 exports.version = 1.4;
 exports.author = &lsquo;Don Thorp&rsquo;;</p>
 
-<pre class='line-numbers language-var'><code class='language-var'>
+<pre class='line-numbers language-javascript'><code class='language-javascript'>
 另一种方式公开的方法主要以对象构造器的方式：
 </code></pre>
 
@@ -486,7 +485,7 @@ Person.prototype.fullName = function() {
 //注意是module.exports
 module.exports = Person;</p>
 
-<pre class='line-numbers language-var'><code class='language-var'>
+<pre class='line-numbers language-javascript'><code class='language-javascript'>
 前者使用`exports.xxx`，后者使用`module.exports`，这两种方式不要在同一个module中混合使用！
 
 每个module都有自己的scope，只有export的方法才是公开的。注意如果exports属性，该值可能不会改变：
@@ -509,7 +508,7 @@ stateful.setPointStep(10);
 stateful.getPointStep(); //10
 stateful.stepVal //值永远是初始值5.</p>
 
-<pre class='line-numbers language-var'><code class='language-var'>
+<pre class='line-numbers language-javascript'><code class='language-javascript'>
 ### 2.3 数据库
 **每次操作都打开并关闭数据库和resultset**
 </code></pre>
@@ -518,7 +517,7 @@ stateful.stepVal //值永远是初始值5.</p>
 <p>cityWeatherRS.close(); // close the resultset when you&rsquo;re done reading from it
 db.close(); // and close the database connection</p>
 
-<pre class='line-numbers language-var'><code class='language-var'>
+<pre class='line-numbers language-javascript'><code class='language-javascript'>
 **批量操作时，使用事务**
 </code></pre>
 
@@ -535,7 +534,7 @@ db.execute('INSERT INTO albums (disc, artist, rating) VALUES (?, ?, ?)', item.di
 db.execute(&lsquo;COMMIT&rsquo;);
 db.close();</p>
 
-<pre class='line-numbers language-var'><code class='language-var'>
+<pre class='line-numbers language-javascript'><code class='language-javascript'>
 ### 2.4 图片
 * PNG – PNG images are in a lossless-compressed format that can support high-color images. This format is best suited to line-art, text, and icons. It is a better choice than GIF in almost all cases.
 * JPG – JPG (or JPEG) is lossy-compressed file format best suited for photographs. It is not well-suited for text, line drawings, or icons because of visual artifacts created during the compression process that will reduce quality and readability.
