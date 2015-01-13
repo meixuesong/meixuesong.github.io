@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-01-13T21:16:03+08:00</updated>
+  <updated>2015-01-13T21:18:45+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -355,7 +355,7 @@ var myValue = (function() {
 })();</code></pre>
 
 
-<p><strong>提高遍历的效率</strong>，缓存数组的length:</p>
+<p><strong>提高遍历的效率</strong>，通过保存数组的length:</p>
 
 <pre class='line-numbers language-var'><code class='language-var'>var names = ['Jeff','Nolan','Marshall','Don']; for(var i=0,j=names.length;i&lt;j;i++){    process(names[i]);}```
 
