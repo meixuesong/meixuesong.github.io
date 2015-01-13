@@ -241,8 +241,7 @@ var myValue = (function() {
 
 **提高遍历的效率**，通过保存数组的length:
 
-```var names = ['Jeff','Nolan','Marshall','Don']; for(var i=0;i<names.length;i++){	process(names[i]);} // I can check the array length only once
-var names = ['Jeff','Nolan','Marshall','Don']; for(var i=0,j=names.length;i<j;i++){    process(names[i]);}```
+```javascript```
 
 ### 2.2 CommonJS Module
 主要有两种方式来创建CommonJS Module。方式一采用exports方法：
