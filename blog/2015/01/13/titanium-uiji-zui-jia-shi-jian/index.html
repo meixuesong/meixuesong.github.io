@@ -455,6 +455,18 @@ var myValue = (function() {
 
 <p><strong>提高遍历的效率</strong>，通过保存数组的length:</p>
 
+<pre class='line-numbers language-javascript'><code class='language-javascript'>var names = ['Jeff','Nolan','Marshall','Don'];
+for(var i=0;i&lt;names.length;i++){
+    process(names[i]);
+}
+
+// I can check the array length only once
+var names = ['Jeff','Nolan','Marshall','Don'];
+for(var i=0,j=names.length;i&lt;j;i++){
+    process(names[i]);
+}</code></pre>
+
+
 <h3>2.2 CommonJS Module</h3>
 
 <p>主要有两种方式来创建CommonJS Module。方式一采用exports方法：</p>
