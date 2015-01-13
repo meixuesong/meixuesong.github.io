@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="Java 8早都出来了，现在来了解一下Java 7语言上的几个新特性。 :) switch语句支持String、数字常量的新形式、改进的异常处理、TWR语句、钻石语法和变参警告位置的修改。 ">
+  <meta name="description" content="Java 7提供了新的NIO(或称为NIO.2, JSR-203)，这是一组新的类和方法，用于取代File类与文件系统的交互，提供新的异步处理类并简化Socket与通道的编码工作。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +83,47 @@ var _hmt = _hmt || [];
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/23/java-nio-dot-2/">Java NIO.2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-23T10:59:37+08:00" pubdate data-updated="true">2014-11-23</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Java 7提供了新的NIO(或称为NIO.2, JSR-203)，这是一组新的类和方法，用于取代File类与文件系统的交互，提供新的异步处理类并简化Socket与通道的编码工作。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/11/23/java-nio-dot-2/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -482,50 +523,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/10/18/zhong-yu-wan-cheng-rss2epubde-xiang-mu/">终于完成RSS2EPUB的项目</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-10-18T22:37:33+08:00" pubdate data-updated="true">2014-10-18</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>国庆期间，自从10月5日完成博客转EPUB电子书后，脑子突然短路，是不是可以把RSS订阅的内容也自动转成EPUB电子书呢？然后就没停下来，利用业余时间终于完成了，各项功能基本完善！</p>
-
-<p>这个项目运行于GAE平台，接受用户订阅，然后每天把最新内容生成电子书发邮件给用户。</p>
-
-<p>运行于GAE平台的好处是直接使用Google的云服务，特别是邮件服务和图片服务非常棒！但坏处是Google被墙，国内无法直接访问。所以又开发了邮件订阅的方法。总体来说效果不错！</p>
-
-<p>项目地址：<a href="http://rss2epub.appspot.com/">http://rss2epub.appspot.com</a></p>
-
-<p>使用方法参考：<a href="https://github.com/meixuesong/rss2epub">RSS2EPUB</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -547,10 +544,14 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (26)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (5)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (26)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/01/13/titanium-uiji-zui-jia-shi-jian/">Titanium UI及最佳实践</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/01/11/titanium-alloy-mvc/">Titanium Alloy MVC</a>
@@ -566,10 +567,6 @@ var _hmt = _hmt || [];
     
       <li class="post">
         <a href="/blog/2014/12/26/la-ji-shou-ji-qi-yu-nei-cun-fen-pei-ce-lue/">Java垃圾收集与内存分配</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/12/20/%5B%3F%5D-ci-jie-jue-tomcatqi-dong-guo-man-de-jing-li/">SecureRandom导致Tomcat启动过慢</a>
       </li>
     
   </ul>

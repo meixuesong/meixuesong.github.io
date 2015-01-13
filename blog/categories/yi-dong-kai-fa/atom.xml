@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 移动开发 | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/yi-dong-kai-fa/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-01-11T20:11:06+08:00</updated>
+  <updated>2015-01-13T21:06:53+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,511 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Titanium UI及最佳实践]]></title>
+    <link href="http://blog.ubone.com/blog/2015/01/13/titanium-uiji-zui-jia-shi-jian/"/>
+    <updated>2015-01-13T21:05:37+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/01/13/titanium-uiji-zui-jia-shi-jian</id>
+    <content type="html"><![CDATA[<p>学习Titanium的UI，以及Titanium相关的最佳实践。</p>
+
+<!--more-->
+
+
+<h2>1. User Interface</h2>
+
+<h3>1.1 基础</h3>
+
+<p>布局属性：</p>
+
+<ul>
+<li>width</li>
+<li>height</li>
+<li>left</li>
+<li>right</li>
+<li>top</li>
+<li>bottom</li>
+<li>center: 其属性x和y，表示view中心相对父容器的left, top</li>
+<li>layout: &ldquo;vertical&rdquo;, &ldquo;horizontal&rdquo; or &ldquo;composite"，默认为composite，值absolute也是composite</li>
+<li>size: 只读，当自己与下级渲染完后才有值。</li>
+<li>rect: 只读</li>
+<li>zIndex: 整数，值大的位于上层</li>
+</ul>
+
+
+<p>Titanium.UI.FILL and Titanium.UI.SIZE</p>
+
+<table>
+<thead>
+<tr>
+<th>Name </th>
+<th> Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>width </td>
+<td> If width is defined, it takes precedence and the positioning pins are not used to determine the view&rsquo;s width. If width is not defined, and at least two horizontal positioning pins are defined, the width is calculated implicitly from the pins. For example, left and right or left and center.x. If all three horizontal pins are defined, the width is determined by the left and center.x pins. If width cannot be implicitly calculated it follows the view&rsquo;s default sizing behavior.</td>
+</tr>
+<tr>
+<td>left </td>
+<td> If left is defined, it always takes precedence for positioning the view horizontally.</td>
+</tr>
+<tr>
+<td>center.x </td>
+<td> Used to position the view horizontally if left is not set. If left is set, this property is not used to position the view, although it may be used to determine its width.</td>
+</tr>
+<tr>
+<td>right </td>
+<td> Used to position the view horizontally when neither left or center.x is set. If either left or center.x is set, this property is not used to position the view, although it may be used to determine its width.</td>
+</tr>
+<tr>
+<td>height </td>
+<td> If height is defined, it takes precedence and the positioning pins are not used to determine the view&rsquo;s height. If height is not defined, and at least two vertical positioning pins are defined, the height is determined implicitly from the pins. If all three vertical pins are defined, the height is determined by the top and center.y pins. If height cannot be implicitly calculated it follows the view&rsquo;s default sizing behavior.</td>
+</tr>
+<tr>
+<td>top </td>
+<td> If specified, always takes precedence for positioning the view horizontally.</td>
+</tr>
+<tr>
+<td>center.y </td>
+<td> Used to position the view vertically if top is not set. If top is defined, this property is not used to position the view, although it may be used to determine its height.</td>
+</tr>
+<tr>
+<td>bottom </td>
+<td> Used to position the view vertically if neither top or center.y is set. If either top or center.y is set, this property is ignored. this property is not used to position the view, although it may be used to determine its height.</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>为了防止重新布局影响性能，可以使用批量操作：</p>
+
+<p><code>javascript
+myView.applyProperties({
+  top: 50,
+  left: 50,
+  width: 200
+});
+</code></p>
+
+<p>使用rect属性可以获取控件的位置、大小。由于布局是异步发生，因此可能需要在postlayout事件之后去获取rect。示例如下：</p>
+
+<p><code>javascript
+var postLayoutCallback  = function(e){
+  Ti.API.info(String.format("Layout done, left: %f, width: %f", myView.rect.x, myView.rect.width));
+  myView.removeEventListener('postlayout', postLayoutCallback);
+}
+myView.addEventListener('postlayout', postLayoutCallback);
+myView.updateLayout({
+  left: '25%',
+  width: '25%'
+});
+</code></p>
+
+<p>注意！如果在postlayout事件中修改view的大小，会导致死循环！此外，为了性能，只监听特定view的postlayout事件，而不是整个窗口。一些非布局的参数变化也可能导致触发此事件，例如设置label的text。</p>
+
+<p><strong>尺寸单位</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Unit </th>
+<th> Abbreviation </th>
+<th> Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pixels </td>
+<td> px </td>
+<td></td>
+</tr>
+<tr>
+<td>density-independent pixels </td>
+<td> dip or dp </td>
+<td> Equivalent to Apple &ldquo;points.&rdquo;</td>
+</tr>
+<tr>
+<td>inches  </td>
+<td> in </td>
+<td></td>
+</tr>
+<tr>
+<td>millimeters </td>
+<td> mm</td>
+<td> Android, iOS only</td>
+</tr>
+<tr>
+<td>centimeters </td>
+<td> cm </td>
+<td> Android, iOS only</td>
+</tr>
+<tr>
+<td>points </td>
+<td> pt</td>
+<td> 1/72 of an inch. Android only. Not to be confused with Apple &ldquo;points.&rdquo;</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>On Android, a density-independent pixel (DIP) corresponds to one pixel on a 160DPI display.</p>
+
+<p>On iOS, a DIP corresponds to one pixel on a non-Retina display, which is 163DPI for iPhone/iPod touch and 132DPI for the iPad. A DIP corresponds to 2 pixels of width or height on a Retina display.</p>
+
+<p>如果未指定，系统默认为：Android(pixels), iOS(DIP), WEB(DIP)</p>
+
+<p><strong>Horizontal and Vertical Layouts</strong></p>
+
+<p>对于垂直布局，child.width = FILL时，充满父容器的width; child.height = FILL时，充满父容器剩余的高度，后续加入的child将超出父容器高度，因此不可见。</p>
+
+<p>对于水平布局，child一个一个往右排。如果horizontalWrap=true, 排不下时会换行，否则只会排成一行。</p>
+
+<p>这两种情况，left和right都用于水平padding, top和bottom用于垂直位置。</p>
+
+<p><strong>冲突时的解决办法：</strong></p>
+
+<ul>
+<li>当控件使用SIZE，而计算出来的尺寸超过父容器，则以父容器边界为准。</li>
+<li>当控件使用FILL，父容器使用SIZE，则父容器按控件FILL走，不停扩大，直到遇到边界限制（例如祖父有限制）。</li>
+<li>当控件使用百分比，而父容器使用SIZE，结果不确定。</li>
+</ul>
+
+
+<p>查看<a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Transitioning_to_the_New_UI_Layout_System-section-30088148_TransitioningtotheNewUILayoutSystem-BehaviorChangesinRelease2.0">布局示例</a>。</p>
+
+<h3>1.2 事件处理</h3>
+
+<p>常用事件：click、swipe、scroll、dblclick、doubletap、touchstart, touchmove, touchend等等。一些模块还有自己的事件。</p>
+
+<p>```
+element.addEventListener(&lsquo;event_type&rsquo;, function(e) {
+ // code here is run when the event is fired
+ // properties of the event object &lsquo;e&rsquo; describe the event and object that received it</p>
+
+<pre><code>Ti.API.info('The '+e.type+' event happened');
+</code></pre>
+
+<p>});
+```</p>
+
+<p>回调方法的e通常包含以下信息：</p>
+
+<ul>
+<li>x和y，事件（如touch）发生时，在view内的坐标。</li>
+<li>globalPoint: （仅iOS）事件发生时，在屏幕中的坐标。</li>
+<li>type: 事件类型名</li>
+<li>source: 事件主体</li>
+</ul>
+
+
+<p>事件可以从当前View往parent View bubbling。Titanium.Event有两个参数控制bubbling: bubbles(boolean)表示事件是否能buggle，只读；cancelBubble(boolean)，如果设置为true则停止bubble。此外，所有View类组件还有一个属性bubbleParent，是可改的。用于表示事件是否bubble给上级。需要注意的是，当手指拿起时，可能触发了touchup, click, tap事件，在touchup事件中设置cancelBubble=true并不会阻止tap或click事件触发和bubble. 在代码中也可以触发事件：</p>
+
+<p>```
+someButton.fireEvent(&lsquo;click&rsquo;);
+//或者传参
+someButton.fireEvent(&lsquo;click&rsquo;, {kitchen: &lsquo;sink&rsquo;});
+//注意获取kitchen的代码
+someButton.addEventListener(&lsquo;click&rsquo;, function(e){</p>
+
+<pre><code>Ti.APP.info('The value of kitchen is '+e.kitchen);
+</code></pre>
+
+<p>});
+```</p>
+
+<p><strong>自定义事件</strong>：</p>
+
+<p>```
+deleteButton.addEventListener(&lsquo;click&rsquo;, function(e){
+ // when something happens in your app</p>
+
+<pre><code>database.doDelete(e.whichRecord);
+</code></pre>
+
+<p> // fire an event so components can react</p>
+
+<pre><code>theTable.fireEvent('db_updated');
+</code></pre>
+
+<p>});
+// &hellip; elsewhere in your code
+theTable.addEventListener(&lsquo;db_updated&rsquo;, function(e){</p>
+
+<pre><code>theTable.setData(database.getCurrentRecords());
+</code></pre>
+
+<p>});
+```</p>
+
+<p><strong>全局事件</strong>，使用Ti.APP。<strong>注意尽量避免使用全局事件</strong>，因为很容易导致内存无法正确释放。</p>
+
+<p>```
+deleteButton.addEventListener(&lsquo;click&rsquo;, function(e){
+ // when something happens in your app</p>
+
+<pre><code>database.doDelete(e.whichRecord);
+</code></pre>
+
+<p> // fire a global event so components can react</p>
+
+<pre><code>Ti.App.fireEvent('db_updated');
+</code></pre>
+
+<p>});
+// &hellip; elsewhere in your code
+Ti.App.addEventListener(&lsquo;db_updated&rsquo;, function(e){</p>
+
+<pre><code>theTable.setData(database.getCurrentRecords());
+someOtherComponent.doSomethingElse();
+</code></pre>
+
+<p>});
+```</p>
+
+<p><strong>移除事件监听：</strong></p>
+
+<p><code>
+function doSomething(e) {
+ // do something
+}
+deleteButton.addEventListener('click', doSomething);
+// ... elsewhere in your code ...
+deleteButton.removeEventListener('click', doSomething);
+});
+</code></p>
+
+<p><strong>特殊事件：</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Event </th>
+<th> Fired when &hellip;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>androidback </td>
+<td> The back button is released</td>
+</tr>
+<tr>
+<td>androidhome </td>
+<td> The home button is released</td>
+</tr>
+<tr>
+<td>androidsearch </td>
+<td> The search button is released</td>
+</tr>
+<tr>
+<td>androidcamera </td>
+<td> The camera button is released</td>
+</tr>
+<tr>
+<td>androidfocus </td>
+<td> Fired when the camera button is pressed halfway and then released.</td>
+</tr>
+<tr>
+<td>androidvolup </td>
+<td> The volume-up rocker button is released</td>
+</tr>
+<tr>
+<td>androidvoldown </td>
+<td> The volume-down rocker button is released</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>所有涉及Ti.的事件都需要在JavaScript与Native之间进行转换，因此尽量使用Underscore的事件处理。另外，将事件监听尽可能地延后，有助于提高系统响应速度。所有全局事件监听一直是活着的，因此监听中引用的局域变量也一直活着，这将可能导致内存泄露。</p>
+
+<h2>2. Titanium最佳实践</h2>
+
+<h3>2.1 JavaScript建议</h3>
+
+<p>避免使用全局变量，Objects are placed in the global scope when:</p>
+
+<ul>
+<li>You declare a variable outside of a function or CommonJS module. Using a modular pattern will alleviate this problem.</li>
+<li>You omit the var keyword when declaring a variable (within or outside of a function). So always use var when declaring variables.</li>
+</ul>
+
+
+<p>避免在全局事件监听中引用局部对象，下面的代码是个坏例子：</p>
+
+<p>```
+var someFunction = function() {</p>
+
+<pre><code>var table = Ti.UI.createTableView(),
+    label = Ti.UI.createLabel(),
+    view = Ti.UI.createView();
+Ti.App.addEventListener('bad:move', function(e) {
+    table.setData(e.data);
+});
+view.add(table);
+view.add(label);
+</code></pre>
+
+<p> return view;
+};
+```</p>
+
+<p>所有Ti命名空间都与Native相关，因此应避免通过prototype扩展，同时使用缓存来避免多次调用Native方法。如下例：</p>
+
+<p><code>
+var isAndroid = (Ti.Platform.osname=='android') ? true : false;
+if(isAndroid) {
+ // do Android specific stuff
+} else {
+ // do iOS stuff
+}
+</code></p>
+
+<p>多个Controller以及CommonJS Module之间，可以使用trigger， on等方法实现事件触发和监听。不要使用Ti相关fireEvent，因为只要涉及Ti都会产生Native与Javascript之间的接口。</p>
+
+<p>变量、属性和方法等不要使双下划线，这是Alloy内部使用的。不要使用JavaScript保留关键字。</p>
+
+<p>Wrap self-calling functions in parenthesis， 这种模式有利于包装局部变量。</p>
+
+<p>```
+var myValue = function() {
+ //do stuff
+ return someValue;
+}();</p>
+
+<p>//这样写更容易明白返回的是值，而不是一个方法。
+var myValue = (function() {
+ //do stuff
+ return someValue;
+})();
+```</p>
+
+<p><strong>提高遍历的效率</strong></p>
+
+<p><code>var names = ['Jeff','Nolan','Marshall','Don']; for(var i=0;i&lt;names.length;i++){process(names[i]); } // I can check the array length only oncevar names = ['Jeff','Nolan','Marshall','Don']; for(var i=0,j=names.length;i&lt;j;i++){    process(names[i]);}</code></p>
+
+<h3>2.2 CommonJS Module</h3>
+
+<p>主要有两种方式来创建CommonJS Module。方式一采用exports方法：</p>
+
+<p>```
+exports.sayHello = function(name) {</p>
+
+<pre><code>Ti.API.info('Hello '+name+'!');
+</code></pre>
+
+<p>};
+exports.version = 1.4;
+exports.author = &lsquo;Don Thorp&rsquo;;
+```</p>
+
+<p>另一种方式公开的方法主要以对象构造器的方式：</p>
+
+<p><code>
+function Person(firstName,lastName) {
+ this.firstName = firstName;
+ this.lastName = lastName;
+}
+Person.prototype.fullName = function() {
+ return this.firstName+' '+this.lastName;
+};
+//注意是module.exports
+module.exports = Person;
+</code></p>
+
+<p>前者使用<code>exports.xxx</code>，后者使用<code>module.exports</code>，这两种方式不要在同一个module中混合使用！</p>
+
+<p>每个module都有自己的scope，只有export的方法才是公开的。注意如果exports属性，该值可能不会改变：</p>
+
+<p>```
+//statefulModule.js
+var <em>stepVal = 5; // default
+exports.setPointStep = function(value) {
+  </em>stepVal = value;
+};
+exports.getPointStep = function() {
+ return <em>stepVal;
+};
+exports.stepVal = </em>stepVal;</p>
+
+<p>//app.js
+var stateful = require(&lsquo;statefulModule&rsquo;);
+stateful.setPointStep(10);
+stateful.getPointStep(); //10
+stateful.stepVal //值永远是初始值5.
+```</p>
+
+<h3>2.3 数据库</h3>
+
+<p><strong>每次操作都打开并关闭数据库和resultset</strong></p>
+
+<p><code>
+cityWeatherRS.close(); // close the resultset when you're done reading from it
+db.close(); // and close the database connection
+</code></p>
+
+<p><strong>批量操作时，使用事务</strong></p>
+
+<p>```
+var db = Ti.Database.open(&lsquo;myDatabase&rsquo;);
+db.execute(&lsquo;BEGIN&rsquo;); // begin the transaction
+for(var i=0, var j=playlist.length; i &lt; j; i++) {</p>
+
+<pre><code>var item = playlist[i];
+db.execute('INSERT INTO albums (disc, artist, rating) VALUES (?, ?, ?)', item.disc, item.artist, item.comment);
+</code></pre>
+
+<p>}
+db.execute(&lsquo;COMMIT&rsquo;);
+db.close();
+```</p>
+
+<h3>2.4 图片</h3>
+
+<ul>
+<li>PNG – PNG images are in a lossless-compressed format that can support high-color images. This format is best suited to line-art, text, and icons. It is a better choice than GIF in almost all cases.</li>
+<li><p>JPG – JPG (or JPEG) is lossy-compressed file format best suited for photographs. It is not well-suited for text, line drawings, or icons because of visual artifacts created during the compression process that will reduce quality and readability.</p></li>
+<li><p>Photos? Use JPG</p></li>
+<li>Text, line drawings, icons, button graphics? Use PNG</li>
+<li>Flip-book style animations (for which animated GIFs would be the traditional choice)? Use the ImageView&rsquo;s images property and pass to it an array of PNG or optimized JPG files.</li>
+</ul>
+
+
+<p>注意：显示JPG图片时，会在内存中解压缩，因此不要一次创建太多的JPG ImageView，否则将耗尽内存。将imageView从view中移除并不会回收内存，还要将imageView设置为null.</p>
+
+<p>为了减少ipa/apk的大小，需要对图片进行优化。见<a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Image_Best_Practices">Titanium文档</a>。</p>
+
+<p>ImageView已经能够显示本地和远程的图片。显示远程图片时，可以先设置defaultImage，下载成功后会自动显示远程图片。这些图片会缓存，对于Android会缓存到应用退出。要自己控制缓存到本地目录，参考<a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Image_Best_Practices">文档</a>。</p>
+
+<h3>2.5 管理内存</h3>
+
+<p>除了把View移除外，还需要将它设置为null.</p>
+
+<p><code>
+var button = Ti.UI.createButton({
+ // parameters go here...
+});
+var view = Ti.UI.createView({
+ // some parameters here...
+});
+view.add(button);
+// ... later
+win.remove(view);  // view &amp; button still exist
+view = null; // deletes the view and its proxy, but not the button!
+// compare that to:
+var view = Ti.UI.createView({
+ // some parameters here...
+});
+view.add(Ti.UI.createButton({
+ // parameters go here...
+}));
+// ... later
+win.remove(view);
+view = null; // deletes the view, button, and their proxies
+</code></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Titanium Alloy MVC]]></title>
@@ -1567,138 +2072,6 @@ MultiDex.install(this);
 <h3>参考：</h3>
 
 <p><a href="http://www.appcelerator.com/blog/2012/05/comparing-titanium-and-phonegap/">Comparing titanium and phonegap</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Titanium移动开发之每日自动构建]]></title>
-    <link href="http://blog.ubone.com/blog/2014/06/25/titaniumzi-dong-gou-jian/"/>
-    <updated>2014-06-25T11:19:18+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/06/25/titaniumzi-dong-gou-jian</id>
-    <content type="html"><![CDATA[<p>以下脚本用于构建Android 和 iOS版本的Titanium应用。可以将脚本加入cron中，每日定时构建。脚本还实现了自动获取svn日志，生成一个发布网页，直接上传到ftp的功能。</p>
-
-<!--more-->
-
-
-<p>```</p>
-
-<h1>转到项目文件夹，更新脚本并执行Clean</h1>
-
-<p>cd /Users/mxs/Develop/CI/myProject
-svn update
-titanium clean</p>
-
-<h1>Android打包</h1>
-
-<p>echo build Android version
-titanium build &mdash;log-level warn &mdash;platform android &mdash;build-only &mdash;force -K /Users/mxs/keystore -P company -L oasuit -O /Users/mxs/Develop/CI/build -T dist-playstore > ../android.build.log</p>
-
-<h1>文件名加上时间</h1>
-
-<p>fileTime=&ldquo;OA-<code>date +'%Y-%m-%d_%H%M'</code>&rdquo;
-localApkName=&ldquo;/Users/mxs/Develop/CI/build/&rdquo;$fileTime".apk"
-localApkZip=$fileTime".apk.zip"
-localApkZipSource=$fileTime".apk"
-remoteApkName=&ldquo;/moa/test/&rdquo;$fileTime".apk.zip"
-oaapk=/Users/mxs/Develop/CI/build/OA.apk
-oaapkinfo=&ldquo;&rdquo;
-if [ ! -f $oaapk ]
-then
-  oaapkinfo=&lsquo;<br/><strong><span style="color:red">OA.apk不存在，tiapp.xml配置不正确或者构建失败。</span></strong>&rsquo;
-fi
-mv $oaapk $localApkName</p>
-
-<h1>iOS打包</h1>
-
-<p>mv /Users/mxs/Develop/CI/i18n /Users/mxs/Develop/CI/myProject/i18n
-titanium clean
-echo build iOS version
-titanium build &mdash;log-level warn &mdash;platform ios &mdash;build-only &mdash;force &mdash;device-family iphone -O /Users/mxs/Develop/CI/build -P XXXXXXX -T dist-adhoc &mdash;distribution-name &ldquo;Company Ltd./&rdquo; > ../ios.build.log
-localIpaName=&ldquo;/Users/mxs/Develop/CI/build/&rdquo;$fileTime".ipa"
-localIpaZip=$fileTime".ipa.zip"
-localIpaZipSource=$fileTime".ipa"
-remoteIpaName=&ldquo;/moa/test/&rdquo;$fileTime".ipa.zip"
-oaipa=/Users/mxs/Develop/CI/build/OA.ipa
-oaipainfo=&ldquo;&rdquo;
-if [ ! -f $oaipa ]
-then
-  oaipainfo=&lsquo;<br/><strong><span style="color:red">OA.ipa不存在，tiapp.xml配置不正确或者构建失败。</span></string>&rsquo;
-fi
-mv $oaipa $localIpaName
-mv /Users/mxs/Develop/CI/myProject/i18n /Users/mxs/Develop/CI/i18n</p>
-
-<h1>获取昨天的日志，只要以#开始的注释</h1>
-
-<p>yesterday=&ldquo;<code>date -v -1d +'%Y-%m-%d'</code>&rdquo;
-today=&ldquo;<code>date +'%Y-%m-%d'</code>&rdquo;
-svn log -r {$yesterday}:{$today} > ../log.tmp
-grep &lsquo;^#&rsquo; ../log.tmp > ../change.log
-rm ../log.tmp</p>
-
-<h1>生成releasenote</h1>
-
-<p>releaseFileName=&ldquo;../build/releasenote-<code>date +'%Y-%m-%d'</code>.txt&rdquo;
-date &ldquo;+<h2>%Y-%m-%d</h2><hr/><p>构建时间：%Y-%m-%d %H:%M:%S</p>&rdquo; > $releaseFileName
-echo &lsquo;<p>下载地址：<a href="'$remoteIpaName'" target="_blank">iOS</a> | <a href="'$remoteApkName'" target="_blank">Android</a></p>&rsquo; >> $releaseFileName
-echo &lsquo;&rsquo; >> $releaseFileName
-echo &lsquo;<h3>&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;变更日志&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;</h3>&rsquo; >> $releaseFileName
-echo &lsquo;<pre>&rsquo; >> $releaseFileName
-cat ../change.log >> $releaseFileName
-echo &lsquo;</pre>&rsquo; >> $releaseFileName
-echo &lsquo;<h3>&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;构建日志&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;</h3>&rsquo; >> $releaseFileName
-echo &lsquo;注：只显示警告和错误信息。&rsquo; >> $releaseFileName
-echo $oaapkinfo >> $releaseFileName
-echo $oaipainfo >> $releaseFileName
-echo &lsquo;<h4>Android</h4>&rsquo; >> $releaseFileName
-echo &lsquo;<pre>&rsquo; >> $releaseFileName</p>
-
-<h1>删除Titanium构建日志的前4行</h1>
-
-<p>cat ../android.build.log  | sed 1d | sed 1d | sed 1d | sed 1d >> $releaseFileName
-echo &lsquo;</pre>&rsquo; >> $releaseFileName
-echo &lsquo;<h4>iOS</h4>&rsquo; >> $releaseFileName
-echo &lsquo;<pre>&rsquo; >> $releaseFileName
-cat ../ios.build.log  | sed 1d | sed 1d | sed 1d | sed 1d >> $releaseFileName
-echo &lsquo;</pre>&rsquo; >> $releaseFileName
-indexFileName=&ldquo;../build/index.html&rdquo;
-historyFileName=&ldquo;../index_history.html&rdquo;
-indexTopFileName=&ldquo;../index_top.html&rdquo;
-cat $historyFileName >> $releaseFileName
-rm $historyFileName
-mv $releaseFileName $historyFileName
-echo &lsquo;&rsquo; > $indexFileName
-cat $indexTopFileName >> $indexFileName
-cat $historyFileName >> $indexFileName
-rm ../change.log
-rm ../android.build.log
-rm ../ios.build.log
-echo zip</p>
-
-<h1>压缩成zip,必须切换到当前文件夹进行压缩操作，否则zip内容包括路径</h1>
-
-<p>cd ../build
-zip $localApkZip $localApkZipSource
-zip $localIpaZip $localIpaZipSource</p>
-
-<h1>上传到FTP服务器</h1>
-
-<p>echo &lsquo;ftp action&rsquo;
-HOST=&lsquo;192.168&hellip;.&rsquo;
-USER=&lsquo;xxx&rsquo;
-PASSWD=&lsquo;xxx&rsquo;
-remoteIndex=&ldquo;/xxx/index.html&rdquo;
-ftp -n $HOST &lt;&lt;END_SCRIPT
-quote USER $USER
-quote PASS $PASSWD
-binary
-put $localIpaZip $remoteIpaName
-put $localApkZip $remoteApkName
-put $indexFileName $remoteIndex
-quit
-END_SCRIPT
-exit 0</p>
-
-<p>```</p>
 ]]></content>
   </entry>
   
