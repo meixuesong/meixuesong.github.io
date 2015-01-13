@@ -323,9 +323,9 @@ db.close();
 ```
 
 ### 2.4 图片
-* PNG – PNG images are in a lossless-compressed format that can support high-color images. This format is best suited to line-art, text, and icons. It is a better choice than GIF in almost all cases.
+>* PNG – PNG images are in a lossless-compressed format that can support high-color images. This format is best suited to line-art, text, and icons. It is a better choice than GIF in almost all cases.
 * JPG – JPG (or JPEG) is lossy-compressed file format best suited for photographs. It is not well-suited for text, line drawings, or icons because of visual artifacts created during the compression process that will reduce quality and readability.
-
+* 因此：
 * Photos? Use JPG
 * Text, line drawings, icons, button graphics? Use PNG
 * Flip-book style animations (for which animated GIFs would be the traditional choice)? Use the ImageView's images property and pass to it an array of PNG or optimized JPG files.
