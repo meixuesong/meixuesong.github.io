@@ -241,8 +241,6 @@ var myValue = (function() {
 
 **提高遍历的效率**，通过保存数组的length:
 
-```javascript```
-
 ### 2.2 CommonJS Module
 主要有两种方式来创建CommonJS Module。方式一采用exports方法：
 
