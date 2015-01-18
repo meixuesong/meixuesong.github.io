@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-01-13T21:28:48+08:00</updated>
+  <updated>2015-01-18T23:40:26+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -2706,7 +2706,44 @@ Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());</
 
 <h2>3. 了解类文件</h2>
 
-<p>有时候有必要查看类文件，但它是二进制文件，和它打交道并不容易。Oracle JVM的javap这个工具可以用来探视类文件内部和反编译。</p>
+<h3>3.1 类文件的结构</h3>
+
+<p>Class文件是一组以8位字节为基础单位的二进制流，各数据项目严格按照顺序紧凑排列，中间没有添加任何分隔符。当遇到需要占用8位字节以上的数据项时，会按照高位在前（Big-Endian，最高位字节在地址最低位，最低位字节在地址最高位。SPARC, POWERPC是这种方式，而x86则相反）的方式分割成若干个8位字节进行存储。</p>
+
+<p>Class文件格式采用类似C语言结构体的伪结构来存储数据，这种伪结构只有两种数据类型：无符号数和表。无符号数属于基本数据类型，u1, u2,u4,u8分别代表1，2，4，8个字节的无符号数。无符号数用来描述数字、索引引用、数量值或者按照UTF8编码构成字符串值。表是由多个无符号数或者其他表作为数据项构成的复合数据类型。所有表都习惯以“_info”结尾。整个Class文件本质上就是一张表。</p>
+
+<p>无论是无符号数还是表，当需要描述同一类型但数量不定的多个数据时，经常会用一个前置的计数器（表示数量）加若干连续的数据项（某一类型的集合）形式来表示。</p>
+
+<p>每个Class文件的头4个字节称为<strong>魔数</strong>（Magic Number），值为<code>0xCAFEBABE</code>，其作用是确定这个文件是否为虚拟机所接受。紧接魔数之后的是4个字节的<strong>Class文件版本号</strong>。第5，6字节是次版本号，第7，8字节是主版本号。（JDK1.0的版本号是45.0，JDK1.7.0可生成的Class文件主版本号最大值为51）</p>
+
+<p>版本号之后是<strong>常量池</strong>入口。常量池中的常量数量是不固定的，所以先有一项u2类型的数据表示常量池容量数值（constant_pool_count）。它从1开始计数，0被空出来，用于某些指向常量池的索引值的数据在特定情况下表达“不引用任何一个常量池项目”的含义。</p>
+
+<p>常量池主要存放两大类常量：字面量（Literal）和符号引用（Symbolic References）。字面量比较接近于常量概念，如字符串、声明为final的常量值等。而符号引用则包括类和接口的全限定名（Full Qualifed Name）、字段的名称和描述符以及方法的名称和描述符。当虚拟机运行时，需要从常量池获得对应的符号引用，瑞在类创建时或运行时解析、翻译到具体的内存地址中。</p>
+
+<p>常量池中每一项常量都是一个表，JDK1.7之前共有11种不同的表结构数据，1.7又增加了三种以支持动态语言调用。这14种表的第1位是u1类型的标志位，代表当前这个常量属于哪种常量类型。每种常量类型均有自己的结构。</p>
+
+<p><strong>访问标志</strong>紧跟常量池，用两个字节表示。主要用于识别Class是类还是接口，是否public，是否abstract类型，是否final等。</p>
+
+<p><strong>类索引、父类索引和接口索引集合</strong>按顺序排列在访问标志之后。类索引用于确定这个类的全限定名，父类索引用于确定父类的全限定名，他们都用两个u2类型的索引值表示。接口索引集合用于描述这个类实现了哪些接口，由于这是可变的，因为入口有一个计数器表示索引表的容量。</p>
+
+<p><strong>字段表集合</strong>（Field_info）用于描述接口或类中声明的亦是。包括类变量和实例变量，但不包括方法的局域变量。信息包括作用域（public/private/protected）、实例还是类变量(static)、可变性（final）、并发可见性(volatile)、可否序列化（transient）、数据类型、字段名等。字段表集合不会列出父类或实现接口中继承的字段，但可能列出原本Java代码中不存在的字段（如向内部类添加指向外部类实例的字段）。</p>
+
+<p><strong>方法表集合</strong>与字段表集合相似。但方法里的Java代码编译成字节码指令后存放在方法属性表集合中一个名为“Code”的属性里面。Code属性表包含方法的很多信息。只说几个重要的：</p>
+
+<ul>
+<li>max_stack:方法的操作数栈（Operand Stacks）深度最大值</li>
+<li>max_locals:局部变量所需的存储空间。单位为Slot，局部变量分配内存的最小单位。byte,int等长度不超过32位的数据类型，每个局部变量占用1个Slot，doublue和long需要2个Slot。并不是方法中用到多少个局部变量，所占Slot之和就是所需存储空间，Slot是可以重用的，当代码执行超过一个局部变量的作用域时，这个局部变量的Slot就可以被其他局部变量使用。</li>
+<li>code_length:字节码长度</li>
+<li>code: 存储字节码指令的一系列字节流。</li>
+<li>exception_table:异常表，编译器使用异常表而不是简单的跳转命令来实现Java异常及finally处理机制。</li>
+</ul>
+
+
+<p>方法表除了Code属性，还有还有多种其他属性。例如Exceptions属性（即方法声明中的throws列表的异常）、LineNumberTable属性（javac用<code>-g:none</code>或<code>-g:lines</code>参数。如果不生成LineNumberTable属性，则异常中不会显示出错的行号）、LocalVariableTable属性（javac用<code>-g:none</code>或<code>-g:vars</code>参数，如果不生成这项信息，IDE只会显示arg0, arg1等，丢失了原有的参数名）。</p>
+
+<p><strong>属性表集合</strong>，Class文件、字段表、方法表都可以携带自己的属性表集合，以用于描述某些场景专有的信息。</p>
+
+<p>由于类文件是二进制文件，和它打交道并不容易。Oracle JVM的javap这个工具可以用来探视类文件内部和反编译。</p>
 
 <p>我们以一个简单的Java类作为示例：</p>
 
@@ -2725,7 +2762,7 @@ Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());</
     //getter, setter</code></pre>
 
 
-<h3>查看类文件的方法和属性</h3>
+<h3>3.2 查看类文件的方法和属性</h3>
 
 <pre class='line-numbers language-java'><code class='language-java'>$ javap  Sample.class 
 Compiled from "Sample.java"
@@ -2740,7 +2777,7 @@ public class com.ubone.tdd.chapter1.javaio.Sample {
 
 <p>javap默认显示public, protected和包级protected级别的方法和属性。加上-p选项后可以显示private方法和属性。</p>
 
-<h3>方法签名的内部形式</h3>
+<h3>3.3 方法签名的内部形式</h3>
 
 <p>JVM内部用的方法签名使用紧凑形式，例如int用I表示。这称为类型描述符：</p>
 
@@ -2828,7 +2865,7 @@ public class com.ubone.tdd.chapter1.javaio.Sample {
 }</code></pre>
 
 
-<h3>常量池</h3>
+<h3>3.4 常量池</h3>
 
 <p>常量池是为类文件中的其他（常量）元素提供快捷访问方式的区域。通过javap -v可以查看常量池的信息：</p>
 
@@ -2929,7 +2966,7 @@ public class com.ubone.tdd.chapter1.javaio.Sample {
 
 <h3>操作码</h3>
 
-<p>JVM字节码由操作码（opcode）序列构成，每个指令后可能会跟一些参数。每个操作码由一个单字节值表示，所以最多有255个操作码。目前用了200个左右。大致可以分为以下几类，摘要说明如下：</p>
+<p>JVM字节码由操作码（opcode）序列构成，每个指令后可能会跟一些参数（Operands，操作数）。每个操作码由一个单字节值表示，所以最多有255个操作码。目前用了200个左右。大致可以分为以下几类，摘要说明如下：</p>
 
 <blockquote><ul>
 <li>参数：操作码参数。如果参数出现在括号中，表示可选。以i打头的参数用来作为常量池或局部变量中的查询索引的几个字节。如果有多个此类参数，会合并在一直。例如i1,i2表示从这两个字节生成一个16位的索引。</li>
