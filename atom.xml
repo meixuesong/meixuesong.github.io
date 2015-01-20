@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-01-18T23:45:08+08:00</updated>
+  <updated>2015-01-20T08:34:59+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,165 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[JVM字节码执行引擎]]></title>
+    <link href="http://blog.ubone.com/blog/2015/01/20/jvmzi-jie-ma-zhi-xing-yin-qing/"/>
+    <updated>2015-01-20T06:40:46+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/01/20/jvmzi-jie-ma-zhi-xing-yin-qing</id>
+    <content type="html"><![CDATA[<p>JVM执行引擎输入的是字节码文件，处理过程是字节码解析的等效过程，输出的是执行结果。本文从概念模型的角度学习栈帧结构、方法调用和字节码执行。</p>
+
+<!--more-->
+
+
+<h2>1. 运行时栈帧结构</h2>
+
+<p>栈帧（Stack Frame）是虚拟机运行时数据区中的虚拟机栈（Virtual Machine Stack）的栈元素，是支持虚拟机进行方法调用和方法执行的数据结构。每个方法从调用开始到执行完成的过程，都对应着一个栈帧在虚拟机栈里面从入栈到出栈的过程。</p>
+
+<p>每个栈帧都包括了局部变量表、操作数栈、动态连接、方法返回地址和额外的附加信息。在编译生成字节码时，栈帧中需要多大的局部变量表、多深的操作数栈就已经完全确定并保存在方法表的Code属性中。</p>
+
+<p>一个线程中的方法调用链可能很长，很多方法同时处于执行状态。但对执行引擎来说，活动线程中，只有栈顶的栈帧才是有效的，称为当前栈帧。与当前栈帧相关联的方法称为当前方法。执行引擎运行的所有字节码指令都只针对当前栈帧操作。</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_-2015-01-20_06.59.02.jpg" alt="image" /></p>
+
+<h3>1.1 局部变量表</h3>
+
+<p>局部变量表用于存放方法参数和方法内局部变量，其容量以Variable Slot为最小单位。每个Slot可以存放32位以内的数据类型，包括boolean、byte、char、short、int、float、reference和returnAddress，对于64位的数据类型long和double，会分配2个连续的Slot。由于虚拟机栈是线程的私有数据，因此操作2个Slot不会引起数据安全问题。</p>
+
+<p>虚拟机通过索引定位的方式使用局部变量表，索引值从0到最大Slot数量。在方法执行时，局部变量表完成参数值到数量变量列表的传递过程。如果执行的是实例方法（非static），关键字&#8221;this&#8221;是隐含参数，位于第0个索引，其余参数按照参数表顺序排列。</p>
+
+<p>为了节省栈帧空间，Slot是可以重用的，因为方法体中定义的变量，其作用域并不一定会覆盖整个方法体，如果当前字节码PC计数器的值已经超出了某个变量的作用域，那这个变量对应的Slot就可以交给其他变量使用。但这也会有一些副作用，示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>public static void main(String[] args) {
+    {
+        byte[] placeholder = new byte[64*1024*1024];//64MB
+    }
+    
+    int a = 0; //!
+    System.gc();
+}</code></pre>
+
+
+<p>上面的代码，如果没有<code>int a</code>那一行，从逻辑上讲应该能够回收placeholder的内存，但实际上并非如此。原因就是代码虽然已经离开了placeholder的作用域，但在此之后，没有任何对局部变量表的读写操作，placeholder占用的Slot还没有被其他变量复用，所以GC Roots一部分的局部变量表仍然保持对它的关联。因此加上<code>int a</code>那一行就能够正常回收了。</p>
+
+<p>因此，如果遇到一个方法，其后面的代码有一些耗时很长的操作，而前面又定义了占用大量内存，实际上已经不再会使用的变量，手动将其设置为null以帮助内存回收也是有意义的。需要注意的是，在日常编程时，没必要过度依赖将变量设置为null，因为编译器优化和JIT编译都可能使赋null语句被优化掉。</p>
+
+<p>此外，局部变量并没有类变量和实例变量那样存在“准备阶段”，因此不会自动赋予系统初始值。</p>
+
+<h3>1.2 操作数栈</h3>
+
+<p>操作数栈（Operand Stack）也常称为操作栈，它是后入先出（LIFO）栈。当一个方法开始执行时，它的操作数栈是空的。在方法执行过程中，会有各种字节码指令往操作数栈写入和提取内容。</p>
+
+<p>在概念模型中，两个栈帧是完全独立的。但大多虚拟机实现都会做优化，让两个栈帧出现一部分重叠。让下面的栈帧的部分操作数栈与上面的栈帧的部分局部变量表重叠在一起，无须进行额外的参数复制。</p>
+
+<h3>1.3 动态连接</h3>
+
+<p>每个栈帧都包含一个指向运行时常量池中该栈帧所属方法的引用，持有这个引用是为了支持方法调用过程中的动态连接。</p>
+
+<h3>1.4 方法返回地址</h3>
+
+<p>当方法开始执行后，有两种方式退出。一是遇到方法返回的字节码指令；二是遇到异常并且这个异常没有在方法体内得到处理。无论哪种退出方式，方法退出之后都要返回到方法被调用的位置。一般来说，方法正常退出时，调用者的PC计数器的值可以作为返回地址，栈帧中很可能会保存这个计数器值。而方法异常退出时，返回地址是通过异常处理器表来确定的，栈帧中一般不会保存此信息。</p>
+
+<p>方法退出的过程就等同于把当前栈帧出栈，因此退出时可能执行的操作有：恢复上层方法的局部变量表和操作数栈，把返回值（如果有的话）压入调用者栈帧的操作数栈中，修改PC计数器的值以指向后一条指令等。</p>
+
+<h3>1.5 附加信息</h3>
+
+<p>各虚拟实现时会增加一些规范中没有描述的信息放到栈帧中，例如与调试相关的信息。</p>
+
+<h2>2. 方法调用</h2>
+
+<p>方法调用并不是方法执行，此阶段的唯一任务是确定被调用方法的版本，即调用哪一个方法。</p>
+
+<h3>2.1 解析（Resolution）</h3>
+
+<p>所有方法调用中的目标方法在Class文件里都是一个常量池中的符号引用。在解析阶段，会将其中一部分符号引用转化为直接引用：如果方法在真正运行之前就有一个可确定的调用版本，并且这个调用版本在运行期是不可改变的，那么就会被转化为直接引用。</p>
+
+<p>符合这个条件的有静态方法、私有方法、实例构造器和父类方法4类。这4类方法和final方法都称为非虚方法。非虚方法在编译期间就完成了解析调用，将符号引用转变为可确定的直接引用。</p>
+
+<h3>2.2 分派（Dispatch）</h3>
+
+<p>分派与解析相反，要在运行时确定调用哪个版本的方法。这是多态特性的体现。分派可能是静态或动态的，根据分派的依据又分为单分派和多分派。</p>
+
+<h4>2.2.1 静态分派</h4>
+
+<p>首先明确什么是静态类型和实际类型，看下面的代码：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>public class Human{...}
+public class Man extends Human{...}
+public class Woman extends Human{...}
+
+public void sayHello(Human h) {print("human");}
+public void sayHello(Man h) {print("man");}
+public void sayHello(Woman h) {print("woman");}
+
+public static void main(String[] args) {
+    Human man = new Man();
+    syaHello(man); //会打印什么呢？
+}</code></pre>
+
+
+<p>在main方法中，Human称为变量的Static类型或Apparent类型，而Man则为变量的实际类型。</p>
+
+<p>所有依赖静态类型来定位方法执行版本的分派动作称为静态分派。静态分派的典型应用是方法重载(Overload)。虚拟机在重载时通过参数的静态类型而不是实际类型作为判定依据。并且静态类型是编译期可知的，因此在编译阶段，编译器会根据参数的静态类型决定使用哪个方法的重载版本。所以main方法中会打印human.</p>
+
+<h4>2.2.2 动态分派</h4>
+
+<p>在运行期根据实际类型确定方法执行版本的分派过程称为动态分派。典型应用是方法重写(Override)。</p>
+
+<h4>2.2.3 单分派与多分派</h4>
+
+<p>方法的接收者和方法的参数统称为方法的宗量。根据分派基于多少种宗量，可以分为单分派和多分派。单分派根据一个宗量对目标方法进行选择，而多分派则根据多于一个宗量对目标方法进行选择。</p>
+
+<p>根据上面的知识，可以得知：Java是一门静态多分派，动态单分派的语言。</p>
+
+<h4>2.2.4 虚拟机动态分派的实现</h4>
+
+<p>由于动态分派是非常频繁的动作，需要在运行时中确定，因此虚拟机的实现基于性能考虑，并不会进行频繁的搜索，而是采用虚方法表来提高性能。</p>
+
+<p>虚方法表中存放了各个方法的实际入口。如果某个方法在子类中没有被重写，那么子类的虚方法表里面的地址入口与父类相同方法的地址入口是一致的，都指向父类的实现入口。如果子类重写了这个方法，则子类方法表中的地址将会替换为指向子类实现版本的入口地址。</p>
+
+<p>方法表一般在类加载的连接阶段进行初始化，类的变量初始值后，会把该类的方法表也初始化。</p>
+
+<h2>3. 基于栈的字节码解释执行引擎</h2>
+
+<p>虚拟机执行Java代码时有解释执行和编译执行。先学习一下解释执行。</p>
+
+<p>Java编译器输出的指令流，基本是一种基于栈的指令集架构（Instruction Set Architecture, ISA），指令流中的指令大部分是零地址指令，它们依赖操作数栈工作。相对应的，x86使用的是基于寄存器的指令集。</p>
+
+<p>基于栈的指令集主要优点是可移植，但缺点是执行速度会稍慢一些，因为出栈入栈操作本身就产生了相当多的指令数量，而且栈实现是在内存中，比寄存器的速度慢了很多。</p>
+
+<p>通过一段代码来学习基于栈的解释器执行过程。</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>public int calc() {
+    int a = 100;
+    int b = 200;
+    int c = 300;
+    return (a+b) *c;
+}</code></pre>
+
+
+<p>对应的字节码：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>public int calc();
+Code:
+stack=2, Locals=4, Args_size=1
+0: bipush 100       //将单字节的整数常量值(-128~`17)推入操作数栈
+2: istore_1     //将操作数栈顶的整形值出栈并存放到第1个局部变量Slot中
+3: sipush 200       //与0类似
+6: istore_2
+7: sipush 300       
+10:istore_3
+11:iload_1      //将局部变量表第1个Slot的整型值复制到操作数栈顶
+12:iload_2      //将局部变量表第2个Slot的整型值复制到操作数栈顶
+13:iadd     //将操作数栈中的头两个栈顶出栈，相加，再将结果入栈
+14:iload_3      //把第3个Slot的300压入操作数栈
+15:imul     //将操作数栈中头两个栈顶出栈，相乘，将结果入栈
+16:ireturn      //结束方法执行，将操作数栈顶的整数返回</code></pre>
+
+
+<p>上面的示例可以看出中间变量都以操作数栈的入栈和出栈为信息交换途径。以上执行过程只是概念模型，实际执行时虚拟机会做优化。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Titanium UI及最佳实践]]></title>
@@ -2528,13 +2687,19 @@ obj.callMyMethod();</code></pre>
 
 <h4>连接</h4>
 
-<p>加载完成后，类必须连接起来。这分为三个步骤：验证、准备和解析。验证类文件符合预期，不会引起系统运行时错误。准备阶段会分配内存，准备好初始化类中的静态变量（但不会现在初始化变量）。解析阶段会检查类中引用的类型是否有未知类型，如果有会加载进来。一旦需要加载的其他类型全部定位并完成解析，VM就可以初始化这个类。这时所有静态变量都可以被初始化，所有静态初始化代码块都会运行。类的加载全部完成，已经可以使用了。</p>
+<p>加载完成后，类必须连接起来。这分为三个步骤：验证、准备和解析。验证类文件符合预期，不会引起系统运行时错误。准备阶段会分配内存，准备好初始化类中的静态变量（但不会现在初始化变量）。解析阶段会检查类中引用的类型是否有未知类型，如果有会加载进来。</p>
+
+<h4>初始化</h4>
+
+<p>一旦需要加载的其他类型全部定位并完成解析，VM就可以初始化这个类。这时所有静态变量都可以被初始化，所有静态初始化代码块都会运行。类的加载全部完成，已经可以使用了。</p>
 
 <h4>Class对象</h4>
 
 <p>加载和连接过程的最终结果是一个Class对象，可以使用这个新类型创建实例了。Class对象可以和反射API一起实现对方法、域和构造方法等类成员的间接访问，通过getSuperClass()返回其父类。</p>
 
 <h4>类加载器</h4>
+
+<p>比较两个类是否“相等”，只有这两个类是由同一个类加载器加载的前提下才有意义。同一个Class文件，被同一个虚拟机加载，只要加载它们的类加载器不同，那这两个类必定不等。这里所指的“相等”，包括Class对象的equals()方法、isAssignableFrom()方法、isInstance()方法的返回结果以及instanceof关键字。</p>
 
 <p>Java平台有几个经典的类加载器：</p>
 
@@ -2545,6 +2710,38 @@ obj.callMyMethod();</code></pre>
 <li>定制类加载器：在更复杂的环境，如EE或比较复杂的SE框架，通常会有些附加（即定制）的类加载器。</li>
 </ul>
 
+
+<p>在实现类加载器时，Java推荐使用双亲委派模型。即定制类加载器继承自应用类加载器，应用类加载器继承自扩展类加载器，扩展类加载器继承自根类加载器。其工作过程是，如果一个类加载器收到了类加载的请求，它首先把这个请求委派给父类加载器去完成，每个层次的类加载器都是如此，因此所有的加载请求都最终应该传送到顶层的根类加载器。只有当父类加载器反馈自己无法完成加载请求（它的搜索范围中没有找到所需的类）时，子加载器才会尝试自己去加载。双亲委派模型的代码实现示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>protected synchronized Class&lt;?&gt; loadClass(String name, boolean resolve) throws ClassNotFoundException {
+    //先检查类是否已经加载过了
+    Class c = findLoadedClass(name);
+    if (c == null) {
+        try {
+            if (parent != null) {
+                c = parent.loadClass(name, false);
+            } else {
+                c = findBootstrapClassOrNull(name);
+            }
+        } catch(ClassNotFoundException e) {
+            //如果父类抛出异常，说明父类加载器无法完成加载请求
+        }
+        
+        if (c == null) {
+            //父类无法加载时，调用本身的findClass方法进行类加载
+            c = findClass(name);
+        }
+    }
+    
+    if (resolve) {
+        resolveClass(c);
+    }
+    
+    return c;
+}</code></pre>
+
+
+<p>从JDK1.2之后，不再提倡用户覆盖loadClass()方法，而应当把自己的类加载逻辑放到findClass()方法中。随着用户对程序动态性的要求，双亲委派模型不一定成立。例如在OSGi中，类加载器变成了复杂的网状结构。</p>
 
 <h2>2. 方法句柄</h2>
 
@@ -6371,36 +6568,6 @@ protected void attachBaseContext(Context base) {
 <p></p>
 
 <p>参考：<a href="http://algs4.cs.princeton.edu/42directed/">http://algs4.cs.princeton.edu/42directed/</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[发布两款自用的GAE应用]]></title>
-    <link href="http://blog.ubone.com/blog/2014/10/27/fa-bu-liang-kuan-zi-yong-de-gaeying-yong/"/>
-    <updated>2014-10-27T22:58:19+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/10/27/fa-bu-liang-kuan-zi-yong-de-gaeying-yong</id>
-    <content type="html"><![CDATA[<p>今天正式公开我的两款GAE(Google App Engine)应用：RSS2EPUB和背单词应用。供有需要的朋友使用。</p>
-
-<!--more-->
-
-
-<h2>RSS2EPUB/MOBI</h2>
-
-<p>RSS2EPUB用于将RSS订阅全文转换成Epub或者MOBI格式，每天推送至邮箱或Kindle等阅读器。开发这款应用的目的主要是想专注于阅读，少一些网络的干扰。使用说明见：<a href="https://github.com/meixuesong/rss2epub">https://github.com/meixuesong/rss2epub</a></p>
-
-<p>网址：<a href="rss2epub.appspot.com">http://rss2epub.appspot.com</a></p>
-
-<h2>背单词</h2>
-
-<p>背单词应用是我数年前开发的一款应用，也是第一次使用GAE。之后对页面升级改造过一次。这个应用提供了“词典”和“我的生词本”功能。词典内容来源于Collins英语学习词典和Collins英汉双解词典，并按四、六级和专四、专八进行了分类。系统按照记忆曲线列出您每天应该复习的单词。另外例句默写是非常有效的强化记忆功能，系统自动列出单词的所有例句，将单词空出来，默写完后可以检查答案。</p>
-
-<p>网址：<a href="http://enubone.appspot.com">http://enubone.appspot.com</a></p>
-
-<h2>注</h2>
-
-<p>这两个应用都部署在Google的云上，所以需要翻墙才能使用。翻墙是我等这么多年练出的拿手绝活，应该不在话下。</p>
-
-<p>GAE与几年前相比，不论是功能还是文档都有了长足进步，现在上手已经很简单了，最关键是免费，并且从GAE访问国外资源不会被墙。</p>
 ]]></content>
   </entry>
   
