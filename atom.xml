@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-01-31T19:44:35+08:00</updated>
+  <updated>2015-01-31T23:48:06+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,235 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Java内存模型与线程]]></title>
+    <link href="http://blog.ubone.com/blog/2015/01/31/javanei-cun-mo-xing-yu-xian-cheng/"/>
+    <updated>2015-01-31T19:45:39+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/01/31/javanei-cun-mo-xing-yu-xian-cheng</id>
+    <content type="html"><![CDATA[<p>学习并发编程，需要了解Java内存模型与线程。</p>
+
+<!--more-->
+
+
+<h2>1. 硬件的基础</h2>
+
+<p>为了提高效率，现在的CPU都有一层读写速度接近处理器运算速度的高速缓存来作为内存与处理器之间的缓冲：将运算需要使用的数据复制到缓存中，让运算能快速进行，当运算结束后再从缓存同步回内存中。</p>
+
+<p>对于多处理器系统，每个处理器都有自己的高速缓存，而它们又共享同一个主内存。因此就存在缓存一致性的问题。当多个处理器的运算任务都涉及同一块主内存区域时，就可能导致各自的缓存数据不一致。为了解决一致性问题，需要遵循一些协议（如MSI, MESI, MOSI等）。</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_-2015-01-31-19.55.58.png" alt="image" /></p>
+
+<p>乱序执行（Out-Of-Order Execution）优化。为了使处理器内部的运算单元能尽量充分利用，处理器可能会对代码进行乱序执行优化，在计算之后将结果重组，保证该结果与顺序执行的结果一致。也就是处理器并不保证各条语句执行的先后顺序与输入顺序一致。JIT也有类似的指令重排序（Instruction Recorder）优化。</p>
+
+<h2>2. Java内存模型</h2>
+
+<h3>2.1 主内存与工作内存</h3>
+
+<p>JVM规范定义了Java内存模型来屏蔽各种硬件和OS的内存访问差异。该模型规定所有变量都存储在主内存（仅是虚拟机内存的一部分）中，每条线程还有自己的工作内存，线程的工作内存保存了该线程使用到的变量（不是对象，而是对象的引用）的主内存副本拷贝，线程对变量的所有操作都必须在工作内存中进行，不能直接读写主内存中的变量。不同的线程之间也无法直接访问对方工作内存中的变量，线程间变量值的传递均需要通过主内存来完成。</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_-2015-01-31-20.27.06.png" alt="image" /></p>
+
+<h3>2.2 内存间交互操作</h3>
+
+<p>关于主内存与工作内存之间的交互，Java内存模型定义了8种操作来完成，每种操作都是原子操作。</p>
+
+<ul>
+<li>lock: 作用于主内存变量，把一个变量标识为一条线程独占状态</li>
+<li>unlock: 作用于主内存变量，释放一个锁定的变量，可以被其他线程锁定</li>
+<li>read: 作用于主内存变量，把一个变量的值从主内存传输到线程的工作内存中，以便load动作使用。</li>
+<li>load: 作用于工作内存变量，把read操作从主内存中得到的变量值放入工作内存变量副本中。</li>
+<li>use: 作用于工作内存变量，把工作内存中的变量的值传递给执行引擎。每当虚拟机遇到一个需要使用变量的值的字节码指令时会执行这个操作。</li>
+<li>assign: 作用于工作内存变量，把从执行引擎接收到的值赋给工作内存变量。每当虚拟机遇到一个给变量赋值的字节码指令时执行此操作。</li>
+<li>store: 作用于工作内存变量，把工作内存中一个变量的值传送到主内存中，以便write操作使用。</li>
+<li>write: 作用于主内存的变量，把store操作从工作内存中得到的变量的值放入主内存的变量中。</li>
+</ul>
+
+
+<h3>2.3 volatile变量</h3>
+
+<h4>2.3.1 可见性</h4>
+
+<p>对于volatile变量，具备两个特性：一是保证此变量对所有线程的可见性，即当一个线程修改了这个变量的值，新值对于其他线程来说可以立即得知。实际上volatile变量在各线程的工作内存中也可以存在不一致的情况，但是由于使用之前都要先刷新，因此可以认为不存在一致性问题。但由于Java中的运算不是原子操作，因此volatile在并发下也不一定是安全的。例如下面的代码：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>public static volatile int race = 0;
+
+public static void increase() {
+    race++;
+}
+
+//测试代码：
+for(int i = 0; i &lt; 20; i++) {
+    ...//用20个线程调用increase()方法
+    public void run() {
+        for(int j = 0; j &lt; 10000; j++) {
+            increase();
+        }
+    }
+}
+
+//当20个线程结束后，race的值通常会少于20万。</code></pre>
+
+
+<p>volatile变量与普通变量的区别在于，前者保证新值能立即同步到主内存，并且每次使用前都立即从主内存刷新。对于volatile变量，如果不符合以下两条规则，则仍然要通过加锁来实现同步：</p>
+
+<ol>
+<li>运算结果并不依赖变量的当前值，或者能够确保只有单一的线程修改变量的值。</li>
+<li>变量不需要与其他的状态变量共同参与不变约束。</li>
+</ol>
+
+
+<h4>2.3.2 禁止指令重排序优化</h4>
+
+<p>volatile变量也用于禁止指令重排序。直接看伪代码：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>volatile boolean initialized = false;
+
+//线程A
+initConfig() //做一些初始化的工作
+initialized = true;
+
+//线程B
+while(! initialized) { sleep();}
+//使用线程A中初始化好的配置信息
+doSomethingWithConfig();</code></pre>
+
+
+<p>如果变量initialized不声明为volatile，则指令重排序后，有可能线程A中的<code>initialized = true</code>比<code>initConfig()</code>提前执行。导致线程B无法正确获取配置信息。</p>
+
+<h2>3. Java与线程</h2>
+
+<p>主流操作系统都提供了线程实现，Java语言则提供了在不同硬件和操作系统平台下对线程操作的统一处理。线程实现主要有3种方式：</p>
+
+<h3>3.1 使用内核线程实现</h3>
+
+<p>内核线程是由操作系统内核（Kernel）支持的线程。程序并不直接使用内核线程，而是使用轻量级进程（Light Weight Process, LWP）。LWP就是我们通常意义上所讲的线程。每个LWP与内核线程是1：1关系。</p>
+
+<p>内核线程的缺点是调用代价高，需要在用户态和内核态来回切换。同时LWP要消耗一定的内核资源。因此一个系统支持LWP的数量是有限的。</p>
+
+<h3>3.2 使用用户线程实现</h3>
+
+<p>用户线程的建立、同步、销毁和调度完全在用户态中完成，不需要内核帮助。因此可以支持更大的线程数量，不需要切换到内核，快速且消耗低。进程与用户线程的关系为1：N关系。</p>
+
+<p>由于没有系统内核支援，所有线程操作都需要用户程序自己处理，因此程序比较复杂。Java曾经使用过用户线程，但最终放弃使用它。</p>
+
+<h3>3.3 使用用户线程加LWP混合实现</h3>
+
+<p>这种混合实现方式即存在用户线程，也存在LWP。用户线程还是完全建立在用户空间中，因此创建、切换等操作依然廉价，并且可以支持大规模用户线程并发。而操作系统提供支持的LWP则作为用户线程与内核线程之间的桥梁，可以使用内核提供的线程调度功能及处理器映射，用户线程的系统调用通过LWP完成，大大降低了整个进程被完全阻塞的风险。用户线程与LWP的数量比不定，即N:M的关系。</p>
+
+<h3>3.4 Java线程的实现</h3>
+
+<p>JDK1.2之前使用用户线程实现。从1.2开始，线程模型基于操作系统原生线程模型来实现。对于SunJDK，Windows和Linux版都是使用1：1的线程模型，即一条Java线程映射到一条LWP。而Solaris，HP-UX等则由于操作系统的线程特性，可以同时支持1：1及N:M模型。</p>
+
+<h2>4. 线程安全</h2>
+
+<p>Brian Goetz对线程安全的定义：当多个线程访问一个对象时，如果不用考虑这些线程在运行时环境下的调度和交替执行，也不需要进行额外的同步，或者在调用方进行任何其他的协调操作，调用这个对象的行为都可以获得正确的结果，那这个对象就是线程安全的。</p>
+
+<h3>4.1 Java语言中的线程安全</h3>
+
+<h4>4.1.1 不可变</h4>
+
+<p>Java中不可变的对象一定是线程安全的。如果共享的数据是一个基本数据类型，只要在定义时使用了final关键字就可以保证它是不可变的。如果共享数据是一个对象，则需要保证对象的行为不会对其状态产生任何影响。</p>
+
+<h4>4.1.2 绝对线程安全</h4>
+
+<p>Java API中标注为线程安全的类，大多数都不是绝对的线程安全。例如java.util.Vector是线程安全的容器，其get(), remove()和size()方法都是同步的。但如果不在方法调用端做额外的同步措施，代码仍然是不安全的：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>//如果一个线程在操作Vector时，另一个线程删除了了个元素，导致i元素不可再用，就会抛出异常。
+private static Vector&lt;Integer&gt; vector = new Vector&lt;Integer&gt;();
+
+public static void main(String[] args) {
+    while(true) {
+        for(int i = 0; i &lt; 10; i++) {vector.add(i);}
+        
+        Thread removeThread = new Thread(new Runnable(){
+            public void run() {
+                for(int i = 0; i &lt; vector.size(); i++) {
+                    vector.remove(i);
+                }
+            }
+        });
+        
+        Thread printThread = new Thread(new Runnable(){
+            public void run() {
+                for(int i = 0; i &lt; vector.size(); i++) {
+                    System.out.println((vector.get(i)));
+                }
+            }
+        });
+        
+        removeThread.start();
+        printThread.start();
+        
+        while(Thread.activeCount() &gt; 20);
+    }
+}</code></pre>
+
+
+<h4>4.1.3 相对线程安全</h4>
+
+<p>这就是我们平时说的线程安全，它需要保证对这个对象单独的操作是线程安全的，我们在调用时不需要做额外的保障措施。但是对于一些特定顺序的连续调用，就可能需要在调用端使用额外的同步手段来保证调用的正确性。</p>
+
+<h4>4.1.4 线程兼容</h4>
+
+<p>对象本身并不是线程安全的，但是可以在调用端正确使用同步手段来保证对象在并发环境下可以安全使用。</p>
+
+<h4>4.1.5 线程对立</h4>
+
+<p>无论调用端是否采取了同步措施，都无法在多线程环境中并发使用。Java中这种代码很少，但Thread的suspend()和resume()方法就是个例子。如果并发情况下，一个尝试中断，另一个尝试恢复线程，无论调用时是否进行了同步，目标线程都存在死锁风险。这两个方法已经声明为Deprecated.</p>
+
+<h3>4.2 线程安全的实现方法</h3>
+
+<h4>4.2.1 互斥同步</h4>
+
+<p>Java中最基本的互斥同步手段是synchronized关键字。这是一个相对重量级的操作，因为需要进行用户态和核心态的转换。</p>
+
+<p>ReentranLock是另一个同步实现方法。它与synchronized相比，有以下高级功能：</p>
+
+<ul>
+<li>等待可中断：如果持有锁的线程长期不释放锁，正在等待锁的线程可以选择放弃。</li>
+<li>公平锁：多个线程在等待同一个锁时，必须按照申请的顺序依次获得锁。（synchronized是非公平的。 ReentranLock默认也是非公平的，但通过参数可以要求用公平锁）</li>
+<li>锁绑定多个条件：一个ReentranLock对象可以同时绑定多个Condition对象。</li>
+</ul>
+
+
+<p>JDK6之后，虚拟机对synchronized性能进行了优化，已经与ReentranLock持平了，未来优化还会偏向于synchronized。因此如果性能满足需要时，可以优先考虑使用synchronized来同步。</p>
+
+<h4>4.2.2 非阻塞同步</h4>
+
+<p>互斥同步是一种悲观的并发策略，因为不论是否真的存在竞争，它都会加锁。随着硬件指令集的发展，有了另一种选择。基于冲突检测的乐观并发策略，就是先进行操作，如果没有其他线程急用共享数据，那操作就成功。如果产生了冲突，再采取其他的补偿措施。这种乐观的并发策略不需要把线程挂起，因此称为非阻塞同步。</p>
+
+<p>非阻塞同步需要了解CAS指令。它有3个操作数，分别是内存位置（V）、旧的预期值(A)和新值（B）。CAS指令执行时，当且仅当V符合旧预期值A时，处理器用新值B更新V的值，否则它就不执行更新。但是无论是否更新了V的值，都会返回V的旧值，这是一个原子操作。</p>
+
+<p>CAS指令看起来很美，但可能产生“ABA”问题。如果V初次读取时是A，并且在准备赋值时检查到它仍然是A，并不能说明它没有被其他线程修改过。因此在此过程中，它可能被改为B，然后再改为A。这时候CAS操作就误以为它从来没有被改变过。当然大部分情况下ABA问题不会影响程序的正确性。</p>
+
+<h3>4.3 JDK的锁优化</h3>
+
+<h4>4.3.1 自旋锁与自适应自旋</h4>
+
+<p>互斥同步对性能最大的影响是阻塞的实现，因为线程挂起和恢复操作都要转入内核态中完成。很多应用中共享数据的锁定状态只会持续很短的时间，为了这个时间去挂起和恢复线程并不值得。因此不妨让后面的请求线程“稍等一下”，执行一个忙循环（自旋），这就是自旋锁。</p>
+
+<p>自旋锁如果占用时间长了，就失去了自旋的意义，因此JDK6之前的自旋锁超过10次仍然没有成功获得锁，就会改用传统的方式去挂起线程。</p>
+
+<p>JDK6引入了自适应的自旋锁，也就是自旋的时间不固定了，会根据前一次在同一个锁上的自旋时间及锁的拥有者的状态来决定。例如前几次成功了，就认为后面也会成功。如果自旋很少成功，以后就可能直接省略自旋，避免浪费资源。</p>
+
+<h4>4.3.2 锁消除</h4>
+
+<p>通常基于逃逸分析，如果堆上的数据不会逃逸出去从而被其他线程访问到，那就可以把它们当做栈上数据对待，认为它们是线程私有的，同步加锁就无须进行。</p>
+
+<h4>4.3.3 锁粗化</h4>
+
+<p>大部分情况下，我们都要将同步代码块限制得尽量小。但是如果一系列的连续操作导致对同一个对象反复加锁、解锁，虚拟机会把加锁同步的范围扩大，只需要加一次锁就行了。</p>
+
+<h4>4.3.4 轻量级锁</h4>
+
+<p>轻量级锁的依据是：对于绝大部分锁，在整个同步周期内都是不存在竞争的。因此可以在没有多线程竞争的前提下，减少传统重量级锁使用操作系统互斥量产生的性能消耗。实现原理是在对象头（Object Header）的内存中加入锁标志位，利用CAS操作来实现。</p>
+
+<h4>4.3.5 偏向锁</h4>
+
+<p>如果说轻量级锁是在无竞争的情况下使用CAS操作去消除同步使用的互斥量，那偏向锁就是在无竞争的情况下把整个同步都消除掉，连CAS操作都不做了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[JVM字节码执行引擎]]></title>
@@ -6209,373 +6438,6 @@ protected void attachBaseContext(Context base) {
 <p>Prim和Kruskal算法不能处理有向图。</p>
 
 <p>参考：<a href="http://algs4.cs.princeton.edu/43mst/">http://algs4.cs.princeton.edu/43mst</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[有向图]]></title>
-    <link href="http://blog.ubone.com/blog/2014/10/30/you-xiang-tu/"/>
-    <updated>2014-10-30T20:10:54+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/10/30/you-xiang-tu</id>
-    <content type="html"><![CDATA[<p>有向图也就是有方向性的图，是由一组顶点和一组有方向的边组成，每条有方向的边都连接着有序的一对顶点。本文要解决的有向图问题：</p>
-
-<ol>
-<li>单点和多点的可达性</li>
-<li>单点有向路径</li>
-<li>单点最短有向路径</li>
-<li>有向环检测</li>
-<li>深度优先的顶点排序</li>
-<li>优先级限制下的调度问题</li>
-<li>拓扑排序</li>
-<li>强连通性</li>
-<li>顶点对的可达性</li>
-</ol>
-
-
-<!--more-->
-
-
-<h2>1. 术语</h2>
-
-<ul>
-<li>出度：一个顶点指出的边的总数；</li>
-<li>入度：指向该顶点的边的总数；</li>
-<li>一条有向边的第一个顶点称为头，第二个顶点称为尾。</li>
-<li>在一幅有向图中，有向路径由一系列顶点组成，对于其中的每个顶点都存在一条有向边从它指向序列中的下一个顶点。</li>
-</ul>
-
-
-<h2>2. 有向图的数据类型</h2>
-
-<p>有向图的API与无向图本质相同，只是多了一个取反操作。如下图：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-20-digraph-api.png" alt="image" /></p>
-
-<p>其中，reverse()方向返回有向图的一个副本，但是将其中的方向反转。adj()返回的是每个顶点指出的边所连接的所有顶点。</p>
-
-<p>Diagraph的实现与无向图Graph非常类似，也是采用邻接表实现，但由于边是有向的，所以假设7&mdash;>8的一条边，则在顶点7的邻接表中有8，而顶点8的邻接表却没有7. <a href="http://algs4.cs.princeton.edu/42directed/Digraph.java.html">实现代码</a>不再重复。</p>
-
-<h2>3. 有向图中的可达性</h2>
-
-<ul>
-<li>单点可达性：是否存在一条从s到达给定顶点v的有向路径？</li>
-<li>多点可达性：是否存在一条从集合中的任意顶点到达给定顶点v的有向路径？</li>
-</ul>
-
-
-<p>API定义和实现如下：</p>
-
-<pre  class='line-numbers language-bash'><code class='language-bash'>public class DirectedDFS {
-    private boolean[] marked;
-    
-    //在G中找到从s可达的所有顶点
-    public DirectedDFS(Digraph G, int s) {
-        marked = new boolean[G.V()];
-        dfs(G, s);
-    }
-    
-    //在G中找到从sources中的所有顶点可达的所有顶点
-    public DirectedDFS(Digraph G, Iterable&lt;Integer&gt; sources) {
-        marked = new boolean[G.V()];
-        for(int s : sources) {
-            if (! marked[s]) dfs(G, s);
-        }
-    }
-    
-    private void dfs(Digraph G, int v) {
-        marked[v] = true;
-        for(int w : G.adj(v)){
-            if (!marked[w]) dfs(G, w);
-        }
-    }
-    
-    //v是可达的吗？
-    public boolean marked(int v) {
-        return marked[v];
-    }
-}</code></pre>
-
-
-<p><strong>标记-清除：</strong>多点可达性的一个重要典型应用就是内存管理，包括许多Java的实现。一个顶点表示一个对象，一条边表示一个对象对另一个对象的引用。在程序执行任何时候，都有某些对象是可以被直接访问的，而不能通过这些对象访问到的所有对象都应该被回收。标记-清除的垃圾回收策略会为每个对象保留一个位做垃圾收集之用。</p>
-
-<p><strong>有向图的寻路：</strong></p>
-
-<ul>
-<li>单点有向路径：从s到给定的顶点v是否存在一条有向路径？如果有，找出这条路径。</li>
-<li>单点最短有向路径：从s到给定的顶点v是否存在一条有向路径？如果有，找出最短的那边。</li>
-</ul>
-
-
-<p>这两个问题都可以通过深度优先和广度优先解决，它们仍是有向图的重要算法。API和代码也基本相同。</p>
-
-<h2>4. 环和有向无环图</h2>
-
-<h3>4.1 有向图中的环</h3>
-
-<p>任务调度是一个典型的有向图用例，其限制条件包括任务的起始时间、时耗、优先级限制（某个任务是另一个任务的前置条件）等。如何进行正确的任务调度？这需要<strong>拓扑排序</strong>：给定一幅有向图，将所有的顶点排序，使得所有的有向边均从排在前面的元素指向排在后面的元素。拓扑排序的例子还包括课程安排（先导课程限制）、继承（Java extends）、电子表格公式等等。</p>
-
-<p>如果一个有优先级限制的问题中存在有向环，例如任务x必须在任务y之前完成，而y必须在z之前完成，但z又必须在x之前完成，那么这个问题就无解了！所以首先要解决<strong>有向环的检测</strong>：给定的有向图中包含有向环吗？</p>
-
-<p><strong>有向无环图（DAG）是一幅不含有向环的有向图。</strong></p>
-
-<p>有向环的检测可以通过深度优先搜索来解决。用一个栈表示正在遍历的有向路径，一旦找到一条有向边v->w且w已经在堆栈中，就找到了一个环。</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public class DirectedCycle {
-    private boolean[] marked;        // marked[v] = 顶点v是否已经访问过?
-    private int[] edgeTo;            // edgeTo[v] = 指向v的前一个顶点
-    private boolean[] onStack;       // onStack[v] = 顶点v在递归调用的堆栈上吗？
-    private Stack&lt;Integer&gt; cycle;    // 有向环 (null表示不存在有向环)
-
-    public DirectedCycle(Digraph G) {
-        marked  = new boolean[G.V()];
-        onStack = new boolean[G.V()];
-        edgeTo  = new int[G.V()];
-        for (int v = 0; v &lt; G.V(); v++)
-            if (!marked[v]) dfs(G, v);
-    }
-
-    private void dfs(Digraph G, int v) {
-        onStack[v] = true;
-        marked[v] = true;
-        for (int w : G.adj(v)) {
-            // 如果环已找到，退出
-            if (cycle != null) {
-                   return;
-            }
-            //找到新顶点，继续
-            else if (!marked[w]) {
-                edgeTo[w] = v;
-                dfs(G, w);
-            }
-            // 找到有向环，记录下路径
-            else if (onStack[w]) {
-                cycle = new Stack&lt;Integer&gt;();
-                for (int x = v; x != w; x = edgeTo[x]) {
-                    cycle.push(x);
-                }
-                cycle.push(w);
-                cycle.push(v);
-            }
-        }
-
-        onStack[v] = false;
-    }
-
-    //是否含有有向环
-    public boolean hasCycle() {
-        return cycle != null;
-    }
-
-    //有向环中的所有顶点（如果存在有向环的话）
-    public Iterable&lt;Integer&gt; cycle() {
-        return cycle;
-    }
-}</code></pre>
-
-
-<h3>4.2 顶点的深度优先次序与拓扑排序</h3>
-
-<p>优先级限制下的调度问题等价于计算有向无环图中的所有顶点的拓扑排序。只需要在标准深度优先搜索中，将<code>dfs()</code>的顶点参数保存在一个数据结构中，遍历这个数据结构就能访问所有的顶点。遍历的顺序取决于这个数据结构的性质以及是在递归调用之前还是之后进行保存。主要有3种排序顺序：</p>
-
-<ol>
-<li>前序(pre)：在递归调用之前将顶点加入队列。</li>
-<li>后序(post)：在递归调用之后将顶点加入队列。</li>
-<li>逆后序(reversePost)：在递归调用之后将顶点压入堆栈。</li>
-</ol>
-
-
-<p>对于这样一张有向图，三种顺序遍历过程如下：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-29-dag.png" alt="image" /></p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-29-depth-first-orders.png" alt="image" /></p>
-
-<p>下面实现的DepthFirstOrder实现了这三种排序：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public class DepthFirstOrder {
-    private boolean[] marked;          // marked[v] = has v been marked in dfs?
-    private Queue&lt;Integer&gt; pre;                 // pre[v]    = preorder  number of v
-    private Queue&lt;Integer&gt; post;                // post[v]   = postorder number of v
-    private Stack&lt;Integer&gt; reversePost;
-    
-    public DepthFirstOrder(Digraph G) {
-        pre    = new Queue&lt;Integer&gt;();
-        post   = new Queue&lt;Integer&gt;();
-        reversePost = new Stack&lt;Integer&gt;();
-        marked    = new boolean[G.V()];
-        
-        for (int v = 0; v &lt; G.V(); v++)
-            if (!marked[v]) dfs(G, v);
-    }
-
-    private void dfs(Digraph G, int v) {
-        pre.enqueue(v);
-        
-        marked[v] = true;
-        
-        for (int w : G.adj(v)) {
-            if (!marked[w]) {
-                dfs(G, w);
-            }
-        }
-        
-        post.enqueue(v);
-        reversePost.push(v);
-    }
-    
-    public Iterable&lt;Integer&gt; pre() {
-        return pre;
-    }
-    public Iterable&lt;Integer&gt; post() {
-        return post;
-    }   
-    public Iterable&lt;Integer&gt; reversePost() {
-        return reversePost;
-    }
-}</code></pre>
-
-
-<p>DepthFirstOrder提供了三种排序的顶点列表：pre, post, reversePost，因此拓扑排序就非常简单了：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public class Topological {
-    private Iterable&lt;Integer&gt; order;    // topological order
-
-    public Topological(Digraph G) {
-        DirectedCycle finder = new DirectedCycle(G);
-        if (!finder.hasCycle()) {
-            DepthFirstOrder dfs = new DepthFirstOrder(G);
-            order = dfs.reversePost();
-        }
-    }
-
-    //拓扑有序的所有顶点
-    public Iterable&lt;Integer&gt; order() {
-        return order;
-    }
-
-    //G是有向无环图吗？
-    public boolean isDAG() {
-        return order != null;
-    }
-}    </code></pre>
-
-
-<p><strong>一幅有向无环图的拓扑顺序就是所有顶点的逆后序排列。</strong>这是一个重要结论！证明如下：对于任意边v->w, 在调用dfs(v)时，必有以下三种情况之一：</p>
-
-<ol>
-<li>dfs(w)已经被调用过且已经返回（w已经被标记）。</li>
-<li>dfs(w)还没有被调用，因此v->会直接或间接调用并返回dfs(w)，且dfs(w)会在dfs(v)返回前返回。</li>
-<li>dfs(w)已经被调用但未返回。</li>
-</ol>
-
-
-<p>第3种情况表示存在环，所以在有向无环图中是不可能出现的。第1、2种情况都证明了dfs(w)会先于dfs(v)完成。后序排列时w在v之前，只有逆后序时，w排在v之后。因此逆后序是有向无环图的拓扑顺序。</p>
-
-<p>再次说明，拓扑排序和有向环的检测总是一起出现的，因为有向环的检测是排序的前提。</p>
-
-<h2>5. 有向图的强连通性</h2>
-
-<p>如果两个顶点v和w是互相可达的，也就是存在一条从v到w的有向路径，同时还存在一条从w到v的有向路径，那么v和w是<strong>强连通</strong>的。</p>
-
-<p>强连通性将所有顶点分为一些等价类，每个等价类都由相互均为强连通的顶点的最大子集组成，这些子集称为<strong>强连通分量</strong>。强连通分量的典型应用包括：网络（网页和超链接）、软件（模块和调用）、食物链（物种和捕食关系）等。强连通分量的API:</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-10-30-scc-api.png" alt="image" /></p>
-
-<h3>5.1 Kosaraju算法</h3>
-
-<p>Kosaraju算法实现了SCC API：</p>
-
-<ul>
-<li>在给定的一幅有向图G中，使用DepthFirstOrder来计算它的反向图G<sup>R</sup>的逆后序排列。</li>
-<li>在G中进行标准的深度优先搜索，但是要按照刚才计算得到的顺序而非标准的顺序来访问所有未被标记的顶点。</li>
-<li>在构造函数中，所有在同一个递归dfs()调用中被访问到的顶点都在同一个强连通分量中，将它们按照和CC相同的方式识别出来。</li>
-</ul>
-
-
-<p>要证明Kosaraju算法的正确性，首先证明：“每个和s强连通的顶点v都会在构造函数调用的dfs(G,s)中被访问到。”这个毫无疑问。然后再证明：“构造函数调用的dfs(G,s)所到达的任意顶点v都必然是和s强连通的。”设v为dfs(G,s)到达的某个顶点。那么G中必然存在一条从s到v的路径，因此只需证明G中还存在一条从v到s的路径即可。也就等价于证明G<sup>R</sup>中存在一条从s到v的路径：</p>
-
-<blockquote><p>按照逆后序进行的深度优先搜索意味着，在G<sup>R</sup>中进行的深度优先搜索中，dfs(G,v)必然在dfs(G,s)之前就已经结束了，这样dfs(G,v)的调用就只会出现两种情况：</p>
-
-<ol>
-<li>调用在dfs(G,s)的调用之前（并且也在dfs(G,s)的调用之前结束）</li>
-<li>调用在dfs(G,s)的调用之后（并且也在dfs(G,s)的调用之前结束）</li>
-</ol>
-
-
-<p>第一种情况不可能出现，因为在G<sup>R</sup>中存在一条从v到s的路径；而第二种情况说明G<sup>R</sup>中存在一条从s到v的路径。证毕。</p></blockquote>
-
-<pre class='line-numbers language-java'><code class='language-java'>public class KosarajuSharirSCC {
-    private boolean[] marked;     //已访问过的顶点
-    private int[] id;             //强连通分量的标识符
-    private int count;            //强连通分量的数量
-
-    public KosarajuSharirSCC(Digraph G) {
-
-        // compute reverse postorder of reverse graph
-        DepthFirstOrder dfs = new DepthFirstOrder(G.reverse());
-
-        // run DFS on G, using reverse postorder to guide calculation
-        marked = new boolean[G.V()];
-        id = new int[G.V()];
-        for (int v : dfs.reversePost()) {
-            if (!marked[v]) {
-                dfs(G, v);
-                count++;
-            }
-        }
-    }
-
-    private void dfs(Digraph G, int v) { 
-        marked[v] = true;
-        id[v] = count;
-        for (int w : G.adj(v)) {
-            if (!marked[w]) dfs(G, w);
-        }
-    }
-
-    //图中的强连通分量的总数
-    public int count() {
-        return count;
-    }
-
-    //v和w是强连通的吗
-    public boolean stronglyConnected(int v, int w) {
-        return id[v] == id[w];
-    }
-
-    //v所在的强连通分量的标识符（在0至count()-1之间）
-    public int id(int v) {
-        return id[v];
-    }
-}    </code></pre>
-
-
-<h3>5.2 顶点对的可达性</h3>
-
-<p>给定一幅有向图，回答“是否存在一条从一个给定的顶点v到达另一个给定的顶点w的路径？”对于无向图，这个问题等价于连通性问题。而对有向图，有很大区别。看似简单的问题困难了专家数十年。如何大幅减少预处理所需的时间和空间，又保证常数的查询时间。这仍然是一个有待解决的问题。而且这个问题有重要的实际意义：处理互联网这样的巨型有向图。</p>
-
-<p>下面的算法只是简单地实现了可达性，但不适用于处理大型有向图，因为它所需的空间与V<sup>2</sup>成正比，所需时间和V(V+E)成正比。但如果图小的话，仍然是一个理想的解决办法。</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public class TransitiveClosure {
-    private DirectedDFS[] tc;  // tc[v] = reachable from v
-
-    //预处理的构造方法
-    public TransitiveClosure(Digraph G) {
-        tc = new DirectedDFS[G.V()];
-        for (int v = 0; v &lt; G.V(); v++)
-            tc[v] = new DirectedDFS(G, v);
-    }
-
-    //w是从v可达的吗？
-    public boolean reachable(int v, int w) {
-        return tc[v].marked(w);
-    }
-}</code></pre>
-
-
-<p></p>
-
-<p>参考：<a href="http://algs4.cs.princeton.edu/42directed/">http://algs4.cs.princeton.edu/42directed/</a></p>
 ]]></content>
   </entry>
   

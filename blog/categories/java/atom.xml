@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-01-31T19:44:35+08:00</updated>
+  <updated>2015-01-31T23:48:06+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,247 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Java内存模型与线程]]></title>
+    <link href="http://blog.ubone.com/blog/2015/01/31/javanei-cun-mo-xing-yu-xian-cheng/"/>
+    <updated>2015-01-31T19:45:39+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/01/31/javanei-cun-mo-xing-yu-xian-cheng</id>
+    <content type="html"><![CDATA[<p>学习并发编程，需要了解Java内存模型与线程。</p>
+
+<!--more-->
+
+
+<h2>1. 硬件的基础</h2>
+
+<p>为了提高效率，现在的CPU都有一层读写速度接近处理器运算速度的高速缓存来作为内存与处理器之间的缓冲：将运算需要使用的数据复制到缓存中，让运算能快速进行，当运算结束后再从缓存同步回内存中。</p>
+
+<p>对于多处理器系统，每个处理器都有自己的高速缓存，而它们又共享同一个主内存。因此就存在缓存一致性的问题。当多个处理器的运算任务都涉及同一块主内存区域时，就可能导致各自的缓存数据不一致。为了解决一致性问题，需要遵循一些协议（如MSI, MESI, MOSI等）。</p>
+
+<p><img src="/myresource/images/image_blog_-2015-01-31-19.55.58.png" alt="image" /></p>
+
+<p>乱序执行（Out-Of-Order Execution）优化。为了使处理器内部的运算单元能尽量充分利用，处理器可能会对代码进行乱序执行优化，在计算之后将结果重组，保证该结果与顺序执行的结果一致。也就是处理器并不保证各条语句执行的先后顺序与输入顺序一致。JIT也有类似的指令重排序（Instruction Recorder）优化。</p>
+
+<h2>2. Java内存模型</h2>
+
+<h3>2.1 主内存与工作内存</h3>
+
+<p>JVM规范定义了Java内存模型来屏蔽各种硬件和OS的内存访问差异。该模型规定所有变量都存储在主内存（仅是虚拟机内存的一部分）中，每条线程还有自己的工作内存，线程的工作内存保存了该线程使用到的变量（不是对象，而是对象的引用）的主内存副本拷贝，线程对变量的所有操作都必须在工作内存中进行，不能直接读写主内存中的变量。不同的线程之间也无法直接访问对方工作内存中的变量，线程间变量值的传递均需要通过主内存来完成。</p>
+
+<p><img src="/myresource/images/image_blog_-2015-01-31-20.27.06.png" alt="image" /></p>
+
+<h3>2.2 内存间交互操作</h3>
+
+<p>关于主内存与工作内存之间的交互，Java内存模型定义了8种操作来完成，每种操作都是原子操作。</p>
+
+<ul>
+<li>lock: 作用于主内存变量，把一个变量标识为一条线程独占状态</li>
+<li>unlock: 作用于主内存变量，释放一个锁定的变量，可以被其他线程锁定</li>
+<li>read: 作用于主内存变量，把一个变量的值从主内存传输到线程的工作内存中，以便load动作使用。</li>
+<li>load: 作用于工作内存变量，把read操作从主内存中得到的变量值放入工作内存变量副本中。</li>
+<li>use: 作用于工作内存变量，把工作内存中的变量的值传递给执行引擎。每当虚拟机遇到一个需要使用变量的值的字节码指令时会执行这个操作。</li>
+<li>assign: 作用于工作内存变量，把从执行引擎接收到的值赋给工作内存变量。每当虚拟机遇到一个给变量赋值的字节码指令时执行此操作。</li>
+<li>store: 作用于工作内存变量，把工作内存中一个变量的值传送到主内存中，以便write操作使用。</li>
+<li>write: 作用于主内存的变量，把store操作从工作内存中得到的变量的值放入主内存的变量中。</li>
+</ul>
+
+
+<h3>2.3 volatile变量</h3>
+
+<h4>2.3.1 可见性</h4>
+
+<p>对于volatile变量，具备两个特性：一是保证此变量对所有线程的可见性，即当一个线程修改了这个变量的值，新值对于其他线程来说可以立即得知。实际上volatile变量在各线程的工作内存中也可以存在不一致的情况，但是由于使用之前都要先刷新，因此可以认为不存在一致性问题。但由于Java中的运算不是原子操作，因此volatile在并发下也不一定是安全的。例如下面的代码：</p>
+
+<p>```java
+public static volatile int race = 0;</p>
+
+<p>public static void increase() {</p>
+
+<pre><code>race++;
+</code></pre>
+
+<p>}</p>
+
+<p>//测试代码：
+for(int i = 0; i &lt; 20; i++) {</p>
+
+<pre><code>...//用20个线程调用increase()方法
+public void run() {
+    for(int j = 0; j &lt; 10000; j++) {
+        increase();
+    }
+}
+</code></pre>
+
+<p>}</p>
+
+<p>//当20个线程结束后，race的值通常会少于20万。
+```</p>
+
+<p>volatile变量与普通变量的区别在于，前者保证新值能立即同步到主内存，并且每次使用前都立即从主内存刷新。对于volatile变量，如果不符合以下两条规则，则仍然要通过加锁来实现同步：</p>
+
+<ol>
+<li>运算结果并不依赖变量的当前值，或者能够确保只有单一的线程修改变量的值。</li>
+<li>变量不需要与其他的状态变量共同参与不变约束。</li>
+</ol>
+
+
+<h4>2.3.2 禁止指令重排序优化</h4>
+
+<p>volatile变量也用于禁止指令重排序。直接看伪代码：</p>
+
+<p>```java
+volatile boolean initialized = false;</p>
+
+<p>//线程A
+initConfig() //做一些初始化的工作
+initialized = true;</p>
+
+<p>//线程B
+while(! initialized) { sleep();}
+//使用线程A中初始化好的配置信息
+doSomethingWithConfig();
+```</p>
+
+<p>如果变量initialized不声明为volatile，则指令重排序后，有可能线程A中的<code>initialized = true</code>比<code>initConfig()</code>提前执行。导致线程B无法正确获取配置信息。</p>
+
+<h2>3. Java与线程</h2>
+
+<p>主流操作系统都提供了线程实现，Java语言则提供了在不同硬件和操作系统平台下对线程操作的统一处理。线程实现主要有3种方式：</p>
+
+<h3>3.1 使用内核线程实现</h3>
+
+<p>内核线程是由操作系统内核（Kernel）支持的线程。程序并不直接使用内核线程，而是使用轻量级进程（Light Weight Process, LWP）。LWP就是我们通常意义上所讲的线程。每个LWP与内核线程是1：1关系。</p>
+
+<p>内核线程的缺点是调用代价高，需要在用户态和内核态来回切换。同时LWP要消耗一定的内核资源。因此一个系统支持LWP的数量是有限的。</p>
+
+<h3>3.2 使用用户线程实现</h3>
+
+<p>用户线程的建立、同步、销毁和调度完全在用户态中完成，不需要内核帮助。因此可以支持更大的线程数量，不需要切换到内核，快速且消耗低。进程与用户线程的关系为1：N关系。</p>
+
+<p>由于没有系统内核支援，所有线程操作都需要用户程序自己处理，因此程序比较复杂。Java曾经使用过用户线程，但最终放弃使用它。</p>
+
+<h3>3.3 使用用户线程加LWP混合实现</h3>
+
+<p>这种混合实现方式即存在用户线程，也存在LWP。用户线程还是完全建立在用户空间中，因此创建、切换等操作依然廉价，并且可以支持大规模用户线程并发。而操作系统提供支持的LWP则作为用户线程与内核线程之间的桥梁，可以使用内核提供的线程调度功能及处理器映射，用户线程的系统调用通过LWP完成，大大降低了整个进程被完全阻塞的风险。用户线程与LWP的数量比不定，即N:M的关系。</p>
+
+<h3>3.4 Java线程的实现</h3>
+
+<p>JDK1.2之前使用用户线程实现。从1.2开始，线程模型基于操作系统原生线程模型来实现。对于SunJDK，Windows和Linux版都是使用1：1的线程模型，即一条Java线程映射到一条LWP。而Solaris，HP-UX等则由于操作系统的线程特性，可以同时支持1：1及N:M模型。</p>
+
+<h2>4. 线程安全</h2>
+
+<p>Brian Goetz对线程安全的定义：当多个线程访问一个对象时，如果不用考虑这些线程在运行时环境下的调度和交替执行，也不需要进行额外的同步，或者在调用方进行任何其他的协调操作，调用这个对象的行为都可以获得正确的结果，那这个对象就是线程安全的。</p>
+
+<h3>4.1 Java语言中的线程安全</h3>
+
+<h4>4.1.1 不可变</h4>
+
+<p>Java中不可变的对象一定是线程安全的。如果共享的数据是一个基本数据类型，只要在定义时使用了final关键字就可以保证它是不可变的。如果共享数据是一个对象，则需要保证对象的行为不会对其状态产生任何影响。</p>
+
+<h4>4.1.2 绝对线程安全</h4>
+
+<p>Java API中标注为线程安全的类，大多数都不是绝对的线程安全。例如java.util.Vector是线程安全的容器，其get(), remove()和size()方法都是同步的。但如果不在方法调用端做额外的同步措施，代码仍然是不安全的：</p>
+
+<p>```java
+//如果一个线程在操作Vector时，另一个线程删除了了个元素，导致i元素不可再用，就会抛出异常。
+private static Vector<Integer> vector = new Vector<Integer>();</p>
+
+<p>public static void main(String[] args) {</p>
+
+<pre><code>while(true) {
+    for(int i = 0; i &lt; 10; i++) {vector.add(i);}
+
+    Thread removeThread = new Thread(new Runnable(){
+        public void run() {
+            for(int i = 0; i &lt; vector.size(); i++) {
+                vector.remove(i);
+            }
+        }
+    });
+
+    Thread printThread = new Thread(new Runnable(){
+        public void run() {
+            for(int i = 0; i &lt; vector.size(); i++) {
+                System.out.println((vector.get(i)));
+            }
+        }
+    });
+
+    removeThread.start();
+    printThread.start();
+
+    while(Thread.activeCount() &gt; 20);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h4>4.1.3 相对线程安全</h4>
+
+<p>这就是我们平时说的线程安全，它需要保证对这个对象单独的操作是线程安全的，我们在调用时不需要做额外的保障措施。但是对于一些特定顺序的连续调用，就可能需要在调用端使用额外的同步手段来保证调用的正确性。</p>
+
+<h4>4.1.4 线程兼容</h4>
+
+<p>对象本身并不是线程安全的，但是可以在调用端正确使用同步手段来保证对象在并发环境下可以安全使用。</p>
+
+<h4>4.1.5 线程对立</h4>
+
+<p>无论调用端是否采取了同步措施，都无法在多线程环境中并发使用。Java中这种代码很少，但Thread的suspend()和resume()方法就是个例子。如果并发情况下，一个尝试中断，另一个尝试恢复线程，无论调用时是否进行了同步，目标线程都存在死锁风险。这两个方法已经声明为Deprecated.</p>
+
+<h3>4.2 线程安全的实现方法</h3>
+
+<h4>4.2.1 互斥同步</h4>
+
+<p>Java中最基本的互斥同步手段是synchronized关键字。这是一个相对重量级的操作，因为需要进行用户态和核心态的转换。</p>
+
+<p>ReentranLock是另一个同步实现方法。它与synchronized相比，有以下高级功能：</p>
+
+<ul>
+<li>等待可中断：如果持有锁的线程长期不释放锁，正在等待锁的线程可以选择放弃。</li>
+<li>公平锁：多个线程在等待同一个锁时，必须按照申请的顺序依次获得锁。（synchronized是非公平的。 ReentranLock默认也是非公平的，但通过参数可以要求用公平锁）</li>
+<li>锁绑定多个条件：一个ReentranLock对象可以同时绑定多个Condition对象。</li>
+</ul>
+
+
+<p>JDK6之后，虚拟机对synchronized性能进行了优化，已经与ReentranLock持平了，未来优化还会偏向于synchronized。因此如果性能满足需要时，可以优先考虑使用synchronized来同步。</p>
+
+<h4>4.2.2 非阻塞同步</h4>
+
+<p>互斥同步是一种悲观的并发策略，因为不论是否真的存在竞争，它都会加锁。随着硬件指令集的发展，有了另一种选择。基于冲突检测的乐观并发策略，就是先进行操作，如果没有其他线程急用共享数据，那操作就成功。如果产生了冲突，再采取其他的补偿措施。这种乐观的并发策略不需要把线程挂起，因此称为非阻塞同步。</p>
+
+<p>非阻塞同步需要了解CAS指令。它有3个操作数，分别是内存位置（V）、旧的预期值(A)和新值（B）。CAS指令执行时，当且仅当V符合旧预期值A时，处理器用新值B更新V的值，否则它就不执行更新。但是无论是否更新了V的值，都会返回V的旧值，这是一个原子操作。</p>
+
+<p>CAS指令看起来很美，但可能产生“ABA”问题。如果V初次读取时是A，并且在准备赋值时检查到它仍然是A，并不能说明它没有被其他线程修改过。因此在此过程中，它可能被改为B，然后再改为A。这时候CAS操作就误以为它从来没有被改变过。当然大部分情况下ABA问题不会影响程序的正确性。</p>
+
+<h3>4.3 JDK的锁优化</h3>
+
+<h4>4.3.1 自旋锁与自适应自旋</h4>
+
+<p>互斥同步对性能最大的影响是阻塞的实现，因为线程挂起和恢复操作都要转入内核态中完成。很多应用中共享数据的锁定状态只会持续很短的时间，为了这个时间去挂起和恢复线程并不值得。因此不妨让后面的请求线程“稍等一下”，执行一个忙循环（自旋），这就是自旋锁。</p>
+
+<p>自旋锁如果占用时间长了，就失去了自旋的意义，因此JDK6之前的自旋锁超过10次仍然没有成功获得锁，就会改用传统的方式去挂起线程。</p>
+
+<p>JDK6引入了自适应的自旋锁，也就是自旋的时间不固定了，会根据前一次在同一个锁上的自旋时间及锁的拥有者的状态来决定。例如前几次成功了，就认为后面也会成功。如果自旋很少成功，以后就可能直接省略自旋，避免浪费资源。</p>
+
+<h4>4.3.2 锁消除</h4>
+
+<p>通常基于逃逸分析，如果堆上的数据不会逃逸出去从而被其他线程访问到，那就可以把它们当做栈上数据对待，认为它们是线程私有的，同步加锁就无须进行。</p>
+
+<h4>4.3.3 锁粗化</h4>
+
+<p>大部分情况下，我们都要将同步代码块限制得尽量小。但是如果一系列的连续操作导致对同一个对象反复加锁、解锁，虚拟机会把加锁同步的范围扩大，只需要加一次锁就行了。</p>
+
+<h4>4.3.4 轻量级锁</h4>
+
+<p>轻量级锁的依据是：对于绝大部分锁，在整个同步周期内都是不存在竞争的。因此可以在没有多线程竞争的前提下，减少传统重量级锁使用操作系统互斥量产生的性能消耗。实现原理是在对象头（Object Header）的内存中加入锁标志位，利用CAS操作来实现。</p>
+
+<h4>4.3.5 偏向锁</h4>
+
+<p>如果说轻量级锁是在无竞争的情况下使用CAS操作去消除同步使用的互斥量，那偏向锁就是在无竞争的情况下把整个同步都消除掉，连CAS操作都不做了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[JVM字节码执行引擎]]></title>
@@ -538,151 +779,6 @@ INFO: Server startup in 3418 ms
 </code></p>
 
 <p>修改后的<code>/dev/urandom</code>没有默认的<code>dev/random</code>安全吗？似乎也不一定，博文<a href="http://www.2uo.de/myths-about-urandom/">Myths about /dev/urandom</a>对两者进行了全面的分析，值得一看。最后作者认为用<code>/dev/urandom</code>就可以了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java运行时数据区与内存溢出异常]]></title>
-    <link href="http://blog.ubone.com/blog/2014/12/15/javayun-xing-shi-shu-ju-qu-yu-nei-cun-yi-chu-yi-chang/"/>
-    <updated>2014-12-15T21:55:31+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/12/15/javayun-xing-shi-shu-ju-qu-yu-nei-cun-yi-chu-yi-chang</id>
-    <content type="html"><![CDATA[<p>JVM定义了各种运行时数据区用于程序执行。有些数据区随着JVM启动而创建，当JVM退出时销毁。另一些数据区则是随着线程而存亡。每个数据区都是内存，因此就存在内存溢出的异常。本文学习JVM有哪些数据区以及常见的内存溢出异常。</p>
-
-<!--more-->
-
-
-<h2>1. 运行时数据区（Run-Time Data Areas）</h2>
-
-<p>根据<a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-2.html#jvms-2.5">JVM规范</a>，运行时数据区主要分为以下部分。</p>
-
-<h3>1.1 程序计数器（Program Counter Register）</h3>
-
-<p>每个JVM线程拥有自己的程序计数器，各线程之间计数器互不影响，这部分区域可以称为线程私有的内存。在任何时间点，一个CPU核心都只会执行一个线程中某个方法的指令，这就是当前方法：</p>
-
-<ul>
-<li>如果当前方法不是Native方法，程序计数器包含正在执行的虚拟机字节码指令的地址。</li>
-<li>如果是Native方法计数器值为Undefined。</li>
-</ul>
-
-
-<p>程序计数器所占内存非常小，也是唯一没有规定任何内存溢出异常的区域。</p>
-
-<h3>1.2 虚拟机栈（JVM Stacks）</h3>
-
-<p>每个线程同时也有一个私有的虚拟机栈，因此虚拟机栈的生命周期与线程相同。每个栈包括帧（frames），帧与方法调用相关，每当方法被调用，就会创建一个新的帧。当方法结束，帧也就被销毁。帧包括局域变量、自己的操作栈和当前方法的运行时常量池引用。</p>
-
-<p>虚拟机栈与C语言中的栈相似，它包括局域变量和部分结果，并在方法调用和返回中扮演角色。除了push和pop帧，虚拟机栈并不提供其它直接操作。帧可能是在堆中分配内存。虚拟机栈的内存并不需要是连续的。</p>
-
-<p>通常人们把Java内存分为堆和栈，其中栈就是虚拟机栈。虚拟机栈的内存可以是固定大小或者根据计算动态扩展。虚拟机栈涉及两个异常：</p>
-
-<ul>
-<li>StackOverflowError: 如果线程请求的栈深度大于允许的深度。</li>
-<li>OutOfMemoryError：如果栈是动态扩展的，扩展时无法申请足够的内存。</li>
-</ul>
-
-
-<p>本地方法栈（Native Method Stack）与虚拟机栈发挥着相似的作用，但它是为Native方法服务。JVM规范并没有对其强制规定。HotSpot直接把本地方法栈和虚拟栈合二为一，相同对待。</p>
-
-<p>栈虽然有两个异常，但实验时，如果是单线程操作，无论是栈帧太大还是虚拟机栈容量太小，基本只会出现StackOverflowError，示例如下：</p>
-
-<p>```java
-/<em>*
-* -Xss128k
-</em>/
-public class JavaVMStackSOF {</p>
-
-<pre><code>private int stackLength = 1;
-public void stackLeak() {
-    stackLength++;
-    stackLeak();
-}
-
-public static void main(String[] args) {
-    JavaVMStackSOF oom = new JavaVMStackSOF();
-    try {
-        oom.stackLeak();
-    } catch(Throwable e) {
-        ...
-    }
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>实验中，只有多线程时，才会出现OutOfMemoryError。通过不停地创建线程，并且每个线程不停止，当线程足够多时就可以重现此异常。</p>
-
-<h3>1.3 堆（Heap）</h3>
-
-<p>堆是在JVM所管理的内存中最大的一块，它是所有线程共享的区域。当JVM启动时会创建此区域。所有对象实例和数组都在堆上分配（现在也有例外，参见<a href="/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">逸出分析</a>）。</p>
-
-<p>堆中存储的对象由垃圾收集器负责回收。堆的大小可以是固定或者动态扩展。堆不需要连续内存空间，只要逻辑上连续即可。根据垃圾收集器的不同，堆内存有不同的管理方式。例如CMS采用分代收集算法，将堆分为年轻代和老年代；而G1则将堆分成大小相同的区域。详见<a href="/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">理解Java性能调优</a>。</p>
-
-<p>堆涉及的内存异常为OutOfMemoryError，如果堆中没有内存用于实例分配并且无法再扩展时，就会抛出此异常。堆内存溢出很容易模拟，示例如下：</p>
-
-<p>```java
-/<em>*
-* -Xms20m -Xmx20m
-</em>/
-public static void main(String[] args) {</p>
-
-<pre><code>List&lt;SomeObject&gt; list = new ArrayList&lt;&gt;();
-while(true) {
-    list.add(new SomeObject());
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>1.4 方法区（Method Area）</h3>
-
-<p>方法区也是所有线程共享的内存区域。它存储了每个类的信息，例如运行时常量池、属性和方法数据、方法和构造方法代码，包括类和实例初始化和接口初始化的特殊方法。</p>
-
-<p>方法区随着虚拟机启动而创建。逻辑上它是堆的一部分，但JVM实现可以选择不对它进行垃圾收集或者压缩。JVM规范并没有强制规定它的位置和管理已编译代码的策略。它可以是固定大小或者动态扩展，也不需要是连续的。</p>
-
-<p>对于HotSpot虚拟机来说，开发者更愿意把方法区称为永久代（Permanent Generation），但本质上两者并不等价。这仅仅是因为HotSpot设计团队使用永久代来实现方法区而已。但其它虚拟机（如Bea JRocket, IBM J9）并没有永久代的概念。</p>
-
-<p>当方法区无法满足内存分配需求时，将抛出OutOfMemoryError异常。如果一些框架使用CGLib这类字节码技术，增强的类过多，或者JVM上的动态语言（如Groovy）持续创建类来实现语言动态特性，可能出现此异常。</p>
-
-<h3>1.5 运行时常量池</h3>
-
-<p>在<a href="/blog/2014/12/04/lei-wen-jian-yu-zi-jie-ma/">类文件与字节码</a>中介绍了类文件的常量池，运行时常量池就是这个常量池的运行时表示。运行时常量池相对于类文件常量池主要有两个区别：</p>
-
-<ul>
-<li>除了类文件中描述的符号引用外，还会把翻译出来的直接引用也存储在运行时常量池中。</li>
-<li>运行时常量池可以在运行期间将新的常量加入池中。</li>
-</ul>
-
-
-<p>运行时常量池的内存是从方法区分配出来的。当JVM创建类或接口时，会为它创建运行时常量池。因此它的内存受方法区内存限制，也可能抛出OutOfMemoryError异常。</p>
-
-<h3>1.6 直接内存</h3>
-
-<p>直接内存（Direct Memory）并不是JVM运行时数据区的一部分，也不是JVM规范定义的内存区域。但它也被频繁使用，可能导致OutOfMemoryError异常。</p>
-
-<p>JDK 1.4中加入NIO类，引入了基于Channel与Buffer的I/O方式，可以使用Native函数库直接分配堆外内存，然后通过DirectByteBuffer对象作为这块内存的引用进行操作。由于避免了Java堆与Native堆之间复制数据，在一些场景能显著提高性能。</p>
-
-<p>这部分内存虽然不受Java堆大小限制，但肯定会受本机总内存和寻址空间限制。因此动态扩展时可能出现OutOfMemoryError异常。</p>
-
-<h2>2. 内存Dump分析</h2>
-
-<p>在<a href="/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">理解Java性能调优</a>中介绍了jmap, jstat等工具可以查看内存映射和垃圾收集活动。这里介绍另一个工具Eclipse Memory Analyzer可以对堆内存溢出问题进行分析。首先需要生成堆转储文件。通过启用参数：</p>
-
-<p><code>-XX:+HeapDumpOnOutOfMemoryError</code></p>
-
-<p>JVM 就会在发生内存泄露时抓拍下当时的内存状态，也就是我们想要的堆转储文件。也可以在未溢出时用jmap创建转储文件。</p>
-
-<p>有了转储文件，利用Eclipse Memory Analyzer tool打开该文件，就可以进行分析了。分析通常分为三步：</p>
-
-<ul>
-<li>对内存状态获取一个整体印象。</li>
-<li>找到最有可能导致内存泄露的元凶，通常也就是消耗内存最多的对象。</li>
-<li>进一步查看这个内存消耗大户的具体情况，看看是否有什么异常行为。</li>
-</ul>
-
-
-<p><img src="/myresource/images/image_blog_2014-12-17-20.30.59.jpg" alt="image" /></p>
 ]]></content>
   </entry>
   
