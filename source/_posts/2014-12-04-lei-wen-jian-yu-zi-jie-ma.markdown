@@ -68,6 +68,14 @@ protected synchronized Class<?> loadClass(String name, boolean resolve) throws C
 
 从JDK1.2之后，不再提倡用户覆盖loadClass()方法，而应当把自己的类加载逻辑放到findClass()方法中。随着用户对程序动态性的要求，双亲委派模型不一定成立。例如在OSGi中，类加载器变成了复杂的网状结构。
 
+OSGi的Bundle类加载器之间只有规则，没有固定的委派关系。例如，某个Bundle声明了一个它依赖的Package，如果有其他Bundle声明发布了这个Package，那么所有对这个Package的类加载动作都会委派给发布它的Bundle类加载器去完成。一个Bundle类加载器为其他Bundle提供服务时，会根据Export-Package列表严格控制访问范围。如果一个类存在于Bundle的类库中但没有被Export，那么这个Bundle的类加载器能找到这个类，但不会提供给其他Bundle使用，而且OSGi平台也不会把其他Bundle的类加载请求分配给这个Bundle来处理。
+
+假设有三个Bundle：A, B和C。A依赖了`java.*`包；B依赖于A、C和`java.*`包；C依赖于A。那么这三个Bundle的类加载器如下图所示：
+
+![image](/myresource/images/image_blog_2015-01-21.jpg)
+
+如上图所示，OSGi中类加载器的关系不再是双亲委派模型的树形结构，而是已经发展成网状结构。但带来灵活性的同时，也引入了额外的复杂度，带来了线程死锁和内存泄露的风险。
+
 ## 2. 方法句柄
 反射代码有很多套路，要捕获各种讨厌的异常，代码看起来也不直观。Java 7为间接调用方法引入了java.lang.invoke包，即方法句柄，可以提高安全性和代码的可读性。
 
