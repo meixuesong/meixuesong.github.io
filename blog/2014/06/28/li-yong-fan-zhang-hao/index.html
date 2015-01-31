@@ -215,6 +215,8 @@ var _hmt = _hmt || [];
 <p>注意SecureProxy类并不需要显式实现Accountable接口，因为在静态工厂方法中动态为其指定了将实现的接口。SecureProxy类必须实现InvocationHandler，该接口的一个重要方法就是invoke，客户端调用Accountable接口中的某个方法时，会触发代理的invoke方法，然后在其中调用真正的目标方法。通过isSecure方法来判断是否有权限调用某方法。</p>
 
 <p>总结一下，Account类是真正的业务实现类，SecureProxy作为代理，在Account的基础上增加了安全功能。关键方法包括Proxy.newProxyInstance和InvocationHandler接口。虽然示例太过简单无法用于实际业务，但它演示了<strong>两个重要原则：单一职责和开闭原则！</strong></p>
+
+<p>注：Proxy.newProxyInstance方法内部会调用sun.misc.ProxyGenerator.generateProxyClass()方法来生成字节码。</p>
 </div>
 
 
