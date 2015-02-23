@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-01-31T23:48:06+08:00</updated>
+  <updated>2015-02-23T21:21:37+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,143 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Java Web中文编码]]></title>
+    <link href="http://blog.ubone.com/blog/2015/02/23/java-webzhong-wen-bian-ma/"/>
+    <updated>2015-02-23T15:57:18+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/02/23/java-webzhong-wen-bian-ma</id>
+    <content type="html"><![CDATA[<p>介绍常见的编码格式，以及Java Web和JavaScript相关的字符集编码。</p>
+
+<!--more-->
+
+
+<h2>1. 常见的编码格式</h2>
+
+<table>
+<thead>
+<tr>
+<th>编码 </th>
+<th> 说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ASCII </td>
+<td> 共128个，用1个字节表示。0～31为控制字符，如换行、回车等。32～126为打印字符。</td>
+</tr>
+<tr>
+<td>ISO-8859-1 </td>
+<td> 扩展ASCII编码，仍然是单字节，共256个字符。</td>
+</tr>
+<tr>
+<td>GB2312 </td>
+<td> 双字节编码，A1~A9是符号区，共682个符号；B0~F7是汉字区，共6763个汉字</td>
+</tr>
+<tr>
+<td>GBK </td>
+<td> 为Win95所制定的汉字内码规范，扩展GB2312，与GB2312兼容，能表示21003个汉字。</td>
+</tr>
+<tr>
+<td>GB18030 </td>
+<td> 可能是单字节、双字节或者四字节编码，与GB2312兼容。虽然是国家标准，但未广泛使用。</td>
+</tr>
+<tr>
+<td>UTF-16 </td>
+<td> 定义了Unicode字符在计算机中的存取方法。Unicode是ISO试图创建一个全新的超语言字典，世界上所有语言都可以通过这个字典相互翻译。Unicode是Java和XML的基础。UTF-16用两个字节来表示Unicode的转化格式，采用定长的表示方法。</td>
+</tr>
+<tr>
+<td>UTF-8 </td>
+<td> 避免UTF-16的空间浪费，采用变长技术，每个编码区域有不同的字码长度。不同类型的字符可以由1～6个字节组成。</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>UTF-8的编码规则：</p>
+
+<ul>
+<li>如果是1个字节，最高位（第8位）为0，表示1个ASCII字符。</li>
+<li>如果是1个字节，以11开着，则连续的1的个数表示这个字符的字节数。例如110xxxxx表示它是双字节UTF-8字符的首字节。</li>
+<li>如果1个字节，以10开始，表示它不是首字节，需要向前查找才能得到当前字符的首字节。</li>
+</ul>
+
+
+<h2>2. Java中的编码场景</h2>
+
+<h3>2.1 在I/O中编码</h3>
+
+<p>在磁盘和网络I/O中，都涉及字节与字符的转换。Reader类是Java的I/O中读字符的父类，而InputStream类是读字节的父类。两者之间的转换由StreamDecoder和StreamEncoder完成。在编、解码过程中必须指定Charset，否则使用本地环境默认字符集，如中文环境使用GBK。</p>
+
+<p>在实际开发过程中，只要保持编码的一致就不会造成乱码：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>String charset = "UTF-8";
+String file = "c:/stream.txt";
+
+FileOutputStream fos = new FieOutputStream(file);
+OutputStreamWriter writer = new OutputStreamWriter(fos, charset);
+
+...
+InputStreamReader reader = new InputStreamReader(inputStream, charset);</code></pre>
+
+
+<h3>2.2 在内存中编码</h3>
+
+<p>String类提供了字符和字节的转换方法：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>String s= "这是一段中文";
+byte[] b = s.getBytes("UTF-8");
+String n = new String(b, "UTF-8");</code></pre>
+
+
+<p></p>
+
+<p>另一种方法是使用Charset类：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>Charset charset = Charset.forName("UTF-8");
+ByteBuffer byteBuffer = charset.encode("abcd");
+CharBuffer charBuffer = charset.decode(byteBuffer);</code></pre>
+
+
+<p></p>
+
+<h2>3. Java Web中的编解码</h2>
+
+<p>用户从浏览器发起一个HTTP请求，需要编码的地方包括URL、Cookie和Parameter。</p>
+
+<h3>3.1 URL的编解码</h3>
+
+<p>URL <code>http://localhost:8080/examples/servlets/servlet/books?author=jason</code> 可分解为：</p>
+
+<ul>
+<li>URI: <code>/examples/servlets/servlet/books</code></li>
+<li>schema: http</li>
+<li>domain: localhost</li>
+<li>port: 8080</li>
+<li>contextPath: examples</li>
+<li>servletPath: servlets/servlet</li>
+<li>PathInfo: books</li>
+<li>QueryString: author=jason</li>
+</ul>
+
+
+<p>对于Tomcat，对URL的URI部分进行解码的字符集是在Connector中定义的。如果没有定义，那么默认为ISO-8859-1。QueryString的解码字符集要么是Header中ContentType定义的Charset，要么是默认的ISO-8859-1。要使用ContentType定义的编码，需要设置Connector。因此Tomcat一般会设置：</p>
+
+<p><code>&lt;Connector URIEncoding="UTF-8" useBodyEncodingForURI="true" /&gt;</code></p>
+
+<h3>3.2 HTTP Header的编解码</h3>
+
+<p>除了URL外，还可能在Header中传递其它参数，如Cookie、redirectPath等。不要在Header中传递非ASCII字符，如果一定要传递，可以先用URLEncoder编码，再添加到Header中。</p>
+
+<h3>3.3 其它编解码</h3>
+
+<p>POST表单也是通过ContentType的Charset编码。用JDBC来存取数据时要和数据的内置编码保持一致，可以通过设置JDBC URL来指定，如MySQL: url=&ldquo;jdbc:mysql://localhost:3306/DB?useUnicode=true&amp;characterEncoding=GBK&#8221;。</p>
+
+<h2>4. Javascript中的编码问题</h2>
+
+<p>如果Javascript文件的编码格式与当前页面不一致，需要指定字符集，否则可能出现乱码：<code>&lt;script src="abc.js" charset="gbk"/&gt;</code>。在Javascript中处理URL可以使用<code>encodeURI()</code>和<code>encodeURIComponent()</code>。后者编码得更彻底，除了<code>!</code>、<code>'</code>、<code>(</code>、<code>)</code>、<code>*</code>、<code>-</code>、<code>.</code>、<code>_</code>、<code>~</code>、<code>0-9</code>、<code>a-z</code>和<code>A-Z</code>之外，对其他所有字符都编码，因此通常用于将一个URL当作一个参数放在另一个URL中。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Java内存模型与线程]]></title>
@@ -6001,443 +6138,6 @@ protected void attachBaseContext(Context base) {
 
 
 <p>参考：<a href="http://algs4.cs.princeton.edu/44sp/">http://algs4.cs.princeton.edu/44sp/</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[最小生成树]]></title>
-    <link href="http://blog.ubone.com/blog/2014/10/31/zui-xiao-sheng-cheng-shu/"/>
-    <updated>2014-10-31T22:38:49+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/10/31/zui-xiao-sheng-cheng-shu</id>
-    <content type="html"><![CDATA[<p>加权图是一种为每条边关联一个权值或成本的图模型。这种图最令人感兴趣的是将成本最小化。本节学习加权无向图模型并找到它的一棵最小生成树。</p>
-
-<p>图的生成树是它的一棵含有其所有顶点的无环连通子图。一幅加权图的最小生成树（MST）是它的一棵权值（树中所有边的权值之和）最小的生成树。</p>
-
-<!--more-->
-
-
-<h2>1. 一些约定</h2>
-
-<p>为了方便说明，有以下这些约定：</p>
-
-<ul>
-<li>只考虑连通图。如果图是非连通的，只能计算它的所有连通分量的最小生成树，合并起来称为最小生成森林。</li>
-<li>边的权重不一定表示距离。但为了看起来方便，示意图会用距离来表示权重。</li>
-<li>边的权重可能是0或者负数。</li>
-<li>所有边的权重都各不相同。如果权重可以相同，最小生成树就不一定唯一，算法证明会更复杂。但实际上算法也适用于存在权重相等的情况。</li>
-</ul>
-
-
-<h2>2. 原理</h2>
-
-<p>图的一种<strong>切分</strong>是将图的所有顶点分为两个非空且不重叠的两个集合。<strong>横切边</strong>是一条连接两个属于不同集合的顶点的边。</p>
-
-<blockquote><p>切分定理：在一幅加权图中，给定任意的切分，它的横切边中的权重最小者必然属于图的最小生成树。</p></blockquote>
-
-<p>切分定理会把加权图中的所有顶点分为两个集合，检查横跨两个集合的所有边并识别哪边边应属于图的最小生成树。</p>
-
-<h2>3. 加权无向图的数据结构</h2>
-
-<p>通过扩展无向图的邻接矩阵来表示加权无向图。在无向图的邻接表表示中，第v个顶点的列表中每个元素都是和顶点v相邻的顶点。在加权无向图中，我们将其替换为一个加权边Edge：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-11-02-edge-api.png" alt="image" /></p>
-
-<p>上图中，eaither()表示边的两个顶点中的某一个，而other()则返回另一个顶点。有了加权边Edge，加权无向图的API就与无向图非常接近，在实现上，只是在邻接表中用Edge对象替代了无向图Graph中的整数作为链表的结点：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-11-02-edge-weighted-graph-api.png" alt="image" /></p>
-
-<p>加权无向图的表示如下：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-11-02-edge-weighted-graph-representation.png" alt="image" /></p>
-
-<p>代码实现如下：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public class Edge implements Comparable&lt;Edge&gt; { 
-    private final int v;
-    private final int w;
-    private final double weight;
-
-    public Edge(int v, int w, double weight) {
-        if (v &lt; 0) throw new IndexOutOfBoundsException("Vertex name must be a nonnegative integer");
-        if (w &lt; 0) throw new IndexOutOfBoundsException("Vertex name must be a nonnegative integer");
-        if (Double.isNaN(weight)) throw new IllegalArgumentException("Weight is NaN");
-        this.v = v;
-        this.w = w;
-        this.weight = weight;
-    }
-
-    public double weight() {
-        return weight;
-    }
-
-    public int either() {
-        return v;
-    }
-
-    public int other(int vertex) {
-        if      (vertex == v) return w;
-        else if (vertex == w) return v;
-        else throw new IllegalArgumentException("Illegal endpoint");
-    }
-
-    public int compareTo(Edge that) {
-        if      (this.weight() &lt; that.weight()) return -1;
-        else if (this.weight() &gt; that.weight()) return +1;
-        else                                    return  0;
-    }
-
-    public String toString() {
-        return String.format("%d-%d %.5f", v, w, weight);
-    }
-}    </code></pre>
-
-
-
-
-<pre class='line-numbers language-java'><code class='language-java'>public class EdgeWeightedGraph {
-    private final int V;
-    private int E;
-    private Bag&lt;Edge&gt;[] adj;
-    
-    /**
-     * Initializes an empty edge-weighted graph with &lt;tt&gt;V&lt;/tt&gt; vertices and 0 edges.
-     * param V the number of vertices
-     * @throws java.lang.IllegalArgumentException if &lt;tt&gt;V&lt;/tt&gt; &lt; 0
-     */
-    public EdgeWeightedGraph(int V) {
-        if (V &lt; 0) throw new IllegalArgumentException("Number of vertices must be nonnegative");
-        this.V = V;
-        this.E = 0;
-        adj = (Bag&lt;Edge&gt;[]) new Bag[V];
-        for (int v = 0; v &lt; V; v++) {
-            adj[v] = new Bag&lt;Edge&gt;();
-        }
-    }
-
-    /**
-     * Initializes a random edge-weighted graph with &lt;tt&gt;V&lt;/tt&gt; vertices and &lt;em&gt;E&lt;/em&gt; edges.
-     * param V the number of vertices
-     * param E the number of edges
-     * @throws java.lang.IllegalArgumentException if &lt;tt&gt;V&lt;/tt&gt; &lt; 0
-     * @throws java.lang.IllegalArgumentException if &lt;tt&gt;E&lt;/tt&gt; &lt; 0
-     */
-    public EdgeWeightedGraph(int V, int E) {
-        this(V);
-        if (E &lt; 0) throw new IllegalArgumentException("Number of edges must be nonnegative");
-        for (int i = 0; i &lt; E; i++) {
-            int v = (int) (Math.random() * V);
-            int w = (int) (Math.random() * V);
-            double weight = Math.round(100 * Math.random()) / 100.0;
-            Edge e = new Edge(v, w, weight);
-            addEdge(e);
-        }
-    }
-
-    /**  
-     * Initializes an edge-weighted graph from an input stream.
-     * The format is the number of vertices &lt;em&gt;V&lt;/em&gt;,
-     * followed by the number of edges &lt;em&gt;E&lt;/em&gt;,
-     * followed by &lt;em&gt;E&lt;/em&gt; pairs of vertices and edge weights,
-     * with each entry separated by whitespace.
-     * @param in the input stream
-     * @throws java.lang.IndexOutOfBoundsException if the endpoints of any edge are not in prescribed range
-     * @throws java.lang.IllegalArgumentException if the number of vertices or edges is negative
-     */
-    public EdgeWeightedGraph(In in) {
-        this(in.readInt());
-        int E = in.readInt();
-        if (E &lt; 0) throw new IllegalArgumentException("Number of edges must be nonnegative");
-        for (int i = 0; i &lt; E; i++) {
-            int v = in.readInt();
-            int w = in.readInt();
-            double weight = in.readDouble();
-            Edge e = new Edge(v, w, weight);
-            addEdge(e);
-        }
-    }
-
-    /**
-     * Initializes a new edge-weighted graph that is a deep copy of &lt;tt&gt;G&lt;/tt&gt;.
-     * @param G the edge-weighted graph to copy
-     */
-    public EdgeWeightedGraph(EdgeWeightedGraph G) {
-        this(G.V());
-        this.E = G.E();
-        for (int v = 0; v &lt; G.V(); v++) {
-            // reverse so that adjacency list is in same order as original
-            Stack&lt;Edge&gt; reverse = new Stack&lt;Edge&gt;();
-            for (Edge e : G.adj[v]) {
-                reverse.push(e);
-            }
-            for (Edge e : reverse) {
-                adj[v].add(e);
-            }
-        }
-    }
-
-    //图的顶点数
-    public int V() {
-        return V;
-    }
-
-    //图的边数
-    public int E() {
-        return E;
-    }
-
-    //向图中添加一条边e
-    public void addEdge(Edge e) {
-        int v = e.either();
-        int w = e.other(v);
-        if (v &lt; 0 || v &gt;= V) throw new IndexOutOfBoundsException("vertex " + v + " is not between 0 and " + (V-1));
-        if (w &lt; 0 || w &gt;= V) throw new IndexOutOfBoundsException("vertex " + w + " is not between 0 and " + (V-1));
-        adj[v].add(e);
-        adj[w].add(e);
-        E++;
-    }
-
-    //与v相关联的所有边
-    public Iterable&lt;Edge&gt; adj(int v) {
-        if (v &lt; 0 || v &gt;= V) throw new IndexOutOfBoundsException("vertex " + v + " is not between 0 and " + (V-1));
-        return adj[v];
-    }
-
-    //图中的所有边
-    public Iterable&lt;Edge&gt; edges() {
-        Bag&lt;Edge&gt; list = new Bag&lt;Edge&gt;();
-        for (int v = 0; v &lt; V; v++) {
-            int selfLoops = 0;
-            for (Edge e : adj(v)) {
-                if (e.other(v) &gt; v) {
-                    list.add(e);
-                }
-                // only add one copy of each self loop (self loops will be consecutive)
-                else if (e.other(v) == v) {
-                    if (selfLoops % 2 == 0) list.add(e);
-                    selfLoops++;
-                }
-            }
-        }
-        return list;
-    }
-
-    public String toString() {
-        String NEWLINE = System.getProperty("line.separator");
-        StringBuilder s = new StringBuilder();
-        s.append(V + " " + E + NEWLINE);
-        for (int v = 0; v &lt; V; v++) {
-            s.append(v + ": ");
-            for (Edge e : adj[v]) {
-                s.append(e + "  ");
-            }
-            s.append(NEWLINE);
-        }
-        return s.toString();
-    }
-}</code></pre>
-
-
-<h2>4. 最小生成树的API及实现</h2>
-
-<p>下面API定义的构造函数接受加权无向图作为参数，并返回最小生成树和其权重。</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-11-02-mst-api.png" alt="image" /></p>
-
-<p>Prim算法和Kruskal算法都可以实现最小生成树，它们都基于贪心算法，区别在于保存切分和判定权重最小的横切边的方式。</p>
-
-<blockquote><p>贪心算法：初始状态下所有边均为灰色，找到一种切分，它产生的横切边均不为黑色。将权重最小的横切边标记为黑色。反复这个步骤直到标记了V-1条黑色边为止。</p></blockquote>
-
-<h3>4.1 Prim算法</h3>
-
-<p>Prim算法每一步都会为一棵生长中的树添加一条边。一开始这棵树只有一个顶点，然后会向它添加V-1条边，每次总是找到这样一条边并将其加入树中：这条边的一端在树中，另一端不在树中，并且权值最小。</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-11-02-prim-eager.jpg" alt="image" /></p>
-
-<p>每当向树中添加一条边后，也向树中添加了一个顶点。要维护一个包含所有横切边的集合，可以将连接这个顶点和其他所有不在树中的顶点的边加入优先队列。这样就可以得到符合条件的权值最小的边。当一个顶点加入树中后，连接这个顶点与树中其它顶点的所有边就失效了，因为这些边的两个顶点都已经在树中，这些边不再是横切边。那么何时删除这些边就形成了Prim算法的两种实现：</p>
-
-<ul>
-<li>延时(Lazy)实现会先把它们留在队列中，等要删除时再检查边的有效性；</li>
-<li>即时实现可以将它们从优先队列中删除。</li>
-</ul>
-
-
-<p>这两种实现所需的时间都与ElogE成正比（最坏情况下），延时实现所需的空间与E成正比，瓶颈在于优先队列的insert()和delMin()中比较边的权重次数。而即时实现所需空间的上限与V成正比，比延时实现有优势。两种实现代码如下：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public class LazyPrimMST {
-    private double weight;       // total weight of MST
-    private Queue&lt;Edge&gt; mst;     // edges in the MST
-    private boolean[] marked;    // marked[v] = true if v on tree
-    private MinPQ&lt;Edge&gt; pq;      // edges with one endpoint in tree
-
-    /**
-     * Compute a minimum spanning tree (or forest) of an edge-weighted graph.
-     * @param G the edge-weighted graph
-     */
-    public LazyPrimMST(EdgeWeightedGraph G) {
-        mst = new Queue&lt;Edge&gt;();
-        pq = new MinPQ&lt;Edge&gt;();
-        marked = new boolean[G.V()];
-        for (int v = 0; v &lt; G.V(); v++)     // run Prim from all vertices to
-            if (!marked[v]) prim(G, v);     // get a minimum spanning forest
-    }
-
-    // run Prim's algorithm
-    private void prim(EdgeWeightedGraph G, int s) {
-        scan(G, s);
-        while (!pq.isEmpty()) {                        // better to stop when mst has V-1 edges
-            Edge e = pq.delMin();                      // smallest edge on pq
-            int v = e.either(), w = e.other(v);        // two endpoints
-            assert marked[v] || marked[w];
-            if (marked[v] && marked[w]) continue;      // lazy, both v and w already scanned
-            mst.enqueue(e);                            // add e to MST
-            weight += e.weight();
-            if (!marked[v]) scan(G, v);               // v becomes part of tree
-            if (!marked[w]) scan(G, w);               // w becomes part of tree
-        }
-    }
-
-    //标记顶点v并将所有连接v和未被标记顶点的边加入pq
-    private void scan(EdgeWeightedGraph G, int v) {
-        assert !marked[v];
-        marked[v] = true;
-        for (Edge e : G.adj(v))
-            if (!marked[e.other(v)]) pq.insert(e);
-    }
-        
-    //树的所有边
-    public Iterable&lt;Edge&gt; edges() {
-        return mst;
-    }
-
-    //树的权重
-    public double weight() {
-        return weight;
-    }
-}</code></pre>
-
-
-
-
-<pre class='line-numbers language-java'><code class='language-java'>public class PrimMST {
-    private Edge[] edgeTo;        // 距离树最近的边，edgeTo[v] = shortest edge from tree vertex to non-tree vertex
-    private double[] distTo;      // distTo[v] = weight of shortest such edge
-    private boolean[] marked;     // marked[v] = true if v on tree, false otherwise
-    private IndexMinPQ&lt;Double&gt; pq;  //有效的横切边
-
-    /**
-     * Compute a minimum spanning tree (or forest) of an edge-weighted graph.
-     * @param G the edge-weighted graph
-     */
-    public PrimMST(EdgeWeightedGraph G) {
-        edgeTo = new Edge[G.V()];
-        distTo = new double[G.V()];
-        marked = new boolean[G.V()];
-        pq = new IndexMinPQ&lt;Double&gt;(G.V());
-        for (int v = 0; v &lt; G.V(); v++) distTo[v] = Double.POSITIVE_INFINITY;
-
-        for (int v = 0; v &lt; G.V(); v++)      // run from each vertex to find
-            if (!marked[v]) prim(G, v);      // minimum spanning forest
-    }
-
-    // run Prim's algorithm in graph G, starting from vertex s
-    private void prim(EdgeWeightedGraph G, int s) {
-        distTo[s] = 0.0;
-        pq.insert(s, distTo[s]); //用顶点0和权重0初始化pq
-        while (!pq.isEmpty()) {
-            int v = pq.delMin();  
-            scan(G, v);          //将最近的顶点添加到树中
-        }
-    }
-
-    // scan vertex v
-    private void scan(EdgeWeightedGraph G, int v) {
-            //将顶点v添加到树中，更新数据
-        marked[v] = true;
-        for (Edge e : G.adj(v)) {
-            int w = e.other(v);
-            if (marked[w]) continue;         // v-w 已经失效
-            if (e.weight() &lt; distTo[w]) {
-                    //连接w和树的最佳边Edge变为e
-                distTo[w] = e.weight();
-                edgeTo[w] = e;
-                if (pq.contains(w)) pq.decreaseKey(w, distTo[w]);
-                else                pq.insert(w, distTo[w]);
-            }
-        }
-    }
-
-    //所有边
-    public Iterable&lt;Edge&gt; edges() {
-        Queue&lt;Edge&gt; mst = new Queue&lt;Edge&gt;();
-        for (int v = 0; v &lt; edgeTo.length; v++) {
-            Edge e = edgeTo[v];
-            if (e != null) {
-                mst.enqueue(e);
-            }
-        }
-        return mst;
-    }
-
-    //权重
-    public double weight() {
-        double weight = 0.0;
-        for (Edge e : edges())
-            weight += e.weight();
-        return weight;
-    }
-}</code></pre>
-
-
-<h3>4.2 Kruskal算法</h3>
-
-<p>Kruskal算法构造最小生成树时也是一条边一条边地构造，但它寻找的边会连接一片森林中的两棵树。我们从一片由V棵单顶点的树构成的森林开始并不断将两棵树合并（用可以找到的最短边）直到只剩下一棵树。其主要思想是按边的权重顺序处理它们，将边加入最小生成树中，加入的边不会与已经加入的边构成环，直到树中含有V-1条边为止。</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-11-02-kruskal.jpg" alt="image" /></p>
-
-<p>实现时，采用优先队列将边按照权重排序，用一个union-find数据结构识别会形成环的边，以及一个队列来保存最小生成树的所有边。代码实现如下：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public class KruskalMST {
-    private double weight;  // weight of MST
-    private Queue&lt;Edge&gt; mst = new Queue&lt;Edge&gt;();  // edges in MST
-
-    public KruskalMST(EdgeWeightedGraph G) {
-        // more efficient to build heap by passing array of edges
-        MinPQ&lt;Edge&gt; pq = new MinPQ&lt;Edge&gt;();
-        for (Edge e : G.edges()) {
-            pq.insert(e);
-        }
-
-        // run greedy algorithm
-        UF uf = new UF(G.V());
-        while (!pq.isEmpty() && mst.size() &lt; G.V() - 1) {
-            Edge e = pq.delMin();  //从pq得到权重最小的边和它的顶点
-            int v = e.either();
-            int w = e.other(v);
-            if (!uf.connected(v, w)) { // v-w does not create a cycle
-                uf.union(v, w);  // merge v and w components
-                mst.enqueue(e);  // add edge e to mst
-                weight += e.weight();
-            }
-        }
-    }
-
-    //树的所有边
-    public Iterable&lt;Edge&gt; edges() {
-        return mst;
-    }
-
-    //树的权重
-    public double weight() {
-        return weight;
-    }
-}</code></pre>
-
-
-<p>Kruskal算法所需的空间与E成正比，所需时间与ElogE成正比（最坏情况下）。</p>
-
-<p>Prim和Kruskal算法不能处理有向图。</p>
-
-<p>参考：<a href="http://algs4.cs.princeton.edu/43mst/">http://algs4.cs.princeton.edu/43mst</a></p>
 ]]></content>
   </entry>
   

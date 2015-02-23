@@ -1,0 +1,379 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Java Web中文编码 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="介绍常见的编码格式，以及Java Web和JavaScript相关的字符集编码。 1. 常见的编码格式 编码 说明 ASCII 共128个，用1个字节表示。0～31为控制字符，如换行、回车等。32～126为打印字符。 ISO-8859-1 扩展ASCII编码，仍然是单字节，共256个字符。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2015/02/23/java-webzhong-wen-bian-ma">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="/stylesheets/prism-default.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
+<style>
+article blockquote {
+  font-size: 0.9em;
+}
+</style>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?28583ca12a9f673dc8d86501f8d02bbe";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">@InfoQ</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Java Web中文编码</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-23T15:57:18+08:00" pubdate data-updated="true">2015-02-23</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>介绍常见的编码格式，以及Java Web和JavaScript相关的字符集编码。</p>
+
+<!--more-->
+
+
+<h2>1. 常见的编码格式</h2>
+
+<table>
+<thead>
+<tr>
+<th>编码 </th>
+<th> 说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ASCII </td>
+<td> 共128个，用1个字节表示。0～31为控制字符，如换行、回车等。32～126为打印字符。</td>
+</tr>
+<tr>
+<td>ISO-8859-1 </td>
+<td> 扩展ASCII编码，仍然是单字节，共256个字符。</td>
+</tr>
+<tr>
+<td>GB2312 </td>
+<td> 双字节编码，A1~A9是符号区，共682个符号；B0~F7是汉字区，共6763个汉字</td>
+</tr>
+<tr>
+<td>GBK </td>
+<td> 为Win95所制定的汉字内码规范，扩展GB2312，与GB2312兼容，能表示21003个汉字。</td>
+</tr>
+<tr>
+<td>GB18030 </td>
+<td> 可能是单字节、双字节或者四字节编码，与GB2312兼容。虽然是国家标准，但未广泛使用。</td>
+</tr>
+<tr>
+<td>UTF-16 </td>
+<td> 定义了Unicode字符在计算机中的存取方法。Unicode是ISO试图创建一个全新的超语言字典，世界上所有语言都可以通过这个字典相互翻译。Unicode是Java和XML的基础。UTF-16用两个字节来表示Unicode的转化格式，采用定长的表示方法。</td>
+</tr>
+<tr>
+<td>UTF-8 </td>
+<td> 避免UTF-16的空间浪费，采用变长技术，每个编码区域有不同的字码长度。不同类型的字符可以由1～6个字节组成。</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>UTF-8的编码规则：</p>
+
+<ul>
+<li>如果是1个字节，最高位（第8位）为0，表示1个ASCII字符。</li>
+<li>如果是1个字节，以11开着，则连续的1的个数表示这个字符的字节数。例如110xxxxx表示它是双字节UTF-8字符的首字节。</li>
+<li>如果1个字节，以10开始，表示它不是首字节，需要向前查找才能得到当前字符的首字节。</li>
+</ul>
+
+
+<h2>2. Java中的编码场景</h2>
+
+<h3>2.1 在I/O中编码</h3>
+
+<p>在磁盘和网络I/O中，都涉及字节与字符的转换。Reader类是Java的I/O中读字符的父类，而InputStream类是读字节的父类。两者之间的转换由StreamDecoder和StreamEncoder完成。在编、解码过程中必须指定Charset，否则使用本地环境默认字符集，如中文环境使用GBK。</p>
+
+<p>在实际开发过程中，只要保持编码的一致就不会造成乱码：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>String charset = "UTF-8";
+String file = "c:/stream.txt";
+
+FileOutputStream fos = new FieOutputStream(file);
+OutputStreamWriter writer = new OutputStreamWriter(fos, charset);
+
+...
+InputStreamReader reader = new InputStreamReader(inputStream, charset);</code></pre>
+
+
+<h3>2.2 在内存中编码</h3>
+
+<p>String类提供了字符和字节的转换方法：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>String s= "这是一段中文";
+byte[] b = s.getBytes("UTF-8");
+String n = new String(b, "UTF-8");</code></pre>
+
+
+<p></p>
+
+<p>另一种方法是使用Charset类：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>Charset charset = Charset.forName("UTF-8");
+ByteBuffer byteBuffer = charset.encode("abcd");
+CharBuffer charBuffer = charset.decode(byteBuffer);</code></pre>
+
+
+<p></p>
+
+<h2>3. Java Web中的编解码</h2>
+
+<p>用户从浏览器发起一个HTTP请求，需要编码的地方包括URL、Cookie和Parameter。</p>
+
+<h3>3.1 URL的编解码</h3>
+
+<p>URL <code>http://localhost:8080/examples/servlets/servlet/books?author=jason</code> 可分解为：</p>
+
+<ul>
+<li>URI: <code>/examples/servlets/servlet/books</code></li>
+<li>schema: http</li>
+<li>domain: localhost</li>
+<li>port: 8080</li>
+<li>contextPath: examples</li>
+<li>servletPath: servlets/servlet</li>
+<li>PathInfo: books</li>
+<li>QueryString: author=jason</li>
+</ul>
+
+
+<p>对于Tomcat，对URL的URI部分进行解码的字符集是在Connector中定义的。如果没有定义，那么默认为ISO-8859-1。QueryString的解码字符集要么是Header中ContentType定义的Charset，要么是默认的ISO-8859-1。要使用ContentType定义的编码，需要设置Connector。因此Tomcat一般会设置：</p>
+
+<p><code>&lt;Connector URIEncoding="UTF-8" useBodyEncodingForURI="true" /&gt;</code></p>
+
+<h3>3.2 HTTP Header的编解码</h3>
+
+<p>除了URL外，还可能在Header中传递其它参数，如Cookie、redirectPath等。不要在Header中传递非ASCII字符，如果一定要传递，可以先用URLEncoder编码，再添加到Header中。</p>
+
+<h3>3.3 其它编解码</h3>
+
+<p>POST表单也是通过ContentType的Charset编码。用JDBC来存取数据时要和数据的内置编码保持一致，可以通过设置JDBC URL来指定，如MySQL: url=&ldquo;jdbc:mysql://localhost:3306/DB?useUnicode=true&amp;characterEncoding=GBK&#8221;。</p>
+
+<h2>4. Javascript中的编码问题</h2>
+
+<p>如果Javascript文件的编码格式与当前页面不一致，需要指定字符集，否则可能出现乱码：<code>&lt;script src="abc.js" charset="gbk"/&gt;</code>。在Javascript中处理URL可以使用<code>encodeURI()</code>和<code>encodeURIComponent()</code>。后者编码得更彻底，除了<code>!</code>、<code>'</code>、<code>(</code>、<code>)</code>、<code>*</code>、<code>-</code>、<code>.</code>、<code>_</code>、<code>~</code>、<code>0-9</code>、<code>a-z</code>和<code>A-Z</code>之外，对其他所有字符都编码，因此通常用于将一个URL当作一个参数放在另一个URL中。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-23T15:57:18+08:00" pubdate data-updated="true">2015-02-23</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+<!-- UY BEGIN 评论-->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1942741"></script>
+<!-- UY END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/01/31/javanei-cun-mo-xing-yu-xian-cheng/" title="Previous Post: Java内存模型与线程">&laquo; Java内存模型与线程</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (29)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/02/23/java-webzhong-wen-bian-ma/">Java Web中文编码</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/31/javanei-cun-mo-xing-yu-xian-cheng/">Java内存模型与线程</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/20/jvmzi-jie-ma-zhi-xing-yin-qing/">JVM字节码执行引擎</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/13/titanium-uiji-zui-jia-shi-jian/">Titanium UI及最佳实践</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/11/titanium-alloy-mvc/">Titanium Alloy MVC</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+</footer>
+  <!--以下为disqus的代码，因为被墙，改用上面的国内代码
+
+
+-->
+
+
+
+
+
+
+
+
+</body>
+</html>
