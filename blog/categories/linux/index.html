@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>设计模式:适配器模式 - 码出人生</title>
+  <title>Category: Linux - 码出人生</title>
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="适配器模式分为类的适配器和对象的适配器。它们都是把被适配类的API转换成目标类的API。但前者使用继承关系，而后者使用委派关系。它们的结构如下图： 上图中的三个角色： Target接口，这是目标接口，表示要适配成这个接口。
-Adaptee，这是被适配的对象，表示要将它适配成Target。 &hellip;">
+  <meta name="description" content="Category: linux">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@ Adaptee，这是被适配的对象，表示要将它适配成Target。 &hellip;"
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.ubone.com/blog/2014/07/30/she-ji-mo-shi-gua-pei-qi-mo-shi">
+  <link rel="canonical" href="http://blog.ubone.com/blog/categories/linux">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
@@ -83,138 +82,35 @@ var _hmt = _hmt || [];
   <div id="main">
     <div id="content">
       <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      <h1 class="entry-title">设计模式:适配器模式</h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-30T22:31:42+08:00" pubdate data-updated="true">2014-07-30</time>
-        
-      </p>
+    <h1 class="entry-title">Category: Linux</h1>
     
   </header>
+  
+  <div id="blog-archives" class="category">
 
 
-<div class="entry-content"><p>适配器模式分为类的适配器和对象的适配器。它们都是把被适配类的API转换成目标类的API。但前者使用继承关系，而后者使用委派关系。它们的结构如下图：</p>
 
-<p><img src="/myresource/images/image_blog_2014-07-30_22.38.26.jpg" alt="image" /> <img src="/myresource/images/image_blog_2014-07-30_22.40.21.jpg" alt="image" /></p>
+  
+  <h2>2015</h2>
 
-<!--more-->
+<article>
+  
+<h1><a href="/blog/2015/02/24/linuxji-chu/">Linux基础</a></h1>
+<time datetime="2015-02-24T11:37:23+08:00" pubdate><span class='month'>Feb</span> <span class='day'>24</span> <span class='year'>2015</span></time>
 
-
-<p>上图中的三个角色：</p>
-
-<ol>
-<li>Target接口，这是目标接口，表示要适配成这个接口。</li>
-<li>Adaptee，这是被适配的对象，表示要将它适配成Target。</li>
-<li>Adapter，适配器，将Adaptee适配成Target。</li>
-</ol>
+<footer>
+  <span class="categories">posted in <a class='category' href='/blog/categories/linux/'>linux</a></span>
+</footer>
 
 
-<p>第一张图对应的是类的适配器，第二张图是对象的适配器。从图上看，区别主要是Adapter到Adaptee的连线不一样，一个是继承，一个是依赖。</p>
-
-<h2>类的适配器</h2>
-
-<p>先看类的适配器，即第一张图。Adapter继承自Adaptee，因此继承了方法operation1，再加上它自己实现的方法operation2，从而实现了Target接口，完成适配。由于是继承关系，因此Adaptee必须是一个类，不能是接口。</p>
-
-<h2>对象的适配器</h2>
-
-<p>对第二张图，Adaptee是被适配的接口，可以是接口或者类。Adapter包含一个对Adaptee的引用。Adapter的operation1方法，只需调用Adaptee.operation1，同时增加operation2，从而实现Target接口，完成适配。</p>
-
-<p>因为没有了继承关系，因此一个适配器可以把多种不同的源适配到同一个目标。</p>
-
-<h2>什么情况下使用适配器模式</h2>
-
-<ol>
-<li>系统需要使用现有类，而此类的接口不符合系统需要。</li>
-<li>建立一个可重复使用的类，用于与一些彼此没有太大关联的一些类一起工作。</li>
-<li>对象的适配器可用于改变多个已有的子类的接口。</li>
-</ol>
+</article>
 
 </div>
 
-
-  <footer>
-    <p class="meta">
-      
   
-
-<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
-
-      
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-30T22:31:42+08:00" pubdate data-updated="true">2014-07-30</time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/she-ji-mo-shi/'>设计模式</a>
-  
-</span>
-
-
-    </p>
-    
-      <div class="sharing">
-  
-  
-  
-  
-  
-  <!-- JiaThis Button BEGIN -->
-  <div class="jiathis_style">
-  	<span class="jiathis_txt">分享到：</span>
-  	<a class="jiathis_button_qzone">QQ空间</a>
-  	<a class="jiathis_button_tsina">新浪微博</a>
-  	<a class="jiathis_button_tqq">腾讯微博</a>
-  	<a class="jiathis_button_weixin">微信</a>
-  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
-  </div>
-  <br/>
-  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
-  <!-- JiaThis Button END -->
-  
-</div>
-
-<!-- UY BEGIN 评论-->
-<div id="uyan_frame"></div>
-<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1942741"></script>
-<!-- UY END -->
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/" title="Previous Post: 设计模式: 原型（Prototype）模式">&laquo; 设计模式: 原型（Prototype）模式</a>
-      
-      
-        <a class="basic-alignment right" href="/blog/2014/07/31/she-ji-mo-shi-que-sheng-gua-pei-mo-shi/" title="Next Post: 设计模式:缺省适配模式">设计模式:缺省适配模式 &raquo;</a>
-      
-    </p>
-  </footer>
 </article>
 
 </div>
