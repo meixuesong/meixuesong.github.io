@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-02-25T22:11:36+08:00</updated>
+  <updated>2015-02-25T22:13:49+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -18,7 +18,12 @@
     <link href="http://blog.ubone.com/blog/2015/02/24/linuxji-chu/"/>
     <updated>2015-02-24T11:37:23+08:00</updated>
     <id>http://blog.ubone.com/blog/2015/02/24/linuxji-chu</id>
-    <content type="html"><![CDATA[<h2>1. 用户身份</h2>
+    <content type="html"><![CDATA[<p>学习Linux的一些基本知识，包括用户身份、文件、目录、程序执行和磁盘管理等。</p>
+
+<!--more-->
+
+
+<h2>1. 用户身份</h2>
 
 <p>Linux的用户只有两个等级：root和非root。Linux支持最多2<sup>32</sup> -1个用户。Linux还有一些用户是用来完成特定任务的，如nobody, admin, ftp等。但不管这些用户多牛逼，都是普通用户。用户组相当于职业，从更高层面来抽象用户能够访问的文件。有些用户的主要任务就是运行某些程序以确保安全性，如nobody用户就可以用于Nginx的工作进程。这类用户一般不分配密码和shell，甚至home目录也没有。</p>
 
