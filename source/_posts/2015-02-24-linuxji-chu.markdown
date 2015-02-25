@@ -1,0 +1,172 @@
+---
+layout: post
+title: "Linux基础"
+date: 2015-02-24 11:37:23 +0800
+comments: true
+categories: 
+- linux
+---
+
+## 1. 用户身份
+Linux的用户只有两个等级：root和非root。Linux支持最多2^32 -1个用户。Linux还有一些用户是用来完成特定任务的，如nobody, admin, ftp等。但不管这些用户多牛逼，都是普通用户。用户组相当于职业，从更高层面来抽象用户能够访问的文件。有些用户的主要任务就是运行某些程序以确保安全性，如nobody用户就可以用于Nginx的工作进程。这类用户一般不分配密码和shell，甚至home目录也没有。
+
+### 1.1 用户
+通过`/etc/passwd`文件可以查看用户。每一行表示一个用户，其结构为：`用户名：密码：UID(User ID):GID(Group ID):用户命名：home目录：shell`。当然，密码并没有真正包含在内：
+
+```
+nobody:*:-2:-2:Unprivileged User:/var/empty:/usr/bin/false
+root:*:0:0:System Administrator:/var/root:/bin/sh
+daemon:*:1:1:System Services:/var/root:/usr/bin/false
+```
+
+UID的0一般分配给root，1～499分配给系统用户，普通用户从500开始。
+
+### 1.2 组
+通过`/etc/group`查看组，每一行代表一个用户组，其结构为：`组名：组密码：GID：用户组内的用户名`：
+
+```
+nobody:*:-2:
+nogroup:*:-1:
+wheel:*:0:root
+daemon:*:1:root
+```
+
+同样，密码并没有存放在这。“用户组内的用户名”并不完整，通常只显示兼职的用户，专职的用户已经在`/etc/passwd`中定义过了。
+
+### 1.2 管理用户和组
+通过adduser或useradd命令可以增加用户，这些命令会修改`/etc/passwd`和`/etc/group`这两个文件，并通过文件`/etc/shadow`来管理密码。不同的Linux发行版本中adduser可能有区别，而useradd则是一样的。
+
+```
+# useradd jason
+# passwd 				//修改当前用户密码
+# passwd jason
+# userdel jason 		//删除用户
+# userdel -r jason	//删除用户，并连同home目录一同删除。
+# usermod 			//修改用户的群组、账户名、目录、shell等等。
+```
+
+用户组的管理命令包括：groupadd、groupmod、groupdel和gpasswd。组密码很少用到。
+
+### 1.3 sudo
+通过sudo可以临时以root身份执行一条命令。但不是所有普通用户都有sudo权限。该权限由`/etc/sudoers`管理。
+
+```
+# User privilege specification
+root	ALL=(ALL:ALL) ALL
+
+# Members of the admin group may gain root privileges
+%admin ALL=(ALL) ALL
+
+# Allow members of group sudo to execute any command
+%sudo	ALL=(ALL:ALL) ALL
+```
+
+如果觉得sudo给予的root权限过大，可以限制可执行的命令，例如：
+
+```
+%users ALL=/sbin/mount /mnt/cdrom, /sbin/umount /mnt/cdrom
+
+#还可以使用!表示禁止
+$users ALL=(ALL) ALL, !/usr/sbin/adduser, !/usr/sbin/useradd
+```
+
+### 1.4 我是谁？
+用户登录的身份为实际用户，通过su命令转换身份后为有效用户。有些脚本可能需要识别“我是谁？”。可以通过以下几个命令：
+
+```
+//以普通用户mxs登录
+mxs@Jasondroplet:~$ whoami
+mxs
+mxs@Jasondroplet:~$ who am i
+mxs      pts/1        2015-02-23 23:20 (10.0.0.100)
+mxs@Jasondroplet:~$ who
+mxs      pts/1        2015-02-23 23:20 (10.0.0.100)
+
+//su后
+mxs@Jasondroplet:~$ su
+root@Jasondroplet:/usr/mxs# whoami
+root
+root@Jasondroplet:/usr/mxs# who am i
+mxs      pts/1        2015-02-23 23:20 (10.0.0.100)
+root@Jasondroplet:/usr/mxs# who
+mxs      pts/1        2015-02-23 23:20 (10.0.0.100)
+```
+
+## 2. 文件与目录
+Linux下用ls命令显示文件和目录时，会采用颜色区分类型。常见的如蓝色表示目录，其他颜色表示文件，绿色表示可执行文件、青色表示符号连接等等。通过`ls -l`命令可查看详细的属性：
+
+```
+-rw-rw-r--  1 mxs  mxs       692 Oct 24 08:31 log4j.properties
+drwxrwxr-x  2 mxs  mxs      4096 Jan 20 10:26 pki
+```
+
+第一个字符用于描述文件类型，可取的值包括：
+
+* -：普通文件
+* d：目录
+* l：软连接，硬连接没有特殊标记
+* b：设备文件，块设备，如磁盘等
+* c：设备文件，字符设备，如鼠标键盘等
+* s：套接字（Socket）文件
+* p：命名管道文件
+
+后面紧跟着的三套“rwx”分别表示所有者、所属用户组和其他用户的读、写和执行权限。对于目录，x权限表示是否能够打开它，r权限表示能否查看这个目录中的文件列表，在该目录创建文件则需要w权限。
+
+文件名前带点号“.”的表示隐藏文件。
+
+之后的数字表示“连接数”。Linux使用的文件系统是一种基于inode的文件系统。每一个新创建的文件都会分配一个inode，且每个文件都有唯一的inode编号。可以将inode理解成一个指针，指向的是文件所在磁盘中的物理位置。上面的文件属性也保存在inode中。为了提高效率，访问过的文件的inode会缓存在内存中。使用ln命令可以建立文件连接。命令`ln -s /bin/bash sh`建立了一个新的软连接sh指向`/bin/bash`，软连接也占用一个inode，不影响inode的引用计数。如果去除参数`-s`则创建的是硬连接。硬连接的属性跟目标文件的属性完全相同，因为引用的是相同的inode，仅仅将inode的引用计数进行了加1操作。由于有`.`目录的存在，所以每个目录的连接数都为2，而`..`目录的存在，则导致每增加一个子目录，其连接数都加1.
+
+### 2.1 文件属性与权限
+
+chown可用于修改文件的拥有者，`chown [-R] username filename` 或者 `chown [-R] username:group filename`, 后者连同文件所属用户组也一同修改了。参数`-R`表示目录。
+
+chmod用于修改文件权限，可以使用数字法或文字法。数字法就是用数字代替r(4)、w(2)和x(1)，例如w-x(5), rw-(6)和rwx(7)。例如：`chmod 755 .bashrc`。文字法则使用四个字母：u(拥有者)、g(所属组)、o(其他)和a(全部)，和三个字符：+(增加)、-(减去)和=（设定）来设置权限。例如：`chmod a-x .bashrc`, `chmod ugo-x .bashrc`, `chmod ugo=rwx .bashrc`。
+
+除了rwx外，Linux还有两个特殊的权限s和t。s可以出现在拥有者的x位置（SUID），也可以出现在所属组的x位置（SGID）。SUID的典型示例是`/bin/su`命令，其属性为`-rwsr-xr-x`，表示执行者将具有该程序拥有者（root）的权限，并且仅在执行该程序过程中有效。SGID不常见。`t`权限用于其他用户的`x`权限位（SBIT），仅对目录有效。典型例子是`/tmp`目录，这个目录允许任何用户在里面创建文件，但为了避免文件被其他人误删除，则设置SBIT权限，使得自己创建的文件只能通过自己或者root删除。
+
+### 2.2 搜索文件
+Linux有5个搜索文件的命令。
+
+命令 | 说明 | 示例
+---|---|---
+whereis | 搜索可执行文件、联机帮助和源代码文件。基于每天更新一次的数据库（/var/lib/mlocate/），查询快速。| whereis ls
+locate | 与whereis使用相同的数据库，支持复杂的匹配语法。| locate ls 会找到很多结果。
+which | 只在$PATH环境变量中搜索可执行文件。可用于确认系统是否安装了指定软件。| which gcc
+find | 强大的查找工具。`find / -mtime -1 -exec ls -l {} \;`表示列出一天以内变化的文件的详细信息。`-exec`表示对找到的文件执行的动作，{}表示占位符，find命令执行过程中会不断地被替换为当前找到的文件，这样ls命令就完整了。分号";"是因为`-exec`的结束标记是分号，在bash中有特殊含义，所以需要转义符`\`。另一个示例： 在php文件中查找41：  find . -name '*.php' -type f -exec grep -q 41 {} \; -print| 
+
+### 2.3 文件打包压缩
+
+```
+#解压缩
+tar -vxf filename
+#压缩
+tar -zcvf filename.tar.gz FILES
+```
+
+## 3. 程序执行
+在命令行下执行命令，Linux只会在$PATH环境变量所指定的那些路径中搜索对应的程序，如果找不到就失败。因此即使是当前路径也需要指定相对路径（./abc.sh）或绝对路径。
+
+管道是Linux系统提供的多任务协调机制，应用十分广泛。通过管道，数据从一端写入，另一端读取（FIFO）。管道分为匿名和命名两种，用竖线“|”表示匿名管道，mkfifo命令可建立命名管道（会在指定路径创建类型为“p”的文件）。I/O重定向（“>”）是Linux提供的一种多任务协调机制。下面的例子演示了管道和重定向：
+
+```
+$ find /boot | cpio -ocB > /tmp/boot.img
+```
+
+find命令查找/boot下的所有文件，并通过匿名管道传给cpio命令，cpio将输出内容重定向到boot.img文件。
+
+Linux命令行下也支持前台和后台任务。前台任务转后台：Ctrl+Z，然后执行bg命令。如果想直接创建一个后台任务，在命令末尾添加“&”符号即可。通过jobs命令查看所有后台任务，要将后台任务切换成前台任务，运行命令`fg 任务号`即可。
+
+kill命令用于结束一个任务或进程。
+
+计划任务可分为单次和循环，前者使用at命令，后者使用crontab命令。
+
+Linux的守护进程分为stand alone和xinetd。前者可以自行启动，启动后会一直占用内存和系统资源，响应快，例如apache, mysql。后者由一个统一的stand alone守护进程(super daemon)负责唤起，当没有客户端要求时，xinetd类型的守护进程都是未启动的，一旦有客户端要求服务，super daemon就会唤醒具体的xinetd守护进程。
+
+大多数Linux会将stand alone守护进程的启动脚本放在/etc/init.d/目录下，而xinetd守护进程的文件放在/etc/xinetd.d/。
+
+查看当前运行的程序信息，可以使用ps、top和pstree三个命令。ps命令显示某一时刻的程序信息，常见三种用法：`ps aux`查看系统中所有程序的数据；`ps ux`查看当前用户所有程序的数据；`ps -l`查看与当前终端关联的程序数据。top命令可以每隔5秒刷新一次数据，相当于Windows任务管理器。而pstree可以查看进程的父子祖先关系。
+
+## 4. 磁盘管理
+Linux的文件系统格式被称为ExtN(N=2,3,4)。ExtN文件系统中包含inode数据结构来代表一个文件，并且存储了这个文件的各种属性和权限。文件的实际数据保存在data block块区中。data block与inode一样，每一个都有一个唯一编号，inode只需要记录这些编号，就能够定位整个文件的任意一段数据。因此ExtN通过inode能够一次性获得文件数据所存放的位置，尽量保证在磁盘只旋转一圈的情况下将所有内容读出来。而FAT32则只有将对应的data block读入之后才知道下一个data block在什么地方，因此效率比较低，这也是Windows系统使用较长时间后，碎片较多，系统变慢的原因。
+
+
