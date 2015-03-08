@@ -4,7 +4,7 @@ title: "Extjs 备忘录"
 date: 2014-06-25 12:13:29 +0800
 comments: true
 categories: 
-- Web前端
+- Web相关
 ---
 
 今天改点老程序，用到了Extjs，记录一下遇到的问题和解决办法。

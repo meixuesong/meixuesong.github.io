@@ -1,0 +1,618 @@
+---
+layout: post
+title: "Redis学习笔记"
+date: 2015-03-08 11:37:07 +0800
+comments: true
+categories: 
+- Web相关
+---
+Redis是一个高性能的key-value数据库，完全开源免费，遵守BSD协议。它的主要优势：
+
+* 性能极高 – Redis能读的速度是110000次/s,写的速度是81000次/s 。
+* 丰富的数据类型 – Redis支持二进制案例的 Strings, Lists, Hashes, Sets 及 Ordered Sets 数据类型操作。
+* 原子 – Redis的所有操作都是原子性的，同时Redis还支持对几个操作全并后的原子性执行。
+* 丰富的特性 – Redis还支持 publish/subscribe, 通知, key 过期等等特性。
+
+<!--more-->
+
+## 1. 简介
+Redis是Remote DIctionary Server（远程字典服务器）的缩写，它以字典结构存储数据，并允许其他应用通过TCP协议读写字典中的内容。到目前为止Redis支持的键值数据类型如下： 
+
+* 字符串类型
+* 散列类型
+* 列表类型
+* 集合类型
+* 有序集合类型
+
+Redis数据库中的所有数据都存储在内存中。由于内存的读写速度远快于硬盘，因此Redis在性能上对比其他基于硬盘存储的数据库有非常明显的优势，不过 Redis提供了对持久化的支持，即将可以内存中的数据异步写入到硬盘中，同时不影响继续提供服务。
+
+Redis可以为每个键设置生存时间（Time To Live，TTL），生存时间到期后键会自动被删除。
+
+关于Redis和Memcached优劣的讨论一直是一个热门的话题。在性能上Redis是单线程模型，而Memcached支持多线程，所以在多核服务器上后者的性能更高一些。然而，前面已经介绍过，Redis的性能已经足够优异，在绝大部分场合下其性能都不会成为瓶颈。所以在使用时更应该关心的是二者在功能上的区别，如果需要用到高级的数据类型或是持久化等功能，Redis将会是Memcached很好的替代品。
+
+作为缓存系统，Redis还可以限定数据占用的最大内存空间，在数据达到空间限制后可以按照一定的规则自动淘汰不需要的键。除此之外，Redis的列表类型键可以用来实现队列，并且支持阻塞式读取，可以很容易地实现一个高性能的优先级队列。同时在更高层面上，Redis还支持“发布/订阅”的消息模式，可以基于此构建聊天室等系统。
+
+Redis提供了几十种不同编程语言的客户端库，这些库都很好地封装了Redis的命令，使得在程序中与Redis进行交互变得更容易。
+
+## 2. 初识Redis
+
+### 2.1 安装
+在OS X系统中安装 OS X下的软件包管理工具Homebrew和MacPorts均提供了较新版本的Redis包，所以我们可以直接使用它们来安装Redis，省去了像其他POSIX系统那样需要手动编译的麻烦。下面以使用Homwbrew安装Redis为例。 
+
+#### 安装Homebrew
+
+通过终端安装：
+
+```
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+
+如果之前安装过Homebrew，请执行brew update来更新Homebrew，以便安装较新版的Redis。 
+
+####通过Homebrew安装Redis
+
+使用brew install软件包名可以安装相应的包，此处执行:`brew install redis`
+
+OSX 系统从Tiger版本开始引入了launchd工具来管理后台程序，如果想让Redis随系统自动运行可以通过以下命令配置launchd： 
+
+```
+ln -sfv/usr/local/opt/redis/＊.plist ～/Library/LaunchAgents 
+launchctl load ～/Library/LaunchAgents/homebrew.mxcl.redis.plist
+```
+通过launchd运行的Redis会加载位于/usr/local/etc/redis.conf的配置文件。
+
+### 2.2 运行
+Redis提供的可执行文件：
+
+文件名 | 说明
+---|---
+redis-server | Redis服务器
+redis-cli | Redis命令行客户端
+redis-benchmark | Redis性能测试工具
+redis-check-aof | AOF文件修复工具
+redis-check-dump | RDB文件检查工具
+
+我们最常使用的两个程序是redis-server和redis-cli，其中redis-server是Redis的服务器，启动Redis即运行redis-server；而redis-cli是Redis自带的Redis命令行客户端，是学习Redis的重要工具。
+
+#### 启动
+启动Redis有直接启动和通过初始化脚本启动两种方式，分别适用于开发环境和生产环境。 以直接启动为例，执行命令：`$ redis-server`，或者加上参数，如修改默认端口6379为6380：`$ redis-server --port 6380`。
+
+#### 执行客户端命令
+通过redis-cli向Redis发送命令有两种方式，一是执行`redis-cli 参数`，二是执行不带参数的redis-cli进入交互模式。交互模式示例如下：
+
+```
+$ redis-cli
+127.0.0.1:6379> ping
+PONG
+127.0.0.1:6379> keys *
+(empty list or set)
+127.0.0.1:6379> echo hello
+"hello"
+```
+
+#### 停止
+考虑到Redis有可能正在将内存中的数据同步到硬盘中，强行终止Redis进程可能会导致数据丢失。正确停止Redis的方式应该是向Redis发送SHUTDOWN命令，方法为： `$ redis-cli SHUTDOWN`
+
+Redis可以妥善处理SIGTERM信号，所以使用“kill Redis进程的PID”也可以正常结束Redis，效果与发送SHUTDOWN命令一样。
+
+#### 配置
+Redis支持通过配置文件来设置这些选项。启用配置文件的方法是在启动时将配置文件的路径作为启动参数传递给redis-server，如： `redis-server /path/to/redis.conf`。通过启动参数传递同名的配置选项会覆盖配置文件中相应的参数，就像这样： `redis-server /path/to/redis.conf --loglevel warning`。
+
+Redis运行时通过CONFIG SET 命令在不重新启动Redis的情况下动态修改部分Redis配置。就像这样： `redis>CONFIG SET loglevel warning`。
+
+#### 多数据库
+一个Redis实例提供了多个用来存储数据的字典，客户端可以指定将数据存储在哪个字典中。每个数据库对外都是以一个从0开始的递增数字命名，Redis默认支持16个数据库，可以通过配置参数databases来修改这一数字。客户端与Redis建立连接后会自动选择0号数据库，不过可以随时使用SELECT命令更换数据库。但Redis不支持每个数据库自定义名字，所以都以编号命名。同时也不支持每个数据库设置不同的密码。
+
+多个数据库之间并不是完全隔离的，比如FLUSHALL命令可以清空一个Redis实例中所有数据库中的数据。因此，这些数据库更像是一种命名空间，而不适宜存储不同应用程序的数据。
+
+### 2.3 Redis基础命令
+所有Redis命令都是原子操作，我们先来了解几个比较基础的命令作为热身，打开redis-cli，跟着样例亲自输入命令来体验一下吧！ （Redis命令不区分大小写。）
+
+#### 2.3.1．获得符合规则的键名列表 KEYS pattern
+pattern支持glob风格通配符格式，具体规则如下表所示。
+
+符号 | 含义
+---|---
+`?` | 匹配一个字符
+`*` | 匹配任意个（包括0个）字符
+`[]` | 匹配括号间的任一字符，可以使用“-”表示一个范围，如a[b-d]可以匹配"ab", "ac"和"ad"等
+`\x` | 匹配字符x， 用于转义，如要匹配"?"就需要使用`\?`
+
+```
+127.0.0.1:6379> keys *
+(empty list or set)
+```
+
+#### 2.3.2 SET
+建立一个名为bar的键：
+
+```
+127.0.0.1:6379> set bar 1
+OK
+127.0.0.1:6379> keys *
+1) "bar"
+127.0.0.1:6379> keys b??
+1) "bar"
+127.0.0.1:6379> keys b?
+(empty list or set)
+```
+
+#### 2.3.3 EXISTS key
+判断一个键是否存在 EXISTS key:
+
+```
+127.0.0.1:6379> exists bar
+(integer) 1
+```
+
+#### 2.3.4．删除键 DEL key [key …]
+
+```
+127.0.0.1:6379> del bar
+(integer) 1
+127.0.0.1:6379> del bar
+(integer) 0
+```
+
+批量删除时可以使用linux管道和xargs命令，例如要删除以“user:”开头的键:
+
+```
+redis-cli KEYS "user:*" | xargs redis-cli DEL
+```
+
+#### 2.3.5．获得键值的数据类型 TYPE key
+
+```
+127.0.0.1:6379> type user:1
+string
+```
+
+返回类型可能是：string, hash(散列类型), list, set, zset(有序集合)。
+
+## 3. 数据类型
+Redis支持的数据类型包括：字符串类型、散列类型、列表类型、集合类型和有序集合类型。
+
+Redis对于键的命名并没有强制的要求，但比较好的实践是用“对象类型:对象ID:对象属性”来命名一个键，如使用键user:1:friends来存储ID为1的用户的好友列表。对于多个单词则推荐使用“.”分隔。
+
+### 3.1 字符串类型
+字符串类型是Redis中最基本的数据类型，它能存储任何形式的字符串，包括二进制数据。你可以用其存储用户的邮箱、JSON化的对象甚至是一张图片。一个字符串类型键允许存储的数据的最大容量是512MB(Redis 2.x)。
+
+字符串类型是其他4种数据类型的基础，其他数据类型和它的区别从某种角度说只是组织字符串的形式不同。
+
+命令 | 描述
+---|---
+SET key value | 设置指定 key 的值
+GET key | 获取指定 key 的值。
+GETRANGE key start end | 返回 key 中字符串值的子字符
+GETSET key value | 将给定 key 的值设为 value ，并返回 key 的旧值(old value)。
+GETBIT key offset | 对 key 所储存的字符串值，获取指定偏移量上的位(bit)。
+`MGET key1 [key2..]` | 获取所有(一个或多个)给定 key 的值。
+SETBIT key offset value | 对 key 所储存的字符串值，设置或清除指定偏移量上的位(bit)。
+SETEX key seconds value | 将值 value 关联到 key ，并将 key 的过期时间设为 seconds (以秒为单位)。
+SETNX key value | 只有在 key 不存在时设置 key 的值。
+SETRANGE key offset value | 用 value 参数覆写给定 key 所储存的字符串值，从偏移量 offset 开始。
+STRLEN key | 返回 key 所储存的字符串值的长度。如果键不存在则返回0。例如： `redis＞STRLEN key (integer)12 redis＞SET key 你好 OK redis＞STRLEN key (integer)6` 前面提到了字符串类型可以存储二进制数据，所以它可以存储任何编码的字符串。例子中Redis接收到的是使用UTF-8编码的中文，由于“你”和“好”两个字的UTF-8编码的长度都是3，所以此例中会返回6。
+`MSET key value [key value ...]` | 同时设置一个或多个 key-value 对。
+`MSETNX key value [key value ...]` | 同时设置一个或多个 key-value 对，当且仅当所有给定 key 都不存在。
+`PSETEX key milliseconds value` | 这个命令和 SETEX 命令相似，但它以毫秒为单位设置 key 的生存时间，而不是像 SETEX 命令那样，以秒为单位。
+INCR key | 将 key 中储存的数字值增一。在Redis中实现自增长ID可以通过另一种模式来实现：对于每一类对象使用名为对象类型(复数形式):count的键（如users:count）来存储当前类型对象的数量，每增加一个新对象时都使用INCR命令递增该键的值。由于使用INCR命令建立的键的初始键值是1，所以可以很容易得知，INCR命令的返回值既是加入该对象后的当前类型的对象总数，又是该新增对象的ID。
+INCRBY key increment | 将 key 所储存的值加上给定的增量值（increment） 。
+INCRBYFLOAT key increment | 将 key 所储存的值加上给定的浮点增量值（increment） 。
+DECR key | 将 key 中储存的数字值减一。
+DECRBY key decrement | key 所储存的值减去给定的减量值（decrement） 。
+APPEND key value | 如果 key 已经存在并且是一个字符串， APPEND 命令将 value 追加到 key 原来的值的末尾。
+
+
+### 3.2 散列类型（HASH）
+我们现在已经知道Redis是采用字典结构以键值对的形式存储数据的，而散列类型（hash）的键值也是一种字典结构，其存储了字段（field）和字段值的映射，但字段值只能是字符串，不支持其他数据类型，换句话说，散列类型不能嵌套其他的数据类型。一个散列类型键可以包含至多2^32-1个字段。(除了散列类型，Redis的其他数据类型同样不支持数据类型嵌套)。
+
+散列类型适合存储对象：使用对象类别和ID构成键名，使用字段表示对象的属性，而字段值则存储属性值。例如要存储ID为2的汽车对象，可以分别使用名为color、name和price的3个字段来存储该辆汽车的颜色、名称和价格。
+
+![image](/myresource/images/image_blog_-2015-03-08-14.26.49.png)
+
+```
+redis> HSET car:2 color white
+(integer) 1
+redis> HSET car:2 name BMW
+(integer) 1
+redis> HGET car:2 name
+"BMW"
+redis> HGETALL car:2
+1) "color"
+2) "white"
+3) "name"
+4) "BMW"
+```
+
+命令 | 描述
+---|---
+`HDEL key field2 [field2]` | 删除一个或多个哈希表字段 
+HEXISTS key field | 查看哈希表 key 中，指定的字段是否存在。
+HGET key field | 获取存储在哈希表中指定字段的值
+HGETALL key | 获取在哈希表中指定 key 的所有字段和值
+HINCRBY key field increment | 为哈希表 key 中的指定字段的整数值加上增量 increment 。
+HINCRBYFLOAT key field increment | 为哈希表 key 中的指定字段的浮点数值加上增量 increment 。
+HKEYS key | 获取所有哈希表中的字段
+HLEN key | 获取哈希表中字段的数量
+`HMGET key field1 [field2]` | 获取所有给定字段的值
+`HMSET key field1 value1 [field2 value2 ]` | 同时将多个 field-value (域-值)对设置到哈希表 key 中。
+`HSET key field value` | 将哈希表 key 中的字段 field 的值设为 value 。
+`HSETNX key field value` | 只有在字段 field 不存在时，设置哈希表字段的值。
+HVALS key | 获取哈希表中所有值
+`HSCAN key cursor [MATCH pattern] [COUNT count]` | 迭代哈希表中的键值对。
+
+### 3.3 列表类型
+列表类型（list）可以存储一个有序的字符串列表，常用的操作是向列表两端添加元素，或者获得列表的某一个片段。 列表类型内部是使用双向链表（double linked list）实现的，所以向列表两端添加元素的时间复杂度为0(1)，获取越接近两端的元素速度就越快。这意味着即使是一个有几千万个元素的列表，获取头部或尾部的10条记录也是极快的（和从只有20个元素的列表中获取头部或尾部的10条记录的速度是一样的）。不过使用链表的代价是通过索引访问元素比较慢。
+
+列表类型能非常快速地完成关系数据库难以应付的场景：如社交网站的新鲜事，我们关心的只是最新的内容，使用列表类型存储，即使新鲜事的总数达到几千万个，获取其中最新的100条数据也是极快的。同样因为在两端插入记录的时间复杂度是0(1)，列表类型也适合用来记录日志，可以保证加入新日志的速度不会受到已有日志数量的影响。借助列表类型，Redis还可以作为队列使用。与散列类型键最多能容纳的字段数量相同，一个列表类型键最多能容纳2^32-1个元素。
+
+```
+redis 127.0.0.1:6379> LPUSH w3ckey redis
+(integer) 1
+redis 127.0.0.1:6379> LPUSH w3ckey mongodb
+(integer) 2
+redis 127.0.0.1:6379> LPUSH w3ckey mysql
+(integer) 3
+redis 127.0.0.1:6379> LRANGE w3ckey 0 10
+1) "mysql"
+2) "mongodb"
+3) "redis"
+```
+
+命令 | 描述
+----|----
+BLPOP key1 [key2 ] timeout | 移出并获取列表的第一个元素， 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止。
+BRPOP key1 [key2 ] timeout | 移出并获取列表的最后一个元素， 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止。
+BRPOPLPUSH source destination timeout | 从列表中弹出一个值，将弹出的元素插入到另外一个列表中并返回它； 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止。
+LINDEX key index | 通过索引获取列表中的元素
+LINSERT key BEFORE or AFTER pivot value | 在列表的元素前或者后插入元素
+LLEN key | 获取列表长度
+LPOP key | 移出并获取列表的第一个元素
+LPUSH key value1 [value2] | 将一个或多个值插入到列表头部
+LPUSHX key value | 将一个或多个值插入到已存在的列表头部
+LRANGE key start stop | 获取列表指定范围内的元素
+LREM key count value | 移除列表元素
+LSET key index value | 通过索引设置列表元素的值
+LTRIM key start stop | 对一个列表进行修剪(trim)，就是说，让列表只保留指定区间内的元素，不在指定区间之内的元素都将被删除。
+RPOP key | 移除并获取列表最后一个元素
+RPOPLPUSH source destination | 移除列表的最后一个元素，并将该元素添加到另一个列表并返回
+RPUSH key value1 [value2] | 在列表中添加一个或多个值
+RPUSHX key value | 为已存在的列表添加值
+
+### 3.4 集合
+集合的概念高中的数学课就学习过。在集合中的每个元素都是不同的，且没有顺序。例如博客的标签就很适合使用集合，一个标签（如Java）包括多篇文章，这些文章就组成一个集合。一个集合类型（set）键可以存储至多2^32-1个字符串。Redis中集合是通过哈希表实现的，所以添加，删除，查找的复杂度都是O(1)。
+
+```
+redis 127.0.0.1:6379> SADD w3ckey redis
+(integer) 1
+redis 127.0.0.1:6379> SADD w3ckey mongodb
+(integer) 1
+redis 127.0.0.1:6379> SADD w3ckey mysql
+(integer) 1
+redis 127.0.0.1:6379> SADD w3ckey mysql
+(integer) 0
+redis 127.0.0.1:6379> SMEMBERS w3ckey
+1) "mysql"
+2) "mongodb"
+3) "redis"
+```
+
+命令 | 描述
+---|---
+SADD key member1 [member2] | 向集合添加一个或多个成员
+SCARD key | 获取集合的成员数
+SDIFF key1 [key2] | 返回给定所有集合的差集
+SDIFFSTORE destination key1 [key2] | 返回给定所有集合的差集并存储在 destination 中
+SINTER key1 [key2] | 返回给定所有集合的交集
+SINTERSTORE destination key1 [key2] | 返回给定所有集合的交集并存储在 destination 中
+SISMEMBER key member | 判断 member 元素是否是集合 key 的成员
+SMEMBERS key | 返回集合中的所有成员
+SMOVE source destination member | 将 member 元素从 source 集合移动到 destination 集合
+SPOP key | 移除并返回集合中的一个随机元素
+SRANDMEMBER key [count] | 返回集合中一个或多个随机数
+SREM key member1 [member2] | 移除集合中一个或多个成员
+SUNION key1 [key2] | 返回所有给定集合的并集
+SUNIONSTORE destination key1 [key2] | 所有给定集合的并集存储在 destination 集合中
+SSCAN key cursor [MATCH pattern] [COUNT count] | 迭代集合中的元素
+
+### 3.5 有序集合
+有序集合类型（sorted set）的特点从它的名字中就可以猜到，它与上一节介绍的集合类型的区别就是“有序”二字。 在集合类型的基础上有序集合类型为集合中的每个元素都关联了一个分数，这使得我们不仅可以完成插入、删除和判断元素是否存在等集合类型支持的操作，还能够获得分数最高（或最低）的前N个元素、获得指定分数范围内的元素等与分数有关的操作。虽然集合中每个元素都是不同的，但是它们的分数却可以相同。 集合中最大的成员数为 2^32 - 1。
+
+有序集合类型是使用散列表和跳跃表（Skip list）实现的，所以即使读取位于中间部分的数据速度也很快（时间复杂度是O(log(N))
+
+```
+redis 127.0.0.1:6379> ZADD w3ckey 1 redis
+(integer) 1
+redis 127.0.0.1:6379> ZADD w3ckey 2 mongodb
+(integer) 1
+redis 127.0.0.1:6379> ZADD w3ckey 3 mysql
+(integer) 1
+redis 127.0.0.1:6379> ZADD w3ckey 3 mysql
+(integer) 0
+redis 127.0.0.1:6379> ZADD w3ckey 4 mysql
+(integer) 0
+redis 127.0.0.1:6379> ZRANGE w3ckey 0 10 WITHSCORES
+1) "redis"
+2) "1"
+3) "mongodb"
+4) "2"
+5) "mysql"
+6) "4"
+```
+
+命令 | 描述
+---|---
+ZADD key score1 member1 [score2 member2] | 向有序集合添加一个或多个成员，或者更新已存在成员的分数
+ZCARD key | 获取有序集合的成员数
+ZCOUNT key min max | 计算在有序集合中指定区间分数的成员数
+ZINCRBY key increment member | 有序集合中对指定成员的分数加上增量 increment
+ZINTERSTORE destination numkeys key [key ...] | 计算给定的一个或多个有序集的交集并将结果集存储在新的有序集合 key 中
+ZLEXCOUNT key min max | 在有序集合中计算指定字典区间内成员数量
+ZRANGE key start stop [WITHSCORES] | 通过索引区间返回有序集合成指定区间内的成员。WITHSCORES 表示结果包含分数。
+ZRANGEBYLEX key min max [LIMIT offset count] | 通过字典区间返回有序集合的成员
+ZRANGEBYSCORE key min max [WITHSCORES] [LIMIT] | 通过分数返回有序集合指定区间内的成员。min, max支持无穷大，-inf和+inf分别表示负无穷和正无穷。"("还可以表示开区间。例如`ZRANGEBYSCORE keyname 80 (100`, `ZRANGEBYSCORE keyname (80 +inf`
+ZRANK key member | 返回有序集合中指定成员的索引
+ZREM key member [member ...] | 移除有序集合中的一个或多个成员
+ZREMRANGEBYLEX key min max | 移除有序集合中给定的字典区间的所有成员
+ZREMRANGEBYRANK key start stop | 移除有序集合中给定的排名区间的所有成员
+ZREMRANGEBYSCORE key min max | 移除有序集合中给定的分数区间的所有成员
+ZREVRANGE key start stop [WITHSCORES] | 返回有序集中指定区间内的成员，通过索引，分数从高到底
+ZREVRANGEBYSCORE key max min [WITHSCORES] | 返回有序集中指定分数区间内的成员，分数从高到低排序
+ZREVRANK key member | 返回有序集合中指定成员的排名，有序集成员按分数值递减(从大到小)排序
+ZSCORE key member | 返回有序集中，成员的分数值
+ZUNIONSTORE destination numkeys key [key ...] | 计算给定的一个或多个有序集的并集，并存储在新的 key 中
+ZSCAN key cursor [MATCH pattern] [COUNT count] | 迭代有序集合中的元素（包括元素成员和元素分值）
+
+## 4. 进阶
+
+### 4.1 事务
+Redis的事务没有关系数据库事务提供的回滚功能。为此开发者必须在事务执行出错后自己收拾剩下的摊子（将数据库复原回事务执行前的状态等）。
+
+Redis的事务是一组命令的集合。事务同命令一样都是最小执行单位，一个事务中的命令要么都执行，要么都不执行。同一事务的命令会依次执行，不会被其它客户端的命令打断。
+
+如果事务中的命令有语法错误，则所有命令都不会执行。而某个命令的运行错误，如操作类型错误，则**其它命令仍然会执行**。
+
+以 MULTI 开始一个事务， 然后将多个命令入队到事务中， 最后由 EXEC 命令触发事务， 一并执行事务中的所有命令。
+
+```
+redis 127.0.0.1:6379> MULTI
+OK
+
+redis 127.0.0.1:6379> SET book-name "Mastering C++ in 21 days"
+QUEUED
+
+redis 127.0.0.1:6379> GET book-name
+QUEUED
+
+redis 127.0.0.1:6379> SADD tag "C++" "Programming" "Mastering Series"
+QUEUED
+
+redis 127.0.0.1:6379> SMEMBERS tag
+QUEUED
+
+redis 127.0.0.1:6379> EXEC
+1) OK
+2) "Mastering C++ in 21 days"
+3) (integer) 3
+4) 1) "Mastering Series"
+   2) "C++"
+   3) "Programming"
+```
+
+命令 | 描述
+---|---
+DISCARD  | 取消事务，放弃执行事务块内的所有命令。
+EXEC  | 执行所有事务块内的命令。
+MULTI  | 标记一个事务块的开始。
+UNWATCH  | 取消 WATCH 命令对所有 key 的监视。
+WATCH key [key ...]  | 监视一个(或多个) key ，如果在事务执行之前这个(或这些) key 被其他命令所改动，那么事务将被打断。   
+
+### 4.2 生存时间
+#### 4.2.1 实现访问频率限制
+在实际开发中，经常会遇到一些有时效的数据，如限时优惠活动、缓存或验证码等，过了一定的时间就需要删除这些数据。在Redis中可以使用EXPIRE命令设置一个键的生存时间，到时间后Redis会自动删除它。命令格式：`EXPIRE KEY SECONDS`，TTL命令（TTL KEY）可以查询键的剩余时间，PERSIST命令（PERSIST KEY）可以取消键的生存时间设置（即恢复成永久）。
+
+假设每分钟限制每个用户最多只能访问100个页面，可以通过Redis对每个用户使用名为“rate.limiting:用户IP”的字符串类型键，每次用户访问时使用INCR命令递增该键。如果递增后是1（第一次访问），则设置生存时间为1分钟。如果超过100则表示访问频率超过限制，提示用户稍后访问。
+
+#### 4.2.1 实现缓存
+可以利用Redis实现缓存，通过设置键的生存时间，每次访问时查询缓存是否存在，如果存在直接使用缓存值，否则重新计算并生成缓存。
+
+如果缓存键很多且生存时间长，可能导致Redis占满内容。可以设置最大可用内存大小（maxmemory参数），当内存超出限制时，Redis会根据maxmemory-policy参数指定的策略来删除不需要的键。对于常用的LRU(最近最少使用)算法，会将最近最少使用的键删除。（实际上只是随机选3个键，删除其中最久未被使用的键）
+
+### 4.3 排序
+集合类型如果需要排序，则需要用到有序集合类型。相关的命令见前表。
+
+#### 4.3.1 SORT命令
+SORT命令（SORT KEY）可以对列表类型、集合类型和有序集合类型键进行排序。加上ALPHA参数可以按字典顺序排序, DESC倒序：
+
+```
+127.0.0.1:6379> lpush mylist a c e d B C A
+(integer) 7
+127.0.0.1:6379> sort mylist
+(error) ERR One or more scores can't be converted into double
+127.0.0.1:6379> sort mylist ALPHA
+1) "A"
+2) "B"
+3) "C"
+4) "a"
+5) "c"
+6) "d"
+7) "e"
+127.0.0.1:6379> sort mylist ALPHA DESC
+1) "e"
+2) "d"
+3) "c"
+4) "a"
+5) "C"
+6) "B"
+7) "A"
+```
+
+利用BY参数可以对某个属性进行排序。STORE参数可将结果保存。SORT是Redis中最强大最复杂的命令之一，如果使用不好很容易成为性能瓶颈。
+
+### 4.4 消息通知
+#### 4.4.1 任务队列
+任务队列有两种实体：生产者、消费者。使用Redis的列表类型可以实现队列，让生产者将任务LPUSH到某个键中，另一边消费者不断地使用RPOP命令从该键中取出任务即可。BRPOP与RPOP的区别是，如果列表中没有元素时前者会一直阻塞，直到有新元素加入（可设置超时参数）。
+
+BRPOP命令可以同时接收多个键，如果所有键都没有元素则阻塞；如果其中有一个键有元素则会从该键弹出元素；如果多个键都有元素则按照从左到右的顺序取键中的元素。利用这个特性可以实现优先级任务队列。即BRPOP命令中，将优先级高的键放前面，优先级低的键放后面。
+
+#### 4.4.2 发布订阅模式
+Redis 发布订阅(pub/sub)是一种消息通信模式：发送者(pub)发送消息，订阅者(sub)接收消息。
+
+订阅者可以订阅任意数量的频道，发布者可以向指定频道发送消息，所有订阅此频道的订阅者都会收到此消息。
+
+下图展示了频道 channel1 ， 以及订阅这个频道的三个客户端 —— client2 、 client5 和 client1 之间的关系：
+
+![image](/myresource/images/image_blog_ 2015-03-08_pubsub1.png)
+
+当有新消息通过 PUBLISH 命令发送给频道 channel1 时， 这个消息就会被发送给订阅它的三个客户端：
+
+![image](/myresource/images/image_blog_ 2015-03-08_pubsub2.png)
+
+以下实例演示了发布订阅是如何工作的。在我们实例中我们创建了订阅频道名为 redisChat:
+
+```
+redis 127.0.0.1:6379> SUBSCRIBE redisChat
+Reading messages... (press Ctrl-C to quit)
+1) "subscribe"
+2) "redisChat"
+3) (integer) 1
+```
+
+现在，我们先重新开启个 redis 客户端，然后在同一个频道 redisChat 发布两次消息，订阅者就能接收到消息。
+
+```
+redis 127.0.0.1:6379> PUBLISH redisChat "Redis is a great caching technique"
+(integer) 1
+redis 127.0.0.1:6379> PUBLISH redisChat "Learn redis by w3cschool.cc"
+(integer) 1
+
+# 订阅者的客户端会显示如下消息
+1) "message"
+2) "redisChat"
+3) "Redis is a great caching technique"
+1) "message"
+2) "redisChat"
+3) "Learn redis by w3cschool.cc"
+```
+
+命令 | 描述
+---|---
+PSUBSCRIBE pattern [pattern ...] | 订阅一个或多个符合给定模式的频道。
+PUBSUB subcommand [argument [argument ...]] | 查看订阅与发布系统状态。
+PUBLISH channel message | 将信息发送到指定的频道。
+PUNSUBSCRIBE [pattern [pattern ...]] | 退订所有给定模式的频道。
+SUBSCRIBE channel [channel ...] | 订阅给定的一个或多个频道的信息。
+UNSUBSCRIBE [channel [channel ...]] | 指退订给定的频道。
+
+使用PSUBSCRIBE可以重复订阅一个频道，此时会重复收到多条消息。PUNSUBSCRIBE只能退订PSUBSCRIBE订阅的规则，不会影响SUBSCRIBE订阅的频道。
+
+### 4.5 管道
+在连续执行多个命令时，每条命令都需要等待上一条命令执行完才能执行，即使命令不需要上一条命令的执行结果。每个命令都要经过网络往返，产生了往返时延。Redis底层通信协议对管道提供了支持，通过管道可以一次性发送金条命令并在执行完成后一次性将结果返回。当一组命令中的每条命令都不依赖于之前命令的执行结果时就可以将这组命令一起通过管道发生。这样客户端与服务器只需要一个来回，降低了往返时延。
+
+## 5. 管理
+### 5.1 持久化
+Redis的强劲性能很大程度上是由于其将所有数据都存储在了内存中，为了使Redis在重启之后仍能保证数据不丢失，需要将数据从内存中以某种形式同步到硬盘中，这一过程就是持久化。Redis支持两种方式的持久化，一种是RDB方式，一种是AOF方式。可以单独使用其中一种或将二者结合使用。 
+
+#### 5.1.1 RDB方式
+RDB方式的持久化是通过快照（snapshotting）完成的，当符合一定条件时Redis会自动将内存中的所有数据进行快照并存储在硬盘上。进行快照的条件可以由用户在配置文件中自定义，由两个参数构成：时间和改动的键的个数。当在指定的时间内被更改的键的个数大于指定的数值时就会进行快照。
+
+RDB是Redis默认采用的持久化方式，在配置文件中已经预置了3个条件：
+
+``` 
+save 900 1 
+save 300 10 
+save 60 10000 
+```
+
+save参数指定了快照条件，可以存在多个条件，条件之间是“或”的关系。如上所说，save 900 1的意思是在15分钟（900秒钟）内有至少一个键被更改则进行快照。
+
+如果想要禁用自动快照，只需要将所有的save参数删除即可。Redis默认会将快照文件存储在当前目录的dump.rdb文件中，可以通过配置dir和dbfilename两个参数分别指定快照文件的存储路径和文件名。 
+
+理清Redis实现快照的过程对我们了解快照文件的特性有很大的帮助。快照的过程如下。 
+
+（1）Redis使用fork函数复制一份当前进程（父进程）的副本（子进程）；
+（2）父进程继续接收并处理客户端发来的命令，而子进程开始将内存中的数据写入硬盘中的临时文件； 
+（3）当子进程写入完所有数据后会用该临时文件替换旧的RDB文件，至此一次快照操作完成。 
+
+在执行fork的时候操作系统（类Unix操作系统）会使用写时复制（copy-on-write）策略，即fork函数发生的一刻父子进程共享同一内存数据，当父进程要更改其中某片数据时（如执行一个写命令），操作系统会将该片数据复制一份以保证子进程的数据不受影响，所以新的RDB文件存储的是执行fork一刻的内存数据。 
+
+通过上述过程可以发现Redis在进行快照的过程中不会修改RDB文件，只有快照结束后才会将旧的文件替换成新的，也就是说任何时候RDB文件都是完整的。这使得我们可以通过定时备份RDB文件来实现Redis数据库备份。RDB文件是经过压缩（可以配置rdbcompression参数以禁用压缩节省CPU占用）的二进制格式，所以占用的空间会小于内存中的数据大小，更加利于传输。 
+
+除了自动快照，还可以手动发送SAVE或BGSAVE命令让Redis执行快照，两个命令的区别在于，前者是由主进程进行快照操作，会阻塞住其他请求，后者会通过fork子进程进行快照操作。 
+
+Redis启动后会读取RDB快照文件，将数据从硬盘载入到内存。根据数据量大小与结构和服务器性能不同，这个时间也不同。通常将一个记录一千万个字符串类型键、大小为1GB的快照文件载入到内存中需要花费20～30秒钟。 
+
+通过RDB方式实现持久化，一旦Redis异常退出，就会丢失最后一次快照以后更改的所有数据。这就需要开发者根据具体的应用场合，通过组合设置自动快照条件的方式来将可能发生的数据损失控制在能够接受的范围。如果数据很重要以至于无法承受任何损失，则可以考虑使用AOF方式进行持久化。 
+
+#### 5.1.2 AOF方式 
+默认情况下Redis没有开启AOF（append only file）方式的持久化，可以通过appendonly参数开启： `appendonly yes`。开启AOF持久化后每执行一条会更改Redis中的数据的命令，Redis就会将该命令写入硬盘中的AOF文件。
+
+AOF文件的保存位置和RDB文件的位置相同，都是通过dir参数设置的，默认的文件名是appendonly.aof，可以通过appendfilename参数修改： `appendfilename appendonly.aof` 
+
+下面讲解AOF持久化的具体实现，假设在开启AOF持久化的情况下执行了如下4个命令： 
+
+```
+SET foo 1 
+SET foo 2 
+SET foo 3 
+GET foo Redis
+```
+
+Redis会将前3条命令写入AOF文件中，AOF文件是纯文本文件，其内容正是Redis客户端向Redis发送的原始通信协议的内容。然而这时有一个问题是前2条命令其实都是冗余的，因为这两条的执行结果会被第三条命令覆盖。随着执行的命令越来越多，AOF文件的大小也会越来越大，即使内存中实际的数据可能并没有多少。
+
+很自然地，我们希望Redis可以自动优化AOF文件，就上例而言，就是将前两条无用的记录删除，只保留第三条。实际上Redis也正是这样做的，每当达到一定条件时Redis就会自动重写AOF文件，这个条件可以在配置文件中设置： 
+
+```
+auto-aof-rewrite-percentage 100 
+auto-aof-rewrite-min-size 64mb
+```
+
+auto-aof-rewrite-percentage参数的意义是当目前的AOF文件大小超过上一次重写时的AOF文件大小的百分之多少时会再次进行重写，如果之前没有重写过，则以启动时的AOF文件大小为依据。auto-aof-rewrite-min-size参数限制了允许重写的最小AOF文件大小，通常在AOF文件很小的情况下即使其中有很多冗余的命令我们也并不太关心。
+
+除了让Redis自动执行重写外，我们还可以主动使用BGREWRITEAOF命令手动执行AOF重写。 重写的过程只和内存中的数据有关，和之前的AOF文件无关，这与RDB很相似，只不过二者的文件格式完全不同。 
+
+在启动时Redis会逐个执行AOF文件中的命令来将硬盘中的数据载入到内存中，载入的速度相较RDB会慢一些。 需要注意的是虽然每次执行更改数据库内容的操作时，AOF都会将命令记录在AOF文件中，但是事实上，由于操作系统的缓存机制，数据并没有真正地写入硬盘，而是进入了系统的硬盘缓存。在默认情况下系统每30秒会执行一次同步操作，以便将硬盘缓存中的内容真正地写入硬盘，在这30秒的过程中如果系统异常退出则会导致硬盘缓存中的数据丢失。一般来讲启用AOF持久化的应用都无法容忍这样的损失，这就需要Redis在写入AOF文件后主动要求系统将缓存内容同步到硬盘中。在Redis中我们可以通过appendfsync参数设置同步的时机： 
+
+```
+# appendfsync always 
+appendfsync everysec 
+# appendfsync no 
+```
+
+默认情况下Redis采用everysec 规则，即每秒执行一次同步操作。always表示每次执行写入都会执行同步，这是最安全也是最慢的方式。no表示不主动进行同步操作，而是完全交由操作系统来做（即每30秒一次），这是最快但最不安全的方式。一般情况下使用默认值everysec就足够了，既兼顾了性能又保证了安全。 Redis允许同时开启AOF和RDB，既保证了数据安全又使得进行备份等操作十分容易。此时重新启动Redis后Redis会使用AOF文件来恢复数据，因为AOF方式的持久化可能丢失的数据更少。
+
+### 5.2 复制 
+通过持久化功能，Redis保证了即使在服务器重启的情况下也不会损失（或少量损失）数据。但是由于数据是存储在一台服务器上的，如果这台服务器的硬盘出现故障，也会导致数据丢失。为了避免单点故障，我们希望将数据库复制多个副本以部署在不同的服务器上，即使有一台服务器出现故障其他服务器依然可以继续提供服务。这就要求当一台服务器上的数据库更新后，可以自动将更新的数据同步到其他服务器上，Redis提供了复制（replication）功能可以自动实现同步的过程。
+
+#### 5.2.1 配置 
+同步后的数据库分为两类，一类是主数据库（master），一类是从数据库（slave）。主数据库可以进行读写操作，当发生写操作时自动将数据同步给从数据库。而从数据库一般是只读的，并接受主数据库同步过来的数据。一个主数据库可以拥有多个从数据库，而一个从数据库只能拥有一个主数据库。一个主数据库可以拥有多个从数据库 在Redis中使用复制功能非常容易，只需要在从数据库的配置文件中加入“slaveof主数据库IP主数据库端口”即可，主数据库无需进行任何配置。
+
+#### 5.2.2 原理 
+了解Redis复制的原理对日后运维有很大的帮助。 当一个从数据库启动后，会向主数据库发送SYNC命令，主数据库接收到SYNC命令后会开始在后台保存快照（即RDB持久化的过程），并将保存期间接收到的命令缓存起来。当快照完成后，Redis会将快照文件和所有缓存的命令发送给从数据库。从数据库收到后，会载入快照文件并执行收到的缓存的命令。当主从数据库断开重连后会重新执行上述操作，不支持断点续传。
+
+#### 5.2.4 读写分离 
+通过复制可以实现读写分离以提高服务器的负载能力。在常见的场景中，读的频率大于写，当单机的Redis无法应付大量的读请求时（尤其是较耗资源的请求，比如SORT命令等）可以通过复制功能建立多个从数据库，主数据库只进行写操作，而从数据库负责读操作。 
+
+#### 5.2.5 从数据库持久化
+另一个相对耗时的操作是持久化，为了提高性能，可以通过复制功能建立一个（或若干个）从数据库，并在从数据库中启用持久化，同时在主数据库禁用持久化。当从数据库崩溃时重启后主数据库会自动将数据同步过来，所以无需担心数据丢失。而当主数据库崩溃时，需要在从数据库中使用SLAVEOF NO ONE命令将从数据库提升成主数据库继续服务，并在原来的主数据库启动后使用SLAVEOF命令将其设置成新的主数据库的从数据库，即可将数据同步回来。
+
+### 5.3 安全
+Redis的作者Salvatore Sanfilippo曾经发表过Redis宣言，其中提到Redis以简洁为美。同样在安全层面Redis也没有做太多的工作。
+
+Redis的安全设计是在“Redis运行在可信环境”这个前提下做出的。
+
+### 5.4 通信协议
+Redis支持两种通信协议，一种是二进制安全的统一请求协议（unified request protocol），一种是比较直观的便于在telnet程序中输入的简单协议。这两种协议只是命令的格式有区别，命令返回值的格式是一样的。
+
+### 5.5 管理工具
+当一条命令执行时间超过限制时，Redis会将命令的执行时间等信息加入耗时命令日志（slow log）中。使用`SLOWLOG　GET`命令获得当前的耗时命令日志。
+
+使用MONITOR命令可监控Redis执行的所有命令。（非常影响Redis性能）
+
+其它管理工具还包括[phpRedisAdmin](https://github.com/ErikDubbelboer/phpRedisAdmin)和[Rdbtools](https://github.com/sripathikrishnan/redis-rdb-tools)（Redis快照文件解析器）。
+
+
+
+
+
+
