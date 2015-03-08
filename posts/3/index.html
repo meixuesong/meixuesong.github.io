@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="最短路径算法可以解决很多问题，例如地图导航、任务调度和网络路由等。本章的主题就是找到从一个顶点到达另一个顶点的成本最小的路径。 在一幅加权有向图中，从顶点s到顶点t的最短路径是所有从s到t的路径中的权重最小者。 本章要涉及以下问题： 加权有向图的API、单点最短路径的API及它们的实现； &hellip;">
+  <meta name="description" content="普通Android应用的方法总数不能超过65536，这是开发者长期以来非常头疼的一个问题。最近Google发布了新的Multidex支持库，为方法总数超过65K的Android应用提供官方支持。 本文已经发表在InfoQ。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +83,49 @@ var _hmt = _hmt || [];
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/12/androidying-multidex/">Android应用打破65K方法数限制</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-12T16:52:42+08:00" pubdate data-updated="true">2014-11-12</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>普通Android应用的方法总数不能超过65536，这是开发者长期以来非常头疼的一个问题。最近Google发布了新的Multidex支持库，为方法总数超过65K的Android应用提供官方支持。</p>
+
+<p>本文已经发表在<a href="http://www.infoq.com/cn/news/2014/11/android-multidex">InfoQ</a>。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/11/12/androidying-multidex/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -493,47 +536,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/27/you-xian-dui-lie/">优先队列</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-27T23:08:56+08:00" pubdate data-updated="true">2014-09-27</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>优先队列是广泛使用的一种抽象数据类型。例如如果你需要从10亿个元素中选出最大的十个，你不可能对10亿规模的数组排序。对于这些类似的场景，我们不一定要求它们全部有序，或者不一定要一次就将它们排序。我们会收集一些元素，处理当前键值最大的元素，然后再收集更多的元素，再处理当前键值最大的元素。例如应用程序的事件优先级，模拟系统，任务调度等。在这种情况下，优先队列应该支持两种操作：<strong>删除最大元素和插入元素。</strong></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/27/you-xian-dui-lie/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -555,10 +557,14 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (29)</a></li><li><a href='/blog/categories/linux/'>linux (1)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (29)</a></li><li><a href='/blog/categories/linux/'>linux (1)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (2)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/redisxue-xi-bi-ji/">Redis学习笔记</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/02/24/linuxji-chu/">Linux基础</a>
@@ -574,10 +580,6 @@ var _hmt = _hmt || [];
     
       <li class="post">
         <a href="/blog/2015/01/20/jvmzi-jie-ma-zhi-xing-yin-qing/">JVM字节码执行引擎</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/13/titanium-uiji-zui-jia-shi-jian/">Titanium UI及最佳实践</a>
       </li>
     
   </ul>

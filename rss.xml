@@ -4,6 +4,13 @@
   <link>http://rss2epub.appspot.com/</link>
   <description></description>
   <item>
+      <title><![CDATA[Redis学习笔记]]></title>
+      <link>http://blog.ubone.com/blog/2015/03/08/redisxue-xi-bi-ji/</link>
+      <description></description>
+      <pubDate>2015-03-08T11:37:07+08:00</pubDate>
+      <guid><![CDATA[http://blog.ubone.com/blog/2015/03/08/redisxue-xi-bi-ji/]]></guid>
+  </item>
+  <item>
       <title><![CDATA[Linux基础]]></title>
       <link>http://blog.ubone.com/blog/2015/02/24/linuxji-chu/</link>
       <description></description>

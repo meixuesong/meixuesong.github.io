@@ -9,7 +9,13 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="在UML类图中，类之间的关系包括：继承、关联、聚合、组合和依赖关系。如何分辨这些关系呢？每种关系使用什么样的连线呢？ ">
+  <meta name="description" content="关于设计，有一些原则。本文总结一些常见的原则。包括： (S)单一职责原则
+(O)开闭原则
+(L)里氏替换原则
+(I)接口隔离原则
+(D)依赖反转原则
+迪米特法则
+组合/聚合复用原则 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +89,58 @@ var _hmt = _hmt || [];
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/25/yi-xie-she-ji-yuan-ze/">一些设计原则</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-25T21:01:51+08:00" pubdate data-updated="true">2014-07-25</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>关于设计，有一些原则。本文总结一些常见的原则。包括：</p>
+
+<ul>
+<li>(S)单一职责原则</li>
+<li>(O)开闭原则</li>
+<li>(L)里氏替换原则</li>
+<li>(I)接口隔离原则</li>
+<li>(D)依赖反转原则</li>
+<li>迪米特法则</li>
+<li>组合/聚合复用原则</li>
+</ul>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/25/yi-xie-she-ji-yuan-ze/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -457,47 +515,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/28/li-yong-fan-zhang-hao/">利用反射和代理创建简单的安全账号</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-28T11:42:34+08:00" pubdate data-updated="true">2014-06-28</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在实际业务中，总是会遇到权限管理和安全方面的需求。以一个帐户类（Account）为例，它实现了帐户的基本信息和余额管理。新的需求是余额修改相关的方法只能由授权用户调用。那么是不是直接修改Account类，在相关方法中加入权限验证代码呢？这样势必会让原来的代码变得混乱，破坏单一职责原则。应该怎么办呢？</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/06/28/li-yong-fan-zhang-hao/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/9">&larr; Older</a>
@@ -519,10 +536,14 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (29)</a></li><li><a href='/blog/categories/linux/'>linux (1)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webqian-duan/'>web前端 (1)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (29)</a></li><li><a href='/blog/categories/linux/'>linux (1)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (2)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/redisxue-xi-bi-ji/">Redis学习笔记</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/02/24/linuxji-chu/">Linux基础</a>
@@ -538,10 +559,6 @@ var _hmt = _hmt || [];
     
       <li class="post">
         <a href="/blog/2015/01/20/jvmzi-jie-ma-zhi-xing-yin-qing/">JVM字节码执行引擎</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/13/titanium-uiji-zui-jia-shi-jian/">Titanium UI及最佳实践</a>
       </li>
     
   </ul>
