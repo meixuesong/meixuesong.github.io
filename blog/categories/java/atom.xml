@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-03-08T21:59:44+08:00</updated>
+  <updated>2015-03-15T11:41:11+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,516 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Java Collections(1)]]></title>
+    <link href="http://blog.ubone.com/blog/2015/03/14/java-collections/"/>
+    <updated>2015-03-14T20:51:05+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/03/14/java-collections</id>
+    <content type="html"><![CDATA[<p>Java提供了一套完整的Collection框架，能够帮助我们减少开发工作量、提高程序运行速度和代码质量。本文学习Collection接口和Set。</p>
+
+<!--more-->
+
+
+<h2>1. 接口层级结构</h2>
+
+<p>核心Collection接口封装了各种类型的集合，它是Java Collections框架的基石。接口继承层次如下图所示：</p>
+
+<p><img src="/myresource/images/image_blog_2015-03-14-colls-coreInterfaces.png" alt="image" /></p>
+
+<p>注意，从上图可以看出，Map并不是真正的Collection。所有核心Collection接口都支持泛型。在声明Collection实例时，你可以也应该指明集合的元素类型，让编译器帮你校验放入集合的元素类型是否匹配，从而降低运行时错误。</p>
+
+<h2>2. Collection接口</h2>
+
+<p>Collection类都有一个便利构造器。例如你有一个<code>Collection&lt;String&gt; c</code>，它可能是一个List、Set或其它Collection类型。通过构造方法可以转换成另一种Collection：</p>
+
+<p><code>
+List&lt;String&gt; list = new ArrayList&lt;String&gt;(c);
+</code></p>
+
+<p>基本的Collection操作包括：</p>
+
+<ul>
+<li><code>int size()</code></li>
+<li><code>boolean isEmpty()</code></li>
+<li><code>boolean contains(Object element)</code></li>
+<li><code>boolean add(E element)</code></li>
+<li><code>boolean remove(Object element)</code></li>
+<li><code>Iterator&lt;E&gt; iterator()</code></li>
+</ul>
+
+
+<p>操作整个Collection的相关方法：</p>
+
+<ul>
+<li><code>boolean containsAll(Collection&lt;?&gt; c)</code></li>
+<li><code>boolean addAll(Collection&lt;? extends E&gt; c)</code></li>
+<li><code>boolean removeAll(Collection&lt;?&gt; c)</code></li>
+<li><code>boolean retainAll(Collection&lt;?&gt; c</code>)（交集，只保留c中存在的元素）</li>
+<li><code>void clear()</code></li>
+</ul>
+
+
+<p>此外还有数组的操作：<code>Object[] toArray()</code>,  <code>&lt;T&gt; T[] toArray(T[] a)</code></p>
+
+<h3>2.1 遍历Collection</h3>
+
+<p>有三种方法遍历Collection：聚合操作、for-each和Iterator。</p>
+
+<h4>2.1.1 聚合操作</h4>
+
+<p>JDK8之后，推荐使用聚合操作来遍历Collection。聚合操作常常与lambda表达式一起让代码更具表达力。下面的代码完成遍历并打印红色的对象的name:</p>
+
+<p>```
+myShapesCollection.stream()</p>
+
+<pre><code>.filter(e -&gt; e.getColor() == Color.RED)
+.forEach(e -&gt; System.out.println(e.getName()));
+</code></pre>
+
+<p>```</p>
+
+<p>对多核系统，还可以请求并行流，这对超大Collection有帮助：</p>
+
+<p>```
+myShapesCollection.parallelStream()</p>
+
+<pre><code>.filter(e -&gt; e.getColor() == Color.RED)
+.forEach(e -&gt; System.out.println(e.getName()));
+</code></pre>
+
+<p>```</p>
+
+<p>更多例子：</p>
+
+<p>```
+//将Collection中的元素转换成一个String，用逗号分隔：
+String joined = elements.stream()</p>
+
+<pre><code>.map(Object::toString)
+.collect(Collectors.joining(", "));
+</code></pre>
+
+<p>//计算合计
+int total = employees.stream()</p>
+
+<pre><code>.collect(Collectors.summingInt(Employee::getSalary)));
+</code></pre>
+
+<p>```</p>
+
+<h4>2.1.2 for-each</h4>
+
+<p>```
+for (Object o : collection)</p>
+
+<pre><code>System.out.println(o);
+</code></pre>
+
+<p>```</p>
+
+<h4>2.1.3 Iterator</h4>
+
+<p>```
+public interface Iterator<E> {</p>
+
+<pre><code>boolean hasNext();
+E next();
+void remove(); //optional
+</code></pre>
+
+<p>}
+```</p>
+
+<p>注意remove方法会删除最后一次next()方法返回的对象。因此，每调用一次remove方法之前都必须调用next方法，否则会抛出异常。remove方法也是迭代过程中唯一安全的修改Collection的方法。以下场景需要使用Iterator而不是for-each:</p>
+
+<ul>
+<li>删除当前元素</li>
+<li>并行遍历多个Collection</li>
+</ul>
+
+
+<p>下面的代码演示了如何使用Iterator过滤任何Collection:</p>
+
+<p>```
+static void filter(Collection&lt;?> c) {</p>
+
+<pre><code>for (Iterator&lt;?&gt; it = c.iterator(); it.hasNext(); )
+    if (!cond(it.next()))
+        it.remove();
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>2.2 Collection批量操作</h3>
+
+<p>Collection批量操作的方法大部分返回值都是boolean，如果Collection有变化则返回true: <code>boolean containsAll(Collection&lt;?&gt; c)</code>, <code>boolean addAll(Collection&lt;? extends E&gt; c)</code>, <code>boolean removeAll(Collection&lt;?&gt; c)</code>, <code>boolean retainAll(Collection&lt;?&gt; c)</code>（取交集）, and <code>void clear()</code>.</p>
+
+<p>Collections.singleton(T o)用于创建包含一个元素“o”的Set，类似的方法还包括：<code>List&lt;T&gt; singletonList(T o)</code>， <code>&lt;K,V&gt; Map&lt;K,V&gt; singletonMap(K key, V value)</code>。示例：</p>
+
+<p><code>
+//移除某个元素的所有实例
+c.removeAll(Collections.singleton(e));
+//移除所有null
+c.removeAll(Collections.singleton(null));
+</code></p>
+
+<h3>2.3 Collections工具类</h3>
+
+<p>除了singleton方法，Collections工具类还有一些常用的方法，如：</p>
+
+<ul>
+<li>unmodifiableXXX()返回一个只读视图。</li>
+<li>synchronizedXXX()返回一个同步（线程安全）的Collection。</li>
+<li>sort(List<T> list, Comparator&lt;? super T> c)方法</li>
+<li>shuffle方法（打乱顺序）</li>
+<li>min/max 可传Comparator</li>
+<li><code>copy(List&lt;? super T&gt; dest, List&lt;? extends T&gt; src)</code> 复制所有元素到另一个List。dest的数量必须大于等于src，操作完成后，src中的所有元素会覆盖dest中相应位置（index）的元素。</li>
+<li><code>int frequency(Collection&lt;?&gt; c,Object o)</code> 返回c中o出现的次数。</li>
+<li><code>fill(List&lt;? super T&gt; list, T obj)</code> 将所有元素替换成obj。</li>
+</ul>
+
+
+<h3>2.4 Array操作</h3>
+
+<p>Collection提供了toArray()方法，用于转换成数组。示例：</p>
+
+<p><code>
+Object[] a = c.toArray();
+</code></p>
+
+<p>如果已知Collection中的元素是字符串类型，如Collection<String> c，则可以直接转换成字符串数组：</p>
+
+<p><code>
+String[] a = c.toArray(new String[0]);  //0没有意义，只是和new String一起表示是字符串数组。
+</code></p>
+
+<h2>3. Set</h2>
+
+<p>Set是一种不能包含重复元素的Collection。Set接口只继承了Collection接口的方法，并增加了禁止重复元素的限制，它依赖于equals和hashCode方法的行为。Set包括三种类型：</p>
+
+<ul>
+<li>HashSet 元素保存在hash表中，高性能，但无法保证迭代顺序。</li>
+<li>TreeSet 元素保存在红黑树中，有序，但比HashSet慢不少。</li>
+<li>LinkedHashSet hash表加linked list实现，顺序为插入顺序。避免HashSet顺序的不确定性，同时性能接近HashSet。</li>
+</ul>
+
+
+<p>对于HashSet，需要注意的是遍历性能与数量和容量之和成线性关系。如果初始容量太大，则浪费空间和时间；反过来，如果初始容量太小则浪费增容时的复制时间。如果不指定初始容量，默认值为16. 过去通过指定一个初始容量能提高性能，但现在已经没必要了。LinkedHashSet的迭代时间与容量没有关系。</p>
+
+<p>除了上面三种标准Set实现，还有两个特殊的Set实现：EnumSet和CopyOnWriteArraySet.</p>
+
+<p>EnumSet是用于枚举类型的高性能Set实现。所有元素必须是同一种枚举类型。内部采用bit-vector实现，通常是一个long。它支持在指定范围内遍历，也可以替代传统的标志位。示例如下：</p>
+
+<p>```
+for (Day d : EnumSet.range(Day.MONDAY, Day.FRIDAY))</p>
+
+<pre><code>System.out.println(d);
+</code></pre>
+
+<p>EnumSet.of(Style.BOLD, Style.ITALIC)
+```</p>
+
+<p>CopyOnWriteArraySet是由copy-on-write数组实现的Set. 所有修改操作，如add, set, remove都会复制一个新的数组拷贝，因此不需要锁。只适合于很少修改、但频繁遍历的Set。</p>
+
+<p>HashSet、TreeSet和LinkedHashSet的实现并不是同步的。因此如果多个线程同时访问一个Set，且有线程会修改Set，就必须进行同步处理，或者使用Collections.synchronizedSet方法对其封装。最好在创建时就完成此操作，以HashSet为例：</p>
+
+<p><code>
+Set s = Collections.synchronizedSet(new HashSet(...));
+</code></p>
+
+<h3>3.1 基本操作</h3>
+
+<p>假设你有一个Collection c，下面的代码可以让你方便地去除重复：</p>
+
+<p>```java
+Collection<Type> noDups = new HashSet<Type>&copy;;
+//如果要保持原来的顺序，可以：
+Collection<Type> noDups = new LinkedHashSet<Type>&copy;;</p>
+
+<p>//如果是JDK8，你还可以这么玩：
+c.stream().collect(Collectors.toSet()); // no duplicates
+//另一个例子，将姓名放到一个TreeSet中
+Set<String> set = people.stream()
+.map(Person::getName)
+.collect(Collectors.toCollection(TreeSet::new));
+```</p>
+
+<table>
+<thead>
+<tr>
+<th>方法 </th>
+<th> 描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>int size() </td>
+<td> 返回元素数量</td>
+</tr>
+<tr>
+<td>boolean isEmpty() </td>
+<td> 是否为空</td>
+</tr>
+<tr>
+<td>boolean add() </td>
+<td> 增加元素，如果之前不存在，返回true</td>
+</tr>
+<tr>
+<td>boolean remove() </td>
+<td> 删除元素，如果之前存在此元素，返回true</td>
+</tr>
+<tr>
+<td><code>Iterator&lt;E&gt; iterator()</code> </td>
+<td> 迭代器</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>JDK8聚合操作与for-each操作示例：</p>
+
+<p>```java
+//JDK8
+public class FindDups {</p>
+
+<pre><code>public static void main(String[] args) {
+    Set&lt;String&gt; distinctWords = Arrays.asList(args).stream()
+    .collect(Collectors.toSet()); 
+    System.out.println(distinctWords.size()+ 
+                       " distinct words: " + 
+                       distinctWords);
+}
+</code></pre>
+
+<p>}
+//for-each
+public class FindDups {</p>
+
+<pre><code>public static void main(String[] args) {
+    Set&lt;String&gt; s = new HashSet&lt;String&gt;();
+    for (String a : args)
+           s.add(a);
+           System.out.println(s.size() + " distinct words: " + s);
+}
+</code></pre>
+
+<p>}
+//运行
+java FindDups i came i saw i left
+//结果：
+4 distinct words: [left, came, saw, i]
+```</p>
+
+<p>上面的代码使用的是HashSet，所以顺序是乱的。如果你改成TreeSet/LinkedHashSet，则结果变为：</p>
+
+<p><code>
+//TreeSet
+4 distinct words: [came, i, left, saw]
+//LinkedHashSet
+4 distinct words: [i, came, saw, left]
+</code></p>
+
+<h3>3.2 批量操作</h3>
+
+<p>Set的指操作并没有什么特殊的方法，但是利用Set元素不会重复这个特性，可以做一些有意思的事情。例如修改FindDups，找到不重复的单词和重复的单词：</p>
+
+<p>```
+public class FindDups2 {</p>
+
+<pre><code>public static void main(String[] args) {
+    Set&lt;String&gt; uniques = new HashSet&lt;String&gt;();
+    Set&lt;String&gt; dups    = new HashSet&lt;String&gt;();
+
+    for (String a : args)
+        if (!uniques.add(a))
+            dups.add(a);
+
+    // Destructive set-difference
+    uniques.removeAll(dups);
+
+    System.out.println("Unique words:    " + uniques);
+    System.out.println("Duplicate words: " + dups);
+}
+</code></pre>
+
+<p>}</p>
+
+<p>//output:
+Unique words:    [left, saw, came]
+Duplicate words: [i]
+```</p>
+
+<h3>3.3 HashSet</h3>
+
+<p>HashSet通过hash table（实际上就是一个HashMap实例）实现。允许null元素。基本方法（如add, remove, contains, size）为常量时间，而遍历性能则与元素数量加容量之和成正比。因此，如果迭代性能要求高的话，不要将初始容量设置得太大。</p>
+
+<h3>3.4 TreeSet</h3>
+
+<p>TreeSet是基于TreeMap的NavigableSet实现。元素按natural ordering或Comparator排序。注意要正确地实现Set接口，就应该保持Comparable与equals一致。因为Set不重复由equals决定，而顺序由Comparable决定。提供降序或升序视图，但升序一般比降序性能更优。</p>
+
+<p>TreeSet允许null元素，但null与一些方法的返回值（不存在时返回null）可能造成混乱。因此建议不要加入null元素。基本操作（add, remove, contains）的时间成本为log(n). TreeSet增加了的NavigableSet接口的方法，常用方法如下表：</p>
+
+<table>
+<thead>
+<tr>
+<th>方法 </th>
+<th> 说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E ceiling(E e) </td>
+<td> 返回大于等于e的最小元素，如果没有返回null</td>
+</tr>
+<tr>
+<td>E higher(E e) </td>
+<td> 返回大于e的最小元素，如果没有返回null</td>
+</tr>
+<tr>
+<td>E floor(E e) </td>
+<td> 返回小于等于e的最大元素，如果没有返回null</td>
+</tr>
+<tr>
+<td>E lower(E e) </td>
+<td> 返回小于e的最大元素，如果没有返回null</td>
+</tr>
+<tr>
+<td><code>Iterator&lt;E&gt;</code> descendingIterator() </td>
+<td> 返回降序迭代器。</td>
+</tr>
+<tr>
+<td><code>NavigableSet&lt;E&gt;</code> descendingSet() </td>
+<td> 返回降序视图</td>
+</tr>
+<tr>
+<td>E first() </td>
+<td> 返回第一个（最小的）元素</td>
+</tr>
+<tr>
+<td>E last() </td>
+<td> 返回最后一个（最大的）元素</td>
+</tr>
+<tr>
+<td><code>NavigableSet&lt;E&gt;</code> headSet(E toElement, boolean inclusive) </td>
+<td> 返回小于toElement的元素，如果inclusive=true表示返回结果包含toElement。</td>
+</tr>
+<tr>
+<td><code>NavigableSet&lt;E&gt;</code> tailSet(E fromElement, boolean inclusive) </td>
+<td> 返回大于（等于，如果inclusive=true）的元素。</td>
+</tr>
+<tr>
+<td>E pollFirst() </td>
+<td> Retrieves and removes the first (lowest) element, or returns null if this set is empty.</td>
+</tr>
+<tr>
+<td>E pollLast() </td>
+<td> Retrieves and removes the last (highest) element, or returns null if this set is empty.</td>
+</tr>
+<tr>
+<td><code>NavigableSet&lt;E&gt;</code> subSet(E fromElement, boolean fromInclusive, E toElement, boolean toInclusive) </td>
+<td> 取子集。</td>
+</tr>
+<tr>
+<td>Object clone() </td>
+<td> 返回TreeSet实例的浅拷贝</td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>3.5 LinkedHashSet</h3>
+
+<p>LinkedHashSet会保持插入的顺序，但是如果多次添加一个元素，并不会改变元素原来的的位置。允许null元素。</p>
+
+<p>与HashSet一样，有两个参数影响其性能：初始容量和load factor。同样地，它也没有提供更多的方法。</p>
+
+<h3>3.6 EnumSet</h3>
+
+<p>EnumSet的所有元素必须是同一个枚举类型的值，不允许null元素。它的效率很高，是替代传统标志位的推荐方案。Iterator按自然顺序（枚举中声明的顺序）返回元素。常用方法如下表：</p>
+
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th> 说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>static <code>&lt;E extends Enum&lt;E&gt;&gt; EnumSet&lt;E&gt;</code> allOf(Class<code>&lt;E&gt;</code> elementType) </td>
+<td> 创建一个包括枚举类型所有值的EnumSet</td>
+</tr>
+<tr>
+<td>EnumSet<E> clone() </td>
+<td> 复制一份。</td>
+</tr>
+<tr>
+<td>static <code>&lt;E extends Enum&lt;E&gt;&gt;</code> <code>EnumSet&lt;E&gt;</code> complementOf(<code>EnumSet&lt;E&gt;</code> s) </td>
+<td> 创建一个同类型的EnumSet，其中的元素为枚举类型所有值减去s中的值。</td>
+</tr>
+<tr>
+<td>static <code>&lt;E extends Enum&lt;E&gt;&gt;</code> <code>EnumSet&lt;E&gt;</code> copyOf(<code>Collection&lt;E&gt; c</code>) </td>
+<td> 创建EnumSet，元素来自c。</td>
+</tr>
+<tr>
+<td>static <code>&lt;E extends Enum&lt;E&gt;&gt;</code> <code>EnumSet&lt;E&gt;</code> noneOf(<code>Class&lt;E&gt; elementType</code>) </td>
+<td> 创建一个空的EnumSet</td>
+</tr>
+<tr>
+<td>static <code>&lt;E extends Enum&lt;E&gt;&gt;</code> <code>EnumSet&lt;E&gt;</code> of(E e, E&hellip; rest) </td>
+<td> 创建包括指定元素的EnumSet</td>
+</tr>
+<tr>
+<td>static <code>&lt;E extends Enum&lt;E&gt;&gt;</code> <code>EnumSet&lt;E&gt;</code> range(E from, E to) </td>
+<td> 创建指定元素范围的EnumSet</td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>3.7 CopyOnWriteArraySet</h3>
+
+<p>内部使用CopyOnWriteArrayList来实现所有操作。因此：</p>
+
+<ul>
+<li>最适合那些size小，读操作远多于修改操作，在遍历中需要防止其它线程干扰的场景。</li>
+<li>它是线程安全的。</li>
+<li>修改操作成本较高，因为通常要复制整个数组。</li>
+<li>Iterator不支持remove操作。</li>
+<li>通过iterator遍历很快，不会受其它线程影响，因为它依赖一个在iterator创建时的数组只读镜像。</li>
+</ul>
+
+
+<p>示例代码：</p>
+
+<p>```
+class Handler { void handle(); &hellip; }</p>
+
+<p> class X {
+   private final CopyOnWriteArraySet<Handler> handlers</p>
+
+<pre><code> = new CopyOnWriteArraySet&lt;Handler&gt;();
+</code></pre>
+
+<p>   public void addHandler(Handler h) { handlers.add(h); }</p>
+
+<p>   private long internalState;
+   private synchronized void changeState() { internalState = &hellip;; }</p>
+
+<p>   public void update() {</p>
+
+<pre><code> changeState();
+ for (Handler handler : handlers)
+   handler.handle();
+</code></pre>
+
+<p>   }
+ }
+```</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Java Web中文编码]]></title>
@@ -672,174 +1182,6 @@ stack=2, Locals=4, Args_size=1
 
 
 <p>在命令行执行<code>jvisualvm</code>即可</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java垃圾收集与内存分配]]></title>
-    <link href="http://blog.ubone.com/blog/2014/12/26/la-ji-shou-ji-qi-yu-nei-cun-fen-pei-ce-lue/"/>
-    <updated>2014-12-26T20:20:12+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/12/26/la-ji-shou-ji-qi-yu-nei-cun-fen-pei-ce-lue</id>
-    <content type="html"><![CDATA[<p>在<a href="/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">理解Java性能调优</a>中，了解了Java的内存管理和垃圾收集。本文再深入学习垃圾收集算法和HotSpot中垃圾收集的实现。</p>
-
-<!--more-->
-
-
-<h2>1. 什么是垃圾</h2>
-
-<p>Java并没有使用引用计数法来识别对象是否为垃圾，而是采用可达性分析（Reachability Analysis）判断对象是否存活。其基本思路就是通过GC Roots对象为起点，搜索其引用链，只要是通过它们可达的对象就是活对象。GC Roots对象包括以下几种：</p>
-
-<ul>
-<li>虚拟机栈（栈帧中的本地变量表）中引用的对象</li>
-<li>方法区中类静态属性引用的对象</li>
-<li>方法区中常量引用的对象</li>
-<li>本地方法栈中JNI(即Native方法)引用的对象</li>
-</ul>
-
-
-<p>而Java的引用又分为多种类型，对象是否存活也与引用类型有关：</p>
-
-<ul>
-<li>强引用：普通引用都是强引用，只要强引用还存在，对象就不会被回收。</li>
-<li>软引用：SoftReference关联的对象是还有用，但不是必须的对象。在系统将要发生内存溢出异常之前，会把这些对象列入回收范围进行第二次回收。</li>
-<li>弱引用：WeakReference与SoftReference更弱，它关联的对象只能生成到下一次垃圾收集发生之前（无论内存是否足够，都会被回收）。</li>
-<li>虚引用：PhantomReference是最弱的一种引用，对生存时间完全没有影响，也无法通过虚引用来取得一个对象实例。其唯一目的就是在回收时收到一个系统通知。</li>
-</ul>
-
-
-<p>真正宣告一个对象的死亡，要经历至少两次标记过程。当扫描发现对象与GC Roots没有引用链，将进行第一次标记，并判断对象是否有必要执行finalize()方法（如果对象没有覆盖该方法，或者方法已经被调用过，视为没有必要执行）。如果有必要执行finalize()方法，虚拟机将该对象放入F-Queue队列，稍后自动由低优先级的Finalizer线程执行该方法。之后GC还会对F-Queue中的对象进行第二次标记，如果对象在finalize()方法中重新建立了一个有效引用，就会被移除出“即将回收”的集合，逃脱回收。</p>
-
-<p>但注意finalize()方法是没有保障的，JVM只会触发它执行，并不保证它会运行结束。试想如果finalize()方法中有死循环，会造成整个内存回收系统崩溃。所以正如<a href="/blog/2014/06/27/effective-java-chuang-jian-he-xiao-hui-dui-xiang/">Effective Java-创建和销毁对象</a>中提到的，你就当Java没有finalize()方法吧!</p>
-
-<p>方法区（通常所指的永久代）也是<strong>可以（非必须）</strong>垃圾收集的。主要回收废弃常量和无用的类。对于常量，例如“abc”已经进入常量池，但当前没有任何一个String对象是“abc”，那么这个常量可能会被清理出去。如何判断无用的类则要苛刻许多，需要同时满足以下条件：</p>
-
-<ul>
-<li>该类所有的实例都已经被回收，即Java堆中不存在该类的任何实例。</li>
-<li>加载该类的ClassLoader已经被回收</li>
-<li>该类对应的java.lang.Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。</li>
-</ul>
-
-
-<p>方法区的对象仅仅是可以回收，并不是必然会回收。在大量使用反射、动态代理、CGLib等字节码框架、动态JSP和OSGi这类频繁自定义ClassLoader场景下，虚拟机需要具备类卸载的功能。</p>
-
-<p>HotSpot提供了参数<code>-Xnoclassgc</code>参数控制方法区回收。在Product版JVM中还可以使用<code>-verbose:class</code>和<code>-XX:+TraceClassLoading</code>查看类加载信息。FastDebug版的JVM还支持<code>-XX:+TraceClassUnLoading</code>查看卸载信息。</p>
-
-<h2>2. 垃圾收集算法</h2>
-
-<p>各平台的虚拟机操作内存的方法各不相同，常见的垃圾收集算法说明如下：</p>
-
-<h3>2.1 常见的垃圾收集算法</h3>
-
-<h4>标记-清除算法(Mark-Sweep)</h4>
-
-<p>这是最基础的收集算法，分为标记和清除两个阶段。首先标记出所有需要回收的对象，标记完成后统一回收所有被标记的对象。它有两个主要问题：一是效率不高，另一个是空间问题，会产生大量不连续的内存碎片。</p>
-
-<h4>复制算法(Copying)</h4>
-
-<p>复制算法的思路是将内存分为大小相等的两块，每次只使用其中一块，永远有一块是空的。当一块用完了，就将存活对象复制到另一块上，把前者内存空间一次清理掉。</p>
-
-<p>复制算法特别适合那些短命的对象，现代虚拟机都采用这个算法来回收新生代。将内存分为较大的Eden区和两个较小的Survivor，每次使用Eden和其中一个Survivor。回收时，将Eden和Survivor存活的对象复制到另一个Survivor，最后清理掉Eden和前一个Survivor空间。HotSpot默认的Eden和Survivor比例是8：1. 如果另一个Survivor空间不足以放下存活对象，那些经历多少GC仍存活的对象会被放入老年代。</p>
-
-<h4>标记-整理算法（Mark-Compact）</h4>
-
-<p>对于长命的对象，复制算法的效率就变得太低。标记-整理算法就适合老年代。其思路是标记后，将活对象向一端移动，然后清理掉边界以外的内存。</p>
-
-<h4>分代收集算法(Generational Collection)</h4>
-
-<p>这个算法没有特殊之处，就是将堆分为新生代和老年代，然后根据各年代的特点选择最适当的算法。在新生代使用复制算法，在老年代使用“标记-清理”或者“标记-整理”算法。</p>
-
-<h3>2.2 HotSpot的算法实现</h3>
-
-<p>结合前面的垃圾收集算法，看看HotSpot是如何实现的。</p>
-
-<h4>2.2.1 枚举GC Roots</h4>
-
-<p>前面说到GC Roots主要是在全局性的引用和执行上下文（如栈帧中的本地变量表）中，但HotSpot并不需要逐个检查这里面的引用，因为这样的效率太低了。</p>
-
-<p>HotSpot使用一组称为OopMap的数据结构，在类加载完成时，就把对象内各偏移量上是什么类型的数据计算出来了，因此GC扫描时，可以直接得到这些信息，并准确判断堆上的数据是否还可能被使用。</p>
-
-<h4>2.2.2 安全点</h4>
-
-<p>当GC时，线程会停在安全点，常见的安全点包括方法调用、循环跳转、异常跳转等。如何让线程停在安全点，有两种方案：抢先式中断和主动式中断。抢先式指中断所有线程，如果发现某个线程不在安全点，则恢复线程让它跑到安全点。但几乎所有虚拟机都没有采用这个方法。</p>
-
-<p>主动式中断的思路是GC需要中断线程时，设置一个标志，各线程执行时会在安全点和创建对象需要分配内存的地方轮询这个标志，如果为真就把自己挂起。</p>
-
-<p>对于那些处于Sleep或Blocked状态的线程，无法跑到安全点，则需要安全区域来解决。安全区域中任何地方GC都是安全的。当线程执行到安全区域中的代码时，先标识自己已经进入安全区，这时GC就不管这些线程了。当线程要离开安全区时，它要检查系统是否已经完成了根节点枚举或GC过程，如果完成则继续执行，否则继续等待直到收到可安全离开的信号。</p>
-
-<h4>2.2.3 垃圾收集器</h4>
-
-<p><a href="https://blogs.oracle.com/jonthecollector/entry/our_collectors">下图</a>展示了HotSpot用于不同年代的7种收集器，如果两个收集器间有连线，说明它们可以搭配使用。</p>
-
-<p><img src="/myresource/images/image_blog_2014-12-26-Collectors.jpg" alt="image" /></p>
-
-<h5>Serial收集器</h5>
-
-<p>这是一个单线程的收集器，工作于年轻代，使用复制算法。当它工作时，会把所有用户线程全部停下来。它现在仍然是Client模式下的默认收集器。它比其他收集器简单但高效，没有了线程交互的开销。桌面应用由于分配的内存相对较少，收集时停顿时间可控制在几十到一百多毫秒，对桌面应用是可以接受的。</p>
-
-<h5>ParNew收集器</h5>
-
-<p>它其实就是Serial收集器的多线程版本，对于单核CPU的环境下，绝对不会比Serial更好。但它适合于在服务端模式时与CMS配合(CMS用于老年代，ParNew用于年轻代)。</p>
-
-<h5>Parallel Scavenge收集器</h5>
-
-<p>这是一个年轻代的收集器，使用复制算法，是并行的多线程收集器。</p>
-
-<ul>
-<li>并行(Parallel):指多条垃圾收集线程并行工作，但此时用户线程仍然处于等待状态。</li>
-<li>并发(Concurrent): 指用户线程与垃圾收集线程同时执行（但不一定是并行的，可能会交替执行）。</li>
-</ul>
-
-
-<p>Parallel Scavenge收集器与其它收集器不同，它的目标是达到一个可控制的吞吐量，即CPU用于运行用户代码的时间与CPU总消耗时间的比值。因此适合于不需要太多交互，主要是后台运算的场景。</p>
-
-<h5>Serial Old收集器</h5>
-
-<p>这是Serial收集器的老年代版本，同样是单线程收集器，使用“标记-整理”算法。其主要意义也是Client模式的虚拟机中使用。如果在Server模式下，主要是在JDK1.5及之前的版本中与Parallel Scavenge搭配使用，以及作为CMS的后备预案。</p>
-
-<h5>Parallel Old收集器</h5>
-
-<p>这是Parallel Scavenge收集器的老年代版本，使用多线程和“标记-整理”算法。从JDK1.6开始提供，主要用于与Parallel Scavenge搭配使用，作为“吞吐量优先”的组合。</p>
-
-<h5>CMS收集器(Concurrent Mark Sweep)</h5>
-
-<p>这是一种以获取最短回收停顿时间为目标的收集器。也是基于“标记-清除”算法实现，整个过程分为4步：</p>
-
-<ol>
-<li>初始标记：标记GC Roots能直接关联到的对象，时间很快。</li>
-<li>并发标记：进行GC Roots Tracing，时间很长。</li>
-<li>重新标记：修正并发标记期间因用户程序继续运行而导致标记发生变化的那一部分对象的标记记录，比第一步稍长。</li>
-<li>并发清除</li>
-</ol>
-
-
-<p>第1、3步需要Stop the World，而耗时最长的第2、4步可以与用户线程一起工作。</p>
-
-<p>CMS是非常优秀的垃圾收集器，是Java 5推荐的高性能收集器，在Java 6仍保持了旺盛的生命力。但它的主要缺点是：</p>
-
-<ol>
-<li>对CPU资源非常敏感。在并发标记阶段，虽然用户程序不用停顿，但CMS占用了一部分CPU资源而导致应用变慢，总吞吐量降低。</li>
-<li>无法处理浮动垃圾，可能出现“Concurrent Mode Failure”，导致另一次Full GC。浮动垃圾就是在并发清除阶段，用户线程还在运行并产生新的垃圾。CMS需要预留一部分内存空间给用户线程使用。如果预留的空间无法满足程序需要，就会出现“Concurrent Mode Failure”，导致JVM临时启用Serial Old收集器来重新进行老年代收集，停顿时间就很长了。</li>
-<li>由于使用“标记-清除”算法，因此会有碎片产生，有时不得不提前触发一次Full GC。</li>
-</ol>
-
-
-<h5>G1收集器</h5>
-
-<p>这是面向服务端应用的垃圾收集器，可用于替换CMS。具备如下特点：</p>
-
-<ol>
-<li>并行与并发：充分利用多CPU、多核优势，缩短Stop the world时间。</li>
-<li>分代收集：仍保留分代概念，可以独立管理整个GC堆。</li>
-<li>空间整合：G1整体上是基于“标记-清除”，但从局部看是基于“复制”算法，不会产生内存碎片。</li>
-<li>可预测的停顿：G1能建立可预测的停顿时间模型，可指定一个长度为M毫秒的时间片段，G1分将停顿时间尽量控制在该时间范围内。</li>
-</ol>
-
-
-<p>G1将整个堆划分为多个大小相等的独立区域（Region），虽然保留分代概念，但新生代和老年代不是物理隔离的，它们是一部分Region的集合（不需要连续）。</p>
-
-<p>它的实现方式是跟踪每个Region里面的垃圾堆积的价值大小（回收所获得的空间大小以及所需时间的经验值），维护一个优先列表，每次根据停顿目标值，回收价值最大的Region。保证在有限的时间内获得尽可能高的收集效率。</p>
-
-<p>每个Region都有一个对应的Remembered Set，用于记录跨Region的引用。因此进行内存回收时，只需要在GC Roots枚举范围内加入Remembered Set即可保证不对全堆扫描也不会有遗漏。</p>
 ]]></content>
   </entry>
   

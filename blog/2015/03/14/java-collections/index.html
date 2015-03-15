@@ -1,0 +1,699 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Java Collections(1) - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="Java提供了一套完整的Collection框架，能够帮助我们减少开发工作量、提高程序运行速度和代码质量。本文学习Collection接口和Set。 1. 接口层级结构 核心Collection接口封装了各种类型的集合，它是Java Collections框架的基石。接口继承层次如下图所示： 注意 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2015/03/14/java-collections">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="/stylesheets/prism-default.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
+<style>
+article blockquote {
+  font-size: 0.9em;
+}
+</style>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?28583ca12a9f673dc8d86501f8d02bbe";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">@InfoQ</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Java Collections(1)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-14T20:51:05+08:00" pubdate data-updated="true">2015-03-14</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Java提供了一套完整的Collection框架，能够帮助我们减少开发工作量、提高程序运行速度和代码质量。本文学习Collection接口和Set。</p>
+
+<!--more-->
+
+
+<h2>1. 接口层级结构</h2>
+
+<p>核心Collection接口封装了各种类型的集合，它是Java Collections框架的基石。接口继承层次如下图所示：</p>
+
+<p><img src="/myresource/images/image_blog_2015-03-14-colls-coreInterfaces.png" alt="image" /></p>
+
+<p>注意，从上图可以看出，Map并不是真正的Collection。所有核心Collection接口都支持泛型。在声明Collection实例时，你可以也应该指明集合的元素类型，让编译器帮你校验放入集合的元素类型是否匹配，从而降低运行时错误。</p>
+
+<h2>2. Collection接口</h2>
+
+<p>Collection类都有一个便利构造器。例如你有一个<code>Collection&lt;String&gt; c</code>，它可能是一个List、Set或其它Collection类型。通过构造方法可以转换成另一种Collection：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>List&lt;String&gt; list = new ArrayList&lt;String&gt;(c);</code></pre>
+
+
+<p>基本的Collection操作包括：</p>
+
+<ul>
+<li><code>int size()</code></li>
+<li><code>boolean isEmpty()</code></li>
+<li><code>boolean contains(Object element)</code></li>
+<li><code>boolean add(E element)</code></li>
+<li><code>boolean remove(Object element)</code></li>
+<li><code>Iterator&lt;E&gt; iterator()</code></li>
+</ul>
+
+
+<p>操作整个Collection的相关方法：</p>
+
+<ul>
+<li><code>boolean containsAll(Collection&lt;?&gt; c)</code></li>
+<li><code>boolean addAll(Collection&lt;? extends E&gt; c)</code></li>
+<li><code>boolean removeAll(Collection&lt;?&gt; c)</code></li>
+<li><code>boolean retainAll(Collection&lt;?&gt; c</code>)（交集，只保留c中存在的元素）</li>
+<li><code>void clear()</code></li>
+</ul>
+
+
+<p>此外还有数组的操作：<code>Object[] toArray()</code>,  <code>&lt;T&gt; T[] toArray(T[] a)</code></p>
+
+<h3>2.1 遍历Collection</h3>
+
+<p>有三种方法遍历Collection：聚合操作、for-each和Iterator。</p>
+
+<h4>2.1.1 聚合操作</h4>
+
+<p>JDK8之后，推荐使用聚合操作来遍历Collection。聚合操作常常与lambda表达式一起让代码更具表达力。下面的代码完成遍历并打印红色的对象的name:</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>myShapesCollection.stream()
+    .filter(e -&gt; e.getColor() == Color.RED)
+    .forEach(e -&gt; System.out.println(e.getName()));</code></pre>
+
+
+<p>对多核系统，还可以请求并行流，这对超大Collection有帮助：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>myShapesCollection.parallelStream()
+    .filter(e -&gt; e.getColor() == Color.RED)
+    .forEach(e -&gt; System.out.println(e.getName()));</code></pre>
+
+
+<p>更多例子：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>//将Collection中的元素转换成一个String，用逗号分隔：
+String joined = elements.stream()
+    .map(Object::toString)
+    .collect(Collectors.joining(", "));
+//计算合计
+int total = employees.stream()
+    .collect(Collectors.summingInt(Employee::getSalary)));</code></pre>
+
+
+<h4>2.1.2 for-each</h4>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>for (Object o : collection)
+    System.out.println(o);</code></pre>
+
+
+<h4>2.1.3 Iterator</h4>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>public interface Iterator&lt;E&gt; {
+    boolean hasNext();
+    E next();
+    void remove(); //optional
+}</code></pre>
+
+
+<p>注意remove方法会删除最后一次next()方法返回的对象。因此，每调用一次remove方法之前都必须调用next方法，否则会抛出异常。remove方法也是迭代过程中唯一安全的修改Collection的方法。以下场景需要使用Iterator而不是for-each:</p>
+
+<ul>
+<li>删除当前元素</li>
+<li>并行遍历多个Collection</li>
+</ul>
+
+
+<p>下面的代码演示了如何使用Iterator过滤任何Collection:</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>static void filter(Collection&lt;?&gt; c) {
+    for (Iterator&lt;?&gt; it = c.iterator(); it.hasNext(); )
+        if (!cond(it.next()))
+            it.remove();
+}</code></pre>
+
+
+<h3>2.2 Collection批量操作</h3>
+
+<p>Collection批量操作的方法大部分返回值都是boolean，如果Collection有变化则返回true: <code>boolean containsAll(Collection&lt;?&gt; c)</code>, <code>boolean addAll(Collection&lt;? extends E&gt; c)</code>, <code>boolean removeAll(Collection&lt;?&gt; c)</code>, <code>boolean retainAll(Collection&lt;?&gt; c)</code>（取交集）, and <code>void clear()</code>.</p>
+
+<p>Collections.singleton(T o)用于创建包含一个元素“o”的Set，类似的方法还包括：<code>List&lt;T&gt; singletonList(T o)</code>， <code>&lt;K,V&gt; Map&lt;K,V&gt; singletonMap(K key, V value)</code>。示例：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>//移除某个元素的所有实例
+c.removeAll(Collections.singleton(e));
+//移除所有null
+c.removeAll(Collections.singleton(null));</code></pre>
+
+
+<h3>2.3 Collections工具类</h3>
+
+<p>除了singleton方法，Collections工具类还有一些常用的方法，如：</p>
+
+<ul>
+<li>unmodifiableXXX()返回一个只读视图。</li>
+<li>synchronizedXXX()返回一个同步（线程安全）的Collection。</li>
+<li>sort(List<T> list, Comparator&lt;? super T> c)方法</li>
+<li>shuffle方法（打乱顺序）</li>
+<li>min/max 可传Comparator</li>
+<li><code>copy(List&lt;? super T&gt; dest, List&lt;? extends T&gt; src)</code> 复制所有元素到另一个List。dest的数量必须大于等于src，操作完成后，src中的所有元素会覆盖dest中相应位置（index）的元素。</li>
+<li><code>int frequency(Collection&lt;?&gt; c,Object o)</code> 返回c中o出现的次数。</li>
+<li><code>fill(List&lt;? super T&gt; list, T obj)</code> 将所有元素替换成obj。</li>
+</ul>
+
+
+<h3>2.4 Array操作</h3>
+
+<p>Collection提供了toArray()方法，用于转换成数组。示例：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>Object[] a = c.toArray();</code></pre>
+
+
+<p>如果已知Collection中的元素是字符串类型，如Collection<String> c，则可以直接转换成字符串数组：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>String[] a = c.toArray(new String[0]);  //0没有意义，只是和new String一起表示是字符串数组。</code></pre>
+
+
+<h2>3. Set</h2>
+
+<p>Set是一种不能包含重复元素的Collection。Set接口只继承了Collection接口的方法，并增加了禁止重复元素的限制，它依赖于equals和hashCode方法的行为。Set包括三种类型：</p>
+
+<ul>
+<li>HashSet 元素保存在hash表中，高性能，但无法保证迭代顺序。</li>
+<li>TreeSet 元素保存在红黑树中，有序，但比HashSet慢不少。</li>
+<li>LinkedHashSet hash表加linked list实现，顺序为插入顺序。避免HashSet顺序的不确定性，同时性能接近HashSet。</li>
+</ul>
+
+
+<p>对于HashSet，需要注意的是遍历性能与数量和容量之和成线性关系。如果初始容量太大，则浪费空间和时间；反过来，如果初始容量太小则浪费增容时的复制时间。如果不指定初始容量，默认值为16. 过去通过指定一个初始容量能提高性能，但现在已经没必要了。LinkedHashSet的迭代时间与容量没有关系。</p>
+
+<p>除了上面三种标准Set实现，还有两个特殊的Set实现：EnumSet和CopyOnWriteArraySet.</p>
+
+<p>EnumSet是用于枚举类型的高性能Set实现。所有元素必须是同一种枚举类型。内部采用bit-vector实现，通常是一个long。它支持在指定范围内遍历，也可以替代传统的标志位。示例如下：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>for (Day d : EnumSet.range(Day.MONDAY, Day.FRIDAY))
+    System.out.println(d);
+        
+EnumSet.of(Style.BOLD, Style.ITALIC)</code></pre>
+
+
+<p>CopyOnWriteArraySet是由copy-on-write数组实现的Set. 所有修改操作，如add, set, remove都会复制一个新的数组拷贝，因此不需要锁。只适合于很少修改、但频繁遍历的Set。</p>
+
+<p>HashSet、TreeSet和LinkedHashSet的实现并不是同步的。因此如果多个线程同时访问一个Set，且有线程会修改Set，就必须进行同步处理，或者使用Collections.synchronizedSet方法对其封装。最好在创建时就完成此操作，以HashSet为例：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>Set s = Collections.synchronizedSet(new HashSet(...));</code></pre>
+
+
+<h3>3.1 基本操作</h3>
+
+<p>假设你有一个Collection c，下面的代码可以让你方便地去除重复：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>Collection&lt;Type&gt; noDups = new HashSet&lt;Type&gt;(c);
+//如果要保持原来的顺序，可以：
+Collection&lt;Type&gt; noDups = new LinkedHashSet&lt;Type&gt;(c);
+
+//如果是JDK8，你还可以这么玩：
+c.stream().collect(Collectors.toSet()); // no duplicates
+//另一个例子，将姓名放到一个TreeSet中
+Set&lt;String&gt; set = people.stream()
+.map(Person::getName)
+.collect(Collectors.toCollection(TreeSet::new));</code></pre>
+
+
+<table>
+<thead>
+<tr>
+<th>方法 </th>
+<th> 描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>int size() </td>
+<td> 返回元素数量</td>
+</tr>
+<tr>
+<td>boolean isEmpty() </td>
+<td> 是否为空</td>
+</tr>
+<tr>
+<td>boolean add() </td>
+<td> 增加元素，如果之前不存在，返回true</td>
+</tr>
+<tr>
+<td>boolean remove() </td>
+<td> 删除元素，如果之前存在此元素，返回true</td>
+</tr>
+<tr>
+<td><code>Iterator&lt;E&gt; iterator()</code> </td>
+<td> 迭代器</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>JDK8聚合操作与for-each操作示例：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>//JDK8
+public class FindDups {
+    public static void main(String[] args) {
+        Set&lt;String&gt; distinctWords = Arrays.asList(args).stream()
+        .collect(Collectors.toSet()); 
+        System.out.println(distinctWords.size()+ 
+                           " distinct words: " + 
+                           distinctWords);
+    }
+}
+//for-each
+public class FindDups {
+    public static void main(String[] args) {
+        Set&lt;String&gt; s = new HashSet&lt;String&gt;();
+        for (String a : args)
+               s.add(a);
+               System.out.println(s.size() + " distinct words: " + s);
+    }
+}
+//运行
+java FindDups i came i saw i left
+//结果：
+4 distinct words: [left, came, saw, i]</code></pre>
+
+
+<p>上面的代码使用的是HashSet，所以顺序是乱的。如果你改成TreeSet/LinkedHashSet，则结果变为：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>//TreeSet
+4 distinct words: [came, i, left, saw]
+//LinkedHashSet
+4 distinct words: [i, came, saw, left]</code></pre>
+
+
+<h3>3.2 批量操作</h3>
+
+<p>Set的指操作并没有什么特殊的方法，但是利用Set元素不会重复这个特性，可以做一些有意思的事情。例如修改FindDups，找到不重复的单词和重复的单词：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>public class FindDups2 {
+    public static void main(String[] args) {
+        Set&lt;String&gt; uniques = new HashSet&lt;String&gt;();
+        Set&lt;String&gt; dups    = new HashSet&lt;String&gt;();
+
+        for (String a : args)
+            if (!uniques.add(a))
+                dups.add(a);
+
+        // Destructive set-difference
+        uniques.removeAll(dups);
+
+        System.out.println("Unique words:    " + uniques);
+        System.out.println("Duplicate words: " + dups);
+    }
+}
+
+//output:
+Unique words:    [left, saw, came]
+Duplicate words: [i]</code></pre>
+
+
+<h3>3.3 HashSet</h3>
+
+<p>HashSet通过hash table（实际上就是一个HashMap实例）实现。允许null元素。基本方法（如add, remove, contains, size）为常量时间，而遍历性能则与元素数量加容量之和成正比。因此，如果迭代性能要求高的话，不要将初始容量设置得太大。</p>
+
+<h3>3.4 TreeSet</h3>
+
+<p>TreeSet是基于TreeMap的NavigableSet实现。元素按natural ordering或Comparator排序。注意要正确地实现Set接口，就应该保持Comparable与equals一致。因为Set不重复由equals决定，而顺序由Comparable决定。提供降序或升序视图，但升序一般比降序性能更优。</p>
+
+<p>TreeSet允许null元素，但null与一些方法的返回值（不存在时返回null）可能造成混乱。因此建议不要加入null元素。基本操作（add, remove, contains）的时间成本为log(n). TreeSet增加了的NavigableSet接口的方法，常用方法如下表：</p>
+
+<table>
+<thead>
+<tr>
+<th>方法 </th>
+<th> 说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E ceiling(E e) </td>
+<td> 返回大于等于e的最小元素，如果没有返回null</td>
+</tr>
+<tr>
+<td>E higher(E e) </td>
+<td> 返回大于e的最小元素，如果没有返回null</td>
+</tr>
+<tr>
+<td>E floor(E e) </td>
+<td> 返回小于等于e的最大元素，如果没有返回null</td>
+</tr>
+<tr>
+<td>E lower(E e) </td>
+<td> 返回小于e的最大元素，如果没有返回null</td>
+</tr>
+<tr>
+<td><code>Iterator&lt;E&gt;</code> descendingIterator() </td>
+<td> 返回降序迭代器。</td>
+</tr>
+<tr>
+<td><code>NavigableSet&lt;E&gt;</code> descendingSet() </td>
+<td> 返回降序视图</td>
+</tr>
+<tr>
+<td>E first() </td>
+<td> 返回第一个（最小的）元素</td>
+</tr>
+<tr>
+<td>E last() </td>
+<td> 返回最后一个（最大的）元素</td>
+</tr>
+<tr>
+<td><code>NavigableSet&lt;E&gt;</code> headSet(E toElement, boolean inclusive) </td>
+<td> 返回小于toElement的元素，如果inclusive=true表示返回结果包含toElement。</td>
+</tr>
+<tr>
+<td><code>NavigableSet&lt;E&gt;</code> tailSet(E fromElement, boolean inclusive) </td>
+<td> 返回大于（等于，如果inclusive=true）的元素。</td>
+</tr>
+<tr>
+<td>E pollFirst() </td>
+<td> Retrieves and removes the first (lowest) element, or returns null if this set is empty.</td>
+</tr>
+<tr>
+<td>E pollLast() </td>
+<td> Retrieves and removes the last (highest) element, or returns null if this set is empty.</td>
+</tr>
+<tr>
+<td><code>NavigableSet&lt;E&gt;</code> subSet(E fromElement, boolean fromInclusive, E toElement, boolean toInclusive) </td>
+<td> 取子集。</td>
+</tr>
+<tr>
+<td>Object clone() </td>
+<td> 返回TreeSet实例的浅拷贝</td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>3.5 LinkedHashSet</h3>
+
+<p>LinkedHashSet会保持插入的顺序，但是如果多次添加一个元素，并不会改变元素原来的的位置。允许null元素。</p>
+
+<p>与HashSet一样，有两个参数影响其性能：初始容量和load factor。同样地，它也没有提供更多的方法。</p>
+
+<h3>3.6 EnumSet</h3>
+
+<p>EnumSet的所有元素必须是同一个枚举类型的值，不允许null元素。它的效率很高，是替代传统标志位的推荐方案。Iterator按自然顺序（枚举中声明的顺序）返回元素。常用方法如下表：</p>
+
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th> 说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>static <code>&lt;E extends Enum&lt;E&gt;&gt; EnumSet&lt;E&gt;</code> allOf(Class<code>&lt;E&gt;</code> elementType) </td>
+<td> 创建一个包括枚举类型所有值的EnumSet</td>
+</tr>
+<tr>
+<td>EnumSet<E> clone() </td>
+<td> 复制一份。</td>
+</tr>
+<tr>
+<td>static <code>&lt;E extends Enum&lt;E&gt;&gt;</code> <code>EnumSet&lt;E&gt;</code> complementOf(<code>EnumSet&lt;E&gt;</code> s) </td>
+<td> 创建一个同类型的EnumSet，其中的元素为枚举类型所有值减去s中的值。</td>
+</tr>
+<tr>
+<td>static <code>&lt;E extends Enum&lt;E&gt;&gt;</code> <code>EnumSet&lt;E&gt;</code> copyOf(<code>Collection&lt;E&gt; c</code>) </td>
+<td> 创建EnumSet，元素来自c。</td>
+</tr>
+<tr>
+<td>static <code>&lt;E extends Enum&lt;E&gt;&gt;</code> <code>EnumSet&lt;E&gt;</code> noneOf(<code>Class&lt;E&gt; elementType</code>) </td>
+<td> 创建一个空的EnumSet</td>
+</tr>
+<tr>
+<td>static <code>&lt;E extends Enum&lt;E&gt;&gt;</code> <code>EnumSet&lt;E&gt;</code> of(E e, E&hellip; rest) </td>
+<td> 创建包括指定元素的EnumSet</td>
+</tr>
+<tr>
+<td>static <code>&lt;E extends Enum&lt;E&gt;&gt;</code> <code>EnumSet&lt;E&gt;</code> range(E from, E to) </td>
+<td> 创建指定元素范围的EnumSet</td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>3.7 CopyOnWriteArraySet</h3>
+
+<p>内部使用CopyOnWriteArrayList来实现所有操作。因此：</p>
+
+<ul>
+<li>最适合那些size小，读操作远多于修改操作，在遍历中需要防止其它线程干扰的场景。</li>
+<li>它是线程安全的。</li>
+<li>修改操作成本较高，因为通常要复制整个数组。</li>
+<li>Iterator不支持remove操作。</li>
+<li>通过iterator遍历很快，不会受其它线程影响，因为它依赖一个在iterator创建时的数组只读镜像。</li>
+</ul>
+
+
+<p>示例代码：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>class Handler { void handle(); ... }
+
+ class X {
+   private final CopyOnWriteArraySet&lt;Handler&gt; handlers
+     = new CopyOnWriteArraySet&lt;Handler&gt;();
+   public void addHandler(Handler h) { handlers.add(h); }
+
+   private long internalState;
+   private synchronized void changeState() { internalState = ...; }
+
+   public void update() {
+     changeState();
+     for (Handler handler : handlers)
+       handler.handle();
+   }
+ }</code></pre>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-14T20:51:05+08:00" pubdate data-updated="true">2015-03-14</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+<!-- UY BEGIN 评论-->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1942741"></script>
+<!-- UY END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/03/08/redisxue-xi-bi-ji/" title="Previous Post: Redis学习笔记">&laquo; Redis学习笔记</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (30)</a></li><li><a href='/blog/categories/linux/'>linux (1)</a></li><li><a href='/blog/categories/others/'>others (4)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (2)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/14/java-collections/">Java Collections(1)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/redisxue-xi-bi-ji/">Redis学习笔记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/24/linuxji-chu/">Linux基础</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/23/java-webzhong-wen-bian-ma/">Java Web中文编码</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/31/javanei-cun-mo-xing-yu-xian-cheng/">Java内存模型与线程</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+</footer>
+  <!--以下为disqus的代码，因为被墙，改用上面的国内代码
+
+
+-->
+
+
+
+
+
+
+
+
+</body>
+</html>
