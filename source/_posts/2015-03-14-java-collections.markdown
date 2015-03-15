@@ -17,9 +17,9 @@ Java提供了一套完整的Collection框架，能够帮助我们减少开发工
 注意，从上图可以看出，Map并不是真正的Collection。所有核心Collection接口都支持泛型。在声明Collection实例时，你可以也应该指明集合的元素类型，让编译器帮你校验放入集合的元素类型是否匹配，从而降低运行时错误。
 
 ## 2. Collection接口
-Collection类都有一个便利构造器。例如你有一个`Collection<String> c`，它可能是一个List、Set或其它Collection类型。通过构造方法可以转换成另一种Collection：
+Collection类都有很方便的构造器。例如你有一个`Collection<String> c`，它可能是一个List、Set或其它Collection类型。通过构造方法可以转换成另一种Collection：
 
-```
+```java
 List<String> list = new ArrayList<String>(c);
 ```
 
@@ -48,7 +48,7 @@ List<String> list = new ArrayList<String>(c);
 #### 2.1.1 聚合操作
 JDK8之后，推荐使用聚合操作来遍历Collection。聚合操作常常与lambda表达式一起让代码更具表达力。下面的代码完成遍历并打印红色的对象的name:
 
-```
+```java
 myShapesCollection.stream()
 	.filter(e -> e.getColor() == Color.RED)
 	.forEach(e -> System.out.println(e.getName()));
@@ -56,7 +56,7 @@ myShapesCollection.stream()
 
 对多核系统，还可以请求并行流，这对超大Collection有帮助：
 
-```
+```java
 myShapesCollection.parallelStream()
 	.filter(e -> e.getColor() == Color.RED)
 	.forEach(e -> System.out.println(e.getName()));
@@ -64,7 +64,7 @@ myShapesCollection.parallelStream()
 
 更多例子：
 
-```
+```java
 //将Collection中的元素转换成一个String，用逗号分隔：
 String joined = elements.stream()
     .map(Object::toString)
@@ -76,14 +76,14 @@ int total = employees.stream()
 
 #### 2.1.2 for-each
 
-```
+```java
 for (Object o : collection)
     System.out.println(o);
 ```
 
 #### 2.1.3 Iterator
 
-```
+```java
 public interface Iterator<E> {
     boolean hasNext();
     E next();
@@ -91,14 +91,14 @@ public interface Iterator<E> {
 }
 ```
 
-注意remove方法会删除最后一次next()方法返回的对象。因此，每调用一次remove方法之前都必须调用next方法，否则会抛出异常。remove方法也是迭代过程中唯一安全的修改Collection的方法。以下场景需要使用Iterator而不是for-each:
+注意remove方法删除最后一次next()方法返回的对象。因此，每调用一次remove方法之前都必须调用next方法，否则会抛出异常。remove方法也是迭代过程中唯一安全的修改Collection的方法。以下场景需要使用Iterator而不是for-each:
 
 * 删除当前元素
 * 并行遍历多个Collection
 
-下面的代码演示了如何使用Iterator过滤任何Collection:
+下面的代码演示了如何使用Iterator过滤Collection:
 
-```
+```java
 static void filter(Collection<?> c) {
     for (Iterator<?> it = c.iterator(); it.hasNext(); )
         if (!cond(it.next()))
@@ -107,7 +107,13 @@ static void filter(Collection<?> c) {
 ```
 
 ### 2.2 Collection批量操作
-Collection批量操作的方法大部分返回值都是boolean，如果Collection有变化则返回true: `boolean containsAll(Collection<?> c)`, `boolean addAll(Collection<? extends E> c)`, `boolean removeAll(Collection<?> c)`, `boolean retainAll(Collection<?> c)`（取交集）, and `void clear()`.
+Collection批量操作的方法大部分返回值都是boolean，如果Collection有变化则返回true: 
+
+* `boolean containsAll(Collection<?> c)`
+* `boolean addAll(Collection<? extends E> c)`
+* `boolean removeAll(Collection<?> c)`
+* `boolean retainAll(Collection<?> c)`（取交集）
+* `void clear()`.
 
 Collections.singleton(T o)用于创建包含一个元素“o”的Set，类似的方法还包括：`List<T> singletonList(T o)`， `<K,V> Map<K,V> singletonMap(K key, V value)`。示例：
 
@@ -121,11 +127,11 @@ c.removeAll(Collections.singleton(null));
 ### 2.3 Collections工具类
 除了singleton方法，Collections工具类还有一些常用的方法，如：
 
-* unmodifiableXXX()返回一个只读视图。
-* synchronizedXXX()返回一个同步（线程安全）的Collection。
-* sort(List<T> list, Comparator<? super T> c)方法
-* shuffle方法（打乱顺序）
-* min/max 可传Comparator
+* `unmodifiableXXX()`返回一个只读视图。(xxx可能是Collection, List, Map, Set, SortedMap, SortedSet)
+* `synchronizedXXX()`返回一个同步（线程安全）的Collection。
+* `sort(List<T> list, Comparator<? super T> c)`方法
+* `shuffle`方法（打乱顺序）
+* `min/max` 可传Comparator
 * `copy(List<? super T> dest, List<? extends T> src)` 复制所有元素到另一个List。dest的数量必须大于等于src，操作完成后，src中的所有元素会覆盖dest中相应位置（index）的元素。
 * `int frequency(Collection<?> c,Object o)` 返回c中o出现的次数。
 * `fill(List<? super T> list, T obj)` 将所有元素替换成obj。
@@ -151,7 +157,7 @@ Set是一种不能包含重复元素的Collection。Set接口只继承了Collect
 * TreeSet 元素保存在红黑树中，有序，但比HashSet慢不少。
 * LinkedHashSet hash表加linked list实现，顺序为插入顺序。避免HashSet顺序的不确定性，同时性能接近HashSet。
 
-对于HashSet，需要注意的是遍历性能与数量和容量之和成线性关系。如果初始容量太大，则浪费空间和时间；反过来，如果初始容量太小则浪费增容时的复制时间。如果不指定初始容量，默认值为16. 过去通过指定一个初始容量能提高性能，但现在已经没必要了。LinkedHashSet的迭代时间与容量没有关系。
+对于HashSet，需要注意的是遍历性能与entry数量和bucket数量(容量)之和成线性关系。如果初始容量太大，则浪费空间和时间；反过来，如果初始容量太小则浪费增容时的复制时间。如果不指定初始容量，默认值为16. 过去通过指定一个初始容量能提高性能，但现在已经没必要了。LinkedHashSet的迭代时间与容量没有关系。
 
 除了上面三种标准Set实现，还有两个特殊的Set实现：EnumSet和CopyOnWriteArraySet.
 
@@ -204,10 +210,9 @@ JDK8聚合操作与for-each操作示例：
 public class FindDups {
     public static void main(String[] args) {
         Set<String> distinctWords = Arrays.asList(args).stream()
-		.collect(Collectors.toSet()); 
+			.collect(Collectors.toSet()); 
         System.out.println(distinctWords.size()+ 
-                           " distinct words: " + 
-                           distinctWords);
+              " distinct words: " + distinctWords);
     }
 }
 //for-each
@@ -215,8 +220,8 @@ public class FindDups {
     public static void main(String[] args) {
         Set<String> s = new HashSet<String>();
         for (String a : args)
-               s.add(a);
-               System.out.println(s.size() + " distinct words: " + s);
+           s.add(a);
+        System.out.println(s.size() + " distinct words: " + s);
     }
 }
 //运行
@@ -235,7 +240,7 @@ java FindDups i came i saw i left
 ```
 
 ### 3.2 批量操作
-Set的指操作并没有什么特殊的方法，但是利用Set元素不会重复这个特性，可以做一些有意思的事情。例如修改FindDups，找到不重复的单词和重复的单词：
+Set的批量操作并没有什么特殊的方法，但是利用Set元素不会重复这个特性，可以做一些有意思的事情。例如修改FindDups，找到不重复的单词和重复的单词：
 
 ```
 public class FindDups2 {
@@ -261,12 +266,12 @@ Duplicate words: [i]
 ```
 
 ### 3.3 HashSet
-HashSet通过hash table（实际上就是一个HashMap实例）实现。允许null元素。基本方法（如add, remove, contains, size）为常量时间，而遍历性能则与元素数量加容量之和成正比。因此，如果迭代性能要求高的话，不要将初始容量设置得太大。
+HashSet通过hash table（实际上就是一个HashMap实例）实现。允许null元素。基本方法（如add, remove, contains, size）为常量时间，而遍历性能则与元素数量加桶数量之和成正比。因此，如果迭代性能要求高的话，不要将初始容量设置得太大。
 
 ### 3.4 TreeSet
-TreeSet是基于TreeMap的NavigableSet实现。元素按natural ordering或Comparator排序。注意要正确地实现Set接口，就应该保持Comparable与equals一致。因为Set不重复由equals决定，而顺序由Comparable决定。提供降序或升序视图，但升序一般比降序性能更优。
+TreeSet是基于TreeMap的NavigableSet实现。元素按natural ordering或Comparator排序。注意要正确地实现Set接口，就应该让Comparable与equals接口实现保持一致。因为Set不重复由equals决定，而顺序由Comparable决定。TreeSet提供降序或升序视图，但升序一般比降序性能更优。
 
-TreeSet允许null元素，但null与一些方法的返回值（不存在时返回null）可能造成混乱。因此建议不要加入null元素。基本操作（add, remove, contains）的时间成本为log(n). TreeSet增加了的NavigableSet接口的方法，常用方法如下表：
+TreeSet允许null元素，但一些方法的返回值也可能是null（不存在时），这样就会造成混乱。因此建议不要加入null元素。基本操作（add, remove, contains）的时间成本为log(n). TreeSet增加了NavigableSet接口的方法，常用方法如下表：
 
 方法 | 说明
 ---|---
@@ -288,23 +293,23 @@ Object clone() | 返回TreeSet实例的浅拷贝
 ### 3.5 LinkedHashSet
 LinkedHashSet会保持插入的顺序，但是如果多次添加一个元素，并不会改变元素原来的的位置。允许null元素。
 
-与HashSet一样，有两个参数影响其性能：初始容量和load factor。同样地，它也没有提供更多的方法。
+与HashSet一样，有两个参数影响其性能：初始容量和load factor。
 
 ### 3.6 EnumSet
-EnumSet的所有元素必须是同一个枚举类型的值，不允许null元素。它的效率很高，是替代传统标志位的推荐方案。Iterator按自然顺序（枚举中声明的顺序）返回元素。常用方法如下表：
+EnumSet的所有元素必须是同一个枚举类型的值，不允许null元素。它的效率很高，是替代传统标志位的推荐方案，用long实现。Iterator按自然顺序（枚举中声明的顺序）返回元素。常用方法如下表：
 
 方法| 说明
 ---|---
-static `<E extends Enum<E>> EnumSet<E>`	allOf(Class`<E>` elementType) | 创建一个包括枚举类型所有值的EnumSet
-EnumSet<E> clone() | 复制一份。
-static `<E extends Enum<E>>` `EnumSet<E>` complementOf(`EnumSet<E>` s) | 创建一个同类型的EnumSet，其中的元素为枚举类型所有值减去s中的值。
-static `<E extends Enum<E>>` `EnumSet<E>` copyOf(`Collection<E> c`) | 创建EnumSet，元素来自c。
-static `<E extends Enum<E>>` `EnumSet<E>` noneOf(`Class<E> elementType`) | 创建一个空的EnumSet
-static `<E extends Enum<E>>` `EnumSet<E>` of(E e, E... rest) | 创建包括指定元素的EnumSet
-static `<E extends Enum<E>>` `EnumSet<E>` range(E from, E to) | 创建指定元素范围的EnumSet
+`static <E extends Enum<E>> EnumSet<E>	allOf(Class<E> elementType)` | 创建一个包括枚举类型所有值的EnumSet
+`EnumSet<E> clone()` | 复制一份。
+`static <E extends Enum<E>> EnumSet<E> complementOf(EnumSet<E> s)` | 创建一个同类型的EnumSet，其中的元素为枚举类型所有值减去s中的值。
+`static <E extends Enum<E>> EnumSet<E> copyOf(Collection<E> c)` | 创建EnumSet，元素来自c。
+`static <E extends Enum<E>> EnumSet<E> noneOf(Class<E> elementType)` | 创建一个空的EnumSet
+`static <E extends Enum<E>> EnumSet<E> of(E e, E... rest)` | 创建包括指定元素的EnumSet
+`static <E extends Enum<E>> EnumSet<E> range(E from, E to)` | 创建指定元素范围的EnumSet
 
 ### 3.7 CopyOnWriteArraySet
-内部使用CopyOnWriteArrayList来实现所有操作。因此：
+CopyOnWriteArraySet内部使用CopyOnWriteArrayList来实现所有操作。因此：
 
 * 最适合那些size小，读操作远多于修改操作，在遍历中需要防止其它线程干扰的场景。
 * 它是线程安全的。
@@ -317,7 +322,7 @@ static `<E extends Enum<E>>` `EnumSet<E>` range(E from, E to) | 创建指定元�
 ```
 class Handler { void handle(); ... }
 
- class X {
+class X {
    private final CopyOnWriteArraySet<Handler> handlers
      = new CopyOnWriteArraySet<Handler>();
    public void addHandler(Handler h) { handlers.add(h); }
@@ -330,7 +335,7 @@ class Handler { void handle(); ... }
      for (Handler handler : handlers)
        handler.handle();
    }
- }
+}
 ```
 
 ## 4. List接口
@@ -345,7 +350,7 @@ Java提供两种普通List实现：ArrayList和LinkedList，前者通常有更�
 
 另一个特殊的实现是CopyOnWriteArrayList，与CopyOnWriteArraySet类似。无需同步操作，不会有ConcurrentModificationException.
 
-Arrays工具类提供了`asList()`方法，这样可以用List的方式查看数组。但是该操作并没有复制这个数组，对List的修改操作将会影响array，反过来也是如此。因此这个List并不是真正的List，它没有add, remove方法，因为数组不是变长的。如果List是定长的，也没有containsAll之类的bulk操作，可以考虑使用Arrays.asList。
+Arrays工具类提供了`asList()`方法，这样可以用List的方式查看数组。但是该操作并不是复制整个数组，对List的修改操作将会影响array，反过来也是如此。因此这个List并不是真正的List，它没有add, remove方法，因为数组不是变长的。如果List是定长的，也没有containsAll之类的bulk操作，可以考虑使用Arrays.asList。
 
 ListIterator提供两个方向迭代的能力，因此多了hasPrevious和previous方法。ListIterator的构造方法有两种格式，默认格式不带参数，表示从头遍历。带int参数的格式表示从指定位置遍历。ListIterator提供了安全的修改方法add, remove和set。它们能够在迭代的过程中安全地修改List的内容。
 
@@ -364,26 +369,26 @@ Doubly-linked列表，实现了List和Deque接口。由于是链表结构，因�
 
 方法 | 说明
 ---|---
-void addFirst(E e) | 在最前面插入
-void addLast(E e) | 加到最后面
-boolean offer(E e), boolean offerFirst(E e), boolean offerLast(E e) | 增加操作。默认是加到最后。如果操作成功返回true
-E element() | 获取但不删除第1个元素
-E getFirst()/getLast() | 返回第1个/最后一个元素
-E peek() | 获取但不移除第一个元素
-E peekFirst()/peakLast() | 获取但不移除第一个/最后一个元素，如果list为空则返回null
-E poll() | 获取并删除第1个元素, 如果list为空则抛出NoSuchElementException
-E pollFirst()/pollLast() | 获取并删除第一个/最后一个元素，如果list为空则返回null, 如果list为空则抛出NoSuchElementException
-E pop() | stack pop
-void push(E e) | stack push
-boolean remove(Object o), E removeFirst(), boolean removeFirstOccurrence(Object o), E removeLast(), boolean removeLastOccurrence(Object o) | 与删除相关的操作，如果list为空则抛出NoSuchElementException
+`void addFirst(E e)` | 在最前面插入
+`void addLast(E e)` | 加到最后面
+`boolean offer(E e)`, `boolean offerFirst(E e)`, `boolean offerLast(E e)` | 增加操作。默认是加到最后。如果操作成功返回true
+`E element()` | 获取但不删除第1个元素
+`E getFirst()/getLast()` | 返回第1个/最后一个元素
+`E peek()` | 获取但不移除第一个元素
+`E peekFirst()/peakLast()` | 获取但不移除第一个/最后一个元素，如果list为空则返回null
+`E poll()` | 获取并删除第1个元素, 如果list为空则抛出NoSuchElementException
+`E pollFirst()/pollLast()` | 获取并删除第一个/最后一个元素，如果list为空则返回null, 如果list为空则抛出NoSuchElementException
+`E pop()` | stack pop
+`void push(E e)` | stack push
+`boolean remove(Object o)`, `E removeFirst()`, `boolean removeFirstOccurrence(Object o)`, `E removeLast()`, `boolean removeLastOccurrence(Object o)` | 与删除相关的操作，如果list为空则抛出NoSuchElementException
 
 ### 4.2 Stack
 方法 | 说明
 ---|---
-boolean empty() | Tests if this stack is empty.
-E peek() | Looks at the object at the top of this stack without removing it from the stack.
-E pop() | Removes the object at the top of this stack and returns that object as the value of this function.
-E push(E item) | Pushes an item onto the top of this stack.
+`boolean empty()` | Tests if this stack is empty.
+`E peek()` | Looks at the object at the top of this stack without removing it from the stack.
+`E pop()` | Removes the object at the top of this stack and returns that object as the value of this function.
+`E push(E item)` | Pushes an item onto the top of this stack.
 int search(Object o) | Returns the 1-based position where an object is on this stack
 
 ## 5. Queue接口
@@ -412,7 +417,7 @@ public interface Queue<E> extends Collection<E> {
 LinkedList实现了Queue接口，提供FIFO队列操作add, poll等等。优先队列PriorityQueue的顺序取决于元素的natural ordering或构造方法的Comparator参数。
 
 ### 5.2 多线程队列
-java.util.concurrent.BlockingQueue继承自Queue，其实现是线程安全的。所有队列方法使用内部锁或其它多线程控制实现原子操作。但是bulk操作，如addAll, containsAll, retainAll, removeAll并没有实现原子操作。例如addAll(c)执行时，如果另一线程在c中添加了元素则会导致addAll失败。
+java.util.concurrent.BlockingQueue继承自Queue，其实现是线程安全的。所有队列方法使用内部锁或其它多线程控制实现原子操作。但是bulk操作，如addAll, containsAll, retainAll, removeAll并没有实现原子操作。例如`addAll(c)`执行时，如果另一线程在c中添加了元素则会导致addAll失败。
 
 BlockingQueue不支持null元素。它可能有数量限制，否则最大为Integer.MAX_VALUE。它的方法有四种模式：
 
@@ -438,7 +443,7 @@ JDK提供了以下实现：
 相关的方法参考LinkedList。LinkedBlockingDeque实现了多线程Deque。
 
 ## 7. Map接口
-Java提供了三种通用的Map实现：HashMap, TreeMap和LinkedHashMap。它们的行为与HashSet, TreeSet和LinkedHashSet相似。如果你想要有序的Map，能够提供有序的keySet，使用TreeMap；如果想要最优性能，使用HashMap。如果即想要高性能，又想保持插入的顺序，使用LinkedHashSet。
+Java提供了三种通用的Map实现：HashMap, TreeMap和LinkedHashMap。它们的行为与HashSet, TreeSet和LinkedHashSet相似。如果你想要有序的Map，能够提供有序的keySet，使用TreeMap；如果想要最优性能，使用HashMap。如果既想要高性能，又想保持插入的顺序，使用LinkedHashSet。
 
 JDK8中引入了相关的聚合操作，示例如下：
 
@@ -487,7 +492,7 @@ for (Map.Entry<KeyType, ValType> e : m.entrySet())
     System.out.println(e.getKey() + ": " + e.getValue());            
 ```
 
-不用担心Map创建Collection view的性能。通过Collecton view iterator遍历时，可以调用Iterator的remove方法来删除map中的键值对。利用Map.Entry遍历时也可以调用entry.setValue方法来修改值（TreeMap不支持）。Collection view支持remove, removeAll, retainAll, clear, Iterator.remove操作。例如，以下命令会清空所有数据：
+不用担心Map创建Collection view的性能。通过Collecton view iterator遍历时，可以调用Iterator的remove方法来删除map中的键值对。利用Map.Entry遍历时也可以调用entry.setValue方法来修改值。Collection view支持remove, removeAll, retainAll, clear, Iterator.remove操作。例如，以下命令会清空所有数据：
 
 ```
 Set<Integer> set = map.keySet();
@@ -513,7 +518,9 @@ commonKeys.retainAll(m2.keySet());
 ```
 
 ### 7.1 LinkedHashMap
-LinkedHashMap的顺序通常是插入顺序，同一元素多次重复插入并不会修改它的位置。有一个特殊的构造方法，它创建的LinkedHashMap顺序是entry被访问的顺序。元素的访问时间越近，则它越靠前。因此这种LinkedHashMap非常适合做LRU(least recently used)缓存。构造方法如下：
+LinkedHashMap的顺序通常是插入顺序，同一元素多次重复插入并不会修改它的位置。
+
+LinkedHashMap还提供了一个特殊的构造方法，它创建的LinkedHashMap顺序是entry被访问的顺序。元素的访问时间越近，则它越靠前。因此这种LinkedHashMap非常适合做LRU(least recently used)缓存。构造方法如下：
 
 ```
 public LinkedHashMap(int initialCapacity,
@@ -521,11 +528,20 @@ public LinkedHashMap(int initialCapacity,
                      boolean accessOrder)
 ```   
 
-会影响这种LinkedHashMap元素顺序的访问方法包括：put, putInfoAbsent, get, getOrDefault, compute, computeIfAbsent, computeIfPresent, merge, replace(如果之前存在，替换动作成立), putAll方法。其中putAll方法会对指定map中的所有元素都产生一次访问，访问的顺序取决于指定map的entryset iterator。除了以上方法外，其他方法都不会影响元素顺序，特别是作用于Collection view的方法也不会对元素顺序产生影响。
+影响这种LinkedHashMap元素顺序的访问方法包括：put, putInfoAbsent, get, getOrDefault, compute, computeIfAbsent, computeIfPresent, merge, replace(如果之前存在，替换动作成功)和putAll方法。其中putAll方法会对指定map中的所有元素都产生一次访问，访问的顺序取决于指定map的entryset iterator。除了以上方法外，其他方法都不会影响元素顺序，特别是作用于Collection view的方法也不会对元素顺序产生影响。
 
 覆盖removeEldestEntry(Map.Entry)方法可以在Map移除旧Entry时自定义一些策略。
 
 LinkedHashMap性能接近于HashMap，在遍历时性能比HashMap更优。因为LinkedHashMap的迭代性能只与size相关，而HashMap还与容量相关。
+
+### 7.2 其它Map实现类
+除了HashMap, TreeMap和LinkedHashMap, 还有一些其它的Map实现：
+
+* EnumMap与EnumSet类似。
+* WeakHashMap 弱引用，便于垃圾收集
+* IdentityHashMap 在此Map中，当且仅当k1==k2时，认为两个key是相等的。（HashMap判断相等使用的是equals）很少用。 
+* ConcurrentHashMap 高并发、高性能的Map。线程安全。
+
 
 
 
