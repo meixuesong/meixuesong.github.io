@@ -1,12 +1,12 @@
 ---
 layout: post
-title: "Java Collections(1)"
+title: "Java Collections"
 date: 2015-03-14 20:51:05 +0800
 comments: true
 categories: 
 - java
 ---
-Java提供了一套完整的Collection框架，能够帮助我们减少开发工作量、提高程序运行速度和代码质量。本文学习Collection接口和Set。
+Java提供了一套完整的Collection框架，能够帮助我们减少开发工作量、提高程序运行速度和代码质量。本文学习Java Collection框架。
 
 <!--more-->
 ## 1. 接口层级结构
@@ -332,6 +332,200 @@ class Handler { void handle(); ... }
    }
  }
 ```
+
+## 4. List接口
+List接口继承自Collection，它比后者增加了以下类型的方法：
+
+* Positional access 基于位置的访问方法，如get, set, addAll
+* Search 搜索指定对象并返回数字索引，如indexOf, lastIndexOf
+* Iteration 继承Iterator，增加增了List的特性。ListIterator。
+* Rang-View sublist方法提供range相关操作。
+
+Java提供两种普通List实现：ArrayList和LinkedList，前者通常有更好的性能，后者在特定场景有更好性能。如果你需要频繁地在List的起始位置插入元素，或者频繁遍历元素并删除，则使用LinkedList更合适。
+
+另一个特殊的实现是CopyOnWriteArrayList，与CopyOnWriteArraySet类似。无需同步操作，不会有ConcurrentModificationException.
+
+Arrays工具类提供了`asList()`方法，这样可以用List的方式查看数组。但是该操作并没有复制这个数组，对List的修改操作将会影响array，反过来也是如此。因此这个List并不是真正的List，它没有add, remove方法，因为数组不是变长的。如果List是定长的，也没有containsAll之类的bulk操作，可以考虑使用Arrays.asList。
+
+ListIterator提供两个方向迭代的能力，因此多了hasPrevious和previous方法。ListIterator的构造方法有两种格式，默认格式不带参数，表示从头遍历。带int参数的格式表示从指定位置遍历。ListIterator提供了安全的修改方法add, remove和set。它们能够在迭代的过程中安全地修改List的内容。
+
+* add()方法，在List当前位置插入一个对象。所谓当前位置就是：add方法增加对象后，调用previous()方法将返回这个对象。
+* remove()方法，将当前元素删除。所谓当前元素就是：如果刚调用了next()或previous()方法，当前元素就是它们返回的元素。注：每调用一次remove()，都需要先调用一次next()或者previous()，如果刚调用了add()，也必须先调用一次next()或者previous()。
+* set()方法，更新当前元素。当前元素的定义与remove()方法相同。每次set()之前，也必须调用next()或previous()。
+
+`subList(int fromIndex, int toIndex)`方法提供了range-view操作。由于subList返回的只是List的一个view，因此对返回结果的修改会影响原List。例如下面的代码删除指定范围内的数据：
+
+```
+list.subList(fromIndex, toIndex).clear();
+```
+
+### 4.1 LinkedList
+Doubly-linked列表，实现了List和Deque接口。由于是链表结构，因此基于索引的操作将导致从头遍历。常用的方法：
+
+方法 | 说明
+---|---
+void addFirst(E e) | 在最前面插入
+void addLast(E e) | 加到最后面
+boolean offer(E e), boolean offerFirst(E e), boolean offerLast(E e) | 增加操作。默认是加到最后。如果操作成功返回true
+E element() | 获取但不删除第1个元素
+E getFirst()/getLast() | 返回第1个/最后一个元素
+E peek() | 获取但不移除第一个元素
+E peekFirst()/peakLast() | 获取但不移除第一个/最后一个元素，如果list为空则返回null
+E poll() | 获取并删除第1个元素, 如果list为空则抛出NoSuchElementException
+E pollFirst()/pollLast() | 获取并删除第一个/最后一个元素，如果list为空则返回null, 如果list为空则抛出NoSuchElementException
+E pop() | stack pop
+void push(E e) | stack push
+boolean remove(Object o), E removeFirst(), boolean removeFirstOccurrence(Object o), E removeLast(), boolean removeLastOccurrence(Object o) | 与删除相关的操作，如果list为空则抛出NoSuchElementException
+
+### 4.2 Stack
+方法 | 说明
+---|---
+boolean empty() | Tests if this stack is empty.
+E peek() | Looks at the object at the top of this stack without removing it from the stack.
+E pop() | Removes the object at the top of this stack and returns that object as the value of this function.
+E push(E item) | Pushes an item onto the top of this stack.
+int search(Object o) | Returns the 1-based position where an object is on this stack
+
+## 5. Queue接口
+Queue接口增加了以下方法，它们的返回值有两种类型：抛出异常、返回特殊值：
+
+```
+public interface Queue<E> extends Collection<E> {
+    E element();
+    boolean offer(E e);
+    E peek();
+    E poll();
+    E remove();
+}
+```
+
+操作类型 | 抛出异常 | 返回特殊值
+---|---|---
+插入操作 | add(e) | offer(e) 成功返回true
+删除操作 | remove() 队列为空时异常 | poll() 队列为空返回null
+检查操作 | element() 队列为空时异常 | peek() 队列为空返回null
+
+
+队列通常是FIFO的行为，但优先队列的顺序取决于它的值。java.util.concurrent下的一些队列有数量限制（bounded），但java.util下的队列没有数量限制。java.util.concurrent.BlockingQueue 继承自Queue，提供了阻塞的机制。
+
+### 5.1 普通队列
+LinkedList实现了Queue接口，提供FIFO队列操作add, poll等等。优先队列PriorityQueue的顺序取决于元素的natural ordering或构造方法的Comparator参数。
+
+### 5.2 多线程队列
+java.util.concurrent.BlockingQueue继承自Queue，其实现是线程安全的。所有队列方法使用内部锁或其它多线程控制实现原子操作。但是bulk操作，如addAll, containsAll, retainAll, removeAll并没有实现原子操作。例如addAll(c)执行时，如果另一线程在c中添加了元素则会导致addAll失败。
+
+BlockingQueue不支持null元素。它可能有数量限制，否则最大为Integer.MAX_VALUE。它的方法有四种模式：
+
+操作类型 |Throws exception | Special value | Blocks | Times out
+---|---|---|---
+Insert|add(e) | offer(e)| put(e) | offer(e, time, unit)
+Remove|remove() | poll() | take() | poll(time, unit)
+Examine|element() | peek() | not applicable | not applicable
+
+JDK提供了以下实现：
+
+* LinkedBlockingQueue — an optionally bounded FIFO blocking queue backed by linked nodes
+* ArrayBlockingQueue — a bounded FIFO blocking queue backed by an array
+* PriorityBlockingQueue — an unbounded blocking priority queue backed by a heap
+* DelayQueue — a time-based scheduling queue backed by a heap
+* SynchronousQueue — a simple rendezvous mechanism that uses the BlockingQueue interface
+* LinkedTransferQueue — an unbounded TransferQueue based on linked nodes
+
+
+## 6. Deque接口
+音（deck），支持从两端插入和删除的队列。它同时包含了Queue和Stack接口方法。ArrayDeque和LinkedList实现了Deque接口。Deque支持FIFO和LIFO。
+
+相关的方法参考LinkedList。LinkedBlockingDeque实现了多线程Deque。
+
+## 7. Map接口
+Java提供了三种通用的Map实现：HashMap, TreeMap和LinkedHashMap。它们的行为与HashSet, TreeSet和LinkedHashSet相似。如果你想要有序的Map，能够提供有序的keySet，使用TreeMap；如果想要最优性能，使用HashMap。如果即想要高性能，又想保持插入的顺序，使用LinkedHashSet。
+
+JDK8中引入了相关的聚合操作，示例如下：
+
+```
+// Group employees by department
+Map<Department, List<Employee>> byDept = employees.stream()
+	.collect(Collectors.groupingBy(Employee::getDepartment));
+
+// Compute sum of salaries by department
+Map<Department, Integer> totalByDept = employees.stream()
+	.collect(Collectors.groupingBy(Employee::getDepartment, Collectors.summingInt(Employee::getSalary)));
+
+// Partition students into passing and failing
+Map<Boolean, List<Student>> passingFailing = students.stream()
+	.collect(Collectors.partitioningBy(s -> s.getGrade()>= PASS_THRESHOLD)); 
+
+// Classify Person objects by city
+Map<String, List<Person>> peopleByCity
+	= personStream.collect(Collectors.groupingBy(Person::getCity));
+
+//cascade two collectors to classify people by state 
+Map<String, Map<String, List<Person>>> peopleByStateAndCity
+	= personStream.collect(Collectors.groupingBy(Person::getState,
+  Collectors.groupingBy(Person::getCity)))
+```
+
+Map提供了Collecton view，有三种方法：
+
+* keySet 所有key的集合
+* values 所有值。这不是一个Set，因为value会有重复。
+* entrySet 所有key-value的集合
+
+Map的遍历方法有多种：
+
+```
+for (KeyType key : m.keySet())
+    System.out.println(key);
+    
+// Filter a map based on some 
+// property of its keys.
+for (Iterator<Type> it = m.keySet().iterator(); it.hasNext(); )
+    if (it.next().isBogus())
+        it.remove();
+        
+for (Map.Entry<KeyType, ValType> e : m.entrySet())
+    System.out.println(e.getKey() + ": " + e.getValue());            
+```
+
+不用担心Map创建Collection view的性能。通过Collecton view iterator遍历时，可以调用Iterator的remove方法来删除map中的键值对。利用Map.Entry遍历时也可以调用entry.setValue方法来修改值（TreeMap不支持）。Collection view支持remove, removeAll, retainAll, clear, Iterator.remove操作。例如，以下命令会清空所有数据：
+
+```
+Set<Integer> set = map.keySet();
+set.clear();
+```		
+
+Map的Collection view在很多场合能起到便利作用。以下是一些示例：
+
+```
+//判断一个Map的key是否包含另一个Map的key
+if (m1.entrySet().containsAll(m2.entrySet())) {
+    ...
+}
+
+//判断两个Map的key是否相同
+if (m1.keySet().equals(m2.keySet())) {
+    ...
+}
+
+//判断两个Map的key交集（注意新建了一个set，避免对Map产生影响）
+Set<KeyType>commonKeys = new HashSet<KeyType>(m1.keySet());
+commonKeys.retainAll(m2.keySet());
+```
+
+### 7.1 LinkedHashMap
+LinkedHashMap的顺序通常是插入顺序，同一元素多次重复插入并不会修改它的位置。有一个特殊的构造方法，它创建的LinkedHashMap顺序是entry被访问的顺序。元素的访问时间越近，则它越靠前。因此这种LinkedHashMap非常适合做LRU(least recently used)缓存。构造方法如下：
+
+```
+public LinkedHashMap(int initialCapacity,
+                     float loadFactor,
+                     boolean accessOrder)
+```   
+
+会影响这种LinkedHashMap元素顺序的访问方法包括：put, putInfoAbsent, get, getOrDefault, compute, computeIfAbsent, computeIfPresent, merge, replace(如果之前存在，替换动作成立), putAll方法。其中putAll方法会对指定map中的所有元素都产生一次访问，访问的顺序取决于指定map的entryset iterator。除了以上方法外，其他方法都不会影响元素顺序，特别是作用于Collection view的方法也不会对元素顺序产生影响。
+
+覆盖removeEldestEntry(Map.Entry)方法可以在Map移除旧Entry时自定义一些策略。
+
+LinkedHashMap性能接近于HashMap，在遍历时性能比HashMap更优。因为LinkedHashMap的迭代性能只与size相关，而HashMap还与容量相关。
 
 
 
