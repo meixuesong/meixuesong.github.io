@@ -1,0 +1,647 @@
+---
+layout: post
+title: "TDD学习笔记"
+date: 2015-03-17 11:42:46 +0800
+comments: true
+categories: 
+- java
+---
+本文是《测试驱动开发的艺术》的学习笔记。
+
+<!--more-->
+
+## 1. TDD入门
+TDD周期包括三个步骤：写测试、添加恰巧能让测试通过的代码，最后进行彻底的重构以改善设计。
+
+### 1.1 什么是好的测试？
+编写（单元）测试时有许多准则可以遵循，例如“测试之间应该相互隔离，并且不依赖于执行顺序”，“测试应该能快速的执行”，“测试中不应该有手动的初始化工作”，等等。不过从把需求分解到测试的角度来看，有两点尤为重要： 
+
+* 好测试是原子化的； 
+* 好测试是独立的。
+
+
+测试的“三角法”是指会从多个方向同时入手，共同确定出恰当的实现。我们可以称之为“找茬”（playing difficult），不过它真的可以帮助防止过早优化、功能蔓延以及总体上的过度设计。
+
+若采用广度优先的方式，我们会集中实现高层的功能，实现过程中会暂时使用底层功能的伪实现。若采用深度优先的方式，我们会先实现底层功能，在所有底层功能都实现完后才会组合来实现出高层功能。通常我会把代码中任何可能的问题或者缺陷都写成新测试加到测试列表中。
+
+### 1.2 对异常的验证
+
+```java
+try {
+	...//应该触发异常的代码
+	
+	fail("evaluate() should throw an exception if " + "a variable was left without a value!"); 
+} catch (MissingValueException expected) {
+}
+```
+
+JUnit 4带给我们一个方便的，基于注释语法的异常测试方法。若使用注释语法语法，测试可以改写成： 
+
+```java
+@Test(expected=MissingValueException.class) 
+public void testMissingValueRaisesException() throws Exception { 
+	new Template("${foo}").evaluate(); 
+} 
+```
+
+虽然这个基于注释语法的测试看起来比try-catch结构的测试精炼，不过使用try-catch，我们能够验证异常的更多信息（例如其中包括的关键错误信息）。有些人喜欢使用注释语法，另一些人总是偏好使用try-catch模式。我在只测试异常类型时使用注释语法，希望发掘出更多的信息时使用try-catch模式。
+
+
+### 1.3 Spike
+Spike基本上是一种是以实验为目的的原型方法，目的是为了研究某个解决方法的可能性和可行性。
+
+### 1.4 一些概念
+
+学习完如何编写测试及通过测试的技巧后，我们将会讨论一些重要概念，包括“夹具”（fixture）、“测试替身”（test doubles），还会讨论到“基于状态的测试”（state-based testing）与“基于交互的测试”1（interaction-based testing）的区别。我们还会重点讨论如何用测试替身处理难缠的协作对象。我们也将会探究三种不同的测试替身，包括伪实现(fakes)、测试桩（stubs）及模拟对象（mock object）。
+
+## 2. 如何选择测试
+在衡量待选测试的各个特征时，我们需要依靠直觉，也需要注意收集各种带有启发性的线索。首先，下面四个技巧可以帮我们选择下一步的测试： 
+
+* 深入细节与整体考虑
+* 探索未知与轻车熟路
+* 最大限度地获取价值与摘取现成的果实
+* 走通基本功能路径与先处理出错情况
+
+### 2.1 细节与整体
+我将这两种方法分别称为“细节优先”和“整体优先”。当然这两种方法各有优劣。细节优先有利于降低风险，例如“我们能够对用户提交上来的图片进行模式识别吗？”，不过从整体角度考虑，处理模式识别问题会耽搁总体进度。从另一方面考虑，整体优先能够很快的验证总体设计，同时不用过多操心细节。整体优先的劣势在于其推迟了细节方面的工作进度。 实际上，我们会对各种方法做出评估，通常会（但不总会，如下节所述）先解决我们最关心的问题。这样就引出第二个测试选择技巧——探索未知与轻车熟路。
+
+### 2.2 不确定与熟悉
+减少不确定性是我们选择测试时要考虑的因素之一。除此之外，我们还可以先挑选自己熟悉的测试，稍后再处理不确定因素较多的测试。处理不确定性的好处简单明了，因为把未知转化成已知能有效的降低风险。 一直在我们熟悉的设计领域工作有什么好呢？那又不会带来任何新的知识和信息。这种工作方式有什么好呢？可是，付出并不总会得到回报。虽然降低风险很有价值，但是比起爬到高高的枝头探索未知的空间，有时摘下唾手可得的果实更加实惠。
+
+### 2.3 高价值与现成果实
+理想情况下，我们应当挑选那些工作量最少，回报却最多的测试。不过通常待选测试之间的区别并不是很明显，我们需要在付出回报比差别不大的各个测试间做出选择。 测试对象的基本功能还是测试对象对null输入的处理，是高价值与现成果实的一个典型例子。开发基本功能需要更多的时间精力，价值也更大。防御出错的功能、处理null输入，这些都很容易实现，但价值也小得多。
+
+### 2.4 基本功能与出错情形
+通常，我会先设法完成基本功能，然后再处理出错情形，如第三方类库抛出的异常及非法的输入等。这样做的主要原因是出于价值的考虑。一个能够处理任何出错情况的异常健壮的系统，若不能提供基本功能，根本毫无用处。另一方面，若某个系统在网络出现问题时会崩溃，
+
+话虽如此，有时候还是需要把基本功能放到一边，先处理所有的出错情况。若挨个处理出错情况相当自然并符合直觉，并且只有正确处理了所有错误情况后系统的价值方能得到体现，则应当使用这种策略。
+
+现在我们已经学到了很多选择测试的技巧。不过，不必过多考虑哪个测试才是“正确”的选择，测试的选择并没有一个标准答案。你会逐渐消化那些测试选择技巧，使用起来也会更加得心应手。不过总体上，从简单的测试入手应该是个好主意。一旦完成了第一个测试，接下来的工作就会变得更有头绪了。
+
+## 3.　实现技巧
+在著名的Test-Driven Development by Example一书中，Kent Beck列举了3种实现方式：伪实现（faking it）、三角法（Triangulation）以及显而易见的实现（obvious implementation）。
+
+### 3.1 伪实现
+写完测试时，我们并不总是清楚如何正确的实现功能使测试通过。这时候，我们可能会先伪实现某个功能，尽快回到绿的状态。可能是因为我们步伐过大，或是触到了系统内的某个“边界”，不过无论是什么原因都需要尽快通过测试，回到稳固可靠的状态。而伪实现功能比停留在红的状态好得多。返回硬编码的值可能是最简单的伪实现方法。你可能还记得，我们在上一章开发模板引擎时曾用过这种方法。 
+
+在伪实现某个功能后，我们可以很容易地切换到“三角法”模式，因为产品代码中绝不能包含硬编码的值，所以要想方设法清除掉硬编码部分，使用真实的实现。当然，为了达到目的，我们需要写一个新的测试。 
+
+### 3.2 三角法
+“三角法”，顾名思义，正如电视中的警察们利用手机信号追踪犯罪嫌疑人。警察们从多点监测疑犯的信号进行三角定位。已知观测点的位置，警察们就可以在地图上标出两条线，线的交点则为疑犯位置。 
+
+我们在使用三角法时，当然不会监测信号，也不会在地图上做标记。我们每写一个测试，都会在一个维度上约束了可能的解决方案。当测试足够多时，测试就能有效地缩减解空间，三角定位出我们期望的实现。
+
+### 3.3 显而易见地实现
+通过测试的方法通常都显而易见。当然我们并不是说像硬编码返回值那样显而易见，而是指正确的实现通常都很容易。在这种情况下，我们大可以快速前进，直接做实现，而不用像三角法或者做伪实现时那样谨小慎微。
+
+## 4 测试驱动的基本准则
+我们总结出以下几条指导准则： 
+
+* 绝不跳过重构 
+* 尽快变绿 
+* 犯错后减慢速度
+
+测试驱动时，我们要用最简单的方法解决手中的问题。不过这不是编码阶段所追求的目的，编码阶段应当试图尽快回到绿的状态。重构时再考虑优化设计。
+
+出错后放慢脚步 开发人员在实践TDD过程中会自然地逐渐增大步伐。不过有时候，我们前进步伐太大，以至于出现错误而前功尽弃。这时，我们应当意识到步伐已经太大了，修改已超出理解范围。我们需要小心行事，小步前行，并彻底地重构。
+
+##5 重要的测试概念
+### 5.1 夹具
+夹具是测试的上下文，我们把夹具定义为测试类中所有测试方法共有的初始条件。
+
+首先讨论初始状态的各个组成部分及其成因。迄今为止，我们都是在某类初始化方法中创建相互关联的对象以及构建出各个测试方法所需的夹具的。不过夹具的范畴不仅如此。归结其本质，夹具是整个运行时的状态，而并非仅指测试类的成员变量值，或相关对象的内部状态。
+
+夹具可消除重复。追求优良的设计，是重视夹具的部分原因。我们应当用产品代码的标准来衡量测试代码，没有重复可能是最关键的衡量标准之一。夹具把多个测试共享的状态移至一处，有效消除了重复。
+
+光板夹具（clean slate fixture）是绝对要避免的反模式（anti-pattern）。光板夹具，指每个测试方法都从头构建出的夹具；各个测试方法的初始化过程毫无共性。这表明测试间要么存在大量重复，要么毫无内聚性。若是后者，则需要把测试类分成几个类。
+
+夹具使测试更紧凑。熟练的TDD开发人员很容易写出紧凑的测试。其要诀是，利用夹具设置与测试相关的系统、对象，只用几行代码就可以完成验证逻辑。 
+
+测试方法只关注真正要测的东西，同时避免其他任何干扰，这样做的好处显而易见，因为我们不会被一叶障目而不见泰山。这样，我们不再反复阅读代码，企图弄清楚“那段逻辑”到底在哪儿。若夹具足够好，其本身就能直接给出上下文，这样测试代码就可以直指要害了。
+
+### 5.2　用测试替身替换依赖
+测试中遇到的困难不少是因为被测对象和其他对象之间存在协作，或存在其他类型的依赖关系。例如某个类的构造函数参数是一个java.sql.ResultSet对象。
+
+我们可以用测试替身来替代真实对象。测试替身乔装打扮，使用者对此毫不察觉。无论从实际执行时间角度，还是从开发和维护测试所耗时间角度，测试替身通常都比真实对象更快。
+
+我们通常这样使用测试替身：首先创建测试替身（数量多少根据需要而定），然后配置测试替身的状态、行为和期望，最后把测试替身传给待测类，验证执行结果。
+
+### 5.3　基于状态及基于交互的的测试 
+在最高层面上，根据验证期望行为的方式不同，测试替身可分为两类：基于状态的测试以及基于交互的测试。
+
+**基于状态的测试 **
+
+基于状态的测试利用对象内部状态来验证执行结果的正确性。我们需要获取待测对象及其协作对象的状态，然后与期望的状态做对比，进行验证。
+
+**测试交互 **
+
+基于交互的测试的验证方法截然不同。基于交互的测试验证待测对象与其协作对象以我们期望的方式进行交互，而非验证这些对象的最终状态是否匹配。换句话说，我们并不关心对象的内部状态，而更在乎待测对象是否正确调用了协作对象的方法，是否使用了正确的参数。如果可能，还需要验证调用顺序是否正确。 要实现基于交互的测试，需要使用动态模拟对象库（dynamic mock objects library）。在Java中，这种库有EasyMock3、jMock4以及rMock5等。这些库都是开源的，用户也很多。
+
+**各种方法的适用范围**
+
+我们依赖基于交互的测试来验证待测对象如何与其协作类进行对话；用基于状态的测试验证对象如何做出回应”。
+
+## 6　近处观察测试替身
+下表总结了不同类型的模拟对象：
+
+ Mock类型 | 描　　述 
+ ---|---
+ 测试桩 | 测试桩实际上是给定接口最简单的实现。例如，测试桩内的方法通常返回硬编码的、无意义的值 
+ 伪实现| 伪实现比测试桩更复杂，通常可以认为是接口的另一种实现。换言之，虽然伪实现并不是鸭子，但是其外形和行走方式和鸭子并无二致。相比之下，测试桩只是看起来像鸭子而已 
+ 模拟对象 | 从实现角度而言，模拟对象更加复杂。模拟对象可以验证待测对象与其协作对象的交互。由于具体实现方式不同，有些模拟对象可以返回硬编码的值，而有些能够提供逻辑的伪实现。模拟对象通常由框架或类库（像EasyMock）动态产生，不过也可以手动实现
+
+在EasyMock中，所有的模拟对象，自创建时起就处于录制模式。在录制模式下，我们可以录制模拟对象与其协作对象的交互方式，以及模拟对象本身的行为。录制时，只需要调用模拟对象的方法，然后再告诉EasyMock模拟对象对该调用当做何反应，例如该返回什么值，或者该抛出何种异常。示例如下： 
+
+```java
+PricingService mock = createMock(PricingService.class); 
+expect(mock.getDiscountPercentage(customer, product)).andReturn(discount); 
+```
+
+当录制完期望的协作及行为后，我们应当让EasyMock从录制模式切换到播放模式（replay），模拟对象开始监听各种事件。接着，我们把模拟对象传给待测对象，作为其协作对象。这时，待测类会与其协作对象交互，当然包括我们创建的模拟对象。当实际交互行为与录制的期望行为不符时，测试会失败。 最后，我们用模拟对象作为协作对象执行测试代码，若模拟对象没有因遇到非预期的调用而抛出任何异常，那我们就可以让模拟对象验证是否所有期望的调用都发生了。
+
+## 7　提高设计的可测试性的准则
+为了帮您避免可测试性问题，这里列举了一些值得注意的设计准则： 
+
+* 尽量使用组合（composition）而非继承（inheritance） 
+* 避免使用static关键字，以及Singleton模式 
+* 隔离依赖（Isolate dependencies） 
+* 注入依赖（Inject dependencies）
+
+### 7.1　尽量使用组合而非继承
+在测试中试图实例化对象时，对象的继承体系有时会带来不必要的麻烦。例如在Java中，我们可能只关注子类的特征，但却必须要提供只有其父类构造函数才需要的各项参数。如果这些参数本身又是很复杂的对象，需要费很多功夫才能初始化，那这项缺点就更加明显了。
+
+另外，哪怕是极小的修改所产生的影响，都可能在整个继承体系内产生较大的影响，显然这样并不好。继承带来的限制过多，使测试很麻烦。这时，我们不得不考虑另一种替代方法，即组合。
+
+组合是指通过组装一些稍简单的类来获得一个功能复杂的大类的过程。顶层的组合对象会把工作委托给其各个组成部分，而不是通过调用父类的方法来完成工作。实际上组合是基于对象级别的责任划分，而不是静态的、类级别上的划分。组合比继承稍显麻烦，代码量更多，不过组合能够提高可测试性、适应性以及可维护性，这些优点远大于多出几行代码所带来的麻烦。
+
+### 7.2　避免使用static关键字以及Singleton模式
+静态方法调用及Singleton模式也会影响可测试性。取决于待测代码与静态方法或Singleton模式的纠葛程度，在测试中用测试替身替换静态方法可能极其困难。或许很多时候我们用不着替换掉 Singleton或静态方法，但如果想这么做（例如在测试过程中，静态方法或者Singleton实例会试着连接远程服务器），可没那么容易。
+
+很难用伪实现替换静态方法，因为类的类型信息已经硬编码在代码中了。同样，用getInstance()方法获取的Singleton类也很难用伪实现替换。其实Singleton模式本身并没错，而是其默认实现方式存在问题。有时，我们需要在测试过程中替换掉静态方法或者Singleton的实现。要完成替换，我们需要有一个静态方法，用于替换当前实现，在测试完成后，还需要把替换过的实现恢复原样。
+
+### 7.3　隔离依赖 
+为了能够方便地用测试替身替换依赖，隔离依赖使其更容易替换非常关键。有几种方法可以解决这个问题：
+
+把静态方法的访问移至成员方法，
+
+```java
+//有味道的代码：通过调用静态方法获取依赖 
+//这种方法并不好。我们把获取依赖与使用依赖的逻辑混在了一起。简言之，我们需要隔离依赖。
+public class OrderProcessor { 
+	public void process(Order order) { 
+		PricingService service = PricingService.getInstance(); 
+		// use the PricingService object for processing the order 
+	} 
+} 
+
+//已消除了代码味道：静态方法的调用包装进了成员方法中 
+public class OrderProcessor { 
+	public void process(Order order) { 
+		PricingService service = getPricingService(); 
+		// 通过替换获取依赖 
+		// use the PricingService object for processing the order 
+	} 
+	
+	protected PricingService getPricingService() { 
+		/*（以下3行）覆盖返回的测试替身*/ 
+		return PricingService.getInstance(); 
+	} 
+}
+```
+
+在Working Effectively with Legacy Code一书中，Michael Feather定义了接缝（seams）的概念：“不用修改直接影响行为的代码就能改变系统行为的那个点”。换言之，在测试期间可以在某个点用一段代码替换另一段代码，而无需修改待测试代码，这个点就是接缝。在上面的代码中，从测试用例调用process方法的角度来看，getPricingService方法的调用实际就是接缝。
+
+接缝，根据其定义，由一个或几个入侵点（enabling points）构成，即入侵接缝的不同途径。getPricingService本身就是入侵点。我们可以使用代码清单4-6中的方法将其覆盖。
+
+```java
+//入侵接缝 
+public class OrderProcessor { 
+	public void process(Order order) { 
+		PricingService service = getPricingService(); 
+		// 这就是接缝 
+		// use the PricingService object for processing the order 
+	} 
+	
+	protected PricingService getPricingService() { 
+		// 入侵点 return PricingService.getInstance(); 
+	} 
+} 
+
+public class OrderProcessorTest { 
+	@Test 
+	public void testOrderProcessorByExploitingTheSeam() throws exception { 
+		OrderProcessor p = new OrderProcessor() { 
+			protected PricingService getPricingService() { 
+				return new FakePricingService(); 
+				// 通过入侵点使用接缝 
+			} 
+		}; 
+		... 
+	} 
+}
+```
+
+我们刚才看到的接缝属于对象接缝，利用面向对象功能，在调用代码中透明的覆盖方法。还有其他多种类型的接缝（每种语言都不一样），如预处理接缝、链接接缝等。
+
+隔离依赖对可测试性及可维护性至关重要。
+
+### 7.4　注入依赖 
+依赖注入（Dependency Injection，DI）是近来软件圈子里的热门话题之一。这种代码组织方式可以减少直接依赖，将其变为间接依赖，或者说把getter变为setter。这个概念最初叫做依赖反转（Inversion of Control），表示依赖反转了。ThoughtWorks公司的Martin Fowler引入了依赖注入这个术语来更好的表达出概念的本意，即注入依赖而非查找依赖。
+
+```java
+//　有了依赖注入，测试代码可读性更强了 
+public class OrderProcessorTest { 
+	@Test 
+	public void testOrderProcessorWithDependencyInjection() throws Exception { 
+		OrderProcessor p = new OrderProcessor(); 
+		p.setPricingService(new FakePricingService()); 
+		... 
+	} 
+}
+```
+
+**依赖注入的不同类型 **
+
+setter-based 依赖注入，通过调用setter注入所需的依赖。不过这不是唯一的依赖注入方式。
+
+field-based依赖注入，及基于构造函数的依赖注入也很常见。 field-based注入实际和setter-based注入一样，唯一的区别是在field-based注入过程中，会直接给实例变量赋值，不通过setter，所以不能对注入的依赖进行任何操作。部分由于这个原因，field-based注入通常用在框架代码中，使用反射API给任意对象注入依赖，而不强求开发人员为纯依赖注入而写setter这种的样板代码。 
+
+基于构造函数的依赖注入是指用构造函数参数注入依赖。这种方法比setter-based注入方法要好，因为要使用setter-based注入，程序员必须要清楚以哪种顺序注入依赖。换句话说，用setter-based注入方法，可能会使目标对象处于未完全配置的状态。 基于构造函数的依赖注入方式也有不足，因为构造函数并不能体现在接口上，所以不能通过接口向对象注入依赖5。另外，把所需的各种依赖作为构造函数参数，可能会使构造函数参数列表过长，含义模糊（这有可能是设计缺陷的象征）。
+
+## 8　单元测试模式
+单元测试是TDD中的重要一环，所以了解单元测试的常用模式很有必要。在这一节中，我们将会了解不少模式，包括： 
+
+* 写断言的模式 
+* 组织及构建夹具的模式 
+* 测试类总体模式。
+
+### 8.1 断言模式
+#### 8.1.1 结果状态验证（Resulting State Assertion） 
+结果状态验证是单元测试中最常用的方法。这种方式是指先调用对象的功能，然后验证其内部状态与期望的是否一致.
+
+#### 8.1.2 防卫断言（Guard Assertion） 
+防卫断言用来明确的验证调用功能前对夹具所做的各项假设。下面这个简单的例子表明了防卫断言的用途： 
+
+```java
+@Test 
+public void listIsNoLongerEmptyAfterAddingAnItemToIt() throws Exception { 
+	List<String> list = new ArrayList<String>(); 
+	assertTrue(list.isEmpty()); 
+	// guard assertion list.add("something"); 
+	assertFalse(list.isEmpty()); 
+	// state verification 
+} 
+```
+
+请注意，在调用add方法前，防卫断言保证了空列表的isEmpty方法正确的返回了true，确保所测试的确实是期望的行为。 
+
+防卫断言模式常常与结果状态验证模式一同使用。这两种方法常常结合在一起，首先验证调用前状态与期望的一致，然后调用功能，验证结果状态，与上面的例子完全一样。 不过有时候，使用防卫断言是为了保证夹具的初始状态的正确性。这时，可以把防卫断言移至初始化方法的末尾，因为这些断言实际上是为了验证初始化方法。
+
+#### 8.1.3 差值断言（Delta Assertion） 
+有时在进行测试时我们需要在控制权不完全在自己手中的代码基础上工作。尤其是我们的测试可能并不能完全控制夹具。由此，在不能硬编码夹具状态的情况下，如何写出可靠、健壮及自检查的测试呢？解决方法是不要验证绝对值，而是验证代码执行前后的差值。
+
+#### 8.1.4 自定义断言 
+有时候用于验证期望的代码比调用待测对象所需的代码要多得多。这时（特别是当出现了不止一次时），可以从测试代码中提取出一个自定义断言，把复杂的验证逻辑封装进一个小巧的方法之中，以备测试代码调用。
+
+自定义断言的一个常见用途是做不同类型的模糊匹配。例如，我们可能希望用对象的一部分属性来比对两个对象。另外一个常见原因是对象并没有正确的实现equals方法，同时我们还不能对其进行修改。此外，创建自定义断言可以在验证失败后能够提供更有意义的错误信息（注释21：有意义的出错信息非常有用，特别是测试变得过大时）。
+
+#### 8.1.5 交互断言（Interaction Assertion） 
+我们的最后一个验证模式称为交互断言。交互断言很有趣，其并不验证代码结果的正确性，而是验证代码与其协作对象的交互行为的正确性。
+
+EasyMock等模拟对象库的内部工作机理。这些库把实际的方法调用及期望的方法调用记录到一个类似于列表的数据结构中，然后把期望的列表与实际列表相比较。
+
+### 8.2　夹具模式 
+夹具是测试的重要组成部分。夹具的结构通常并不简单，我看到了不少巨大的夹具，用巨大的初始化方法创建出巨多的对象，这方法大到一屏都显示不下。无论在产品代码中，还是测试代码中，这种庞杂的代码都是个问题。还好，这些年来我们发现了不少模式，用于解决这类问题。
+
+我们将会谈到3个此类模式。前两个模式关于在夹具中创建对象，第三个关于在测试结束时处理创建出的对象方法。准备好了吗？ 
+
+#### 8.2.1 参数化创建方法 
+典型的夹具中的大部分对象是所谓的实体对象（entity objects），用来表示业务领域中存在的实体或者实际概念。这类对象通常有很多属性，我见到的大多数糟糕的夹具就是因为填充这些属性，尽管不少属性对当前测试根本不重要。
+
+参数化创建方法（Parameterized Creation Method）可以解决此问题，把不重要的属性从初始化方法中移到单独的创建方法中。此创建方法接受变量的属性值作为其参数，而把常量或者随机值直接赋给不重要的属性。
+
+#### 8.2.2 对象母亲 
+重构测试类，在类中加入创建方法从而消除重复，这种修改一开始效果会很好。不过不久我们就会发现不同类的创建方法间存在重复。接下来自然要把创建方法移到单独的类中以消除重复。对象母亲模式就是创建方法的聚合体。
+
+总的来说，对象母亲模式是一个复杂的对象工厂，用于创建领域对象（domain object）的整个对象网络（object graph），还可以创建出不同状态下的实例。此外，对象母亲也可以提供方法修改某个领域对象，例如在对象间建立关联关系、移除关联关系、或者把对象设置为特征状态。
+
+#### 8.2.3 自动清理 
+在测试框架（如JUnit）中之所以需要清理方法，是为了执行测试后做必要的清除工作，例如在集成测试后删掉数据库中保存的数据，或者移除测试过程中创建出的文件。假如清理逻辑很复杂，或者需要清除的对象过多，我们的测试代码会变得很混乱，也很容易漏掉某些需要清除的对象。这会使后续的测试出现问题，而且极难调试或跟踪出问题的源头。
+
+可以看出，在自动清理模式中，夹具的初始化方法不仅仅创建出了夹具对象，而且把这些对象添加到测试对象注册表中。这注册表只不过是一个对象引用的集合，当夹具的清理方法触动注册表时，注册表会清除每一个注册了的夹具对象。
+
+### 8.3　测试模式 
+我们已经接触到了防卫断言到对象母亲等一系列测试相关模式。接下来我们会先学习一些更为通用的测试模式，然后学习如何在遗留代码上工作。
+
+下面要介绍的这些模式主要是关于如何可使代码的可测试性更佳，以及使测试代码更紧凑，结构更好的Java语言技巧。
+
+#### 8.3.1 参数化测试 
+有时，我们会发现我们编写的测试几乎一模一样，只有个别输入值不同，而测试逻辑完全相同。这时，我们或许可以把这类测试重写成参数化测试。 这类测试的基本要点是，只编写一个测试方法，包含应用于测试数据的测试逻辑。当然，显然还需要一个方法提供参数化数据，再用一些代码绑定给定的测试数据到测试方法上。 还好，JUnit4为此提供了很多便利，要创建参数化测试只需要给测试类加上相应的注释（annotation）即可。下面的代码是在JUnit4中编写参数化测试的例子：
+
+```java
+import org.junit.runner.RunWith; 
+import org.junit.runners.Parameterized; 
+import org.junit.runners.Parameterized.Parameters; 
+
+@RunWith(Parameterized.class) 
+public class ParameterizedTest { 　 
+	@Parameters 
+	/*❶（以下2行）提供参数化数据*/ 
+	public static Collection<Object[]> parameters() { 
+		Object[][] data = new Object[][] { 
+			{ 0, 0, 0 }, 
+			{ 1, 1, 0 }, 
+			{ 2, 1, 1 }, 
+			{ 3, 2, 1 }, 
+			{ 4, 3, 1 }, 
+			{ 5, 5, 0 }, 
+			{ 6, 8, -2 } 
+		}; 
+		return Arrays.asList(data); 
+	} 　 
+	
+	public int expected, input1, input2; 
+	　 
+	public ParameterizedTest(int expected, int input1, int input2) { 
+		// ❷数据通过构造函数绑定 
+		this.expected = expected; 
+		this.input1 = input1; 
+		this.input2 = input2; 
+	} 　 
+	
+	@Test 
+	/*❸（以下2行）每个对象数组调用一切测试方法*/ 
+	public void executeParameterizedTest() throws Exception { 
+		assertEquals(expected, new Calculator().add(input1, input2)); 
+	} 
+}
+```
+
+上面的参数化测试由三部分组成。首先，我们用一个标有@Parameters的静态方法提供参数化数据。此方法返回一个对象数组的集合，每一个数组都表示一个数据集或者一个测试实例❶。换句话讲，JUnit会为每一个对象数组都重新实例化一次测试类。JUnit❷会把对象数组作为构造函数参数传给测试类，通常测试类会把这个参数保存在内部变量中，在❸测试方法中使用。最后，JUnit会调用标有@Test的测试方法。这就是整个测试过程。 
+
+参数化测试模式（Parameterized Test Pattern）可以很好的用来实现数据驱动测试。一旦写好了一个类似于代码清单4-14中的架子，添加新测试就非常方便了，只要加新的对象数组就行。 不过，添加一个对象数组不是创建新测试用例的最佳方法。如果代码清单4-14中的测试，每一个测试用例都是一行代码的断言，那么可读性会好得多。确实，当测试数据量非常大，而且是从XML或ASCII文件类的外部数据源获得，那么使用参数化测试会很合适，解析外部数据源的工作可以交给标有@Paramters的方法做。这样，测试类难免会变得稍微有些复杂，不过好处是可以以更合适的语法和文件格式描述测试数据。 不过需要处理大量数据的测试毕竟是少数，我们接下来会讨论些更常见的东西。因为很多对象都和其他对象有依赖关系，或许接下来应该介绍自分流（Self-Shunt）模式。
+
+#### 8.3.2 自分流 
+前面我们讨论过几种不同的测试替身，不过没有提及自分流模式。自分流模式也是一种测试替身，同时也是我们的测试类。自分流模式首先由Micheal Feathers提出，这种模式是指在测试中，测试类本身充当测试替身。
+
+```java
+//自分流模式的例子 
+public class SelfShuntExample implements PricingService { 
+	/*❶（以下5行）实现PricingService接口*/ 　 
+	@Override 
+	public float getDiscountPercentage(Customer c, Product p) { 
+		return 10.0f; 
+	} 　 
+	
+	@Test 
+	public void testOrderProcessorWithMockObject() throws Exception { 
+		// some setup omitted for brevity... 
+		OrderProcessor processor = new OrderProcessor(); 
+		processor.setPricingService(this); 
+		// ❷ 将“this”传给待测对象 
+		processor.process(new Order(customer, product));
+		assertEquals(expectedBalance, customer.getBalance(), 0.001f); 
+	} 
+} 
+```
+
+从上面代码可以看出，测试类实现了PricingService接口❶，这样我们就可以直接给待测类传入this❷，作为其协作对象，而不用重新创建一个测试替身，或者写出匿名类这样的凌乱代码。对于这种简单的情况，匿名类也是个不错的选择，不过随着方法数量的增多，匿名类代码也会变得越加凌乱，这时最好能使用自分流模式，或者单独的测试替身类。 
+
+要想在需要的地方快速创建出简单的测试替身，Shelf-Shunt是个绝佳的工具。不过随着测试替身的逻辑变得更加复杂，把这些逻辑移到独立的测试替身中会更合适。即便如此，我们要知道，独立的测试替身也有缺点。如果我们想在测试方法间或者测试替身间共享对象及数据，无间内部类（Intimate Inner Class）也许是个更好的选择。
+
+#### 8.3.3 无间内部类 
+有时我们会想在测试类间或者测试替身间共享对象及数据。这问题有几种解决办法（例如添加个getter），无间内部类作为解决方法之一，可能并不很一目了然。不过这并不意味着这种方法不好。实际上，非静态内部类那能够读取和修改测试类成员变量的能力，可以使测试代码更紧凑，比起用getter暴露测试替身内部状态要好得多。 我们可以用一段代码展示无间内部类的作用。下面的示例代码测试的行为是，Server对象在初始化时会从ThreadFactory中获取一个Thread对象，停止时会挂起这个线程。解决办法是使用无间内部类，它将一个新创建的Thread实例赋给包含测试类的thread成员变量。 
+
+```java
+//无间内部类的例子 
+public class IntimateAnonymousInnerClassExample { 　 
+	private StartStopSynchronizedThread thread; 
+	// ❶在测试类和测试替身间共享 　 
+	@Test 
+	public void testStartingAndStoppingThreadsThroughAnExecutorService() throws Exception { 
+		Server server = new Server(); 
+		server.setThreadFactory(new ThreadFactory() { 
+			/*❷无间内部类*/ 
+			public Thread newThread(Runnable task) { 
+				thread = new StartStopSynchronizedThread(task); 
+				// ❶在测试类和测试替身间共享 
+				return thread; 
+			} 
+		}); 
+		
+		server.start(); 
+		thread.shouldBeStartedWithin(1, TimeUnit.SECONDS); 
+		// ❸测试即可访问共享域 
+		server.stop(); 
+		thread.shouldBeStoppedWithin(1, TimeUnit.SECONDS); 
+		// ❸测试即可访问共享域 
+	} 
+} 
+```
+
+可以看到，无间内部类❶使用了测试类中的thread成员变量❷，这样测试中就可以访问thread的成员变量做验证了❸。从技术层面上，无间内部类可以实现为匿名类或者内嵌类。像上面代码中的内部匿名类，可能会变得不好控制，但是它可以访问创建它的方法中的final变量。相比之下，内嵌类更清楚一些，不过数据访问上存在限制。两种方式都可以访问测试类的成员变量。 说到访问成员变量，下一个模式专门介绍如何访问那些本不该被访问到的成员变量。
+
+#### 8.3.4 特许访问（Privileged Access） 
+有时候你可能想改变一点系统现有代码，以测试新添加的代码，但由于某种原因，不能够修改那些代码。这时，“侵犯”现有代码的隐私，通过反射（reflection）API直接读取内部数据，就可以绕过问题，写出测试了。 JUnit邮件列表的文件区有PrivilegedAccessor类的源代码，可以用来做这类工作。另外JUnit-Addons的开源库6里包含PrivateAccessor类、Langhing Panda社区开发的BeanInject工具，也有类似的功能。
+
+#### 8.3.5 额外构造函数（Extra Constructor） 
+计算机世界里面充斥着大段大段怪物般的代码。与这种代码一起工作，很容易头昏脑胀，因为要实例化一个类，可能需要准备一大堆其他对象。这问题很可能是因为没有正确地隔离依赖。当然相应的解决方法是恰当地隔离依赖，把整个架构往依赖注入方向引导，不过这需要花费很多时间。这时，可以使用额外构造函数模式作为临时解决方法。 因为我们没法从外部替换掉依赖，所以要从内部替换。因此，需要给待测类添加额外的构造函数，把依赖作为参数传入，保存到相应的成员变量中，替换真实的依赖。 若原先的构造函数会创建或配置依赖（若不是，我们也可以把依赖配置代码移至这里），我们则可以修改原先构造函数，使其调用新构造函数。
+
+
+- 您在位置 #2590-2607的标注 | 添加于 2015年3月16日星期一 下午10:50:30
+
+### 8.4 小结
+一开始，我们探讨了如何编写测试，介绍了一些测试选择技巧。有了这些技巧，选择测试时有了更多的依据。然后我们转而讨论最为基础的技术，如何使测试通过。这些技术有：伪实现、用三角定位法逐渐逼近正确的功能实现、及时常遇见的显而易见的实现。接着，我们简要陈述了测试驱动的三项准则：毫无保留的重构，尽快变绿，出了问题后放慢速度。 
+
+我们也讨论了几个重要的测试概念。我们把夹具定义为测试执行的上下文环境。我们研究了测试替身的多彩世界，学习了它的分类，包括：伪实现、测试桩及模拟对象。接着，我们比较了基于状态的测试及更为复杂的基于交互的测试。 通过深入地探讨伪实现、测试桩，特别是模拟对象，我们对测试替身的理解也更加细致。然后我们转而讨论提高可测试性等更高层次的准则。我们讨论了继承及组合，讨论了静态方法和Singleton模式的潜在问题。
+
+在讨论完用接缝解决依赖问题后，我们进一步讨论了依赖注入带来的好处。 在理解了测试的重要概念，及具有良好的可测试性的设计的准则后，我们回到了模式方面的讨论。这些模式不少源自Gerard Meszaros的xunitpaterns.com。我们探讨了单元测试的相关模式，从不同断言间的微小差别，到初始化及清除夹具的大家伙模式。 我们的模式乐园之旅正式结束啦。
+
+## 9. 其它测试
+### 9.1 测试驱动Web组件
+#### 9.1.1　测试驱动Java Servlets
+HttpServlet类的service方法负责处理所有HTTP请求。我们的Servlet类会继承自这个HttpServlet类。HttpServlet的Service方法根据HTTP请求的类型把请求转发到相应的doXXX()方法上。
+
+```java
+//为LoginServlet配置AuthenticationService 
+public class TestLoginServlet { 　 
+	private static final String CORRECT_PASSWORD = "correctpassword"; 
+	private static final String VALID_USERNAME = "validuser";
+	private LoginServlet servlet; 
+	
+	/* 将普通对象移到域中*/ 
+	private FakeAuthenticationService authenticator; 
+	private MockHttpServletRequest request; 
+	private MockHttpServletResponse response; 　 
+	@Before 
+	public void setUp() { 
+		authenticator = new FakeAuthenticationService(); 
+		authenticator.addUser(VALID_USERNAME, CORRECT_PASSWORD); 　 
+		servlet = new LoginServlet() { 
+			@Override 
+			protected AuthenticationService getAuthenticationService() { 
+				return authenticator; 
+			} 
+		}; 
+		
+		request = new MockHttpServletRequest(); 
+		response = new MockHttpServletResponse(); 
+	} 　 
+	
+	@Test 
+	public void wrongPasswordShouldRedirectToErrorPage() throws Exception { 
+		request.addParameter("j_username", VALID_USERNAME); 
+		request.addParameter("j_password", "wrongpassword"); 
+		servlet.service(request, response); 
+		assertEquals("/invalidlogin", response.getRedirectedUrl()); 
+	} 　 
+	
+	@Test public void validLoginForwardsToFrontPageAndStoresUsername() throws Exception { 
+		request.addParameter("j_username", VALID_USERNAME); 
+		request.addParameter("j_password", CORRECT_PASSWORD); 
+		servlet.service(request, response); assertEquals("/frontpage", response.getRedirectedUrl()); 
+		assertEquals(VALID_USERNAME, request.getSession() .getAttribute("username")); 
+	} 
+} 
+```
+
+提取出公用初始化方法后，测试都通过了。不过j_username和j_password这两个字符串还存在重复，也可以重构成常量。虽然有时候可读性比“不能有重复”更重要，不过就这具体情况，我强烈建议做重构。这重复不但存在于测试方法之间，还存在于测试代码与产品代码之间，为此我们需要定义公共的常量，让产品代码和测试代码都使用此常量，这样就可以消除重复了。
+
+现在来看看我们对AuthenticationService接口做了哪些工作。我们引入了AuthenticationService接口，这样LoginServlet就不用知道过多验证细节了。至于如何给Servlet注入AuthenticationService暂时不做考虑，先使用getter方法，做测试时可以覆盖这个方法。目前我们还没实现真正的AuthenticationService，只有一个伪实现。 采用分治法，我们可以保持Java Servlet的代码既干净，可测试性又好。使用意图编程，小步地通过测试，我们正在一步步地实现完整的功能。在LoginServlet例子中我们也看到了，用测试驱动的方法编写Servlet代码并不比写普通代码难多少。
+
+```java
+//包含依赖注入的LoginController的完整实现 
+public class LoginController implements Controller { 　 
+	private AuthenticationService authenticator; 　 
+	public void setAuthenticationService(AuthenticationService authService) { 
+		this.authenticator = authService; 
+	} 　 
+	
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception { 
+		String user = request.getParameter("j_username"); 
+		String pass = request.getParameter("j_password"); 
+		if (authenticator.isValidLogin(user, pass)) { 
+			return new ModelAndView("frontpage"); 
+		} 
+		return new ModelAndView("wrongpassword"); 
+	} 
+} 
+```
+
+上面的代码没什么新东西。运行所有测试，当前有效登录的测试通过了，第一个测试却失败了。这是因为我们没有给第一个测试中的控制器注入AuthenticationService。我们可以把公共的初始化代码提取成一个成员方法，再给这个方法标记上@Before。这一步重构的结果就不在这里演示了，你可以自己试试，重构后代码会很简洁。 看完这些例子后，我想不会再有人认为现代MVC框架下测试驱动控制器类有任何麻烦或者困难了。这些实际上都只是普通的Java代码，只不过接口稍微大了一点而已。
+
+#### 9.1.2　用JspTest测试驱动JSP
+JspTest里有一个叫做HtmlTestCase的抽象类，所有测试都需要继承这个类。HtmlTestCase提供了一些方法来模拟HTTP请求和渲染JSP文件以及做HTTP相关的验证等。
+
+### 9.2 测试驱动数据访问
+开发应用逻辑层（application logic layer）时，可以使用持久化逻辑伪实现。我们可以验证业务逻辑代码正确地调用了持久层方法，传入了正确的参数。那么我们在开发持久层时应该模拟JDBC API（或其他任何正在使用的持久化框架接口），还是该访问数据库？应该使用真实的数据库，还是使用轻量级，速度飞快的，但和真实数据库系统有一定差别的内存数据库？ 
+
+#### 9.2.1　用DAO模式分层
+此模式是指每个持久化的领域对象（domain object）都应该有一个DAO接口负责其持久化工作。具体持久化方式有很多种，可以是关系数据库、对象数据库、或是文件系统上的一堆XML文件。对象本身及DAO的调用者并不知道对象从哪里来，到哪里去，以及是否具有持久性。因此，我们可以随意替换持久化的具体实现技术，而上层应用程序对此不会有一丝察觉。
+
+```java
+//PersonDao接口对应用代码隐藏了实现细节 
+public interface PersonDao { 
+	Person find(Integer id); 
+	void save(Person person); 
+	void update(Person person); 
+	void delete(Person person); 
+	List<Person> findAll(); 
+	List<Person> findByLastname(String lastname); 
+}
+```
+
+比起把数据访问代码与应用逻辑代码混在一起，使用DAO模式的好处显而易见。另外使用DAO模式还可以缩减代码量。如果使用了Hibernate或Spring框架的JdbcTemplate等现成的开源持久层框架，能够显著加快开发速度。好的框架能帮你做不少工作，开发人员就可以专心开发持久化逻辑，而不用在持久化技术细节上花太多功夫了。
+
+### 9.3 小结 
+我们了解了如何测试驱动数据访问代码。这工作比想象的要容易得多。我们从两个角度阐述了这个问题——分别使用了单元测试和集成测试驱动产品代码的开发。 首先，我们讨论了为何数据访问代码与普通的应用程序代码或业务逻辑代码间存在一定差别，为何其会跨越许多层。然后我们了解了DAO模式，以及如何用这种模式解决代码臃肿的现实问题。 然后，我们尝试用3种不同的持久化技术实现一个简单的DAO类。这3种技术分别为：纯JDBC API、Spring框架提供的JdbcTemplate以及Hibernate API。因为使用3种技术实现同一种功能，我们很容易看出框架的可测试性风格对TDD过程的影响。 在学会用单元测试驱动数据访问代码后，我们转向了另一种方式：直接连接到HSQLDB内存数据库进行集成测试。我们讨论了在集成测试中使用轻量级数据库可能带来的问题，也讨论了在版本控制系统中维护各项配置的必要性。 我们学习了如何搭建集成测试的基础架构，好让集成测试编写工作变得飞快，讨论了用SQL脚本及Hibernate API来创建数据库模式，亦讨论了如何用事务夹具清理测试数据。我们也介绍了用DbUnit填充数据库，以及用外部XML数据文件中的内容进行结果验证。 在尝试测试驱动数据访问代码的两种不同方法后，我们发现两种方法各自的优势，并决定针对具体情况而使用不同的方法。 
+
+## 10　JUnit 4简明教程 
+
+```java
+import static org.junit.Assert.*; 
+// ❶ 
+import org.junit.*; 
+import java.io.*; 
+
+public class TestConsoleLogger { 
+	// ❷ private static final String EOL = System.getProperty("line.separator"); 
+	private ConsoleLogger logger; 
+	/*❸ */ 
+	private PrintStream originalSysOut, originalSysErr; 
+	private ByteArrayOutputStream sysOut, sysErr; 
+	
+	@Before 
+	public void createFixture() { 
+		// ❹ 
+		logger = new ConsoleLogger(); 
+		/*❸*/ 
+		originalSysOut = System.out; 
+		originalSysErr = System.err; 
+		sysOut = new ByteArrayOutputStream(); 
+		sysErr = new ByteArrayOutputStream(); 
+		System.setOut(new PrintStream(sysOut)); 
+		System.setErr(new PrintStream(sysErr)); 
+	} 
+	
+	@After 
+	public void resetStandardStreams() { 
+		// ❺ System.setOut(originalSysOut); 
+		System.setErr(originalSysErr); 
+	} 
+	
+	@Test /*❻❼ */
+	public void infoLevelGoesToSysOut() throws Exception { 
+		logger.info("msg"); 
+		streamShouldContain("[INFO] msg" + EOL, sysOut.toString()); 
+	} 
+	
+	@Test(timeout = 100) // ❽ 
+	public void errorLevelGoesToSysErr() throws Exception { 
+		// ❻❼ 
+		logger.error("Houston..."); 
+		streamShouldContain("[ERROR] Houston..." + EOL, sysErr.toString()); 
+	} 
+	
+	/*❾ */
+	private void streamShouldContain(String expected, String actual) { 
+		/*❿ */ 
+		assertEquals("Wrong stream content.", expected, actual); 
+	} 
+} 
+```
+
+❶ 通过静态导入的JUnit的Assert类获取断言方法。 ❷ 类名应该表明它是一个测试（例如名称中包含Test）。 ❸ 在@Before方法中设置的实例变量表示测试方法中常用的类具。 ❹ 通过为一个公有方法加上@Before注解来为测试准备一个已知状态。 ❺ 通过为一个公有方法加上@After注解来在测试之后执行清理操作。 ❻ 所有带@Test注解的public void方法均被视为JUnit 4 TestRunner的测试用例。 ❼ 测试方法可以声明任何异常——JUnit负责捕获它们。 ❽ @Test注解也可以用于计时测试、测试异常等。 ❾ 除测试方法外，还可以声明任意数量的辅助方法。 
+
+## 11　EasyMock简明教程 
+
+```java
+import static org.easymock.EasyMock.*; 
+/*❶ */ 
+import org.easymock.EasyMock; 
+import org.junit.Test; 
+
+public class TestInternetRelayChat { 
+	@Test public void messagesAreOnlyDeliveredToOtherClients() throws Exception { 
+		String msg = "Maisk Maisk!"; 
+		Client koskela = EasyMock.createMock(Client.class); 
+		/*❷*/ 
+		Client freeman = EasyMock.createMock(Client.class); 
+		Client himberg = EasyMock.createMock(Client.class); 
+		/*❸ */
+		expect(himberg.onMessage("lasse", msg)).andReturn(true); 
+		freeman.onMessage("lasse", msg); /*❹*/ 
+		expectLastCall().andReturn(true); 
+		replay(freeman, koskela, himberg); // ❺ 
+		InternetRelayChat irc = new InternetRelayChat(); /*❻ */ 
+		irc.join("inhuman", freeman); 
+		irc.join("vilbert", himberg); 
+		Prompt prompt = irc.join("lasse", koskela); 
+		prompt.say(msg); 
+		verify(freeman, koskela, himberg); // ❼ 
+	} 
+} 
+```
+
+❶ 从EasyMock和类自身中导入静态辅助方法。 ❷ 让EasyMock为指定接口创建模拟对象。 ❸ 记录期望的交互操作。 ❹ 功能上与上一条语句等价，但语法不同。 ❺ 记录完期望的信息后，转换为应答模式。 ❻ 一切都准备好以后，做个练习。 ❼ 让模拟对象验证是否发生了期望的交互行为。
+
