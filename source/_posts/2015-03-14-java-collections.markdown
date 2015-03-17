@@ -16,6 +16,10 @@ Java提供了一套完整的Collection框架，能够帮助我们减少开发工
 
 注意，从上图可以看出，Map并不是真正的Collection。所有核心Collection接口都支持泛型。在声明Collection实例时，你可以也应该指明集合的元素类型，让编译器帮你校验放入集合的元素类型是否匹配，从而降低运行时错误。
 
+类结构图
+
+![image](/myresource/images/image_blog_2015-03-14-colls-classdiagram.jpg)
+
 ## 2. Collection接口
 Collection类都有很方便的构造器。例如你有一个`Collection<String> c`，它可能是一个List、Set或其它Collection类型。通过构造方法可以转换成另一种Collection：
 
