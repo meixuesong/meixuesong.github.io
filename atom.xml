@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-03-17T20:40:45+08:00</updated>
+  <updated>2015-03-17T22:05:19+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -743,6 +743,10 @@ public class TestInternetRelayChat {
 <p><img src="http://blog.ubone.com/myresource/images/image_blog_2015-03-14-colls-coreInterfaces.png" alt="image" /></p>
 
 <p>注意，从上图可以看出，Map并不是真正的Collection。所有核心Collection接口都支持泛型。在声明Collection实例时，你可以也应该指明集合的元素类型，让编译器帮你校验放入集合的元素类型是否匹配，从而降低运行时错误。</p>
+
+<p>类结构图</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_2015-03-14-colls-classdiagram.jpg" alt="image" /></p>
 
 <h2>2. Collection接口</h2>
 
