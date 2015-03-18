@@ -57,7 +57,7 @@ categories:
 
 ![image](/myresource/images/image_blog_20140803_002859.jpg)
 
-图中，红色类为适配器模式，将其它类型（如Byte数组）接口转换成InputStream接口。而绿色及其子类为适配器模式，各角色：
+图中，红色类为适配器模式，将其它类型（如Byte数组）接口转换成InputStream接口。而绿色及其子类为装饰模式，各角色：
 
 1. Component角色：InputStream
 2. Concrete Component角色：红色的类
