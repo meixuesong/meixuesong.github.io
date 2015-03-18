@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Others | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/others/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-03-18T23:04:16+08:00</updated>
+  <updated>2015-03-19T00:17:22+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -319,6 +319,10 @@ disqus_show_comment_count: true
 <tr>
 <td><code>Command + shift + L</code> </td>
 <td> 显示快捷键</td>
+</tr>
+<tr>
+<td><code>Option + Command + X</code> </td>
+<td> 运行快捷键，单元测试（T），Java(J)</td>
 </tr>
 <tr>
 <td><code>Command + O</code> </td>
