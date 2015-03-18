@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>设计模式:桥梁模式 - 码出人生</title>
+  <title>Mac Eclipse快捷键 - 码出人生</title>
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="桥梁模式的用意是“将抽象化与实现化解耦，使二者可以独立变化。”这里的解耦就是将它们之间的强关联改变成弱关联。所谓强关联就是继承关系，在编译期就已经确定。而弱关联就是动态确定并且可以在运行期动态改变的关联。因此对于Java，继承是强关联，而聚合关系是弱关联。因此桥梁模式中的解耦， &hellip;">
+  <meta name="description" content="快捷键是提高开发效率的必要手段。下表是常用快捷键。 快捷键 说明 Command + shift + L 显示快捷键 Command + O （不是数字0）显示大纲 Command + 1 快速修复 Command + 2 多个菜单：赋值给实例变量（F）,局域变量（L） Command + D &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.ubone.com/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi">
+  <link rel="canonical" href="http://blog.ubone.com/blog/2014/03/11/mac-eclipsekuai-jie-jian">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
@@ -86,7 +86,7 @@ var _hmt = _hmt || [];
   
   <header>
     
-      <h1 class="entry-title">设计模式:桥梁模式</h1>
+      <h1 class="entry-title">Mac Eclipse快捷键</h1>
     
     
       <p class="meta">
@@ -102,45 +102,165 @@ var _hmt = _hmt || [];
   
 
 
-<time datetime="2014-08-03T22:09:23+08:00" pubdate data-updated="true">2014-08-03</time>
+<time datetime="2014-03-11T22:08:33+08:00" pubdate data-updated="true">2014-03-11</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>桥梁模式的用意是“将抽象化与实现化解耦，使二者可以独立变化。”这里的解耦就是将它们之间的强关联改变成弱关联。所谓强关联就是继承关系，在编译期就已经确定。而弱关联就是动态确定并且可以在运行期动态改变的关联。因此对于Java，继承是强关联，而聚合关系是弱关联。因此桥梁模式中的解耦，就是指将抽象化与实现化之间的继承关系换成组合/聚合关系，使两者可以独立变化。桥梁模式的结构图如下：</p>
-
-<p><img src="/myresource/images/image_blog_20140803_233716.jpg" alt="image" /></p>
+<div class="entry-content"><p>快捷键是提高开发效率的必要手段。下表是常用快捷键。</p>
 
 <!--more-->
 
 
-<ol>
-<li>抽象化角色（Abstraction）：抽象化给出的定义，并保存一个对实现化对象的引用。</li>
-<li>修正抽象化角色（Refined Abstraction）：扩展抽象化角色，改变和修正父类的定义。</li>
-<li>实现化角色（Implementor）：给出实现化角色的接口，但不给出具体实现。这个接口不一定与抽象化角色接口相同，实际上，这两个接口可以非常不一样。<strong>实现化角色应当只给出底层操作，而抽象化角色应当只给出基于底层操作的更高一层的操作。</strong></li>
-<li>具体实现化角色（Concrete Implementor）：给出实现化角色接口的具体实现。当具体实现化类只有一个ConcreteImplementor的情况下，实现化角色就可以省略了。</li>
-</ol>
+<table>
+<thead>
+<tr>
+<th>快捷键 </th>
+<th> 说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Command + shift + L </td>
+<td> 显示快捷键</td>
+</tr>
+<tr>
+<td>Command + O </td>
+<td> （不是数字0）显示大纲</td>
+</tr>
+<tr>
+<td>Command + 1 </td>
+<td> 快速修复</td>
+</tr>
+<tr>
+<td>Command + 2 </td>
+<td> 多个菜单：赋值给实例变量（F）,局域变量（L）</td>
+</tr>
+<tr>
+<td>Command + D </td>
+<td> 删除当前行</td>
+</tr>
+<tr>
+<td>Command + . </td>
+<td> 跳转到下一个错误或警告</td>
+</tr>
+<tr>
+<td>Option + ↓ </td>
+<td> 当前行和下面一行交互位置</td>
+</tr>
+<tr>
+<td>Option + ↑ </td>
+<td> 当前行和上面一行交互位置</td>
+</tr>
+<tr>
+<td>Option + Return </td>
+<td> 显示当前选择资源的属性</td>
+</tr>
+<tr>
+<td>Shift + Return </td>
+<td> 在当前行的下一行插入空行</td>
+</tr>
+<tr>
+<td>Shift + Command + Return </td>
+<td> 在当前行插入空行</td>
+</tr>
+<tr>
+<td>Control + Q </td>
+<td> 定位到最后编辑的地方</td>
+</tr>
+<tr>
+<td>Control + M </td>
+<td> 最大化当前的Edit或View（再按则最小化）</td>
+</tr>
+<tr>
+<td>Command + / </td>
+<td> 注释当前行，再按则取消注释</td>
+</tr>
+<tr>
+<td>Command + T </td>
+<td> 快速显示当前类的继承结构</td>
+</tr>
+<tr>
+<td>Command + W </td>
+<td> 关闭当前Editer</td>
+</tr>
+<tr>
+<td>Command + K </td>
+<td> 参照当前选中的Word快速定位到下一个</td>
+</tr>
+<tr>
+<td>Command + E </td>
+<td> 快速显示当前已打开文件的下拉列表（如果当前页面没有显示的用黑体表示）</td>
+</tr>
+<tr>
+<td>Option + / </td>
+<td> 代码助手完成一些代码的插入（俗称“智能提示”）</td>
+</tr>
+<tr>
+<td>Command + J </td>
+<td> 正向增量查找（按下Command + J后，你所输入的每个字母编辑器都提供快速匹配定位到某个单词，如果没有，则在Stutes Line中显示没有找到了）</td>
+</tr>
+<tr>
+<td>Command + Option + ↓ </td>
+<td> 复制当前行到下一行</td>
+</tr>
+<tr>
+<td>Command + Option + ↑ </td>
+<td> 复制当前行到上一行</td>
+</tr>
+<tr>
+<td>Command + Shift + E </td>
+<td> 显示管理当前打开的所有的View的管理器</td>
+</tr>
+<tr>
+<td>Command + Shift + F </td>
+<td> 格式化当前代码</td>
+</tr>
+<tr>
+<td>Command + shift + G </td>
+<td> 查看当前选中方法名的所有reference</td>
+</tr>
+<tr>
+<td>Command + Shift + J </td>
+<td> 反向增量查找</td>
+</tr>
+<tr>
+<td>Command + Shift + P </td>
+<td> 定位到对于的匹配符（譬如{}）（从前面定位后面时，光标要在匹配符里面，后面到前面，则反之）</td>
+</tr>
+<tr>
+<td>Command + shift + R </td>
+<td> 打开资源</td>
+</tr>
+<tr>
+<td>Command + Shift + W </td>
+<td> 关闭所有打开的Editer</td>
+</tr>
+<tr>
+<td>Command + Shift + X </td>
+<td> 把当前选中的文本全部变为大写</td>
+</tr>
+<tr>
+<td>Command + Shift + Y </td>
+<td> 把当前选中的文本全部变为小写</td>
+</tr>
+<tr>
+<td>Option + Command + R </td>
+<td> 重命名（尤其是变量和类的Rename效果比较明显）</td>
+</tr>
+<tr>
+<td>Option + Command + M </td>
+<td> 抽取方法（这是重构里面最常用的方法之一了，尤其是对一大堆泥团代码有用）</td>
+</tr>
+<tr>
+<td>Option + Command + L </td>
+<td> 抽取本地变量（可以直接把一些魔法数字和字符串抽取成一个变量，尤其是多处调用的时候）</td>
+</tr>
+</tbody>
+</table>
 
-
-<p>抽象化等级结构中的方法通过向对应的实现化对象的委派实现自己的功能。一般来说，实现化角色中的每一个方法都应当有一个抽象化角色中的某一个方法与之对应，但反过来则不一定。即抽象化角色的接口比实现化角色的接口宽，抽象化角色还可能提供其它的商业方法。而实现化角色则仅仅为实现抽象化角色的相关行为而存在。</p>
-
-<p>桥梁模式是为了分离抽象化与实现，使两者的接口可以不同。而适配器模式是为了改变已有接口，使它们相容。因此这两种模式是不一样的。</p>
-
-<p>什么情况下应当使用桥梁模式？</p>
-
-<ul>
-<li>如果一个系统需要在构件的抽象化角色和具体化角色之间增加更多的灵活性，避免在两个层次之间建立静态的联系。</li>
-<li>设计要求实现化角色的任何改变不应当影响客户端。</li>
-<li>一个构件有多个抽象化角色和实现化角色，系统需要它们之间进行动态耦合。</li>
-<li>虽然在系统中使用继承没有问题，但由于抽象化角色和具体角色需要独立变化，设计要求需要独立管理这两者。</li>
-</ul>
-
-
-<p>桥梁模式的一个例子是Java AWT的Peer架构。Java应用在不同的操作系统上有不同的Look and Feel。Java为AWT中的每一个GUI构件都提供了一个Peer构件。Java程序员只需要关心Button对象提供的接口，当运行时，Button对象动态地与一个本地环境的底层Peer对象联系起来，这个Peer对象会按照指令执行正确的操作。</p>
-
-<p><img src="/myresource/images/image_blog_20140825_200404.jpg" alt="image" /></p>
 </div>
 
 
@@ -163,12 +283,12 @@ var _hmt = _hmt || [];
   
 
 
-<time datetime="2014-08-03T22:09:23+08:00" pubdate data-updated="true">2014-08-03</time>
+<time datetime="2014-03-11T22:08:33+08:00" pubdate data-updated="true">2014-03-11</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/she-ji-mo-shi/'>设计模式</a>
+    <a class='category' href='/blog/categories/others/'>others</a>
   
 </span>
 
@@ -203,10 +323,8 @@ var _hmt = _hmt || [];
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi/" title="Previous Post: 设计模式:门面模式">&laquo; 设计模式:门面模式</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/08/07/ha-er-bin-yin-xiang/" title="Next Post: 哈尔滨印象">哈尔滨印象 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2014/06/25/just-a-test/" title="Next Post: 单例与枚举">单例与枚举 &raquo;</a>
       
     </p>
   </footer>
