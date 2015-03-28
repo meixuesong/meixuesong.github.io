@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Others | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/others/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-03-22T17:59:10+08:00</updated>
+  <updated>2015-03-28T17:34:20+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -198,7 +198,7 @@ jekyll-ebook manifest.yml
     <link href="http://blog.ubone.com/blog/2014/07/25/mac-eclipsekuai-jie-jian/"/>
     <updated>2014-07-25T22:08:33+08:00</updated>
     <id>http://blog.ubone.com/blog/2014/07/25/mac-eclipsekuai-jie-jian</id>
-    <content type="html"><![CDATA[<p>快捷键是提高开发效率的必要手段。下表是常用快捷键。</p>
+    <content type="html"><![CDATA[<p>快捷键是提高开发效率的必要手段。下表是常用快捷键：</p>
 
 <!--more-->
 
