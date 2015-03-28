@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Linux | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-03-28T21:30:25+08:00</updated>
+  <updated>2015-03-28T21:47:10+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -91,7 +91,49 @@ crontab [ -u user ] [ -i ] { -e | -l | -r }
 <li><ul>
 <li><ul>
 <li><ul>
-<li>myCommand</li>
+<li>myCommand
+
+<h1>实例2：每5分钟执行一次myCommand</h1>
+
+*/5 * * * * myCommand
+
+<h1>实例3：每小时的第3和第15分钟执行</h1>
+
+3,15 * * * * myCommand
+
+<h1>实例4：在上午8点到11点的第3和第15分钟执行</h1>
+
+3,15 8-11 * * * myCommand
+
+<h1>实例5：每隔两天的上午8点到11点的第3和第15分钟执行</h1>
+
+3,15 8-11 */2  *  * myCommand
+
+<h1>实例6：每周一上午8点到11点的第3和第15分钟执行</h1>
+
+3,15 8-11 * * 1 myCommand
+
+<h1>实例7：每晚的21:30重启smb</h1>
+
+30 21 * * * /etc/init.d/smb restart
+
+<h1>实例8：每月1、10、22日的4 : 45重启smb</h1>
+
+45 4 1,10,22 * * /etc/init.d/smb restart
+
+<h1>实例9：每周六、周日的1 : 10重启smb</h1>
+
+10 1 * * 6,0 /etc/init.d/smb restart
+
+<h1>实例10：每天18 : 00至23 : 00之间每隔30分钟重启smb</h1>
+
+0,30 18-23 * * * /etc/init.d/smb restart
+
+<h1>实例11：每星期六的晚上11 : 00 pm重启smb</h1>
+
+0 23 * * 6 /etc/init.d/smb restart
+
+<h1>实例12：每一小时重启smb</h1></li>
 </ul>
 </li>
 </ul>
@@ -100,51 +142,9 @@ crontab [ -u user ] [ -i ] { -e | -l | -r }
 </li>
 </ul>
 </li>
-</ul>
-
-
-<h1>实例2：每小时的第3和第15分钟执行</h1>
-
-<p>3,15 * * * * myCommand</p>
-
-<h1>实例3：在上午8点到11点的第3和第15分钟执行</h1>
-
-<p>3,15 8-11 * * * myCommand</p>
-
-<h1>实例4：每隔两天的上午8点到11点的第3和第15分钟执行</h1>
-
-<p>3,15 8-11 */2  *  * myCommand</p>
-
-<h1>实例5：每周一上午8点到11点的第3和第15分钟执行</h1>
-
-<p>3,15 8-11 * * 1 myCommand</p>
-
-<h1>实例6：每晚的21:30重启smb</h1>
-
-<p>30 21 * * * /etc/init.d/smb restart</p>
-
-<h1>实例7：每月1、10、22日的4 : 45重启smb</h1>
-
-<p>45 4 1,10,22 * * /etc/init.d/smb restart</p>
-
-<h1>实例8：每周六、周日的1 : 10重启smb</h1>
-
-<p>10 1 * * 6,0 /etc/init.d/smb restart</p>
-
-<h1>实例9：每天18 : 00至23 : 00之间每隔30分钟重启smb</h1>
-
-<p>0,30 18-23 * * * /etc/init.d/smb restart</p>
-
-<h1>实例10：每星期六的晚上11 : 00 pm重启smb</h1>
-
-<p>0 23 * * 6 /etc/init.d/smb restart</p>
-
-<h1>实例11：每一小时重启smb</h1>
-
-<ul>
 <li>*/1 * * * /etc/init.d/smb restart
 
-<h1>实例12：晚上11点到早上7点之间，每隔一小时重启smb</h1></li>
+<h1>实例13：晚上11点到早上7点之间，每隔一小时重启smb</h1></li>
 <li>23-7/1 * * * /etc/init.d/smb restart
 ```</li>
 </ul>
