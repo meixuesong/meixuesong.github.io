@@ -10,7 +10,7 @@ categories:
 
 <!--more-->
 
-快捷键 | 说明
+快捷键 | 使用说明
 ---|---
 `Command + shift + L` | 显示快捷键
 `Option + Command + X` | 运行快捷键，单元测试（T），Java(J)
