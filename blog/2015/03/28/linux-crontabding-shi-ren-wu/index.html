@@ -1,0 +1,374 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Linux Crontab定时任务 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="通过crontab命令可以固定的间隔时间循环执行指定的命令或shell脚本。时间间隔的单位可以是分钟、小时、日、月、周及以上的任意组合。这个命令非常适合周期性的工作。 命令 crontab有两种命令形式： crontab [ -u user ] file
+crontab [ -u user &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2015/03/28/linux-crontabding-shi-ren-wu">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="/stylesheets/prism-default.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
+<style>
+article blockquote {
+  font-size: 0.9em;
+}
+</style>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?28583ca12a9f673dc8d86501f8d02bbe";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">@InfoQ</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Linux Crontab定时任务</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-28T21:04:50+08:00" pubdate data-updated="true">2015-03-28</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>通过crontab命令可以固定的间隔时间循环执行指定的命令或shell脚本。时间间隔的单位可以是分钟、小时、日、月、周及以上的任意组合。这个命令非常适合周期性的工作。</p>
+
+<!--more-->
+
+
+<h2>命令</h2>
+
+<p>crontab有两种命令形式：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>crontab [ -u user ] file
+crontab [ -u user ] [ -i ] { -e | -l | -r }</code></pre>
+
+
+<ul>
+<li>-u user：用来设定某个用户的crontab服务；</li>
+<li>file：file是命令文件的名字,表示将file做为crontab的任务列表文件并载入crontab。如果在命令行中没有指定这个文件，crontab命令将接受标准输入（键盘）上键入的命令，并将它们载入crontab。</li>
+<li>-i：在删除用户的crontab文件时给确认提示。</li>
+<li>-e：编辑某个用户的crontab文件内容。如果不指定用户，则表示编辑当前用户的crontab文件。</li>
+<li>-l：显示某个用户的crontab文件内容，如果不指定用户，则表示显示当前用户的crontab文件内容。</li>
+<li>-r：从/var/spool/cron目录中删除某个用户的crontab文件，如果不指定用户，则默认删除当前用户的crontab文件。</li>
+</ul>
+
+
+<h2>crontab文件格式</h2>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'># Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * command to be executed
+  23 20 *  *  * shutdown  -r  now</code></pre>
+
+
+<h2>建立cron任务</h2>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>为当前用户建立cron任务
+# crontab -e
+为root建立cron任务
+# sudo crontab -e</code></pre>
+
+
+<p>系统会打开默认编辑器（如果没有会让你选择），然后进行任务编辑。</p>
+
+<h2>cron任务示例</h2>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>#实例1：每1分钟执行一次myCommand
+* * * * * myCommand
+
+#实例2：每小时的第3和第15分钟执行
+3,15 * * * * myCommand
+#实例3：在上午8点到11点的第3和第15分钟执行
+3,15 8-11 * * * myCommand
+#实例4：每隔两天的上午8点到11点的第3和第15分钟执行
+3,15 8-11 */2  *  * myCommand
+#实例5：每周一上午8点到11点的第3和第15分钟执行
+3,15 8-11 * * 1 myCommand
+#实例6：每晚的21:30重启smb
+30 21 * * * /etc/init.d/smb restart
+#实例7：每月1、10、22日的4 : 45重启smb
+45 4 1,10,22 * * /etc/init.d/smb restart
+#实例8：每周六、周日的1 : 10重启smb
+10 1 * * 6,0 /etc/init.d/smb restart
+#实例9：每天18 : 00至23 : 00之间每隔30分钟重启smb
+0,30 18-23 * * * /etc/init.d/smb restart
+#实例10：每星期六的晚上11 : 00 pm重启smb
+0 23 * * 6 /etc/init.d/smb restart
+#实例11：每一小时重启smb
+* */1 * * * /etc/init.d/smb restart
+#实例12：晚上11点到早上7点之间，每隔一小时重启smb
+* 23-7/1 * * * /etc/init.d/smb restart</code></pre>
+
+
+<h2>注意事项</h2>
+
+<h3>环境变量问题</h3>
+
+<p>我们手动执行某个任务时，是在当前shell环境下进行的，程序能找到环境变量。而系统自动执行任务调度时，是不会加载任何环境变量的，因此，就需要在crontab文件中指定任务运行所需的所有环境变量。因此需要注意：</p>
+
+<ul>
+<li>脚本中涉及文件路径时写全局路径；</li>
+<li>脚本执行要用到java或其他环境变量时，通过source命令引入环境变量，如:</li>
+</ul>
+
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>cat start_cbp.sh
+!/bin/sh
+source /etc/profile
+export RUN_CONF=/home/d139/conf/platform/cbp/cbp_jboss.conf
+/usr/local/jboss-4.0.5/bin/run.sh -c mev &</code></pre>
+
+
+<ul>
+<li>当手动执行脚本OK，但是crontab执行不成功时,很可能是环境变量惹的祸，可尝试在crontab中直接引入环境变量解决问题。如:</li>
+</ul>
+
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>*/5 * * * * . /etc/profile;/bin/sh /usr/bin/gitupdateblog.sh</code></pre>
+
+
+<h3>重定向问题</h3>
+
+<p>每条任务调度执行完毕，系统都会将任务输出信息通过电子邮件的形式发送给当前系统用户，但如果没有配置电子邮件，通过日志会查看到提示信息：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'># grep CRON /var/log/syslog
+Mar 28 08:30:01 Jasondroplet CRON[26905]: (CRON) info (No MTA installed, discarding output)</code></pre>
+
+
+<p>也可将输出重定向，即在每条命令后面加上<code>/dev/null 2&gt;&amp;1</code>：</p>
+
+<p><code>*/5 * * * * . /etc/profile;/bin/sh /usr/bin/gitupdateblog.sh  &gt;/dev/null 2&gt;&amp;1</code></p>
+
+<p><code>/dev/null 2&gt;&amp;1</code>表示先将标准输出重定向到/dev/null，然后将标准错误重定向到标准输出，由于标准输出已经重定向到了/dev/null，因此标准错误也会重定向到/dev/null，这样日志输出问题就解决了。</p>
+
+<h3>系统级任务调度与用户级任务调度</h3>
+
+<p>系统级任务调度主要完成系统的一些维护操作，用户级任务调度主要完成用户自定义的一些任务，可以将用户级任务调度放到系统级任务调度来完成（不建议这么做），但是反过来却不行，root用户的任务调度操作可以通过”crontab –uroot –e”来设置，也可以将调度任务直接写入/etc/crontab文件，需要注意的是，如果要定义一个定时重启系统的任务，就必须将任务放到/etc/crontab文件，即使在root用户下创建一个定时重启系统的任务也是无效的。</p>
+
+<h3>重启服务</h3>
+
+<p><code># service cron restart</code></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-28T21:04:50+08:00" pubdate data-updated="true">2015-03-28</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/linux/'>linux</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+<!-- UY BEGIN 评论-->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1942741"></script>
+<!-- UY END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/03/17/tddxue-xi-bi-ji/" title="Previous Post: TDD学习笔记">&laquo; TDD学习笔记</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (31)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (5)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (2)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/28/linux-crontabding-shi-ren-wu/">Linux Crontab定时任务</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/17/tddxue-xi-bi-ji/">TDD学习笔记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/14/java-collections/">Java Collections</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/redisxue-xi-bi-ji/">Redis学习笔记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/24/linuxji-chu/">Linux基础</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+</footer>
+  <!--以下为disqus的代码，因为被墙，改用上面的国内代码
+
+
+-->
+
+
+
+
+
+
+
+
+</body>
+</html>

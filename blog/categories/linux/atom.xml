@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Linux | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-03-28T20:14:54+08:00</updated>
+  <updated>2015-03-28T21:30:25+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,199 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux Crontab定时任务]]></title>
+    <link href="http://blog.ubone.com/blog/2015/03/28/linux-crontabding-shi-ren-wu/"/>
+    <updated>2015-03-28T21:04:50+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/03/28/linux-crontabding-shi-ren-wu</id>
+    <content type="html"><![CDATA[<p>通过crontab命令可以固定的间隔时间循环执行指定的命令或shell脚本。时间间隔的单位可以是分钟、小时、日、月、周及以上的任意组合。这个命令非常适合周期性的工作。</p>
+
+<!--more-->
+
+
+<h2>命令</h2>
+
+<p>crontab有两种命令形式：</p>
+
+<p><code>
+crontab [ -u user ] file
+crontab [ -u user ] [ -i ] { -e | -l | -r }
+</code></p>
+
+<ul>
+<li>-u user：用来设定某个用户的crontab服务；</li>
+<li>file：file是命令文件的名字,表示将file做为crontab的任务列表文件并载入crontab。如果在命令行中没有指定这个文件，crontab命令将接受标准输入（键盘）上键入的命令，并将它们载入crontab。</li>
+<li>-i：在删除用户的crontab文件时给确认提示。</li>
+<li>-e：编辑某个用户的crontab文件内容。如果不指定用户，则表示编辑当前用户的crontab文件。</li>
+<li>-l：显示某个用户的crontab文件内容，如果不指定用户，则表示显示当前用户的crontab文件内容。</li>
+<li>-r：从/var/spool/cron目录中删除某个用户的crontab文件，如果不指定用户，则默认删除当前用户的crontab文件。</li>
+</ul>
+
+
+<h2>crontab文件格式</h2>
+
+<p>```</p>
+
+<h1>Example of job definition:</h1>
+
+<h1>.&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash; minute (0 &ndash; 59)</h1>
+
+<h1>|  .&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash; hour (0 &ndash; 23)</h1>
+
+<h1>|  |  .&mdash;&mdash;&mdash;&mdash;&mdash; day of month (1 &ndash; 31)</h1>
+
+<h1>|  |  |  .&mdash;&mdash;&mdash;&ndash; month (1 &ndash; 12) OR jan,feb,mar,apr &hellip;</h1>
+
+<h1>|  |  |  |  .&mdash;&mdash; day of week (0 &ndash; 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat</h1>
+
+<h1>|  |  |  |  |</h1>
+
+<h1>*  *  *  *  * command to be executed</h1>
+
+<p>  23 20 *  *  * shutdown  -r  now
+```</p>
+
+<h2>建立cron任务</h2>
+
+<p>```
+为当前用户建立cron任务</p>
+
+<h1>crontab -e</h1>
+
+<p>为root建立cron任务</p>
+
+<h1>sudo crontab -e</h1>
+
+<p>```</p>
+
+<p>系统会打开默认编辑器（如果没有会让你选择），然后进行任务编辑。</p>
+
+<h2>cron任务示例</h2>
+
+<p>```</p>
+
+<h1>实例1：每1分钟执行一次myCommand</h1>
+
+<ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li>myCommand</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<h1>实例2：每小时的第3和第15分钟执行</h1>
+
+<p>3,15 * * * * myCommand</p>
+
+<h1>实例3：在上午8点到11点的第3和第15分钟执行</h1>
+
+<p>3,15 8-11 * * * myCommand</p>
+
+<h1>实例4：每隔两天的上午8点到11点的第3和第15分钟执行</h1>
+
+<p>3,15 8-11 */2  *  * myCommand</p>
+
+<h1>实例5：每周一上午8点到11点的第3和第15分钟执行</h1>
+
+<p>3,15 8-11 * * 1 myCommand</p>
+
+<h1>实例6：每晚的21:30重启smb</h1>
+
+<p>30 21 * * * /etc/init.d/smb restart</p>
+
+<h1>实例7：每月1、10、22日的4 : 45重启smb</h1>
+
+<p>45 4 1,10,22 * * /etc/init.d/smb restart</p>
+
+<h1>实例8：每周六、周日的1 : 10重启smb</h1>
+
+<p>10 1 * * 6,0 /etc/init.d/smb restart</p>
+
+<h1>实例9：每天18 : 00至23 : 00之间每隔30分钟重启smb</h1>
+
+<p>0,30 18-23 * * * /etc/init.d/smb restart</p>
+
+<h1>实例10：每星期六的晚上11 : 00 pm重启smb</h1>
+
+<p>0 23 * * 6 /etc/init.d/smb restart</p>
+
+<h1>实例11：每一小时重启smb</h1>
+
+<ul>
+<li>*/1 * * * /etc/init.d/smb restart
+
+<h1>实例12：晚上11点到早上7点之间，每隔一小时重启smb</h1></li>
+<li>23-7/1 * * * /etc/init.d/smb restart
+```</li>
+</ul>
+
+
+<h2>注意事项</h2>
+
+<h3>环境变量问题</h3>
+
+<p>我们手动执行某个任务时，是在当前shell环境下进行的，程序能找到环境变量。而系统自动执行任务调度时，是不会加载任何环境变量的，因此，就需要在crontab文件中指定任务运行所需的所有环境变量。因此需要注意：</p>
+
+<ul>
+<li>脚本中涉及文件路径时写全局路径；</li>
+<li>脚本执行要用到java或其他环境变量时，通过source命令引入环境变量，如:</li>
+</ul>
+
+
+<p><code>
+cat start_cbp.sh
+!/bin/sh
+source /etc/profile
+export RUN_CONF=/home/d139/conf/platform/cbp/cbp_jboss.conf
+/usr/local/jboss-4.0.5/bin/run.sh -c mev &amp;
+</code></p>
+
+<ul>
+<li>当手动执行脚本OK，但是crontab执行不成功时,很可能是环境变量惹的祸，可尝试在crontab中直接引入环境变量解决问题。如:</li>
+</ul>
+
+
+<p><code>
+*/5 * * * * . /etc/profile;/bin/sh /usr/bin/gitupdateblog.sh
+</code></p>
+
+<h3>重定向问题</h3>
+
+<p>每条任务调度执行完毕，系统都会将任务输出信息通过电子邮件的形式发送给当前系统用户，但如果没有配置电子邮件，通过日志会查看到提示信息：</p>
+
+<p>```</p>
+
+<h1>grep CRON /var/log/syslog</h1>
+
+<p>Mar 28 08:30:01 Jasondroplet CRON[26905]: (CRON) info (No MTA installed, discarding output)
+```</p>
+
+<p>也可将输出重定向，即在每条命令后面加上<code>/dev/null 2&gt;&amp;1</code>：</p>
+
+<p><code>*/5 * * * * . /etc/profile;/bin/sh /usr/bin/gitupdateblog.sh  &gt;/dev/null 2&gt;&amp;1</code></p>
+
+<p><code>/dev/null 2&gt;&amp;1</code>表示先将标准输出重定向到/dev/null，然后将标准错误重定向到标准输出，由于标准输出已经重定向到了/dev/null，因此标准错误也会重定向到/dev/null，这样日志输出问题就解决了。</p>
+
+<h3>系统级任务调度与用户级任务调度</h3>
+
+<p>系统级任务调度主要完成系统的一些维护操作，用户级任务调度主要完成用户自定义的一些任务，可以将用户级任务调度放到系统级任务调度来完成（不建议这么做），但是反过来却不行，root用户的任务调度操作可以通过”crontab –uroot –e”来设置，也可以将调度任务直接写入/etc/crontab文件，需要注意的是，如果要定义一个定时重启系统的任务，就必须将任务放到/etc/crontab文件，即使在root用户下创建一个定时重启系统的任务也是无效的。</p>
+
+<h3>重启服务</h3>
+
+<p><code># service cron restart</code></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux基础]]></title>
