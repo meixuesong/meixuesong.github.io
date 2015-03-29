@@ -4,7 +4,7 @@ title: "某移动客户端项目开发"
 date: 2014-06-26 15:20:21 +0800
 comments: true
 categories: 
-- 项目管理 
+- 项目与产品
 
 ---
 
