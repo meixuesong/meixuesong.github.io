@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-03-29T11:16:42+08:00</updated>
+  <updated>2015-03-29T11:25:50+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -146,7 +146,7 @@ Mar 28 08:30:01 Jasondroplet CRON[26905]: (CRON) info (No MTA installed, discard
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[读谷歌和亚马逊如何做产品]]></title>
+    <title type="html"><![CDATA[读《谷歌和亚马逊如何做产品》]]></title>
     <link href="http://blog.ubone.com/blog/2015/03/25/du-gu-ge-he-ya-ma-xun-ru-he-zuo-chan-pin/"/>
     <updated>2015-03-25T10:08:11+08:00</updated>
     <id>http://blog.ubone.com/blog/2015/03/25/du-gu-ge-he-ya-ma-xun-ru-he-zuo-chan-pin</id>
@@ -319,6 +319,8 @@ Mar 28 08:30:01 Jasondroplet CRON[26905]: (CRON) info (No MTA installed, discard
 </ol>
 
 
+<p>作者推荐使用<a href="https://www.omnigroup.com/omnigraffle">Omnigraffle</a>制作线框图，但可惜不是免费的。</p>
+
 <h3>1.4 赢在测试</h3>
 
 <p>如果你交付的软件无法工作，卖不出去是一方面，更糟糕的是你会因此蒙羞。遵循下面8个步骤可以对产品质量产生重大影响：</p>
@@ -417,7 +419,7 @@ Mar 28 08:30:01 Jasondroplet CRON[26905]: (CRON) info (No MTA installed, discard
 
 <h2>3. 书中的有趣点</h2>
 
-<p>书中提到了很多有趣的点，摘录如下：</p>
+<p>书中提到了很多有趣的点，翻译也很赞！摘录如下：</p>
 
 <p>强调测试驱动开发的重要性：</p>
 
