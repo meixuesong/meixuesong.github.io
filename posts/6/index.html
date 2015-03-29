@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="命令模式将发出命令和执行命令的责任分割开，委派给不同的对象。类图如下： ">
+  <meta name="description" content="备忘录(Memento)模式又叫做快照模式。备忘录对象是一个用来存储另外一个对象内部状态快照的对象。备忘录模式的用意是在不破坏封装的条件下，将一个对象的状态存储在外部，从而在合适的时候把这个对象还原到原来的状态。通常系统不止存储一个状态，而是存储多个状态（快照）。每一个快照所处的位置就是Check &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +83,49 @@ var _hmt = _hmt || [];
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/13/she-ji-mo-shi-bei-wang-lu-mo-shi/">设计模式:备忘录模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-13T23:00:58+08:00" pubdate data-updated="true">2014-08-13</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>备忘录(Memento)模式又叫做快照模式。备忘录对象是一个用来存储另外一个对象内部状态快照的对象。备忘录模式的用意是在不破坏封装的条件下，将一个对象的状态存储在外部，从而在合适的时候把这个对象还原到原来的状态。通常系统不止存储一个状态，而是存储多个状态（快照）。每一个快照所处的位置就是Check Point。其结构如下图：</p>
+
+<p><img src="/myresource/images/image_blog_20140813_231854.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/13/she-ji-mo-shi-bei-wang-lu-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -473,46 +516,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/03/she-ji-mo-shi-men-mian-mo-shi/">设计模式:门面模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-03T21:59:42+08:00" pubdate data-updated="true">2014-08-03</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>门面(Facade)模式的作用是屏蔽众多子系统的复杂性，为客户端提供一个统一的门面(Facade)对象，方便客户端调用。门面模式没有统一的结构。一般是一个子系统提供一个门面。要注意的是门面只负责协调子系统去服务客户端的请求，不能在门面类中增加功能和职责。</p>
-
-<p>什么情况下使用门面模式？如果子系统演化得越来越复杂，客户端的调用变得很复杂，产生很大的依赖性，则可以引入门面模式将一个子系统与它的客户端以及其他子系统分离。</p>
-
-<p>这与迪米特法则也是相符的，该法则要求不要与陌生人说话，只与你直接朋友通信。采用门面模式，客户端只要与门面打交道，不需要去协调多个子系统。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/7">&larr; Older</a>
@@ -534,13 +537,17 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (31)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (5)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (2)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-guan-li/'>项目管理 (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (31)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (5)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (2)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
     
       <li class="post">
         <a href="/blog/2015/03/28/linux-crontabding-shi-ren-wu/">Linux Crontab定时任务</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/25/du-gu-ge-he-ya-ma-xun-ru-he-zuo-chan-pin/">读谷歌和亚马逊如何做产品</a>
       </li>
     
       <li class="post">
@@ -553,10 +560,6 @@ var _hmt = _hmt || [];
     
       <li class="post">
         <a href="/blog/2015/03/08/redisxue-xi-bi-ji/">Redis学习笔记</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/02/24/linuxji-chu/">Linux基础</a>
       </li>
     
   </ul>

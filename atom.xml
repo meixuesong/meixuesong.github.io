@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-03-28T21:47:10+08:00</updated>
+  <updated>2015-03-29T11:16:42+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -142,6 +142,303 @@ Mar 28 08:30:01 Jasondroplet CRON[26905]: (CRON) info (No MTA installed, discard
 <h3>重启服务</h3>
 
 <p><code># service cron restart</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[读谷歌和亚马逊如何做产品]]></title>
+    <link href="http://blog.ubone.com/blog/2015/03/25/du-gu-ge-he-ya-ma-xun-ru-he-zuo-chan-pin/"/>
+    <updated>2015-03-25T10:08:11+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/03/25/du-gu-ge-he-ya-ma-xun-ru-he-zuo-chan-pin</id>
+    <content type="html"><![CDATA[<p>最近读了《谷歌和亚马逊如何做产品》这本书，书的内容不多，但都是精华。作者曾先后在Amazon和Google担任研发经理和高级产品经理。该书主要讲软件的交付，分为两部分，一是介绍Amazon和Google如何交付软件产品，二是团队主管带领团队成功交付所需的技术、最佳实践和技能。</p>
+
+<!--more-->
+
+
+<h2>1. 步步为“赢”</h2>
+
+<p>在介绍Amazon和Google如何交付软件产品时，作者强调了各个阶段的重点，也就是如何步步为“赢”。<strong>包括使命和策略、产品定义、用户体验、项目管理、测试、量化以及发布。</strong></p>
+
+<h3>1.1 赢在使命和策略</h3>
+
+<p>作者表示，成功交付的关键在于快速且充分地满足客户需求。（看起来是句废话？）因此使命就是解决客户的问题，而策略就是找到一种独特的方法来满足这个群体或细分市场的共同需求。</p>
+
+<p>关于如何找到正确的需求，作者提到杰夫.贝索斯（Amazon CEO）一直强调的观点“以客户为导向，而不是以竞争为导向。”同样地，拉里.佩奇（Google CEO）也常说“立足客户，向外拓展。”，所以，<strong>团队应该始终积极地去解决客户的问题，而不是紧盯竞争对手，被动地做出反应。</strong></p>
+
+<p>如何构建卓越的使命？作者表示团队一定要有自己的使命。如果对使命的理解不同而各自为战，就是导致冲突、混乱和痛苦。一个卓越的使命要符合三点要求：</p>
+
+<ol>
+<li>能够唤起人们的兴趣</li>
+<li>提供言之有物且能指明方向的原则</li>
+<li>适合印在T恤上。</li>
+</ol>
+
+
+<p>使命不需要面面俱到，而是要能够反映代表性产品或服务的使命。</p>
+
+<p>如何制订正确的策略？策略是指在竞争对手的压力下，利用公司独特的优势来争取目标客户的粗略计划。需要阐明三件事：客户、公司和竞争。你需要特别注意如何才能长期为客户提供比竞争对手更优质的产品。</p>
+
+<p>当你已经知道谁是产品的忠实用户，以及产品如何保持长期的竞争优势，那么你用最多三段文字写下来，然后再将这些想法的本质浓缩成一段文字。这就是你的策略。越简短的策略越容易实现，也越容易获得他人的认同。</p>
+
+<h3>1.2 赢在产品定义</h3>
+
+<p>通过制订使命和策略，你知道了你的客户是谁，他们的需求是什么，你也知道如何做才能比对手更出色、更具备差异性。然后你就可以细化产品方案。</p>
+
+<p>在细化产品方案时，你会发现很多要解决的客户问题都是你主观臆断的，Amazon和Google都犯过这样的错误。所以要采用一些方法来证明臆断是否正确。即使它们十之八九是正确的，也要经过证明。最好的证明方法就是把产品提供给客户使用，然后听听他们的意见。这也是现在互联网产品常用的方法：最小化可行产品（MVP）。</p>
+
+<p>产品定义过程分为10步：</p>
+
+<h4>1.2.1 撰写新闻稿</h4>
+
+<p>这是由杰夫率先倡导的方法，可以是新闻稿或博客。从用户的视角出发，简明扼要地描述产品是什么、什么时候发布以及为什么要做这个产品。主要包括六大要素：</p>
+
+<ul>
+<li>产品命名</li>
+<li>发布时间</li>
+<li>目标客户</li>
+<li>解决了什么问题</li>
+<li>如何解决（务必简明扼要）</li>
+<li>CEO的公开赞辞</li>
+</ul>
+
+
+<h4>1.2.2 创建并不断更新FAQ文档</h4>
+
+<p>随着产品方案的不断细化，遇到的问题也层出不穷，需要记录一个FAQ文档。它有两大好处：</p>
+
+<ul>
+<li>节省你大量回复邮件的时间、抵御一些内部责难（证明你是尽职的）</li>
+<li>FAQ中的内部问题和外部问题，以后客户支持团队和科技写作团队需要用到。</li>
+</ul>
+
+
+<h4>1.2.3 绘制线框图和流程图</h4>
+
+<p>在FAQ中撰写问题答案时，用流程图或线框图表述会更好一些，尤其涉及用户体验（UX）的细节时更是如此。</p>
+
+<h4>1.2.4 撰写产品单页和制作10分钟的演示文稿</h4>
+
+<p>接下来你要争取工程团队、管理层、风险投资人(VC)或其它利益相关方的初步支持，弄清楚他们对产品的认可程度，而不是等待第7步功能规格文档都快完成了，而他们还对产品的价值存有疑义。</p>
+
+<p>这一步需要准备产品单页或10分钟的演示文稿，或者两样都要准备。这两份文档是新闻稿的延伸，应该包含5个要素：</p>
+
+<ul>
+<li>产品名称</li>
+<li>目标客户 +数量有多少</li>
+<li>解决了什么问题 + 这个问题对于目标客户来说有多大价值</li>
+<li>解决方案 + 这个解决方案类似线上哪个产品，为什么你的方案能让竞争对手在长时间内都无法模仿</li>
+<li>何时交付 + 主要的里程碑有哪些</li>
+<li>团队背景 （仅针对VC）</li>
+</ul>
+
+
+<h4>1.2.5 在FAQ中增加API文档</h4>
+
+<p>API文档用于说明你的团队如何与其他团队协作、外部开发者如何使用这套系统，以及你需要存储什么数据，也有助于你构建SOA体系。</p>
+
+<h4>1.2.6 撰写功能规格文档</h4>
+
+<p>功能规格文档的读者一般为工程团队、设计团队，偶尔还有市场营销团队。主要包括：</p>
+
+<ol>
+<li>简介</li>
+<li>目标与非目标</li>
+<li>用例或用户场景</li>
+<li>原型图或线框图</li>
+<li>API</li>
+<li>负载规划</li>
+<li>依赖</li>
+<li>FAQ和开放问题</li>
+<li>关键事件</li>
+</ol>
+
+
+<p>其中“非目标”用于告诉别人你不要做什么。例如“不用支持PC端。”用例是指用简要的语句描述那些用户必须执行的操作，用户场景则用叙述故事的方式来描述用户是如何体验产品的（类似于用例实现规约）。用例和用户场景都需要加上优先级，以方便工程团队排定任务。常见的优先级包括：</p>
+
+<ul>
+<li>P0 没有此功能产品无法演示</li>
+<li>P1 没有此功能无法交付</li>
+<li>P2 锦上添花的功能</li>
+<li>P3 哈哈哈！</li>
+</ul>
+
+
+<p>负载规划是指对未来一段时间内用户的使用量进行粗略估计并制定应对计划。灾难并不可怕，可怕的是你没有任何准备。应该适当部署一些有效的危机管理系统，如流量限制系统。你需要了解当系统过载时是部分彻底不可用还是整体被拖慢。<strong>不要花太长时间在评估上，只需要花几个小时写个初稿，再找几个团队成员讨论下并将讨论出的数值翻倍就大功告成了。</strong></p>
+
+<p>你需要将全部依赖方及负责人列出来，如果有应急方案也一并列出。功能规格定稿后应该发给各依赖方的负责人，让他们知道你需要他们的支持。</p>
+
+<p>如果有一些硬性时间要求（例如某某开发者大会），这些时间也需要放入文档。最好列出主要事件的达成时间，如特性完成时间，可信测试者版发布时间。</p>
+
+<h4>1.2.7 找出边界情况并得到团队认可</h4>
+
+<p>这时候最困难的部分已经过去，你写了一份超级大的文档，可能没有人能全部读完。这时候你需要时间仔细地、创造性地思考用户会如何弄坏你的软件或者在某种意义上没有按照你的预期来使用软件。当你“漫步”时，请将想到的所有可能的边界情况以及应对策略写在FAQ或者产品需求文档中。</p>
+
+<p>这一步充满风险。一方面你必须承认并整合所有你的团队找到的边界情况，另一方面还必须捍卫产品的核心原则。如果工程团队都不买账的产品，你如何指望你的客户会买账？你并不需要团队的每一个人都相信你的规划是完美的，而是需要他们同意朝一个方向前进并把产品视作是一个极有可能成功的实验！</p>
+
+<h4>1.2.8 客户测试</h4>
+
+<p>找一批现存的或潜在的客户，向他们介绍你的产品设想和原型，听听他们的反馈。在产品演示文稿准备妥当之后，应该马上安排持续3周，每周3至5次的面向潜在客户的产品演示。</p>
+
+<h4>1.2.9 想清楚基本的商业要素——命名、定价和收益</h4>
+
+<p>讨论名称是一件极其主观且争议较大的事情。其实名称并没有那么重要，它再出色也不能帮做成一个产品或者毁掉一个产品，不要浪费太多时间纠结，赶紧定一个！</p>
+
+<p>产品定价有三个基本方法：按成本定价、按价值定价以及对比定价。软件业通常不适合按成本定价，因为难以统计也不知道明天的成本。按价值定价，你需要去调研客户，看什么价位他们愿意购买。但客户很少如实回答，这个方法看起来合理但不具备可操作性。对比定价与前面两个方法相比要合理得多。它有两个前提：1是有一个合理的比较目标；2是假定市场是弹性的，即产品会在价格下降时销量增加。</p>
+
+<p>有了定价就可以制定收益模型，这也是一个拍脑袋出来的东西。可以做一个简单的Excel表格，设定相应的变量和计算步骤，反复进行预测。</p>
+
+<h4>1.2.10 取得上层的认可</h4>
+
+<p>在向位高权重的人汇报产品方案时，首先确保你了解产品的所有信息。如果你注定做不到这点，也需要尽力做好一些。万一问到你不清楚的问题时，不要试着糊弄过去，承认错误也没有什么大不了的，这不过是向他们证明作为一个菜鸟你无法理解他们有多优秀。</p>
+
+<h4>1.2.11 去构建产品</h4>
+
+<p>驱动你的团队在现实的重重困境中构建出可靠的软件。</p>
+
+<h3>1.3 赢在用户体验</h3>
+
+<p>首先了解一些概念：</p>
+
+<ul>
+<li>用户体验（UX, User Experience）通过制作流程图或原型图来说明用户体验。</li>
+<li>用户界面（UI, User Interface）用户体验的旧称，更关注单个页面的设计。</li>
+<li>视觉设计（VisD, Visual Design）通过一种既赏心悦目、夺人眼球又清晰明了的方式来展示内容。</li>
+<li>用户体验研究（UXR, User Experience Research）专注于研究用户是如何看待你的产品。</li>
+</ul>
+
+
+<p>要交付一套卓越的用户体验，必须回答6个问题：</p>
+
+<ol>
+<li>该用户界面要求用户完成的最重要的任务是什么？</li>
+<li>这是最简单的解决方案吗？</li>
+<li>信息是否组织得当？</li>
+<li>设计是否易用且一目了然？</li>
+<li>标准是否一致？</li>
+<li>是否减少用户点击次数？</li>
+</ol>
+
+
+<h3>1.4 赢在测试</h3>
+
+<p>如果你交付的软件无法工作，卖不出去是一方面，更糟糕的是你会因此蒙羞。遵循下面8个步骤可以对产品质量产生重大影响：</p>
+
+<ol>
+<li>坚持测试驱动开发（<strong>“调试过劳死，测试嗨翻天”</strong>）</li>
+<li>围绕优秀的测试主管组建测试团队</li>
+<li>亲自评审测试计划和测试用例</li>
+<li>自动化测试</li>
+<li>虔诚地推行内部试用（Dogfood，欲卖狗食，必先偿之。不要自己团队吃人食，让用户吃狗食）</li>
+<li>开展找虫总动员</li>
+<li>勤勉且有条理地处理Bug</li>
+<li>任命可信测试者以构建最后一道防线。</li>
+</ol>
+
+
+<h3>1.5 赢在发布</h3>
+
+<p>如何确保发布质量？</p>
+
+<ol>
+<li>对改动说不（发布手中有的，而非脑中想的）</li>
+<li>开启作战室</li>
+<li>营造紧迫的气氛</li>
+<li>核查发布清单</li>
+<li>撰写博文</li>
+<li>发布软件</li>
+<li>亲自验证软件</li>
+<li>应对发布带来的各种影响</li>
+</ol>
+
+
+<p>关于应对发布带来的各种影响，书中提到需要做的5件事情：</p>
+
+<ol>
+<li>应对回滚（只要成功回滚，发布就还没有失败。最好的防守是制定周详的撤退计划。Google和Amazon也经常回滚，甚至回滚5次。）</li>
+<li>处理产品危机（做事之前，先做准备）</li>
+<li>演示产品</li>
+<li>应对媒体和客户</li>
+<li>庆祝发布</li>
+</ol>
+
+
+<h2>2. 掌握卓越技能</h2>
+
+<p>产品经理在交付软件的过程中，应该努力学习多种技能，包括：团队、技术、沟通、决策和从容，然后在周期轮回中不断升华。</p>
+
+<h3>2.1 胜在团队</h3>
+
+<p>软件业中团队角色：</p>
+
+<h4>项目集成经理</h4>
+
+<p>项目集成经理的职责重点在于整合不同团队和不同工作职能，专注于“黏合与润滑”。通常他们比产品经理更少关注业务，比项目经理更少关注技术。</p>
+
+<h4>产品经理</h4>
+
+<p>通常产品经理的职责更偏重业务方面。如专注于品牌、定价、市场进入策略等。在谷歌，产品经理需要做除了写代码之外的任何事，甚至有些连代码也写过。</p>
+
+<h4>项目经理</h4>
+
+<p>项目经理主要职责在于排定项目计划和协调团队工作，通常称为技术项目经理。</p>
+
+<h4>工程经理</h4>
+
+<p>工程经理通常由老牌程序员担任。最佳的工程经理是那些由于热爱团队、善解人意、精通交付并乐于构建卓越产品而晋升到该职位的人。产品经理、项目集成经理或者项目经理，甚至技术项目经理都可以是工程经理的属下，但也可以是合作伙伴。每个工程团队都需要工程经理，但不一定需要产品经理、项目集成经理或项目经理。</p>
+
+<h4>如何雇佣产品经理、项目集成经理或者工程经理</h4>
+
+<p>有5条原则：</p>
+
+<ol>
+<li>雇佣比你聪明的人</li>
+<li>雇佣懂得自己不是来当老板的人</li>
+<li>雇佣表达清晰、言之有物的人</li>
+<li>雇佣用数据说话的人</li>
+<li>雇佣充满活力的人</li>
+</ol>
+
+
+<h3>2.2 其它</h3>
+
+<p>关于如何做好演示，作者提出的建议是：</p>
+
+<ol>
+<li>将演示时间控制在15分钟内</li>
+<li>永远传达且只传达一个信息</li>
+<li>讲故事</li>
+<li>制作“综述单页”</li>
+<li>重点演示用户体验</li>
+<li>极度专注倾听</li>
+</ol>
+
+
+<p>在演示时，如果你连关键信息是什么都不知道，还是取消演示吧。最好只传递一个信息，去掉与这个信息无关的数据或议题。</p>
+
+<h2>3. 书中的有趣点</h2>
+
+<p>书中提到了很多有趣的点，摘录如下：</p>
+
+<p>强调测试驱动开发的重要性：</p>
+
+<blockquote><p>调试过劳死，测试嗨翻天！</p></blockquote>
+
+<p>关于沟通的技巧：</p>
+
+<blockquote><p>狗屎三明治（The Shit Sandwich）是一种有效的反馈技巧。它是说当你给员工反馈时，你可以一开始先表扬他们（第一块面包），然后再给他们一些难以完成的挑战（狗屎夹心），最后提醒他们你有多么看好他们的能力（第二块面包）。</p></blockquote>
+
+<p>关于如何咽下狗屎三明治并生存下去：</p>
+
+<blockquote><p>在某些恶劣的环境中，你可能发现你无时无刻不在吃这些三明治，这不是一个好信号&hellip;在断定自己精神抑郁或缺乏自信之前，先确定你实际上没有被一群白痴包围&hellip;有时候你被要求咽下的三明治的数量和质量都是直接来自和你一起工作的白痴们。当碰到这种情况时，你该换个地方，换个产品去交付了。</p></blockquote>
+
+<p>关于Scrum站会</p>
+
+<blockquote><p>我在Google和Amazon的团队喜欢在11:30或12:00的时候开站会，时间不超过15分钟。因为大家都要吃午饭。
+我不赞成Scrum中区分猪和鸡的做法，它只让猪（即开发者）说话&hellip;我的工程团队喜欢听关于业务拓展近况的30秒简述&hellip;我还喜欢让开发主管就项目状态做30秒简报。</p></blockquote>
+
+<p>关于决策</p>
+
+<blockquote><p>几乎所有特性或用户体验的争论最后就会变成像绑匪谈判。你控制了人家的孩子，或者人家控制了你的孩子，除非某一方开出的条件被接受，否则孩子就会被撕票。</p></blockquote>
 ]]></content>
   </entry>
   
@@ -7054,125 +7351,6 @@ channel.read(buffer, channel.size() - 1000);</code></pre>
 <h2>5. Socket与Channel整合</h2>
 
 <p>NetworkChannel把Socket和Channel结合起来，更好地应对网络编程。而MulticastChannel则可以用于像BitTorrent这样的多播编程。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java 7的6个新特性]]></title>
-    <link href="http://blog.ubone.com/blog/2014/11/18/java-7de-6ge-xin-te-xing/"/>
-    <updated>2014-11-18T22:20:52+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/11/18/java-7de-6ge-xin-te-xing</id>
-    <content type="html"><![CDATA[<p>Java 8早都出来了，现在来了解一下Java 7语言上的几个新特性。 :) switch语句支持String、数字常量的新形式、改进的异常处理、TWR语句、钻石语法和变参警告位置的修改。</p>
-
-<!--more-->
-
-
-<h2>1. switch语句支持String</h2>
-
-<pre class='line-numbers language-java'><code class='language-java'>public void printDay(String dayOfWeek) {
-    switch(dayOfWeek) {
-        case "Sunday": System.out.println("周日"); break;
-        case "Saturday": System.out.println("周六"); break;
-        ...
-        default: System.out.println("不知道"); break;
-    }
-}</code></pre>
-
-
-<h2>2. 更强的数值文本表示法</h2>
-
-<pre class='line-numbers language-java'><code class='language-java'>int x = 0b1100110; //0b表示二进制
-int bitPattern = 0b0001_1100_0011; //也可以加下划线
-long longValue = 2_111_000_888L; //加下划线便于阅读</code></pre>
-
-
-<h2>3. 改善的异常处理</h2>
-
-<pre class='line-numbers language-java'><code class='language-java'>try {
-    String fileText = getFile(fileName);
-    cfg = verifyConfig(parseConfig(fileText));
-} catch(FileNotFoundException | ParseException | ConfigurationException e) {
-    //可以用或来表示可能的异常
-    ...
-} catch(IOException iox) {
-    ...
-}</code></pre>
-
-
-<p>另一个新语法对需要重新抛出异常时很有用：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>try {
-    doSomethingWhichMightThrowIOException();
-    doSomethingElseWhichMightThrowSQLException();
-} catch (final Exception e) {
-    ...
-    //不再是抛出笼统的Exception，而是抛出实际的异常。
-    //final不是必须的，但留着提个醒有好处。
-    throw e;
-}</code></pre>
-
-
-<h2>4. TWR(try-with-resources)</h2>
-
-<p>这个很有用，特别是io操作时，可以抛掉大串丑陋的代码了。</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>try (
-    OutputStream out = new FileOutputStream(file);
-    InputStream is = url.openStream()
-) {
-    byte[] buf = new byte[4096];
-    int len;
-    while (len = is.read(buf)) &gt; 0)
-        out.write(buf, 0, len);
-}</code></pre>
-
-
-<p>上面的代码将资源放在try的圆括号内，当处理完后会自动关闭！但一定要注意不要嵌套创建，否则可能无法正确关闭。一定要声明变量。例如下面的代码就应该修改：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>try (ObjectInputStream in = 
-    new ObjectInputStream(
-        new FileInputStream("someFile.bin"))) {
-    ...
-}
-
-//要改为：
-try (
-    FileInputStream fin = new FileInputStream("someFile.bin");
-    ObjectInputStream in = new ObjectInputStream(fin)) {
-    ...
-}
-</code></pre>
-
-
-<p>TWR特性依赖于try从句中的资源类实现新接口AutoCloseable。Java 7平台的大多数资源都已经修改过了。</p>
-
-<h2>5. 钻石语法</h2>
-
-<pre class='line-numbers language-java'><code class='language-java'>//不用这么麻烦了：
-Map&lt;Integer, Map&lt;String, String&gt;&gt; userList = new HashMap&lt;Integer, Map&lt;String, String&gt;&gt;();
-
-//可以直接写成：
-Map&lt;Integer, Map&lt;String, String&gt;&gt; userList = new HashMap&lt;&gt;();</code></pre>
-
-
-<h2>6. 简化变参方法调用</h2>
-
-<p>在Java 7之前，如果泛型和变参结合起来会怎么样？</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public static &lt;T&gt; Collection&lt;T&gt; doSomething(T... entries) {
-    ...
-}</code></pre>
-
-
-<p>Java处理变参实际上是把它放到一个编译器自动创建的数组中。但我们知道泛型的实现其实是通过<a href="http://blog.ubone.com/blog/2014/07/02/javafan-xing/">擦拭法</a>实现的。所以Java数组不支持泛型:</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>HashMap&lt;String, String&gt;[] a = new HashMap&lt;String, String&gt;[3]; //编译错误
-
-HashMap&lt;String, String&gt;[] a = new HashMap[3]; //编译可通过，但会有警告：
-//Type safety: The expression of type HashMap[] needs unchecked conversion to conform to HashMap&lt;String,String&gt;[]</code></pre>
-
-
-<p>因此，当泛型遇到变参时，编译器只好给你个警告。但这个问题更应该由API的设计者去关注，而不是API使用者。所以Java 7把警告信息挪到了定义API的地方。</p>
 ]]></content>
   </entry>
   
