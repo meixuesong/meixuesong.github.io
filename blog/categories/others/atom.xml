@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Others | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/others/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-04-03T00:10:21+08:00</updated>
+  <updated>2015-04-03T00:20:36+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -18,7 +18,7 @@
     <link href="http://blog.ubone.com/blog/2015/04/02/intellij-idea-mackuai-jie-jian/"/>
     <updated>2015-04-02T11:12:07+08:00</updated>
     <id>http://blog.ubone.com/blog/2015/04/02/intellij-idea-mackuai-jie-jian</id>
-    <content type="html"><![CDATA[<p>准备从Eclipse抱成IntelliJ IDEA，备注一下常用的快捷键。</p>
+    <content type="html"><![CDATA[<p>从Eclipse换成IntelliJ IDEA，记录常用的快捷键。</p>
 
 <!--more-->
 
@@ -95,10 +95,18 @@
 <td><code>Command+W</code> </td>
 <td> 选中当前单词</td>
 </tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
 <tr>
-<td>菜单 </td>
-<td> 菜单快捷键</td>
+<th>菜单快捷键 </th>
+<th> 说明</th>
 </tr>
+</thead>
+<tbody>
 <tr>
 <td><code>^+N ^+Return</code> </td>
 <td> 生成Getter/Setter等代码</td>
@@ -239,10 +247,18 @@
 <td><code>Control+Command+F</code> </td>
 <td> Toggle Full Screen</td>
 </tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
 <tr>
-<td>Navigate菜单 </td>
-<td> 快捷键</td>
+<th>Navigate快捷键 </th>
+<th> 说明</th>
 </tr>
+</thead>
+<tbody>
 <tr>
 <td><code>Command+N</code> </td>
 <td> 打开Class</td>
@@ -315,10 +331,18 @@
 <td><code>Option+Command+下箭头</code> </td>
 <td> Next Occurrence</td>
 </tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
 <tr>
-<td>Code菜单 </td>
-<td> 快捷键</td>
+<th>Code快捷键 </th>
+<th> 说明</th>
 </tr>
+</thead>
+<tbody>
 <tr>
 <td><code>Command+O</code> </td>
 <td> Override Methods&hellip;</td>
@@ -355,10 +379,18 @@
 <td><code>Option+Command+O</code> </td>
 <td> Optimize Imports&hellip;</td>
 </tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
 <tr>
-<td>Refactor菜单 </td>
-<td> 快捷键</td>
+<th>Refactor快捷键 </th>
+<th> 说明</th>
 </tr>
+</thead>
+<tbody>
 <tr>
 <td><code>Option+Shift+Command+T</code> </td>
 <td> Refactor this&hellip;</td>
@@ -403,10 +435,18 @@
 <td><code>Option+Command+M</code> </td>
 <td> Extract Method&hellip;</td>
 </tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
 <tr>
-<td>Build Run菜单 </td>
-<td> 快捷键</td>
+<th>Build Run 快捷键 </th>
+<th> 说明</th>
 </tr>
+</thead>
+<tbody>
 <tr>
 <td><code>Command+F9</code> </td>
 <td> Make Project</td>
