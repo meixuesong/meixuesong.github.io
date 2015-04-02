@@ -7,7 +7,7 @@ categories:
 - others
 ---
 
-准备从Eclipse抱成IntelliJ IDEA，备注一下常用的快捷键。
+从Eclipse换成IntelliJ IDEA，记录常用的快捷键。
 
 <!--more-->
 
@@ -29,7 +29,9 @@ categories:
 `Command+Shift+上下箭头` | 将当前行上移或下移，交换位置
 `Option++左右箭头` | 光标左右移动，每次一个单词，加上shift键可以选择
 `Command+W` | 选中当前单词
-菜单 | 菜单快捷键
+
+菜单快捷键 | 说明
+---|---
 `^+N ^+Return` | 生成Getter/Setter等代码
 `Command+,` | preferences
 `Command+;` | Project structure
@@ -65,7 +67,9 @@ categories:
 `Command+E` | 最近的文件
 `Command+Shift+E` | 最近修改的文件
 `Control+Command+F` | Toggle Full Screen
-Navigate菜单 | 快捷键
+
+Navigate快捷键 | 说明
+---|---
 `Command+N` | 打开Class
 `Command+Shift+N` | 打开文件
 `Option+Shift+Command+N` | Symbol...
@@ -84,7 +88,9 @@ Navigate菜单 | 快捷键
 `Shift+F2` | Previous Highlighted Error
 `Option+Command+上箭头` | Previous Occurrence
 `Option+Command+下箭头` | Next Occurrence
-Code菜单 | 快捷键
+
+Code快捷键 | 说明
+---|---
 `Command+O` | Override Methods...
 `Command+I` | Implement Methods...
 `Option+Command+T` | Surround With...
@@ -94,7 +100,9 @@ Code菜单 | 快捷键
 `Control+Shift+/` | Comment with Block Comment
 `Option+Command+L` | Reformat Code...
 `Option+Command+O` | Optimize Imports...
-Refactor菜单 | 快捷键
+
+Refactor快捷键 | 说明
+---|---
 `Option+Shift+Command+T` | Refactor this...
 `Shift+F6` | Rename...
 `Command+F6` | Change Signature
@@ -106,7 +114,9 @@ Refactor菜单 | 快捷键
 `Option+Command+F` | Extract Field...
 `Option+Command+P` | Extract Parameter...
 `Option+Command+M` | Extract Method...
-Build Run菜单 | 快捷键
+
+Build Run 快捷键 | 说明
+---|---
 `Command+F9` | Make Project
 `Shift+F10` | Run
 `Option+Shift+F10` | Run...
