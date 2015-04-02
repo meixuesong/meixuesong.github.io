@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Others | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/others/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-03-29T11:25:50+08:00</updated>
+  <updated>2015-04-03T00:10:21+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,470 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[IntelliJ IDEA Mac快捷键]]></title>
+    <link href="http://blog.ubone.com/blog/2015/04/02/intellij-idea-mackuai-jie-jian/"/>
+    <updated>2015-04-02T11:12:07+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/04/02/intellij-idea-mackuai-jie-jian</id>
+    <content type="html"><![CDATA[<p>准备从Eclipse抱成IntelliJ IDEA，备注一下常用的快捷键。</p>
+
+<!--more-->
+
+
+<table>
+<thead>
+<tr>
+<th>快捷键 </th>
+<th> 说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>^+space</code> </td>
+<td> 代码提示</td>
+</tr>
+<tr>
+<td><code>Shift+Command+回车</code> </td>
+<td> 代码提示后的操作，Choose Lookup Item and Invoke Complete Statement</td>
+</tr>
+<tr>
+<td><code>^+.</code> </td>
+<td> 代码提示后的操作，Choose Lookup Item Dot</td>
+</tr>
+<tr>
+<td><code>^+Shift+数字</code> </td>
+<td> Toggle bookmark 0-9，然后再按^+数字可以返回此处</td>
+</tr>
+<tr>
+<td><code>Command + [ or ]</code> </td>
+<td> 将光标移到代码块的“｛”或者“｝”处。</td>
+</tr>
+<tr>
+<td><code>Command + Shift + [ or ]</code> </td>
+<td> 将光标移到代码块的“｛”或者“｝”处，同时完成选择操作。</td>
+</tr>
+<tr>
+<td><code>Shift+Command+Return</code> </td>
+<td> Complete Current Statement</td>
+</tr>
+<tr>
+<td><code>Command+Y</code> </td>
+<td> 删除当前行</td>
+</tr>
+<tr>
+<td><code>Option+Delete</code> </td>
+<td> 往前删除一个单词</td>
+</tr>
+<tr>
+<td><code>Command+D</code> </td>
+<td> 复制一行或者代码块</td>
+</tr>
+<tr>
+<td><code>^+Shift+J</code> </td>
+<td> 合并行</td>
+</tr>
+<tr>
+<td><code>Command+左右箭头</code> </td>
+<td> 光标移到行首或行尾，加上shift键可以选择</td>
+</tr>
+<tr>
+<td><code>Command+上下箭头</code> </td>
+<td> 屏幕上移一行或下移一行。</td>
+</tr>
+<tr>
+<td><code>Command+Shift+上下箭头</code> </td>
+<td> 将当前行上移或下移，交换位置</td>
+</tr>
+<tr>
+<td><code>Option++左右箭头</code> </td>
+<td> 光标左右移动，每次一个单词，加上shift键可以选择</td>
+</tr>
+<tr>
+<td><code>Command+W</code> </td>
+<td> 选中当前单词</td>
+</tr>
+<tr>
+<td>菜单 </td>
+<td> 菜单快捷键</td>
+</tr>
+<tr>
+<td><code>^+N ^+Return</code> </td>
+<td> 生成Getter/Setter等代码</td>
+</tr>
+<tr>
+<td><code>Command+,</code> </td>
+<td> preferences</td>
+</tr>
+<tr>
+<td><code>Command+;</code> </td>
+<td> Project structure</td>
+</tr>
+<tr>
+<td><code>Command+S</code> </td>
+<td> Save all</td>
+</tr>
+<tr>
+<td><code>Option+Command+Y</code> </td>
+<td> Synchronize</td>
+</tr>
+<tr>
+<td><code>Command+Q</code> </td>
+<td> Exit</td>
+</tr>
+<tr>
+<td><code>Shift+Command+Z</code> </td>
+<td> Redo</td>
+</tr>
+<tr>
+<td><code>Command+F</code> </td>
+<td> Find&hellip;</td>
+</tr>
+<tr>
+<td><code>Command+R</code> </td>
+<td> Replace&hellip;</td>
+</tr>
+<tr>
+<td><code>F3</code> </td>
+<td> Find next</td>
+</tr>
+<tr>
+<td><code>Shift+F3</code> </td>
+<td> Find Previous</td>
+</tr>
+<tr>
+<td><code>Command+F3</code> </td>
+<td> 查找当前单词</td>
+</tr>
+<tr>
+<td><code>Control+Command+G</code> </td>
+<td> Select All Occurrences</td>
+</tr>
+<tr>
+<td><code>Control+G</code> </td>
+<td> Select Next Occurrence</td>
+</tr>
+<tr>
+<td><code>Control+Shift+G</code> </td>
+<td> Unselect Occurrence</td>
+</tr>
+<tr>
+<td><code>Control+Shift+F</code> </td>
+<td> Find in Path</td>
+</tr>
+<tr>
+<td><code>Control+Shift+R</code> </td>
+<td> Replace in Path</td>
+</tr>
+<tr>
+<td><code>Shift+Command+S</code> </td>
+<td> Search Structurally</td>
+</tr>
+<tr>
+<td><code>Option+F7</code> </td>
+<td> Find Usages</td>
+</tr>
+<tr>
+<td><code>Command+F7</code> </td>
+<td> Find Usages in File</td>
+</tr>
+<tr>
+<td><code>Command+1</code> </td>
+<td> Tool Windows &ndash; Project</td>
+</tr>
+<tr>
+<td><code>Command+2</code> </td>
+<td> Tool Windows &ndash; Favorites</td>
+</tr>
+<tr>
+<td><code>Command+3</code> </td>
+<td> Tool Windows &ndash; Find</td>
+</tr>
+<tr>
+<td><code>Command+4</code> </td>
+<td> Tool Windows &ndash; Run</td>
+</tr>
+<tr>
+<td><code>Command+5</code> </td>
+<td> Tool Windows &ndash; Debug</td>
+</tr>
+<tr>
+<td><code>Command+6</code> </td>
+<td> Tool Windows &ndash; TODO</td>
+</tr>
+<tr>
+<td><code>Command+7</code> </td>
+<td> Tool Windows &ndash; Structure</td>
+</tr>
+<tr>
+<td><code>Option+F12</code> </td>
+<td> Terminal</td>
+</tr>
+<tr>
+<td><code>Shift+Command+I</code> </td>
+<td> Quick Definition. 快速显示光标所在方法名的定义/实现</td>
+</tr>
+<tr>
+<td><code>Control+J</code> </td>
+<td> 显示光标所在方法名的文档</td>
+</tr>
+<tr>
+<td><code>Command+F1</code> </td>
+<td> 显示光标所在代码的错误信息</td>
+</tr>
+<tr>
+<td><code>F4</code> </td>
+<td> 从当前方法名跳转到代码</td>
+</tr>
+<tr>
+<td><code>Command+E</code> </td>
+<td> 最近的文件</td>
+</tr>
+<tr>
+<td><code>Command+Shift+E</code> </td>
+<td> 最近修改的文件</td>
+</tr>
+<tr>
+<td><code>Control+Command+F</code> </td>
+<td> Toggle Full Screen</td>
+</tr>
+<tr>
+<td>Navigate菜单 </td>
+<td> 快捷键</td>
+</tr>
+<tr>
+<td><code>Command+N</code> </td>
+<td> 打开Class</td>
+</tr>
+<tr>
+<td><code>Command+Shift+N</code> </td>
+<td> 打开文件</td>
+</tr>
+<tr>
+<td><code>Option+Shift+Command+N</code> </td>
+<td> Symbol&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+Command+左箭头</code> </td>
+<td> Back</td>
+</tr>
+<tr>
+<td><code>Option+Command+右箭头</code> </td>
+<td> Forward</td>
+</tr>
+<tr>
+<td><code>Shift+Command+Backspace</code> </td>
+<td> Last Edit Location</td>
+</tr>
+<tr>
+<td><code>Option+F1</code> </td>
+<td> Select In&hellip;</td>
+</tr>
+<tr>
+<td><code>Command+B</code> </td>
+<td> 跳转到方法声明</td>
+</tr>
+<tr>
+<td><code>Option+Command+B</code> </td>
+<td> 跳转到方法实现</td>
+</tr>
+<tr>
+<td><code>Shift+Command+T</code> </td>
+<td> Test</td>
+</tr>
+<tr>
+<td><code>Command+F12</code> </td>
+<td> 显示当前文件的结构（方法列表）</td>
+</tr>
+<tr>
+<td><code>Control+H</code> </td>
+<td> 显示当前类的继承结构</td>
+</tr>
+<tr>
+<td><code>Shift+Command+H</code> </td>
+<td> Method Hierarchy</td>
+</tr>
+<tr>
+<td><code>Control+Alt+H</code> </td>
+<td> Call Hierarchy</td>
+</tr>
+<tr>
+<td><code>F2</code> </td>
+<td> Next Highlighted Error</td>
+</tr>
+<tr>
+<td><code>Shift+F2</code> </td>
+<td> Previous Highlighted Error</td>
+</tr>
+<tr>
+<td><code>Option+Command+上箭头</code> </td>
+<td> Previous Occurrence</td>
+</tr>
+<tr>
+<td><code>Option+Command+下箭头</code> </td>
+<td> Next Occurrence</td>
+</tr>
+<tr>
+<td>Code菜单 </td>
+<td> 快捷键</td>
+</tr>
+<tr>
+<td><code>Command+O</code> </td>
+<td> Override Methods&hellip;</td>
+</tr>
+<tr>
+<td><code>Command+I</code> </td>
+<td> Implement Methods&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+Command+T</code> </td>
+<td> Surround With&hellip;</td>
+</tr>
+<tr>
+<td><code>Control+Space</code> </td>
+<td> Basic Completion</td>
+</tr>
+<tr>
+<td><code>Command+ +/-</code> </td>
+<td> 将当前代码块卷起或展开</td>
+</tr>
+<tr>
+<td><code>Command+J</code> </td>
+<td> Insert Live Template&hellip;</td>
+</tr>
+<tr>
+<td><code>Control+Shift+/</code> </td>
+<td> Comment with Block Comment</td>
+</tr>
+<tr>
+<td><code>Option+Command+L</code> </td>
+<td> Reformat Code&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+Command+O</code> </td>
+<td> Optimize Imports&hellip;</td>
+</tr>
+<tr>
+<td>Refactor菜单 </td>
+<td> 快捷键</td>
+</tr>
+<tr>
+<td><code>Option+Shift+Command+T</code> </td>
+<td> Refactor this&hellip;</td>
+</tr>
+<tr>
+<td><code>Shift+F6</code> </td>
+<td> Rename&hellip;</td>
+</tr>
+<tr>
+<td><code>Command+F6</code> </td>
+<td> Change Signature</td>
+</tr>
+<tr>
+<td><code>F6</code> </td>
+<td> Move&hellip;</td>
+</tr>
+<tr>
+<td><code>F5</code> </td>
+<td> Copy&hellip;</td>
+</tr>
+<tr>
+<td><code>Command+Delete</code> </td>
+<td> Safe Delete&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+Command+V</code> </td>
+<td> Extract Variable&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+Command+C</code> </td>
+<td> Extract Constant&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+Command+F</code> </td>
+<td> Extract Field&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+Command+P</code> </td>
+<td> Extract Parameter&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+Command+M</code> </td>
+<td> Extract Method&hellip;</td>
+</tr>
+<tr>
+<td>Build Run菜单 </td>
+<td> 快捷键</td>
+</tr>
+<tr>
+<td><code>Command+F9</code> </td>
+<td> Make Project</td>
+</tr>
+<tr>
+<td><code>Shift+F10</code> </td>
+<td> Run</td>
+</tr>
+<tr>
+<td><code>Option+Shift+F10</code> </td>
+<td> Run&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+F9</code> </td>
+<td> Run to Cursor</td>
+</tr>
+<tr>
+<td><code>Shift+F9</code> </td>
+<td> Debug</td>
+</tr>
+<tr>
+<td><code>Option+Shift+F9</code> </td>
+<td> Debug&hellip;</td>
+</tr>
+<tr>
+<td><code>Command+F2</code> </td>
+<td> Stop</td>
+</tr>
+<tr>
+<td><code>F8</code> </td>
+<td> Step Over</td>
+</tr>
+<tr>
+<td><code>Option+Shift+F8</code> </td>
+<td> Force Step Over</td>
+</tr>
+<tr>
+<td><code>F7</code> </td>
+<td> Step Into</td>
+</tr>
+<tr>
+<td><code>Option+Shift+F7</code> </td>
+<td> Force Step Into</td>
+</tr>
+<tr>
+<td><code>F9</code> </td>
+<td> Resume Program</td>
+</tr>
+<tr>
+<td><code>Option+F8</code> </td>
+<td> Evaluation Expression&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+F10</code> </td>
+<td> Show Execution Point</td>
+</tr>
+<tr>
+<td><code>Command+F8</code> </td>
+<td> Toggle Line BreakPoint</td>
+</tr>
+<tr>
+<td><code>Shift+Command+F8</code> </td>
+<td> View Breakpoints&hellip;</td>
+</tr>
+</tbody>
+</table>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[发布两款自用的GAE应用]]></title>
@@ -354,111 +818,6 @@ jekyll-ebook manifest.yml
 </tbody>
 </table>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[在GitHub上写博客]]></title>
-    <link href="http://blog.ubone.com/blog/2014/06/25/zai-githubshang-xie-bo-ke/"/>
-    <updated>2014-06-25T22:54:07+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/06/25/zai-githubshang-xie-bo-ke</id>
-    <content type="html"><![CDATA[<p>一直想找个能支持Markdown的博客平台。在尝试了包括CSDN、Loft、点点等博客平台之后，均觉不太满意。CSDN太业余，一个IT业最大的社区网站，竟然不支持Markdown。Loft偏文艺，不适合技术。点点还不错，支持Markdown，本来准备最终选择它了，但不爽有二：<!--more-->一是主题没合适的，界面布局、代码高亮显示、字体大小和摘要显示等总有一点让你觉得勉强；二是使用独立域名，要求太不清晰。输入相关信息后总是提示我的博客太少，不让使用自己的域名。但你好歹说一下标准是啥啊？多少篇博客才能满足你这条件啊？这种体验太差了。最后放弃。</p>
-
-<p>一番折腾后，发现可以直接使用<a href="http://github.com">GitHub</a>写博客，而且几年前就有这个功能了。看来真是有点Out了！</p>
-
-<p>安装的过程完全参照<a href="http://octopress.org/">Octopress</a>网站和唐巧的两篇博客：</p>
-
-<ul>
-<li><a href="http://blog.devtang.com/blog/2012/02/10/setup-blog-based-on-github/">象写程序一样写博客：搭建基于github的博客</a></li>
-<li><a href="http://blog.devtang.com/blog/2014/06/02/use-gitcafe-to-host-blog/">将博客从GitHub迁移到GitCafe</a></li>
-</ul>
-
-
-<p>安装过程就不再重复了，说说有哪些不同。</p>
-
-<p>Octopress的默认主题背景是黑色，有点太压抑了。代码高亮显示的颜色也不爽，所以改了点颜色：</p>
-
-<p><code>css
-//sass/custom/_colors.scss
-$page-bg:       #F4F3DE;
-$header-bg:     #5B4947;
-$base03:          #eee; //darkest blue
-$base02:          #ddd; //dark blue
-$solar-blue:      navy;
-</code></p>
-
-<p>另外对配置文件_config.yml，除了常规修改外，还修改了：</p>
-
-<p>```</p>
-
-<h1>修改日期格式</h1>
-
-<p>date_format: &ldquo;%Y-%m-%d&rdquo;</p>
-
-<h1>增加评论功能</h1>
-
-<p>disqus_short_name: 你的disqus short name
-disqus_show_comment_count: true
-```</p>
-
-<p>唐巧使用的是国内的一个评论系统，实际上Octopress内置的插件包含了评论功能。在<a href="http://disqus.com">Disqus</a>注册帐号并设置shortname后，修改_config.yml即可。</p>
-
-<p>在GitHub上建立博客，最担心的是访问速度。GitHub已经使用全球CDN来服务GitHub Pages，参见：<a href="https://github.com/blog/1715-faster-more-awesome-github-pages">Faster, More Awesome GitHub Pages</a>。实际测试下来速度很快，用Chrome监视，打开页面基本就是2－3秒时间。</p>
-
-<p>但是在手机上打开博客时，却非常慢。最后发现原因是使用了googleapis.com托管的jQuery.min.js，在天朝这样的网站是很没保障的。解决办法是修改source/_includes/head.html：</p>
-
-<p>```
-//将原来的googleapis jquery库改为本地jQuery：</p>
-
-<script src="http://blog.ubone.com/javascripts/libs/jquery.min.js"></script>
-
-
-<p>```</p>
-
-<p>改完后手机上访问也基本可以秒杀了。</p>
-
-<p>用GitHub + Octopress建立博客，过程虽然复杂了点，但最终效果相当不错，你值得拥有！</p>
-
-<p>【Update 2014-12-21】修改代码高亮显示方案</p>
-
-<p>将原来的代码高亮替换为<a href="http://prismjs.com/">prismjs</a>，主要是修改<code>plugins/backtick_code_block.rb</code>:</p>
-
-<p>```ruby</p>
-
-<pre><code>  if @lang.nil? || @lang == 'plain'
-    #mxs comment code = tableize_code(str.gsub('&lt;','&amp;lt;').gsub('&gt;','&amp;gt;'))
-    #mxs comment "&lt;figure class='code'&gt;#{@caption}#{code}&lt;/figure&gt;"
-    mxscode = str.gsub('&lt;','&amp;lt;').gsub('&gt;','&amp;gt;')
-    "&lt;pre  class='line-numbers language-'&gt;&lt;code class='line-numbers language-'&gt;#{mxscode}&lt;/code&gt;&lt;/pre&gt;" 
-  else
-    mxscode = str.gsub('&lt;','&amp;lt;').gsub('&gt;','&amp;gt;')
-    "&lt;pre class='line-numbers language-#{@lang}'&gt;&lt;code class='line-numbers language-#{@lang}'&gt;#{mxscode}&lt;/code&gt;&lt;/pre&gt;" 
-</code></pre>
-
-<h1>mxs comment</h1>
-
-<h1>if @lang.include? &ldquo;-raw&rdquo;</h1>
-
-<h1>raw = &ldquo;`&ldquo; #{@options.sub(&lsquo;-raw&rsquo;, &rdquo;)}\n&rdquo;</h1>
-
-<h1>raw += str</h1>
-
-<h1>raw += &ldquo;\n```\n&rdquo;</h1>
-
-<h1>else</h1>
-
-<h1>code = highlight(str, @lang)</h1>
-
-<h1>&ldquo;<figure class='code'>#{@caption}#{code}</figure>&rdquo;</h1>
-
-<h1>end</h1>
-
-<pre><code>  end
-</code></pre>
-
-<p>```</p>
-
-<p>prismjs部分按照官方文档配置即可。</p>
 ]]></content>
   </entry>
   

@@ -3,6 +3,12 @@
   
   
   <url>
+    <loc>http://blog.ubone.com/blog/2015/04/02/intellij-idea-mackuai-jie-jian/</loc>
+    <lastmod>2015-04-02T11:12:07+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.ubone.com/blog/2015/03/28/linux-crontabding-shi-ren-wu/</loc>
     <lastmod>2015-03-28T21:04:50+08:00</lastmod>
     <priority>0.8</priority>
@@ -563,14 +569,14 @@
   
   <url>
     <loc>http://blog.ubone.com/blog/archives/</loc>
-    <lastmod>2015-03-29T11:25:50+08:00</lastmod>
+    <lastmod>2015-04-03T00:10:21+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.ubone.com/</loc>
-    <lastmod>2015-03-29T11:25:50+08:00</lastmod>
+    <lastmod>2015-04-03T00:10:21+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>

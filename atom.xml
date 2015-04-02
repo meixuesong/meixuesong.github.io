@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-03-29T11:25:50+08:00</updated>
+  <updated>2015-04-03T00:10:21+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,470 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[IntelliJ IDEA Mac快捷键]]></title>
+    <link href="http://blog.ubone.com/blog/2015/04/02/intellij-idea-mackuai-jie-jian/"/>
+    <updated>2015-04-02T11:12:07+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/04/02/intellij-idea-mackuai-jie-jian</id>
+    <content type="html"><![CDATA[<p>准备从Eclipse抱成IntelliJ IDEA，备注一下常用的快捷键。</p>
+
+<!--more-->
+
+
+<table>
+<thead>
+<tr>
+<th>快捷键 </th>
+<th> 说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>^+space</code> </td>
+<td> 代码提示</td>
+</tr>
+<tr>
+<td><code>Shift+Command+回车</code> </td>
+<td> 代码提示后的操作，Choose Lookup Item and Invoke Complete Statement</td>
+</tr>
+<tr>
+<td><code>^+.</code> </td>
+<td> 代码提示后的操作，Choose Lookup Item Dot</td>
+</tr>
+<tr>
+<td><code>^+Shift+数字</code> </td>
+<td> Toggle bookmark 0-9，然后再按^+数字可以返回此处</td>
+</tr>
+<tr>
+<td><code>Command + [ or ]</code> </td>
+<td> 将光标移到代码块的“｛”或者“｝”处。</td>
+</tr>
+<tr>
+<td><code>Command + Shift + [ or ]</code> </td>
+<td> 将光标移到代码块的“｛”或者“｝”处，同时完成选择操作。</td>
+</tr>
+<tr>
+<td><code>Shift+Command+Return</code> </td>
+<td> Complete Current Statement</td>
+</tr>
+<tr>
+<td><code>Command+Y</code> </td>
+<td> 删除当前行</td>
+</tr>
+<tr>
+<td><code>Option+Delete</code> </td>
+<td> 往前删除一个单词</td>
+</tr>
+<tr>
+<td><code>Command+D</code> </td>
+<td> 复制一行或者代码块</td>
+</tr>
+<tr>
+<td><code>^+Shift+J</code> </td>
+<td> 合并行</td>
+</tr>
+<tr>
+<td><code>Command+左右箭头</code> </td>
+<td> 光标移到行首或行尾，加上shift键可以选择</td>
+</tr>
+<tr>
+<td><code>Command+上下箭头</code> </td>
+<td> 屏幕上移一行或下移一行。</td>
+</tr>
+<tr>
+<td><code>Command+Shift+上下箭头</code> </td>
+<td> 将当前行上移或下移，交换位置</td>
+</tr>
+<tr>
+<td><code>Option++左右箭头</code> </td>
+<td> 光标左右移动，每次一个单词，加上shift键可以选择</td>
+</tr>
+<tr>
+<td><code>Command+W</code> </td>
+<td> 选中当前单词</td>
+</tr>
+<tr>
+<td>菜单 </td>
+<td> 菜单快捷键</td>
+</tr>
+<tr>
+<td><code>^+N ^+Return</code> </td>
+<td> 生成Getter/Setter等代码</td>
+</tr>
+<tr>
+<td><code>Command+,</code> </td>
+<td> preferences</td>
+</tr>
+<tr>
+<td><code>Command+;</code> </td>
+<td> Project structure</td>
+</tr>
+<tr>
+<td><code>Command+S</code> </td>
+<td> Save all</td>
+</tr>
+<tr>
+<td><code>Option+Command+Y</code> </td>
+<td> Synchronize</td>
+</tr>
+<tr>
+<td><code>Command+Q</code> </td>
+<td> Exit</td>
+</tr>
+<tr>
+<td><code>Shift+Command+Z</code> </td>
+<td> Redo</td>
+</tr>
+<tr>
+<td><code>Command+F</code> </td>
+<td> Find&hellip;</td>
+</tr>
+<tr>
+<td><code>Command+R</code> </td>
+<td> Replace&hellip;</td>
+</tr>
+<tr>
+<td><code>F3</code> </td>
+<td> Find next</td>
+</tr>
+<tr>
+<td><code>Shift+F3</code> </td>
+<td> Find Previous</td>
+</tr>
+<tr>
+<td><code>Command+F3</code> </td>
+<td> 查找当前单词</td>
+</tr>
+<tr>
+<td><code>Control+Command+G</code> </td>
+<td> Select All Occurrences</td>
+</tr>
+<tr>
+<td><code>Control+G</code> </td>
+<td> Select Next Occurrence</td>
+</tr>
+<tr>
+<td><code>Control+Shift+G</code> </td>
+<td> Unselect Occurrence</td>
+</tr>
+<tr>
+<td><code>Control+Shift+F</code> </td>
+<td> Find in Path</td>
+</tr>
+<tr>
+<td><code>Control+Shift+R</code> </td>
+<td> Replace in Path</td>
+</tr>
+<tr>
+<td><code>Shift+Command+S</code> </td>
+<td> Search Structurally</td>
+</tr>
+<tr>
+<td><code>Option+F7</code> </td>
+<td> Find Usages</td>
+</tr>
+<tr>
+<td><code>Command+F7</code> </td>
+<td> Find Usages in File</td>
+</tr>
+<tr>
+<td><code>Command+1</code> </td>
+<td> Tool Windows &ndash; Project</td>
+</tr>
+<tr>
+<td><code>Command+2</code> </td>
+<td> Tool Windows &ndash; Favorites</td>
+</tr>
+<tr>
+<td><code>Command+3</code> </td>
+<td> Tool Windows &ndash; Find</td>
+</tr>
+<tr>
+<td><code>Command+4</code> </td>
+<td> Tool Windows &ndash; Run</td>
+</tr>
+<tr>
+<td><code>Command+5</code> </td>
+<td> Tool Windows &ndash; Debug</td>
+</tr>
+<tr>
+<td><code>Command+6</code> </td>
+<td> Tool Windows &ndash; TODO</td>
+</tr>
+<tr>
+<td><code>Command+7</code> </td>
+<td> Tool Windows &ndash; Structure</td>
+</tr>
+<tr>
+<td><code>Option+F12</code> </td>
+<td> Terminal</td>
+</tr>
+<tr>
+<td><code>Shift+Command+I</code> </td>
+<td> Quick Definition. 快速显示光标所在方法名的定义/实现</td>
+</tr>
+<tr>
+<td><code>Control+J</code> </td>
+<td> 显示光标所在方法名的文档</td>
+</tr>
+<tr>
+<td><code>Command+F1</code> </td>
+<td> 显示光标所在代码的错误信息</td>
+</tr>
+<tr>
+<td><code>F4</code> </td>
+<td> 从当前方法名跳转到代码</td>
+</tr>
+<tr>
+<td><code>Command+E</code> </td>
+<td> 最近的文件</td>
+</tr>
+<tr>
+<td><code>Command+Shift+E</code> </td>
+<td> 最近修改的文件</td>
+</tr>
+<tr>
+<td><code>Control+Command+F</code> </td>
+<td> Toggle Full Screen</td>
+</tr>
+<tr>
+<td>Navigate菜单 </td>
+<td> 快捷键</td>
+</tr>
+<tr>
+<td><code>Command+N</code> </td>
+<td> 打开Class</td>
+</tr>
+<tr>
+<td><code>Command+Shift+N</code> </td>
+<td> 打开文件</td>
+</tr>
+<tr>
+<td><code>Option+Shift+Command+N</code> </td>
+<td> Symbol&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+Command+左箭头</code> </td>
+<td> Back</td>
+</tr>
+<tr>
+<td><code>Option+Command+右箭头</code> </td>
+<td> Forward</td>
+</tr>
+<tr>
+<td><code>Shift+Command+Backspace</code> </td>
+<td> Last Edit Location</td>
+</tr>
+<tr>
+<td><code>Option+F1</code> </td>
+<td> Select In&hellip;</td>
+</tr>
+<tr>
+<td><code>Command+B</code> </td>
+<td> 跳转到方法声明</td>
+</tr>
+<tr>
+<td><code>Option+Command+B</code> </td>
+<td> 跳转到方法实现</td>
+</tr>
+<tr>
+<td><code>Shift+Command+T</code> </td>
+<td> Test</td>
+</tr>
+<tr>
+<td><code>Command+F12</code> </td>
+<td> 显示当前文件的结构（方法列表）</td>
+</tr>
+<tr>
+<td><code>Control+H</code> </td>
+<td> 显示当前类的继承结构</td>
+</tr>
+<tr>
+<td><code>Shift+Command+H</code> </td>
+<td> Method Hierarchy</td>
+</tr>
+<tr>
+<td><code>Control+Alt+H</code> </td>
+<td> Call Hierarchy</td>
+</tr>
+<tr>
+<td><code>F2</code> </td>
+<td> Next Highlighted Error</td>
+</tr>
+<tr>
+<td><code>Shift+F2</code> </td>
+<td> Previous Highlighted Error</td>
+</tr>
+<tr>
+<td><code>Option+Command+上箭头</code> </td>
+<td> Previous Occurrence</td>
+</tr>
+<tr>
+<td><code>Option+Command+下箭头</code> </td>
+<td> Next Occurrence</td>
+</tr>
+<tr>
+<td>Code菜单 </td>
+<td> 快捷键</td>
+</tr>
+<tr>
+<td><code>Command+O</code> </td>
+<td> Override Methods&hellip;</td>
+</tr>
+<tr>
+<td><code>Command+I</code> </td>
+<td> Implement Methods&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+Command+T</code> </td>
+<td> Surround With&hellip;</td>
+</tr>
+<tr>
+<td><code>Control+Space</code> </td>
+<td> Basic Completion</td>
+</tr>
+<tr>
+<td><code>Command+ +/-</code> </td>
+<td> 将当前代码块卷起或展开</td>
+</tr>
+<tr>
+<td><code>Command+J</code> </td>
+<td> Insert Live Template&hellip;</td>
+</tr>
+<tr>
+<td><code>Control+Shift+/</code> </td>
+<td> Comment with Block Comment</td>
+</tr>
+<tr>
+<td><code>Option+Command+L</code> </td>
+<td> Reformat Code&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+Command+O</code> </td>
+<td> Optimize Imports&hellip;</td>
+</tr>
+<tr>
+<td>Refactor菜单 </td>
+<td> 快捷键</td>
+</tr>
+<tr>
+<td><code>Option+Shift+Command+T</code> </td>
+<td> Refactor this&hellip;</td>
+</tr>
+<tr>
+<td><code>Shift+F6</code> </td>
+<td> Rename&hellip;</td>
+</tr>
+<tr>
+<td><code>Command+F6</code> </td>
+<td> Change Signature</td>
+</tr>
+<tr>
+<td><code>F6</code> </td>
+<td> Move&hellip;</td>
+</tr>
+<tr>
+<td><code>F5</code> </td>
+<td> Copy&hellip;</td>
+</tr>
+<tr>
+<td><code>Command+Delete</code> </td>
+<td> Safe Delete&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+Command+V</code> </td>
+<td> Extract Variable&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+Command+C</code> </td>
+<td> Extract Constant&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+Command+F</code> </td>
+<td> Extract Field&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+Command+P</code> </td>
+<td> Extract Parameter&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+Command+M</code> </td>
+<td> Extract Method&hellip;</td>
+</tr>
+<tr>
+<td>Build Run菜单 </td>
+<td> 快捷键</td>
+</tr>
+<tr>
+<td><code>Command+F9</code> </td>
+<td> Make Project</td>
+</tr>
+<tr>
+<td><code>Shift+F10</code> </td>
+<td> Run</td>
+</tr>
+<tr>
+<td><code>Option+Shift+F10</code> </td>
+<td> Run&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+F9</code> </td>
+<td> Run to Cursor</td>
+</tr>
+<tr>
+<td><code>Shift+F9</code> </td>
+<td> Debug</td>
+</tr>
+<tr>
+<td><code>Option+Shift+F9</code> </td>
+<td> Debug&hellip;</td>
+</tr>
+<tr>
+<td><code>Command+F2</code> </td>
+<td> Stop</td>
+</tr>
+<tr>
+<td><code>F8</code> </td>
+<td> Step Over</td>
+</tr>
+<tr>
+<td><code>Option+Shift+F8</code> </td>
+<td> Force Step Over</td>
+</tr>
+<tr>
+<td><code>F7</code> </td>
+<td> Step Into</td>
+</tr>
+<tr>
+<td><code>Option+Shift+F7</code> </td>
+<td> Force Step Into</td>
+</tr>
+<tr>
+<td><code>F9</code> </td>
+<td> Resume Program</td>
+</tr>
+<tr>
+<td><code>Option+F8</code> </td>
+<td> Evaluation Expression&hellip;</td>
+</tr>
+<tr>
+<td><code>Option+F10</code> </td>
+<td> Show Execution Point</td>
+</tr>
+<tr>
+<td><code>Command+F8</code> </td>
+<td> Toggle Line BreakPoint</td>
+</tr>
+<tr>
+<td><code>Shift+Command+F8</code> </td>
+<td> View Breakpoints&hellip;</td>
+</tr>
+</tbody>
+</table>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux Crontab定时任务]]></title>
@@ -7037,322 +7501,6 @@ public class MicroBlogUpdateSorter extends RecursiveAction {
 <li>对于子任务来说，分而治之是不是很自然的事？子任务是不是会创建更多的子任务，而且它们要比派生出它们的任务粒度更细？</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java NIO.2]]></title>
-    <link href="http://blog.ubone.com/blog/2014/11/23/java-nio-dot-2/"/>
-    <updated>2014-11-23T10:59:37+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/11/23/java-nio-dot-2</id>
-    <content type="html"><![CDATA[<p>Java 7提供了新的NIO(或称为NIO.2, JSR-203)，这是一组新的类和方法，用于取代File类与文件系统的交互，提供新的异步处理类并简化Socket与通道的编码工作。</p>
-
-<!--more-->
-
-
-<p>在Java 1.4之前，Java缺乏对非阻塞I/O的支持，1.4引入了非阻塞I/O，为I/O操作抽象出缓冲区和通道层；提供字符集的编码和解码能力；能够将文件映射为内存数据；实现正则表达式。Java 7进一步扩展了NIO的能力。</p>
-
-<h2>1. PATH</h2>
-
-<p>Path相关的类包括：</p>
-
-<ul>
-<li>Path：获取路径信息</li>
-<li>Paths：工具类，提供返回一个路径的辅助方法</li>
-<li>FileSystem：与文件系统交互的类</li>
-<li>FileSystems：工具类，提供各种方法。</li>
-</ul>
-
-
-<p>Path不仅用于传统的文件系统，也能表示zip或jar这样的文件系统。</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>//创建Path
-Path listing = Paths.get("/user/bin/zip")；
-//相当于
-Path listing = FileSystems.getDefault().getPath("/user/bin/zip");
-
-//获取Path信息：
-listing.getFileName(): zip
-listing.getNameCount(): 3
-listing.subpath(0, 2): /user/bin
-listing.getParent(): /user/bin
-listing.getRoot(): /</code></pre>
-
-
-<p>如果Path是一个文件的路径，有时需要去除冗余信息。例如去除表示当前路径的<code>./</code>，或者该文件只是个符号链接，指向了另一个真正的位置，此时需要得到真实路径。</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>//移除冗余
-Path testPath = Paths.get("./test.java");
-Path normalizedPath = testPath.normalize();
-
-//获取绝对路径
-Path absolutePath = testPath.toAbsolutePath();
-//获取绝对路径并去除冗余信息，或者获取符号连接的真实路径
-Path realPath = testPath.toRealPath();</code></pre>
-
-
-<p>合并路径与路径比较。</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>//合并
-Path prefix = Paths.get("/usr");
-Path completePath = prefix.resolve("mxs");
-//completePath: /usr/mxs
-
-//比较
-Path path1 = Paths.get("/Users/mxs/Documents/Blog/");
-Path path2 = Paths.get("/Users/mxs");
-path1.relativize(path2): ../..
-path2.relativize(path1): Documents/Blog</code></pre>
-
-
-<p>新的API完全替换了java.io.File类，在处理遗留代码时，可能将其进行互换：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>File file = new File("../abcd.txt");
-Path listing = file.toPath();
-file = listing.toFile();</code></pre>
-
-
-<h2>2. 处理目录与目录树</h2>
-
-<p>新的DirectoryStream<T>接口实现了目录相关的操作：</p>
-
-<ul>
-<li>循环遍历目录中的子项</li>
-<li>用glob表达式（如<code>*Foobar*</code>）进行目录子项的匹配和MIME内容检测（如text/xml文件）</li>
-<li>用walkFileTree实现递归移动、复制和删除操作</li>
-</ul>
-
-
-<p><strong>在目录中查找文件：</strong></p>
-
-<pre class='line-numbers language-java'><code class='language-java'>Path dir = Paths.get("/user/mxs/Documents");
-
-try(DirectoryStream&lt;Path&gt; stream = Files.newDirectoryStream(dir, "*.properties")) {
-    for(Path entry : stream){
-        System.out.println(entry.getFileName());    
-    }
-} catch(IOException e) {
-    //...
-}</code></pre>
-
-
-<p><strong>遍历目录树。</strong>Files.walkFileTree方法是遍历目录树的关键，该方法定义如下：</p>
-
-<p><code>Files.walkFileTree(Path startingDir, FileVisitor&lt;? super Path&gt; visitor);
-</code></p>
-
-<p>其中Visitor是一个接口，包括5个方法，但一般使用Java的默认实现SimpleFileVisitor就可以了。</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public void walk() {
-    Path dir = Paths.get("/code/src");
-    Files.walkFileTree(dir, new FindJavaVisitor());
-}
-
-private static class FindJavaVisitor extends SimpleFileVisitor&lt;Path&gt; {
-    @Override
-    public FileVisitresult visitFile(Path file, BasicFileAttributes attrs) {
-        if (file.toString().endsWith(".java")) {
-            //...
-        }
-        
-        return FileVisitResult.CONTINUE;
-    }
-}</code></pre>
-
-
-<p>需要注意的是，walkFileTree方法不会自动跟随符号链接（为了确保递归等操作的安全性）。因此如果你需要跟随符号链接，就需要检查相应属性并执行相应操作。</p>
-
-<h2>3. 文件系统I/O</h2>
-
-<p>在NIO.2中，Files和WatchService是两个重要的基础类。前者用于复制、移动、删除或处理文件，后者用于监视文件或目录，发出定制通知等。</p>
-
-<h3>3.1 创建和删除文件</h3>
-
-<pre class='line-numbers language-java'><code class='language-java'>Path target = Paths.get("/Users/mxs/Document/mystuff.txt");
-Path file = Files.createFile(target);</code></pre>
-
-
-<p>如果需要设置文件属性，如读、写和执行的权限，则需要设置FileAttribute，但文件属性与操作系统相关，因此要使用与操作系统相关的文件权限类。以下是POSIX文件系统的示例(其它文件系统参考java.nio.file.attribute.*FilePermission类)：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>Set&lt;PosixFilePermission&gt; perms = PosixFilePermissions.fromString("rw-rw-rw-");
-FileAttribute&lt;Set&lt;PosixFilePermission&gt;&gt; attr = PosixFilePermissions.asFileAttribute(perms);
-Files.createFile(target, attr);</code></pre>
-
-
-<p>删除文件只需要调用<code>Files.delete(target)</code>方法。</p>
-
-<h3>3.2 文件复制与移动</h3>
-
-<pre class='line-numbers language-java'><code class='language-java'>Path source = Paths.get("c:\\My Documents\\stuff.txt");
-Path target = Paths.get("D:\backup\stuff.txt");
-Files.copy(source, target);
-
-//复制时还可以设置CopyOptions选项（变参，可多个。ATOMIC_MOVE确保两边都成功，否则回滚）
-import static java.nio.file.StandardCopyOption.*;
-Files.copy(source, target, REPLACE_EXISTING, COPY_ATTRIBUTES, ATOMIC_MOVE); 
-
-//移动
-Files.move(source, target);
-Files.move(source, target, CopyOptions);</code></pre>
-
-
-<h3>3.3 文件属性</h3>
-
-<p>由于不同的文件系统属性不同，因此Java中的文件属性分为基本文件属性、特定文件属性。前者是各文件系统通用的文件属性。</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>Path zip = Paths.get("/usr/bin/zip");
-Files.getLastModifiedTime(zip);
-Files.size(zip);
-Files.isSymbolicLink(zip);
-Files.isDirectory(zip);
-Files.readAttributes(zip, "*"); //批量读取属性</code></pre>
-
-
-<p>特定文件属性独立于某个操作系统。以POSIX文件系统为例：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>//获取文件属性
-PosixFileAttributes attrs = Files.readAttributes(zip, PosixFileAttributes.class);
-
-//修改属性
-Set&lt;PosixFilePermission&gt; permissions = attrs.permissions();
-permissions.clear;
-permissions.add(GROUP_READ);
-//...
-Files.setPosixFilePermissions(zip, permissions);</code></pre>
-
-
-<p>符号链接的处理：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>Path file = Paths.get("/opt/platform/java");
-if (Files.isSymbolicLink(file)) {
-    file = Files.readSymbolicLink(file);
-}
-//继续处理文件相关操作
-Files.readAttributes(file, BasicFileAttributes.class);</code></pre>
-
-
-<h3>3.4. 快速读写数据</h3>
-
-<p>Files工具类提供了更方便的方法来读写数据：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>Path logFile = Paths.get("/tmp/app.log");
-try(BufferedReader reader = 
-    Files.newBufferedReader(logFile, StandardCharsets.UTF_8)) {
-    String line;
-    while((line = reader.readLine()) != null) {
-        //...
-    }
-}
-
-//写入
-try(BufferedWriter writer = 
-    Files.newBufferedWrite(logFile, StandardCharsets.UTF_8, StandardOpenOption.WRITE)) //变参，可多个
-{ 
-    writer.write("Hello!");
-}</code></pre>
-
-
-<p>Files工具类提供的方法还有<code>newInputStream()</code>, <code>newOutputStream()</code>等方法，用于配合现有IO类。还有更方便的方式：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>List&lt;String&gt; lines = Files.readAllLines(logFile, StandardCharsets.UTF_8);
-byte[] bytes = Files.readAllBytes(logFile);</code></pre>
-
-
-<h3>3.5. 文件修改通知</h3>
-
-<p>WatchService可用于监测文件或目录的变化，可监测的事件包括：ENTRY_CREATE, ENTRY_DELETE, OVERFLOW(事件已经丢弃或丢失)。</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>import static java.nio.file.StandardWatchEventKinds.*;
-
-try {
-    WatchService watcher = FileSystems.getDefault().newWatchService();
-    Path dir = FileSystems.getDefault().getPath("/usr/mxs");
-    WatchKey key = dir.register(watcher, ENTRY_MODIFY);
-    
-    while(!shutdown ) { //一个标志，判断循环是否该结束
-        key = watcher.take();
-        for (WatchEvent&lt;?&gt; event: key.pollEvents()) {
-            if (event.kind() == ENTRY_MODIFY) {
-                //dir changed
-            }
-        }
-        key.reset(); 
-    }
-} catch(IOException | InterruptedException e) {
-    //...
-}</code></pre>
-
-
-<h3>3.6 SeekableByteChannel</h3>
-
-<p>这是Java 7引入的新接口，用于改变字节通道的位置和大小。例如用多个线程去分析一个大型日志文件的字节通道。FileChannel是这个接口的一种实现，下面的示例读取日志文件的最后1000个字符：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>Path logFile = Paths.get("c:\\temp.log");
-ByteBuffer buffer = ByteBuffer.allocate(1024);
-FileChannel channel = FileChannel.open(logFile, StandardOpenOption.READ);
-channel.read(buffer, channel.size() - 1000);</code></pre>
-
-
-<h2>4. 异步I/O操作</h2>
-
-<p>异步I/O操作主要有两种方式：Future和回调。Java 7提供了三个新的异步通道：</p>
-
-<ul>
-<li>AsynchronousFileChannel 用于文件I/O</li>
-<li>AsynchronousSocketChannel 用于Socket I/O, 支持超时</li>
-<li>AsynchronousServerSocketChannel 用于Socket接受异步连接</li>
-</ul>
-
-
-<h3>4.1 Future方式</h3>
-
-<pre class='line-numbers language-java'><code class='language-java'>try {
-    Path file = Paths.get("/usr/mxs/foobar.txt");
-    AsynchronousFileChannel channel = AsynchronousFileChannel.open(file);
-    
-    //读取100 000字节
-    ByteBuffer buffer = ByteBuffer.allocate(100_1000); 
-    Future&lt;Integer&gt; result = channel.read(buffer, 0);//返回值为Integer
-    
-    //如果未结束
-    while(! result.isDone()) {
-        //...干点别的事。
-    }
-    
-    //获取结果
-    Integer byteRead = result.get();
-} catch(IOException | ExecutionException | InterruptedException e) {
-    //...
-}</code></pre>
-
-
-<h3>4.2 回调方式</h3>
-
-<p>CompletionHandler&lt;V, A>是回调的接口。V表示结果类型，A是提供结果的附着对象。</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>try {
-    Path file = Paths.get("/usr/mxs/foobar.txt");
-    AsynchronousFileChannel channel = AsynchronousFileChannel.open(file);
-    //读取100 000字节
-    ByteBuffer buffer = ByteBuffer.allocate(100_1000); 
-    
-    channel.read(buffer, 0, buffer, new CompletionHandler&lt;Integer, ByteBuffer&gt;(){
-        public void completed(Integer result, ByteBuffer attachment) {
-            //完成时的回调方法
-        }
-        
-        public void failed(Throwable exception, ByteBuffer attachment) {
-            //失败时的回调方法
-        }
-    });
-} catch(IOException e) {
-    //...
-}</code></pre>
-
-
-<h2>5. Socket与Channel整合</h2>
-
-<p>NetworkChannel把Socket和Channel结合起来，更好地应对网络编程。而MulticastChannel则可以用于像BitTorrent这样的多播编程。</p>
 ]]></content>
   </entry>
   
