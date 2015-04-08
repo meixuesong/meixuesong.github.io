@@ -19,7 +19,6 @@ categories:
 `^+Shift+数字` | Toggle bookmark 0-9，然后再按^+数字可以返回此处
 `Command + [ or ]` | 将光标移到代码块的“｛”或者“｝”处。
 `Command + Shift + [ or ]` | 将光标移到代码块的“｛”或者“｝”处，同时完成选择操作。
-`Shift+Command+Return` | Complete Current Statement
 `Command+Y` | 删除当前行
 `Option+Delete` | 往前删除一个单词
 `Command+D` | 复制一行或者代码块
