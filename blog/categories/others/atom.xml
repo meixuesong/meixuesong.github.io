@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Others | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/others/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-04-03T00:20:36+08:00</updated>
+  <updated>2015-04-08T22:47:34+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -54,10 +54,6 @@
 <tr>
 <td><code>Command + Shift + [ or ]</code> </td>
 <td> 将光标移到代码块的“｛”或者“｝”处，同时完成选择操作。</td>
-</tr>
-<tr>
-<td><code>Shift+Command+Return</code> </td>
-<td> Complete Current Statement</td>
 </tr>
 <tr>
 <td><code>Command+Y</code> </td>

@@ -3,6 +3,12 @@
   
   
   <url>
+    <loc>http://blog.ubone.com/blog/2015/04/06/xue-xi-zheng-ze-biao-da-shi/</loc>
+    <lastmod>2015-04-06T20:39:05+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.ubone.com/blog/2015/04/02/intellij-idea-mackuai-jie-jian/</loc>
     <lastmod>2015-04-02T11:12:07+08:00</lastmod>
     <priority>0.8</priority>
@@ -569,14 +575,14 @@
   
   <url>
     <loc>http://blog.ubone.com/blog/archives/</loc>
-    <lastmod>2015-04-03T00:20:36+08:00</lastmod>
+    <lastmod>2015-04-08T22:47:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://blog.ubone.com/</loc>
-    <lastmod>2015-04-03T00:20:36+08:00</lastmod>
+    <lastmod>2015-04-08T22:47:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>

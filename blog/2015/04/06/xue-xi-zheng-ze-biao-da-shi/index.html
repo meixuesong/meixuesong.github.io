@@ -1,0 +1,501 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>学习正则表达式 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="我们常常用到正则表达式，它是一项神奇的技术，简单的表达式却可以实现强大的功能。但是它看起来却太复杂，除了Google搜索外，你是否想过系统地学一下呢？真的有那么难吗？ 首先建议你打开Regexpal网站，这是一个练习的好帮手。打开网站后，在下方输入你想匹配的内容，然后在上方输入正则表达式进行验证 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2015/04/06/xue-xi-zheng-ze-biao-da-shi">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="/stylesheets/prism-default.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
+<style>
+article blockquote {
+  font-size: 0.9em;
+}
+</style>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?28583ca12a9f673dc8d86501f8d02bbe";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">@InfoQ</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">学习正则表达式</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-06T20:39:05+08:00" pubdate data-updated="true">2015-04-06</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>我们常常用到正则表达式，它是一项神奇的技术，简单的表达式却可以实现强大的功能。但是它看起来却太复杂，除了Google搜索外，你是否想过系统地学一下呢？真的有那么难吗？</p>
+
+<!--more-->
+
+
+<p>首先建议你打开<a href="http://regexpal.com/">Regexpal网站</a>，这是一个练习的好帮手。打开网站后，在下方输入你想匹配的内容，然后在上方输入正则表达式进行验证。</p>
+
+<h2>1. 什么是正则表达式</h2>
+
+<p>正则表达式使用单个字符串来描述、匹配一系列符合某个句法规则的字符串。</p>
+
+<p>方括号“[]”被视为特殊的元字符（Metacharacter），不参与匹配。<code>[0-9]</code>这种形式的正则表达式称为<strong>字符组</strong>，也叫<strong>字符集</strong>。例如<code>[0-9]</code>匹配0到9的数字，<code>[0127]</code>匹配0、1、2和7。</p>
+
+<p><code>\d</code>是字符组简写式，与<code>[0-9]</code>一样匹配任意阿拉伯数字。例如匹配电话号码：<code>\d\d\d-\d\d\d-\d\d\d\d</code>.</p>
+
+<p><code>\D</code>匹配任何一个<strong>非数字</strong>字符。</p>
+
+<p><code>.</code>英文句号匹配任意字符（但某些情况下不能匹配行起始符）。</p>
+
+<h3>捕获分组和向后引用</h3>
+
+<p><code>(\d)\d\1</code></p>
+
+<h3>使用量词</h3>
+
+<p>示例：`\d{3}&ndash;?\d{3}&ndash;?\d{4}</p>
+
+<p>包含数字的花括号<code>\d{3}</code>表示待查找的数字出现的次数，是一种量词。花括号本身用做元字符。问号是另一种量词，上例中表示连字符是可选的。其它的量词还包括<code>+</code>表示“一个或多个”；<code>*</code>表示“零个或多个”。下面来看个复杂点的：</p>
+
+<p><code>(\d{3,4}[.-]?)+</code></p>
+
+<ul>
+<li><code>(</code> 捕获分组的起始符</li>
+<li><code>{3,4}</code> 匹配的最小数量是3，最大数量是4</li>
+<li><code>[.-]</code> 字符组，匹配<code>.</code>或<code>-</code></li>
+<li><code>?</code> 表示可选，0个或1个</li>
+<li><code>)</code> 捕获分组的结束符</li>
+<li><code>+</code> 表示1个或多个</li>
+</ul>
+
+
+<p>这下可以容易读懂下面的表达式了：<code>(\d{3})[.-]?){2}\d{4}</code> 表示连续2个3位数字，每3位数字后可以带连字符也可以不带，最后是一个4位数字。</p>
+
+<h3>括选文字符</h3>
+
+<p>示例：<code>^(\(\d{3}\)|^\d{3}[.-]?)?\d{3}[.-]?\d{4}$</code></p>
+
+<ul>
+<li>起始位置的<code>^</code>,或者<code>|</code>之后的<code>^</code>表示会出现在一行的起始位置</li>
+<li><code>\(</code> 表示左括号本身</li>
+<li><code>\)</code> 表示右括号本身</li>
+<li><code>|</code> 表示选择，也就是从多个可选项中选择一个。在此例中表示“匹配一个不带括号的区号或者一个带括号的区号”</li>
+<li>第2个问题表示分组可选</li>
+<li><code>$</code> 匹配行结束位置</li>
+</ul>
+
+
+<h2>2. 简单的模式匹配</h2>
+
+<h3>匹配数字</h3>
+
+<p><code>\d</code> <code>[0-9]</code> <code>[0123456789]</code></p>
+
+<h3>匹配非数字字符</h3>
+
+<p><code>\D</code> <code>[^0-9]</code> <code>[^\d]</code></p>
+
+<h3>匹配单词和非单词字符</h3>
+
+<p><code>\w</code> 匹配单词字符，与<code>\D</code>不同的时，前者不包括空格和标点符号。在英语环境中，<code>\w</code>相当于<code>[_a-zA-Z0-9]</code>。<code>\W</code> 匹配空格、标点以及其他非字母、非数字字符。相当于<code>[^_a-zA-Z0-9]</code>。</p>
+
+<table>
+<thead>
+<tr>
+<th>字符简写式 </th>
+<th> 描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>\a</code> </td>
+<td> 报警符</td>
+</tr>
+<tr>
+<td><code>[\b]</code> </td>
+<td> 退格字符</td>
+</tr>
+<tr>
+<td><code>\c x</code> </td>
+<td> 控制字符</td>
+</tr>
+<tr>
+<td><code>\d</code> </td>
+<td> 数字字符</td>
+</tr>
+<tr>
+<td><code>\D</code> </td>
+<td> 非数字字符</td>
+</tr>
+<tr>
+<td><code>\o xxx</code> </td>
+<td> 字符的八进制值</td>
+</tr>
+<tr>
+<td><code>\w</code> </td>
+<td> 单词字符(不包括空格和标点符号)</td>
+</tr>
+<tr>
+<td><code>\W</code> </td>
+<td> 非单词字符</td>
+</tr>
+<tr>
+<td><code>\x xx</code> </td>
+<td> 字符的十六进制值</td>
+</tr>
+<tr>
+<td><code>\u xxx</code> </td>
+<td> 字符的Unicode值</td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>匹配空白符</h3>
+
+<p><code>\s</code> 匹配：空格、制表符(<code>\t</code>)、换行符(<code>\n</code>)、回车符(<code>\r</code>)。<code>\S</code>匹配非空白字符，相当于<code>[^ \t\n\r]</code>和<code>[\s]</code></p>
+
+<h3>匹配任意字符</h3>
+
+<p><code>.</code>可以用于匹配任意字符。例如<code>\bA.{5}T\b</code>可以匹配单词ANCYENT。其中<code>\b</code>匹配单词边界，不消耗任何字符。</p>
+
+<h2>3. 边界</h2>
+
+<p>断言标记边界，但不耗用字符。也就是字符并不会返回到结果中，因此也称为<strong>零宽度断言</strong>。</p>
+
+<h3>3.1 行的起始与结束</h3>
+
+<p>根据上下文，<code>^</code>会匹配行或者字符串的起始位置，<code>$</code>匹配行或字符串的结尾位置。例如：<code>^How.*Country\.$</code>匹配以How开头的整行，并以<code>.</code>结尾</p>
+
+<h3>3.2 单词边界与非单词边界</h3>
+
+<p>使用<code>\b</code>匹配单词边界。如：<code>\bTHE\b</code> 匹配THE。<code>\B</code>匹配非单词边界，即匹配除单词边界之外的位置，比如单词或字符串中的字母或数字。例如<code>\Be\B</code>可以匹配test中的e，而<code>\Bt\B</code>无法匹配test中的两个t。</p>
+
+<h3>3.3 使用元字符的字面值</h3>
+
+<p>这15个元字符在正则表达式中有特殊含义：<code>.^$*+?|(){}[]\-</code>。其中<code>-</code>用于在字符组的方括号中用来表示范围，在其它情况下无特殊含义。</p>
+
+<h2>4. 选择、分组和后向引用</h2>
+
+<p>用括号进行分组以帮助执行某种操作。</p>
+
+<h3>4.1 选择操作</h3>
+
+<p><code>(the|The|THE)</code>用于选择三种方式的the. 也可以借助选项简写成：<code>(?i)the</code>表示不区分大小写。Java支持的选项包括：</p>
+
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>(?d)</code> </td>
+<td> Unix中的行</td>
+</tr>
+<tr>
+<td><code>(?i)</code> </td>
+<td> 不区分大小写</td>
+</tr>
+<tr>
+<td><code>(?m)</code> </td>
+<td> 多行</td>
+</tr>
+<tr>
+<td><code>(?s)</code> </td>
+<td> 单行</td>
+</tr>
+<tr>
+<td><code>(?u)</code> </td>
+<td> Unicode</td>
+</tr>
+<tr>
+<td><code>(?x)</code> </td>
+<td> 忽略空格和注释</td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>4.2 子模式</h3>
+
+<p>子模式是指分组中的一个或多个分组。例如<code>(the|The|THE)</code>就包括三个子模式。这个例子中第三个子模式不依赖于前面的模式。但<code>(t|T)h(e|eir)</code>中后面的子模式依赖于前面的子模式。</p>
+
+<p>括号对于子模式不是必须的，例如<code>\b[tT]h[ceinry]*\b</code>可以匹配the, The, thee等。</p>
+
+<h3>4.3 捕获分组和后向引用</h3>
+
+<p>当一个模式的全部或者部分内容由一对括号分组时，它就对内容进行捕获并临时存储于内存中。可以通过后向引用重用捕获的内容，形式为：<code>\1</code>或<code>$1</code>表示第一个捕获的分组，<code>\2</code>或<code>$2</code>表示第二个捕获的分组。</p>
+
+<p>除了用数字来表示分组，也可以在括号中使用<code>?&lt;name&gt;</code>命名分组。例如 <code>(?&lt;one&gt;It)</code></p>
+
+<h3>4.4 非捕获分组</h3>
+
+<p>非捕获分组不会将其内容存储到内存中，因此如果你不想引用分组时可以使用它。由于不存储内容，因此性能较高。示例：<code>(?:the|The|THE)</code>, <code>(?i)(?:the)</code>, <code>(?i:the)</code></p>
+
+<h2>5. 量词</h2>
+
+<p>量词的一些特性需要知道：</p>
+
+<h3>5.1 贪心、懒惰和占有</h3>
+
+<p>量词自身是贪心的。贪心的量词首先会匹配整个字符串，也就是整个输入。如果失败则回退一个字符后再尝试，这个过程叫回溯（backtracking）。它的资源消耗最大，它是先吃尽所有字符，然后一个个吐出来，慢慢咀嚼消化。</p>
+
+<p>懒惰的量词是从起始位置开始尝试寻找匹配，每次检查字符串的一个字符，寻找要匹配的内容，因此它是每次只吃一点。要使一个量词成为懒惰的，必须在普通量词后加一个问号（？）。</p>
+
+<p>占有量词会覆盖整个目标，然后尝试寻找匹配内容，但它只尝试一次，不会回溯。它不咀嚼，而是直接吞咽，然后才想知道吃的是什么。使用方法是在普通量词之后添加一个加号（+）。</p>
+
+<h3>5.2 基本量词</h3>
+
+<ul>
+<li><code>?</code> 0个或1个（表示可选）</li>
+<li><code>+</code> 1个或多个</li>
+<li><code>*</code> 0个或多个</li>
+</ul>
+
+
+<table>
+<thead>
+<tr>
+<th>示例 </th>
+<th> 说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>7+</code> </td>
+<td> 1个或多个7</td>
+</tr>
+<tr>
+<td><code>7{1,}</code> </td>
+<td> 1个或多个7</td>
+</tr>
+<tr>
+<td><code>7{3,5}</code> </td>
+<td> 3-5个7</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-06T20:39:05+08:00" pubdate data-updated="true">2015-04-06</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/webxiang-guan/'>web相关</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+<!-- UY BEGIN 评论-->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1942741"></script>
+<!-- UY END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/04/02/intellij-idea-mackuai-jie-jian/" title="Previous Post: IntelliJ IDEA Mac快捷键">&laquo; IntelliJ IDEA Mac快捷键</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (31)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/04/06/xue-xi-zheng-ze-biao-da-shi/">学习正则表达式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/02/intellij-idea-mackuai-jie-jian/">IntelliJ IDEA Mac快捷键</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/28/linux-crontabding-shi-ren-wu/">Linux Crontab定时任务</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/25/du-gu-ge-he-ya-ma-xun-ru-he-zuo-chan-pin/">读《谷歌和亚马逊如何做产品》</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/17/tddxue-xi-bi-ji/">TDD学习笔记</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+</footer>
+  <!--以下为disqus的代码，因为被墙，改用上面的国内代码
+
+
+-->
+
+
+
+
+
+
+
+
+</body>
+</html>
