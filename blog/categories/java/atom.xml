@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-04-11T23:07:31+08:00</updated>
+  <updated>2015-04-11T23:14:51+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -1061,7 +1061,7 @@ public JsonNoJaxbBook getNoJaxbBook() {
 
 <h2>4. REST连通性</h2>
 
-<p>在Restful Web Service中，Representation应该是超媒体（HyperMedia），也就是说表示中不仅包含数据，还包含指向其它资源的连接。这种具有“连接”的特性，称为连通性。连通性使服务器通过超媒体告诉客户端当前状态有哪些后续状态可以进入。例如在<a href="http://www.google.com/search?hl=en&amp;q=apple&amp;aq=f%E8%B5%84%E6%BA%90%E9%87%8C%E7%9A%84%E2%80%9C%E4%B8%8B%E4%B8%80%E9%A1%B5%E2%80%9D%E8%BF%9E%E6%8E%A5%E8%B5%B7%E7%9A%84%E5%B0%B1%E6%98%AF%E8%BF%99%E7%A7%8D%E6%8E%A8%E8%BF%9B%E4%BD%9C%E7%94%A8%E2%80%94%E2%80%94%E5%AE%83%E6%8C%87%E5%BC%95%E4%BD%A0%E5%A6%82%E4%BD%95%E4%BB%8E%E5%BD%93%E5%89%8D%E7%8A%B6%E6%80%81%E8%BF%9B%E5%85%A5%E4%B8%8B%E4%B8%80%E4%B8%AA%E5%8F%AF%E8%83%BD%E7%9A%84%E7%8A%B6%E6%80%81%E3%80%82%E5%9C%A8Restful">http://www.google.com/search?hl=en&amp;q=apple&amp;aq=f%E8%B5%84%E6%BA%90%E9%87%8C%E7%9A%84%E2%80%9C%E4%B8%8B%E4%B8%80%E9%A1%B5%E2%80%9D%E8%BF%9E%E6%8E%A5%E8%B5%B7%E7%9A%84%E5%B0%B1%E6%98%AF%E8%BF%99%E7%A7%8D%E6%8E%A8%E8%BF%9B%E4%BD%9C%E7%94%A8%E2%80%94%E2%80%94%E5%AE%83%E6%8C%87%E5%BC%95%E4%BD%A0%E5%A6%82%E4%BD%95%E4%BB%8E%E5%BD%93%E5%89%8D%E7%8A%B6%E6%80%81%E8%BF%9B%E5%85%A5%E4%B8%8B%E4%B8%80%E4%B8%AA%E5%8F%AF%E8%83%BD%E7%9A%84%E7%8A%B6%E6%80%81%E3%80%82%E5%9C%A8Restful</a> Web服务的文档中只要包含URI就可以指向本应用的其他状态，因为Restful WebService是可寻址且无状态的应用。</p>
+<p>在Restful Web Service中，Representation应该是超媒体（HyperMedia），也就是说表示中不仅包含数据，还包含指向其它资源的连接。这种具有“连接”的特性，称为连通性。连通性使服务器通过超媒体告诉客户端当前状态有哪些后续状态可以进入。例如在Google搜索页的“下一页”连接起的就是这种推进作用——它指引你如何从当前状态进入下一个可能的状态。在Restful Web服务的文档中只要包含URI就可以指向本应用的其他状态，因为Restful WebService是可寻址且无状态的应用。</p>
 
 <h3>4.1 过渡型链接</h3>
 
