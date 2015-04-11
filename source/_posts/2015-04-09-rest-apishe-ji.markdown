@@ -870,7 +870,7 @@ public class BookResource {
 **(6)单元测试** [代码](https://github.com/feuyeux/jax-rs2-guide/blob/master/sample/3/2simple-service-jackson/src/test/java/com/example/resource/BookResourceTest.java)
 
 ## 4. REST连通性
-在Restful Web Service中，Representation应该是超媒体（HyperMedia），也就是说表示中不仅包含数据，还包含指向其它资源的连接。这种具有“连接”的特性，称为连通性。连通性使服务器通过超媒体告诉客户端当前状态有哪些后续状态可以进入。例如在http://www.google.com/search?hl=en&q=apple&aq=f资源里的“下一页”连接起的就是这种推进作用——它指引你如何从当前状态进入下一个可能的状态。在Restful Web服务的文档中只要包含URI就可以指向本应用的其他状态，因为Restful WebService是可寻址且无状态的应用。
+在Restful Web Service中，Representation应该是超媒体（HyperMedia），也就是说表示中不仅包含数据，还包含指向其它资源的连接。这种具有“连接”的特性，称为连通性。连通性使服务器通过超媒体告诉客户端当前状态有哪些后续状态可以进入。例如在Google搜索页的“下一页”连接起的就是这种推进作用——它指引你如何从当前状态进入下一个可能的状态。在Restful Web服务的文档中只要包含URI就可以指向本应用的其他状态，因为Restful WebService是可寻址且无状态的应用。
 
 ### 4.1 过渡型链接
 Web Link通过使用HTTP头信息来传递操作链接。在Jersey中使用javax.ws.rs.core.Link类来支持Web Link的资源类。示例如下：
