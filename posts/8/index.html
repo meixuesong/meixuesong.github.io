@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="Builder模式感觉没什么特别的，甚至都不值得称为一种模式。无非就是由Director构建部分，然后再使用一个方法完成构建过程。但Builder模式对于参数太多的构造器却非常有用。先看Builder模式的类图： 这篇博客建议当构造器参数比较多时，考虑使用Builder模式。这是一种非常优雅的方式 &hellip;">
+  <meta name="description" content="原型（Prototype）模式的用处是：对于给定的原型对象，用复制的方法创建出更多的同类型对象。之前学习的工厂方法模式常常需要有一个与产品等级相同的等级结构，而原型模式则不需要这样。Java语言天生就支持原型模式。原型模式的结构图如下： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +83,49 @@ var _hmt = _hmt || [];
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/">设计模式: 原型（Prototype）模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-30T20:58:15+08:00" pubdate data-updated="true">2014-07-30</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>原型（Prototype）模式的用处是：对于给定的原型对象，用复制的方法创建出更多的同类型对象。之前学习的工厂方法模式常常需要有一个与产品等级相同的等级结构，而原型模式则不需要这样。Java语言天生就支持原型模式。原型模式的结构图如下：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-30_21.10.50.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/30/she-ji-mo-shi-prototypemo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -480,49 +523,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/">分布式系统的基础知识</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-22T20:04:40+08:00" pubdate data-updated="true">2014-07-22</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>这是一篇学习笔记，内容为《大型网站系统与Java中间件实践》的第一章。</p>
-
-<p>组成计算机的5要素为：输入、输出、运算器、控制器、存储器（内存、外存）。分布式系统也一样，可以分为这5个要素。因此这本书会对分布式系统中，这5个要素的变化进行说明。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/22/fen-bu-shi-xi-tong-de-ji-chu-zhi-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/9">&larr; Older</a>
@@ -544,10 +544,14 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (31)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (32)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/04/09/rest-apishe-ji/">JAX-RS REST API设计</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/04/06/xue-xi-zheng-ze-biao-da-shi/">学习正则表达式</a>
@@ -563,10 +567,6 @@ var _hmt = _hmt || [];
     
       <li class="post">
         <a href="/blog/2015/03/25/du-gu-ge-he-ya-ma-xun-ru-he-zuo-chan-pin/">读《谷歌和亚马逊如何做产品》</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/03/17/tddxue-xi-bi-ji/">TDD学习笔记</a>
       </li>
     
   </ul>

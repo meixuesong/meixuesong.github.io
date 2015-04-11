@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-04-08T22:47:34+08:00</updated>
+  <updated>2015-04-11T23:07:31+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,1122 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[JAX-RS REST API设计]]></title>
+    <link href="http://blog.ubone.com/blog/2015/04/09/rest-apishe-ji/"/>
+    <updated>2015-04-09T19:54:14+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/04/09/rest-apishe-ji</id>
+    <content type="html"><![CDATA[<p>REST式的Web服务和RPC式的Web服务在接口定义上的区别是，前者使用HTTP的方法作为统一接口的标准词汇，而后者所提供的方法信息在SOAP/HTTP信封里，每个RPC式的Web服务都会公布一套自己的方法词汇。</p>
+
+<!--more-->
+
+
+<h2>1. REST统一接口</h2>
+
+<p>每一种HTTP请求方法都可以从安全性和幂等性两方面考虑，这对设计统一接口具有决定性意义。</p>
+
+<ul>
+<li>安全性：指对该接口的访问，不会使服务端资源的状态发生改变。</li>
+<li>幂等性（Idempotence）：指对同一REST接口的多次访问，得到的资源状态是相同的。</li>
+</ul>
+
+
+<h3>1.1 GET方法</h3>
+
+<p>HTTP GET方法用于读取资源。GET方法应该是安全的、幂等的。如果这样一种场景，虽然是读取资源，但服务端可能需要从其它系统同步资源，即意味着服务端资源状态可能发生改变，此时应该使用POST方法，而不是GET方法。</p>
+
+<p>通常GET方法会以资源名称命名，根据不同情况使用单数或复数。</p>
+
+<p>JAS-RS 2.0使用<code>@GET</code>注解来定义资源方法，注解可以定义在接口和POJO中，放在接口中更具抽象和通用性。示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@Path("book")
+public interface BookResource {
+    @GET
+    public String getWeight();
+}
+
+public class EBookResourceImpl implements BookResource {    
+    //实现类无须加注解
+    @Override
+    public String getWeight() {
+        return "150M";
+    }
+}
+
+public class GetTest extends JerseyTest {
+    @Override
+    protected Application configure() {
+        return new ResourceConfig(EBookResourceImpl.class);
+    }
+
+    @Test
+    public void testGet() {
+        final Response response = target("book").request().get();
+        Assert.assertEquals("150M", response.readEntity(String.class));
+    }
+}</code></pre>
+
+
+<p></p>
+
+<h3>1.2 HEAD和OPTIONS方法</h3>
+
+<p>这两个方法与GET相似，但HEAD方法的返回值不包括HTTP实体，因此也应该是安全和幂等的。使用<code>@HEAD</code>注解来定义。而OPTIONS方法用于读取资源所支持（Allow）的所有HTTP请求方法，也是安全和幂等的。使用<code>@OPTIONS</code>注解进行定义。</p>
+
+<h3>1.3 PUT方法</h3>
+
+<p>PUT方法用于更新或添加资源，所以肯定不是安全的。PUT方法应该是幂等的。多次插入或者更新同一份数据，在服务端对资源状态所产生的改变应该是相同的。通常更新资源使用PUT方法没有问题，但添加资源时，需要考虑使用PUT方法还是POST方法。一般来说，如果同一份数据，总是可以提供唯一的主键，具有幂等性，使用PUT方法，否则使用POST方法。</p>
+
+<p>JAX-RS 2.0定义了<code>@PUT</code>注解来定义PUT方法。示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@Path("book")
+public interface BookResource {
+    @PUT
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_XML)
+    public String newBook(Book book);
+}
+
+public class EBookResourceImpl implements BookResource {
+    @Override
+    public String newBook(Book book) {
+        SimpleDateFormat f = new SimpleDateFormat("d MMM yyyy HH:mm:ss");
+        Date lastUpdate = Calendar.getInstance().getTime();
+        //...
+        LOGGER.debug(book.getBookId());
+        return f.format(lastUpdate);
+    }    
+}
+
+public class PutTest extends JerseyTest {
+    private final static Logger LOGGER = Logger.getLogger(PutTest.class);
+    public static AtomicLong clientBookSequence = new AtomicLong();
+
+    @Override
+    protected Application configure() {
+        enable(TestProperties.LOG_TRAFFIC);
+        enable(TestProperties.DUMP_ENTITY);
+        return new ResourceConfig(EBookResourceImpl.class);
+    }
+
+    @Test
+    public void testNew() {
+        final Book newBook = new Book(clientBookSequence.incrementAndGet(), "book-" + System.nanoTime());
+        MediaType contentTypeMediaType = MediaType.APPLICATION_XML_TYPE;
+        MediaType acceptMediaType = MediaType.TEXT_PLAIN_TYPE;
+        final Entity&lt;Book&gt; bookEntity = Entity.entity(newBook, contentTypeMediaType);
+        final String lastUpdate = target("book").request(acceptMediaType).put(bookEntity, String.class);
+        Assert.assertNotNull(lastUpdate);
+        LOGGER.debug(lastUpdate);
+    }
+}</code></pre>
+
+
+<p></p>
+
+<p>PUT方法需要考虑请求实体的媒体类型（HTTP头的Content Type，上例中的@Consumes）和响应实体的媒体类型(HTTP头的Accept定义, 上例中的@Produces)。</p>
+
+<h3>1.4 DELETE方法</h3>
+
+<p>DELETE方法是幂等的、不安全的。使用<code>@DELETE</code>注解来定义资源方法。示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@Path("book")
+public interface BookResource {
+    @DELETE
+    public void delete(@QueryParam("bookId") final long bookId);
+}
+
+public class EBookResourceImpl implements BookResource {
+    @Override
+    public void delete(long bookId) {
+        LOGGER.debug(bookId);
+    }
+}  
+
+public class DeleteTest extends JerseyTest {
+    private final static Logger LOGGER = Logger.getLogger(DeleteTest.class);
+    @Test
+    public void testGet() {
+        final Response response = target("book").queryParam("bookId", "9527").request().delete();
+        int status = response.getStatus();
+        LOGGER.debug(status);
+        Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), status);
+    }
+}  </code></pre>
+
+
+<p></p>
+
+<p>上例中，delete方法没有返回值，将HTTP状态码设置为204. 在测试代码中，测试断言不是针对删除资源的实体，而是响应的HTTP状态码。</p>
+
+<h3>1.5 POST方法</h3>
+
+<p>POST方法用于写数据，既不幂等也不安全。REST只使用POST方法添加资源。使用<code>@POST</code>注解，示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@Path("book")
+public interface BookResource {
+    @POST
+    @Produces(MediaType.APPLICATION_XML)
+    @Consumes(MediaType.APPLICATION_XML)
+    public Book createBook(Book book);
+}
+
+public class EBookResourceImpl implements BookResource {
+    @Override
+    public Book createBook(Book book) {
+        book.setBookId(serverBookSequence.incrementAndGet());
+        return book;
+    }    
+}
+
+public class PostTest extends JerseyTest {
+    private final static Logger LOGGER = Logger.getLogger(PostTest.class);
+    public static AtomicLong clientBookSequence = new AtomicLong();
+
+    @Override
+    protected Application configure() {
+        enable(TestProperties.LOG_TRAFFIC);
+        enable(TestProperties.DUMP_ENTITY);
+        return new ResourceConfig(EBookResourceImpl.class);
+    }
+
+    @Test
+    public void testCreate() {
+        final Book newBook = new Book("book-" + System.nanoTime());
+        MediaType contentTypeMediaType = MediaType.APPLICATION_XML_TYPE;
+        MediaType acceptMediaType = MediaType.APPLICATION_XML_TYPE;
+        final Entity&lt;Book&gt; bookEntity = Entity.entity(newBook, contentTypeMediaType);
+        final Book book = target("book").request(acceptMediaType).post(bookEntity, Book.class);
+        Assert.assertNotNull(book.getBookId());
+        LOGGER.debug("Server Id=" + book.getBookId());
+    }
+}    </code></pre>
+
+
+<h2>2. REST资源定位</h2>
+
+<p>在设计REST式的Web服务过程中，资源地址的设计是非常严谨的。地址应该是面向资源的，资源名称应是准确描述该资源的名词，资源地址应具有直观的描述性。</p>
+
+<h3>2.1 资源地址设计</h3>
+
+<p>一个典型的请求URL如下：<code>http://localhost:8080/myproject/webapi/books/book?id=1</code>，它包括以下部分：</p>
+
+<ul>
+<li>requestURI: <code>myproject/webapi/books/book?id=1</code></li>
+<li>ContextPath: <code>myproject</code>，与部署服务器的配置或web.xml有关</li>
+<li>ServletPath: <code>webapi</code>，与<code>@ApplicationPath</code>注解或web.xml配置有关</li>
+<li>PathInfo: <code>books/book</code>，与<code>@Path</code>注解有关</li>
+<li>QueryString: <code>id=1</code></li>
+</ul>
+
+
+<p>资源地址是否可以唯一定位一个资源？答案是否定的。因为资源地址相同，但HTTP方法不同时，对应的是不同的REST接口。</p>
+
+<p>在路径变量中可以使用标点符号来辅助增强逻辑清晰性：</p>
+
+<ul>
+<li><code>?</code>号，用来分隔资源地址和查询字符串，<code>&amp;</code>号用于分隔参数。如: <code>GET /books?start=0&amp;size=10</code></li>
+<li><code>,</code>逗号用来分隔有次序的作用域信息。也可以使用<code>-</code>,<code>_</code>来做逻辑上的辅助分隔。如：<code>GET /books/01,2002-12,2014</code></li>
+<li><code>;</code>分号用来分隔无次序的作用域信息。这些信息在逻辑上通常是并列存在的，如并列查询条件。示例：<code>GET /books/restful;program=java;type=web</code></li>
+</ul>
+
+
+<h3>2.2 @QueryParam注解</h3>
+
+<p>@QueryParam注解用来定义查询参数，例如：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>public Yijings getByPaging(
+    @QueryParam("start")final int start, 
+    @DefaultValue("100") @QueryParam("limit")final int limit, 
+    @QueryParam("sort")final String sortName) {
+    //...
+}</code></pre>
+
+
+<h3>2.3 @PathParam注解</h3>
+
+<p>@PathParam注解用于定义路径参数，每个参数对应一个子资源。</p>
+
+<h4>@Path注解</h4>
+
+<p>格式为：{参数名称：正则表达式}，例如：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@GET
+@Path("{from:\\d+}-{to:\\d+}")
+public String getByCondition(
+    @PathParam("from")final Integer from, 
+    @PathParam("to")final Integer to){
+    ...
+}
+//eg. /path-resource/199-1999</code></pre>
+
+
+<p>正则表达式的内容可以参考<a href="http://blog.ubone.com/blog/2015/04/06/xue-xi-zheng-ze-biao-da-shi/">这篇博客</a>。</p>
+
+<h4>路径区间(PathSegment)</h4>
+
+<p>路径区间可以支持更广泛的资源地址请求。示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>/*
+匹配以下资源(都有固定子资源shenyang)：
+/path-res/Asia/China/northeast/liaoning/shenyang/huanggu
+/path-res/China/northeast/liaoning/shenyang/tiexi
+/path-res/China/shenyang/huanggu
+*/
+
+@GET
+@Path("{region:.+}/shenyang/{district:\\w+}")
+public String getByAddress(
+    @PathParam("region") final List&lt;PathSegment&gt; region, 
+    @PathParam("district") final String district) {
+    final StringBuilder result = new StringBuilder();
+    for(final PathSegment pathSegment : region) {
+        result.append(pathSegment.getPath()).append("-");
+    }
+    ...
+}</code></pre>
+
+
+<p>对于查询参数动态给定的场景（经测，需要用分号分隔），可以定义PathSegment参数类型，示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@GET
+@Path("q/{condition}")
+public String getByCondition(@PathParam("condition") final PathSegment condition) {
+    final MultivaluedMap&lt;String, String&gt; matrixParameters = condition.getMatrixParameters();
+    final Iterator&lt;Map.Entry&lt;String, List&lt;String&gt;&gt;&gt; iterator = matrixParameters.entrySet().iterator();
+
+    StringBuilder result = new StringBuilder(condition.getPath()+":");
+    while (iterator.hasNext()) {
+        final Map.Entry&lt;String, List&lt;String&gt;&gt; entry = iterator.next();
+        result.append(entry.getKey()).append("=");
+        result.append(entry.getValue()).append(" ");
+    }
+    return result.toString();
+}
+
+//http://localhost:8080/webapi/books/q/restful;program=java;type=web
+//输出：restful:program=[java] type=[web]    </code></pre>
+
+
+<p>上述示例也可以通过<code>@MatrixParam</code>注解来实现，示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@GET
+@Path("q/{condition}")
+public String getByCondition(
+    @PathParam("condition") final PathSegment condition, 
+    @MatrixParam("program") final String program, 
+    @MatrixParam("type") final String type) {
+    return condition.getPath() + ": program=[" + program + "] type=[" + type + "]";
+}</code></pre>
+
+
+<p><code>@MatrixParam</code>注解可以清晰地表达可接收的参数名称和类型，但缺乏灵活性。</p>
+
+<h3>2.4 @FormParam注解</h3>
+
+<p>@FormParam注解用来定义表单参数，相应的REST方法用于处理请求实体媒体类型为Content-Type:application/x-www-form-urlencoded的请求。示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@Path("form-resource")
+@POST
+public String newPassword(
+    //注意可以使用@DefaultValue
+    @DefaultValue("meixuesong") @FormParam("user") final String user,
+    //注意@Encoded表示禁用自动解码，参数不会被解码，如果直接返回，客户端的值是处于编码状态的字符串。下面的测试代码可看到区别
+    @Encoded @FormParam("password") final String password,
+    @Encoded @FormParam("newPassword") final String newPassword,
+    @FormParam("verification") final String verification
+) {
+    return user + ":" + password + ":" + newPassword + ":" + verification;
+}
+
+/** 测试代码*/
+public class FormTest extends JerseyTest {
+    private static final Logger LOGGER = Logger.getLogger(FormTest.class);
+
+    @Override
+    protected Application configure() {
+        enable(TestProperties.LOG_TRAFFIC);
+        enable(TestProperties.DUMP_ENTITY);
+        return new ResourceConfig(BookResource.class);
+    }
+
+    @Test
+    public void testPost2() {
+        final Form form = new Form();
+        form.param("password", "北京");
+        form.param("newPassword", "上海");
+        form.param("verification", "上海");
+        final String result = target("books/form-resource").request().post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+        FormTest.LOGGER.debug(result);
+        Assert.assertEquals("encoded should let it to disable decoding", "meixuesong:%E5%8C%97%E4%BA%AC:%E4%B8%8A%E6%B5%B7:上海", result);
+    }
+}</code></pre>
+
+
+<h3>2.5 @BeanParam注解</h3>
+
+<p>@BeanParam注解用于自定义参数组合，使REST方法的参数更加简洁。示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@Path("bean-resource")
+public class BeanParamResource {
+
+    @GET
+    @Path("{region:.+}/shenyang/{district:\\w+}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getByAddress(@BeanParam Jaxrs2GuideParam param) {
+        System.out.println("acceptParam: " + param.getAcceptParam());
+        //acceptParam: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+        return param.getRegionParam() + ":" + param.getDistrictParam() + ":" + param.getStationParam() + ":" + param.getVehicleParam();
+    }
+}
+
+public class Jaxrs2GuideParam {
+    @HeaderParam("accept")
+    private String acceptParam;
+    @PathParam("region")
+    private String regionParam;
+    @PathParam("district")
+    private String districtParam;
+    @QueryParam("station")
+    private String stationParam;
+    @QueryParam("vehicle")
+    private String vehicleParam;
+    //getter setter
+}    
+
+//测试
+public class BeanParamTest extends JerseyTest {
+    private static final Logger LOGGER = Logger.getLogger(BeanParamTest.class);
+
+    @Override
+    protected Application configure() {
+        enable(TestProperties.LOG_TRAFFIC);
+        enable(TestProperties.DUMP_ENTITY);
+        return new ResourceConfig(BeanParamResource.class);
+    }
+
+    @Test
+    public void testBeanParam() {
+        final String path = "bean-resource";
+        String result;
+
+        /*http://localhost:9998/bean-resource/China/northeast/shenyang/tiexi?station=Workers+Village&vehicle=bus*/
+        final WebTarget queryTarget = target(path).path("China").path("northeast").path("shenyang").path("tiexi").queryParam("station", "Workers Village")
+                .queryParam("vehicle", "bus");
+        result = queryTarget.request().get().readEntity(String.class);
+        LOGGER.debug(result);
+        Assert.assertEquals("China/northeast:tiexi:Workers Village:bus", result);
+    }
+}</code></pre>
+
+
+<h3>2.6 @CookieParam注解</h3>
+
+<p>@CookieParam注解用于匹配Cookie中的键值对信息。示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@Path("kuky-resource")
+public class CookieResource {
+    @GET
+    public String getHeaderParams(@CookieParam("longitude") final String longitude,
+                                  @CookieParam("latitude") final String latitude,
+                                  @CookieParam("population") final double population,
+                                  @CookieParam("area") final int area) {
+        return longitude + "," + latitude + " population=" + population + ",area=" + area;
+    }
+}
+
+//测试
+public class CookieTest extends JerseyTest {
+    private static final Logger LOGGER = Logger.getLogger(CookieTest.class);
+
+    @Override
+    protected Application configure() {
+        enable(TestProperties.LOG_TRAFFIC);
+        enable(TestProperties.DUMP_ENTITY);
+        return new ResourceConfig(CookieResource.class);
+    }
+
+    @Test
+    public void testContexts() {
+        final String path = "kuky-resource";
+        String result;
+
+        /*http://localhost:9998/kuky-resource*/
+        final Builder request = target(path).request();
+        request.cookie("longitude", "123.38");
+        request.cookie("latitude", "41.8");
+        request.cookie("population", "822.8");
+        request.cookie("area", "12948");
+        result = request.get().readEntity(String.class);
+        CookieTest.LOGGER.debug(result);
+        Assert.assertEquals("123.38,41.8 population=822.8,area=12948", result);
+    }
+}</code></pre>
+
+
+<h3>2.7 @Context注解</h3>
+
+<p>@Context注解用于解析上下文参数。下面的示例代码定义了Application、Request、Providers、UriInfo和HttpHeaders等5种类型的上下文实例，从而可以获取请求过程中的重要参数信息。代码如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@Path("ctx-resource")
+public class ContextResource {
+    @GET
+    @Path("{region:.+}/shenyang/{district:\\w+}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getByAddress(
+            @Context final Application application,
+            @Context final Request request,
+            @Context final javax.ws.rs.ext.Providers provider,
+            @Context final UriInfo uriInfo,
+            @Context final HttpHeaders headers) {
+        final StringBuilder buf = new StringBuilder();
+        final String path = uriInfo.getPath();
+        buf.append("PATH=").append(path).append("\n");
+
+        final MultivaluedMap&lt;String, String&gt; pathMap = uriInfo.getPathParameters();
+        buf.append("PATH_PARAMETERS:\n");
+        iterating(buf, pathMap);
+
+        final MultivaluedMap&lt;String, String&gt; queryMap = uriInfo.getQueryParameters();
+        buf.append("QUERY_PARAMETERS:\n");
+        iterating(buf, queryMap);
+
+        final List&lt;PathSegment&gt; segmentList = uriInfo.getPathSegments();
+        buf.append("PATH_SEGMENTS:\n");
+        for (final PathSegment pathSegment : segmentList) {
+            final MultivaluedMap&lt;String, String&gt; matrix = pathSegment.getMatrixParameters();
+            final String segmentPath = pathSegment.getPath();
+            buf.append(matrix);
+            buf.append(segmentPath);
+        }
+        buf.append("\nHEAD:\n");
+        final MultivaluedMap&lt;String, String&gt; headerMap = headers.getRequestHeaders();
+        iterating(buf, headerMap);
+        buf.append("COOKIE:\n");
+        final Map&lt;String, Cookie&gt; kukyMap = headers.getCookies();
+        final Iterator&lt;Entry&lt;String, Cookie&gt;&gt; i = kukyMap.entrySet().iterator();
+        while (i.hasNext()) {
+            final Entry&lt;String, Cookie&gt; e = i.next();
+            final String k = e.getKey();
+            buf.append("key=").append(k).append(",value=");
+            final Cookie cookie = e.getValue();
+            buf.append(cookie.getValue()).append(" ");
+            buf.append("\n");
+        }
+        return buf.toString();
+    }
+
+    private void iterating(final StringBuilder buf, final MultivaluedMap&lt;String, String&gt; pathMap) {
+        final Iterator&lt;Entry&lt;String, List&lt;String&gt;&gt;&gt; i = pathMap.entrySet().iterator();
+        while (i.hasNext()) {
+            final Entry&lt;String, List&lt;String&gt;&gt; e = i.next();
+            final String k = e.getKey();
+            buf.append("key=").append(k).append(",value=");
+            final List&lt;String&gt; vList = e.getValue();
+            for (final String v : vList) {
+                buf.append(v).append(" ");
+            }
+            buf.append("\n");
+        }
+    }
+}
+
+//测试代码
+public class ContextTest extends JerseyTest {
+    private static final Logger LOGGER = Logger.getLogger(ContextTest.class);
+
+    @Override
+    protected Application configure() {
+        enable(TestProperties.LOG_TRAFFIC);
+        enable(TestProperties.DUMP_ENTITY);
+        return new ResourceConfig(ContextResource.class);
+    }
+
+    @Test
+    public void testContexts() {
+        final String path = "ctx-resource";
+        String result;
+
+        /*http://localhost:9998/ctx-resource/Asia/China/northeast/liaoning/shenyang/huangu*/
+        final WebTarget pathTarget = target(path).path("Asia").path("China").path("northeast").path("liaoning").path("shenyang").path("huangu");
+        result = pathTarget.request().get().readEntity(String.class);
+        ContextTest.LOGGER.debug(result);
+
+        /*http://localhost:9998/ctx-resource/China/shenyang/tiexi?station=Workers+Village&vehicle=bus*/
+        final WebTarget queryTarget = target(path).path("China").path("shenyang").path("tiexi").queryParam("station", "Workers Village")
+                .queryParam("vehicle", "bus");
+        result = queryTarget.request().get().readEntity(String.class);
+        ContextTest.LOGGER.debug(result);
+    }
+}</code></pre>
+
+
+<h2>3. REST传输格式</h2>
+
+<p>采用什么样的数据格式进行传输也是API设计的一个重要内容。通常REST接口以XML和JSON作为主要的传输格式。</p>
+
+<h3>3.1 基本类型、输入流及Reader</h3>
+
+<p>Java的基本类型主要包括4种整型（byte，short, int, long）、两种浮点类型（float, double）、Unicode编码的字符(char)和布尔类型(boolean)。</p>
+
+<p>Jersey开发REST接口时，除了支持基本类型外，还支持文件类型（File）、字节流（InputStream）、字符流类型以及Reader类型。示例代码及测试类如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@Path("in-resource")
+public class InResource {
+    private static final Logger LOGGER = Logger.getLogger(InResource.class);
+
+    @POST
+    @Path("b")
+    public String postBytes(final byte[] bs) {
+        for (final byte b : bs) {
+            LOGGER.debug(b);
+        }
+        return "byte[]:" + new String(bs);
+    }
+
+    @POST
+    @Path("c")
+    public Response postString(final String s) {
+        LOGGER.debug(s);
+        //Response.noContent().build();
+        return Response.ok().entity("char[]:" + s).build();
+    }
+
+    @DELETE
+    @Path("{s}")
+    public void delete(@PathParam("s") final String s) {
+        LOGGER.debug(s);
+    }
+
+    @POST
+    @Path("f")
+    public File postFile(final File f) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+            String s;
+            do {
+                s = br.readLine();
+                LOGGER.debug(s);
+            } while (s != null);
+            return f;
+        }
+    }
+
+    @POST
+    @Path("bio")
+    public String postStream(final InputStream is) throws IOException {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            StringBuilder result = new StringBuilder();
+            String s = br.readLine();
+            while (s != null) {
+                result.append(s).append("\n");
+                LOGGER.debug(s);
+                s = br.readLine();
+            }
+            return result.toString();
+        }
+    }
+
+    @POST
+    @Path("cio")
+    public Response postChars(final Reader r) throws IOException {
+        try (BufferedReader br = new BufferedReader(r)) {
+            StringBuilder result = new StringBuilder();
+            String s = br.readLine();
+            if (s == null) {
+                throw new RuntimeException("NOT FOUND FROM READER");
+            }
+            while (s != null) {
+                result.append(s).append("\n");
+                LOGGER.debug(s);
+                s = br.readLine();
+            }
+            return Response.ok().entity(result.toString()).build();
+        }
+    }
+}
+
+/*测试*/
+public class InputTest extends JerseyTest {
+    private static final Logger LOGGER = Logger.getLogger(InputTest.class);
+    final String path = "in-resource";
+    String result;
+
+    @Override
+    protected Application configure() {
+        enable(TestProperties.LOG_TRAFFIC);
+        enable(TestProperties.DUMP_ENTITY);
+        return new ResourceConfig(InResource.class);
+    }
+
+    @Test
+    public void testBytes() {
+        final String message = "TEST STRING";
+        final Builder request = target(path).path("b").request();
+        //final Response response = request.post(Entity.entity(message, MediaType.TEXT_PLAIN_TYPE), Response.class);
+        final Response response = request.post(Entity.entity(message, MediaType.TEXT_HTML_TYPE), Response.class);
+        result = response.readEntity(String.class);
+        LOGGER.debug(result);
+        Assert.assertEquals("byte[]:" + message, result);
+    }
+
+    @Test
+    public void testResponse() {
+        final String message = "TEST STRING";
+        final Builder request = target(path).path("c").request();
+        final Response response = request.post(Entity.entity(message, MediaType.TEXT_HTML_TYPE), Response.class);
+        result = response.readEntity(String.class);
+        LOGGER.debug(result);
+        Assert.assertEquals("char[]:" + message, result);
+    }
+
+    @Test
+    public void testVoid() {
+        final String message = "TEST STRING";
+        final Builder request = target(path).path(message).request();
+        final Response response = request.delete();
+        int status = response.getStatus();
+        LOGGER.debug(status);
+        Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), status);
+    }
+
+    @Test
+    public void testFile() throws IOException {
+        final URL resource = getClass().getClassLoader().getResource("gua.txt");
+        assert resource != null;
+        final String file = resource.getFile();
+        final File f = new File(file);
+        final Builder request = target(path).path("f").request();
+        Entity&lt;File&gt; e = Entity.entity(f, MediaType.TEXT_PLAIN_TYPE);
+        final Response response = request.post(e, Response.class);
+        File result = response.readEntity(File.class);
+        try (BufferedReader br = new BufferedReader(new FileReader(result))) {
+            String s;
+            do {
+                s = br.readLine();
+                LOGGER.debug(s);
+            } while (s != null);
+        }
+    }
+
+    @Test
+    public void testStream() {
+        final InputStream resource = getClass().getClassLoader().getResourceAsStream("gua.txt");
+        final Builder request = target(path).path("bio").request();
+        Entity&lt;InputStream&gt; e = Entity.entity(resource, MediaType.TEXT_PLAIN_TYPE);
+        final Response response = request.post(e, Response.class);
+        result = response.readEntity(String.class);
+        LOGGER.debug(result);
+    }
+
+    @Test
+    public void testReader() {
+        ClassLoader classLoader = getClass().getClassLoader();
+        final Reader resource = new InputStreamReader(classLoader.getResourceAsStream("gua.txt"));
+        final Builder request = target(path).path("cio").request();
+        Entity&lt;Reader&gt; e = Entity.entity(resource, MediaType.TEXT_PLAIN_TYPE);
+        final Response response = request.post(e, Response.class);
+        result = response.readEntity(String.class);
+        LOGGER.debug(result);
+    }
+}</code></pre>
+
+
+<h3>3.2 XML类型</h3>
+
+<p>Java处理XML有两大标准：JAXP(Java API for XML Processing)和JAXB(Java Architecture for XML Binding)。</p>
+
+<h4>JAXP</h4>
+
+<p>JAXP包含了DOM、SAX和StAX三种解析XML的技术标准。</p>
+
+<ul>
+<li>DOM 面向文档解析的技术，要求将XML全部加载到内存，映射为树和结点。</li>
+<li>SAX 事件驱动的流解析技术，通过监听注册事件，触发回调方法以实现解析。</li>
+<li>StAX 拉式流解析技术，读取过程可以主动推进当前XML位置指针，而不是被动获得解析中的XML数据。</li>
+</ul>
+
+
+<p>相应地，JAXP定义了三种标准类型的输入接口Source(DOMSource、SAXSource和StreamSource)和输出接口Result(DomResult、SAXResult和StreamResult)。示例代码：<a href="https://github.com/feuyeux/jax-rs2-guide/blob/master/sample/3/simple-service-3/src/main/java/com/example/media/xml/XMLResource.java">代码</a>、<a href="https://github.com/feuyeux/jax-rs2-guide/blob/master/sample/3/simple-service-3/src/test/java/com/example/media/xml/XMLTest.java">测试代码</a>。</p>
+
+<h4>JAXB</h4>
+
+<p>JAXP的缺点是需要编码解析XML，增加了开发工作量。JAXB只需要在POJO中定义相关的注解，无须对XML进行程序式解析，推荐使用JAXB作为XML解析技术。</p>
+
+<p>Jersey支持使用JAXBElement作为REST方法参数，也支持直接使用POJO作为REST方法参数，示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@XmlRootElement
+public class Book implements Serializable {
+    private Long bookId;
+    private String bookName;
+    private String publisher;
+
+    @XmlAttribute(name = "bookId")
+    public Long getBookId() {
+        return bookId;
+    }
+
+    @XmlAttribute(name = "bookName")
+    public String getBookName() {
+        return bookName;
+    }
+    ...
+}
+
+@POST
+@Path("jaxb")
+@Produces(MediaType.APPLICATION_XML)
+@Consumes(MediaType.APPLICATION_XML)
+public Book getEntity(JAXBElement&lt;Book&gt; bookElement) {
+    Book book = bookElement.getValue();
+    ...
+}
+
+/*以POJO作为参数*/
+@POST
+@Produces(MediaType.APPLICATION_XML)
+@Consumes(MediaType.APPLICATION_XML)
+public Book saveBook(final Book book) {
+    return bookService.saveBook(book);
+}   </code></pre>
+
+
+<h3>3.3 JSON类型</h3>
+
+<p>JSON类型已经成为Ajax数据传输的实际标准，Jersey提供了4种处理JSON数据的媒体包。它们支持的处理方式如下表：</p>
+
+<table>
+<thead>
+<tr>
+<th>解析方式 </th>
+<th> MOXy </th>
+<th> JSON-P </th>
+<th> Jackson </th>
+<th> Jettison</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POJO-based JSON Binding </td>
+<td> yes </td>
+<td> no </td>
+<td> yes </td>
+<td> no</td>
+</tr>
+<tr>
+<td>JAXB-based JSON Binding </td>
+<td> yes </td>
+<td> no </td>
+<td> yes </td>
+<td> yes</td>
+</tr>
+<tr>
+<td>Low-level JSON parsing &amp; processing  </td>
+<td> no </td>
+<td> yes </td>
+<td> no </td>
+<td> yes</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>请注意，JSON-P是指Java API for JSON Processing，而不是JSON with Padding(JSONP)。前者是Java处理JSON格式数据的API，而后者是用于异步请求中传递脚本的回调函数来解决跨域问题。</p>
+
+<h4>使用Jackson处理JSON</h4>
+
+<p><strong>(1)定义依赖</strong>，在pom中增加依赖：</p>
+
+<pre class='line-numbers language-xml'><code class='language-xml'>&lt;dependency&gt;
+    &lt;groupId&gt;org.glassfish.jersey.media&lt;/groupId&gt;
+    &lt;artifactId&gt;jersey-media-json-jackson&lt;/artifactId&gt;
+    &lt;version&gt;${jersey.version}&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+
+
+<p><strong>(2)定义Application</strong>，需要在application中注册JacksonFeature，如有必要根据不同的实体类做详细解析，则可以注册ContextResolver的实现类。示例：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@ApplicationPath("/api/*")
+public class JsonResourceConfig extends ResourceConfig {
+    public JsonResourceConfig() {
+        register(JacksonFeature.class);
+        register(BookResource.class);
+        
+        //注册ContextResolver的实现类
+        register(JsonContextProvider.class);
+    }
+}</code></pre>
+
+
+<p><strong>(3)定义POJO</strong>，可以定义三种不同方式的POJO：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>//第一种：仅用JAXB注解的普通POJO
+@XmlRootElement
+@XmlType(propOrder = {"bookId", "bookName", "chapters"})
+public class JsonBook {
+    private String[] chapters;
+    private String bookId;
+    private String bookName;
+
+    public String getBookId() {
+        return bookId;
+    }
+    
+    ...
+}    
+
+//第二种：混和使用JAXB注解和Jackson注解的POJO
+@XmlRootElement
+public class JsonHybridBook {
+    @SuppressWarnings("unused")
+    @JsonProperty("bookId")
+    private String bookId;
+
+    @SuppressWarnings("unused")
+    @JsonProperty("bookName")
+    private String bookName;
+    
+    ...
+}    
+
+//第三种：不使用任何注解的POJO
+
+public class JsonNoJaxbBook {
+    private String bookId;
+    private String bookName;
+
+    public String getBookId() {
+        return bookId;
+    }
+    ...
+}    </code></pre>
+
+
+<p><strong>(4) 定义资源类</strong></p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@Path("books")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public class BookResource {
+    @Path("/emptybook")
+    @GET
+    public JsonBook getEmptyArrayBook() {
+        return new JsonBook();
+    }
+
+    @Path("/hybirdbook")
+    @GET
+    public JsonHybridBook getHybirdBook() {
+        return new JsonHybridBook();
+    }
+
+    @Path("/nojaxbbook")
+    @GET
+    public JsonNoJaxbBook getNoJaxbBook() {
+        return new JsonNoJaxbBook();
+    }
+}</code></pre>
+
+
+<p></p>
+
+<p><strong>(5)上下文解析实现类</strong> 可以根据上下文提供的POJO类型，分别提供解析方式。<a href="https://github.com/feuyeux/jax-rs2-guide/blob/master/sample/3/2simple-service-jackson/src/main/java/com/example/resource/JsonContextProvider.java">示例代码</a></p>
+
+<p><strong>(6)单元测试</strong> <a href="https://github.com/feuyeux/jax-rs2-guide/blob/master/sample/3/2simple-service-jackson/src/test/java/com/example/resource/BookResourceTest.java">代码</a></p>
+
+<h2>4. REST连通性</h2>
+
+<p>在Restful Web Service中，Representation应该是超媒体（HyperMedia），也就是说表示中不仅包含数据，还包含指向其它资源的连接。这种具有“连接”的特性，称为连通性。连通性使服务器通过超媒体告诉客户端当前状态有哪些后续状态可以进入。例如在<a href="http://www.google.com/search?hl=en&amp;q=apple&amp;aq=f%E8%B5%84%E6%BA%90%E9%87%8C%E7%9A%84%E2%80%9C%E4%B8%8B%E4%B8%80%E9%A1%B5%E2%80%9D%E8%BF%9E%E6%8E%A5%E8%B5%B7%E7%9A%84%E5%B0%B1%E6%98%AF%E8%BF%99%E7%A7%8D%E6%8E%A8%E8%BF%9B%E4%BD%9C%E7%94%A8%E2%80%94%E2%80%94%E5%AE%83%E6%8C%87%E5%BC%95%E4%BD%A0%E5%A6%82%E4%BD%95%E4%BB%8E%E5%BD%93%E5%89%8D%E7%8A%B6%E6%80%81%E8%BF%9B%E5%85%A5%E4%B8%8B%E4%B8%80%E4%B8%AA%E5%8F%AF%E8%83%BD%E7%9A%84%E7%8A%B6%E6%80%81%E3%80%82%E5%9C%A8Restful">http://www.google.com/search?hl=en&amp;q=apple&amp;aq=f%E8%B5%84%E6%BA%90%E9%87%8C%E7%9A%84%E2%80%9C%E4%B8%8B%E4%B8%80%E9%A1%B5%E2%80%9D%E8%BF%9E%E6%8E%A5%E8%B5%B7%E7%9A%84%E5%B0%B1%E6%98%AF%E8%BF%99%E7%A7%8D%E6%8E%A8%E8%BF%9B%E4%BD%9C%E7%94%A8%E2%80%94%E2%80%94%E5%AE%83%E6%8C%87%E5%BC%95%E4%BD%A0%E5%A6%82%E4%BD%95%E4%BB%8E%E5%BD%93%E5%89%8D%E7%8A%B6%E6%80%81%E8%BF%9B%E5%85%A5%E4%B8%8B%E4%B8%80%E4%B8%AA%E5%8F%AF%E8%83%BD%E7%9A%84%E7%8A%B6%E6%80%81%E3%80%82%E5%9C%A8Restful</a> Web服务的文档中只要包含URI就可以指向本应用的其他状态，因为Restful WebService是可寻址且无状态的应用。</p>
+
+<h3>4.1 过渡型链接</h3>
+
+<p>Web Link通过使用HTTP头信息来传递操作链接。在Jersey中使用javax.ws.rs.core.Link类来支持Web Link的资源类。示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@Path("weblink-resource")
+public class WebLinkResource {
+    @Context
+    UriInfo uriInfo;
+
+    @Path("{bookId:[0-9]*}")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Book getOne(@PathParam("bookId") final Long bookId) {
+        final Book result = LinkCache.map.get(bookId);
+        if (result == null) {
+            throw new RuntimeException("Not found for bookId=" + bookId);
+        }
+        return result;
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_XML)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_XML})
+    public Response saveBook(final Book book) {
+        final long newId = System.nanoTime();
+        book.setBookId(newId);
+        LinkCache.map.put(newId, book);
+        //方式1：通过uriInfo实例获取资源路径，然后添加资源ID信息
+        final UriBuilder ub = uriInfo.getAbsolutePathBuilder();
+        final URI location = ub.path("" + newId).build();
+        //方式2：通过模板获取资源路径，
+        final String uriTemplate = "http://{host}:{port}/{path}/{param}";
+        final URI location2 = UriBuilder.fromUri(uriTemplate)
+                .resolveTemplate("host", "localhost")
+                .resolveTemplate("port", "9998")
+                .resolveTemplate("path", "weblink-resource")
+                .resolveTemplate("param", newId).build();
+        //方式3：通过模板方法获取资源路径
+        final UriBuilder ub3 = uriInfo.getAbsolutePathBuilder();
+        final URI location3 = ub3.scheme("http")
+                .host("localhost")
+                .port(9998)
+                .path("weblink-resource")
+                .path("" + newId).build();
+
+        //这三个与Link相关的URI实例由Response构建，作为返回值响应给客户端
+        return Response.created(location)
+                .link(location2, "view1")
+                .link(location3, "view2")
+                .entity(book).build();
+    }
+}
+
+//测试
+public class WebLinkTest extends JerseyTest {
+    private static final Logger LOGGER = Logger.getLogger(WebLinkTest.class);
+
+    @Override
+    protected Application configure() {
+        enable(TestProperties.LOG_TRAFFIC);
+        enable(TestProperties.DUMP_ENTITY);
+        return new ResourceConfig(WebLinkResource.class);
+    }
+
+    @Test
+    public void testPostAndGet() {
+        final Entity&lt;Book&gt; entity = Entity.entity(new Book("WEBLINK"), MediaType.APPLICATION_XML_TYPE);
+        final Response response = target("weblink-resource").request().post(entity, Response.class);
+        final URI location = response.getLocation();
+        WebLinkTest.LOGGER.debug(location.toString());
+        final Set&lt;Link&gt; links = response.getLinks();
+        for (final Link link : links) {
+            WebLinkTest.LOGGER.debug(link);
+        }
+        final Book book = response.readEntity(Book.class);
+        WebLinkTest.LOGGER.debug("POSTED::" + book);
+        Assert.assertEquals("WEBLINK", book.getBookName());
+
+        final Client client = ClientBuilder.newClient();
+        final WebTarget target = client.target(location);
+        final Response response2 = target.request().get();
+        final Book book2 = response2.readEntity(Book.class);
+        WebLinkTest.LOGGER.debug("GET::" + book2);
+        Assert.assertEquals("WEBLINK", book2.getBookName());
+    }
+}</code></pre>
+
+
+<p></p>
+
+<h3>4.2 结构型链接</h3>
+
+<p>HATEOAS用以代替聚集数据并避免描述膨胀，通常使用Atom格式在实体字段中提供链接信息。<a href="https://github.com/feuyeux/jax-rs2-guide/blob/master/sample/3/simple-service-3/src/main/java/com/example/link/HATEOASResource.java">示例代码</a></p>
+
+<h2>5. REST响应处理</h2>
+
+<p>REST的响应处理结果应包括HTTP状态码、响应实体的媒体参数类型、返回值类型以及异常情况处理。</p>
+
+<h3>5.1 返回类型</h3>
+
+<p>JAX-RS 2.0支持4种返回值类型的响应。</p>
+
+<p><strong>（1）void</strong> 在返回值类型为void的响应中，其响应实体为空，HTTP状态码为204.</p>
+
+<p><strong>（2）Response</strong> 响应实体为Response类的entity()方法定义的实体类实例。如果该内容为空，则HTTP状态码为204，否则为200 OK. 参见3.1的代码。</p>
+
+<p><strong>（3）GenericEntity</strong> 不常用。其形式是构造一个统一的实体实例并将其返回。实体实例作为第一个参数，实体类型作为第二个参数。</p>
+
+<p><strong>（4）自定义类型</strong> 即返回自定义的POJO类型，前述代码中已经有很多例子。</p>
+
+<h3>5.2 处理异常</h3>
+
+<p>处理异常包括异常的定义和错误状态码的正确返回。</p>
+
+<h4>5.2.1 处理状态码</h4>
+
+<p>JAX-RS 2.0规定的REST式WEB服务的基本异常类型为运行时异常WebApplicationException类，该类包括3个主要子类：</p>
+
+<ul>
+<li>RedirectionException HTTP状态码3xx的重定向类</li>
+<li>ClientErrorException HTTP状态码4xx的请求错误类</li>
+<li>ServerErrorException HTTP状态码5xx的服务器错误类</li>
+</ul>
+
+
+<p>除了上面的标准异常，也可以定义业务相关的异常类。示例：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>public class Jaxrs2GuideNotFoundException extends WebApplicationException {
+    private static final long serialVersionUID = 1L;
+
+    public Jaxrs2GuideNotFoundException() {
+        super(javax.ws.rs.core.Response.Status.NOT_FOUND);
+    }
+
+    public Jaxrs2GuideNotFoundException(String message) {
+        super(message);
+    }
+}</code></pre>
+
+
+<h4>5.2.2 ExceptionMapper</h4>
+
+<p>Jersey提供了更通用的异常处理方式。通过实现ExceptionMapper接口并使用@Provider注解将其定义为一个Provider，可以实现通用的异常的面向切面处理。示例：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@Provider
+public class EntityNotFoundMapper implements ExceptionMapper&lt;Jaxrs2GuideNotFoundException&gt; {
+    @Override
+    public Response toResponse(final Jaxrs2GuideNotFoundException ex) {
+        return Response.status(404).entity(ex.getMessage()).type("text/plain").build();
+    }
+}</code></pre>
+
+
+<p>在上面的代码中，当响应中发生了Jaxrs2GuideNotFoundException异常时，响应流程就会被拦截并补充HTTP状态码和异常消息，以文本作为媒体格式返回给客户端。</p>
+
+<h2>6. REST内容协商</h2>
+
+<p>一个资源可以有不同格式的表述，即响应实体。内容协商是指在服务提供的多种表述中，为特定的请求选择最好的一种表述的处理过程。客户端/浏览器通过使用HTTP Accept、Accept-Charset、Accept-Language和Accept-Encoding头来定义接收头的信息，将其所期待的格式或MIME类型告知服务器，服务器根据协商算法返回客户端可接收的数据信息。</p>
+
+<h3>6.1 @Produces注解</h3>
+
+<p>JAX-RS 2.0对内容协商的支持，是通过@Produces实现的。该注解可以为每种类型定义质量因素（0～1的小数值）。如果不定义则默认为1. 例如：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@GET
+@Produces({"application/json; qs=.9", "application/xml; qs=.5"})
+@Path("book/{id}")
+public Book getBook(@PathParam("id") final Long bookId) {
+    return new Book(bookId);
+}</code></pre>
+
+
+<p></p>
+
+<p>客户端也可以指定每种类型的质量因素。内容协商过程通常如下：</p>
+
+<ul>
+<li>如果客户端指定了一种类型，且服务端支持，则返回该类型。</li>
+<li>如果客户端指定了服务端支持的两种类型，则返回服务端质量因素高的那种类型。</li>
+<li>如果客户端指定了服务端支持的两种类型，同时客户端指定了类型的质量因素，则返回客户端质量因素高的那种类型。</li>
+</ul>
+
+
+<h3>6.2 @Consumes注解</h3>
+
+<p>@Consumes注解用于定义方法的请求实体的数据类型，它只用于匹配请求处理的方法，不做内容协商使用。如果匹配不到，则服务器返回HTTP状态码415（Unsupported Media Type）。</p>
+
+<p>参考：《Java RESTful Web Service实战》</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[学习正则表达式]]></title>
@@ -6979,541 +8095,6 @@ obj.callMyMethod();</code></pre>
 <p>如果上面的代码只会在一种类型的对象上调用（基于统计），也就是obj.callMyMethod()几乎不会同时碰到一个类和它的子类。这时就可以把Java方法查找替换为callMyMethod()编译结果的直接调用。为了防止getInstance()可能返回的是其他类，运行时会检查，确保对象的类型是由编译器按预期插入的。如果这个预期被违背，运行时会取消优化。程序不会注意到这些动作也不会犯任何错误。</p>
 
 <p>通过启动选项<code>-XX:+PrintCompilation</code>可以告诉JIT编译线程输出标准日志。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[类文件与字节码]]></title>
-    <link href="http://blog.ubone.com/blog/2014/12/04/lei-wen-jian-yu-zi-jie-ma/"/>
-    <updated>2014-12-04T20:40:02+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/12/04/lei-wen-jian-yu-zi-jie-ma</id>
-    <content type="html"><![CDATA[<p>本篇学习类加载过程、类文件的分析工具和字节码。</p>
-
-<!--more-->
-
-
-<h2>1. 类加载和类对象</h2>
-
-<p>一个.class文件定义了JVM的一种类型。类加入到JVM当前运行态中，首先要加载并连接，进行大量验证，然后提供一个代表该类型的Class对象给正在运行的系统，用于创建新的实例。</p>
-
-<h4>加载</h4>
-
-<p>加载的过程首先要读取类文件的字节数据流，创建一个字节数组，然后产生对应的Class对象。这个过程会进行一些基本检查。加载结束时，Class对象还不成熟，类也不可用。</p>
-
-<h4>连接</h4>
-
-<p>加载完成后，类必须连接起来。这分为三个步骤：验证、准备和解析。验证类文件符合预期，不会引起系统运行时错误。准备阶段会分配内存，准备好初始化类中的静态变量（但不会现在初始化变量）。解析阶段会检查类中引用的类型是否有未知类型，如果有会加载进来。</p>
-
-<h4>初始化</h4>
-
-<p>一旦需要加载的其他类型全部定位并完成解析，VM就可以初始化这个类。这时所有静态变量都可以被初始化，所有静态初始化代码块都会运行。类的加载全部完成，已经可以使用了。</p>
-
-<h4>Class对象</h4>
-
-<p>加载和连接过程的最终结果是一个Class对象，可以使用这个新类型创建实例了。Class对象可以和反射API一起实现对方法、域和构造方法等类成员的间接访问，通过getSuperClass()返回其父类。</p>
-
-<h4>类加载器</h4>
-
-<p>比较两个类是否“相等”，只有这两个类是由同一个类加载器加载的前提下才有意义。同一个Class文件，被同一个虚拟机加载，只要加载它们的类加载器不同，那这两个类必定不等。这里所指的“相等”，包括Class对象的equals()方法、isAssignableFrom()方法、isInstance()方法的返回结果以及instanceof关键字。</p>
-
-<p>Java平台有几个经典的类加载器：</p>
-
-<ul>
-<li>根（或引导）类加载器：通常在VM启动后不久实例化，一般用本地代码实现。可视为VM的一部分。负责加载系统的基础JAR(主要是rt.jar),而且不做验证工作。</li>
-<li>扩展类加载器：用来加载安装时自带的标准扩展。一般包括安全性扩展。</li>
-<li>应用（或系统）类加载器：应用最广泛的类加载器，负责加载应用类。</li>
-<li>定制类加载器：在更复杂的环境，如EE或比较复杂的SE框架，通常会有些附加（即定制）的类加载器。</li>
-</ul>
-
-
-<p>在实现类加载器时，Java推荐使用双亲委派模型。即定制类加载器继承自应用类加载器，应用类加载器继承自扩展类加载器，扩展类加载器继承自根类加载器。其工作过程是，如果一个类加载器收到了类加载的请求，它首先把这个请求委派给父类加载器去完成，每个层次的类加载器都是如此，因此所有的加载请求都最终应该传送到顶层的根类加载器。只有当父类加载器反馈自己无法完成加载请求（它的搜索范围中没有找到所需的类）时，子加载器才会尝试自己去加载。双亲委派模型的代码实现示例如下：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>protected synchronized Class&lt;?&gt; loadClass(String name, boolean resolve) throws ClassNotFoundException {
-    //先检查类是否已经加载过了
-    Class c = findLoadedClass(name);
-    if (c == null) {
-        try {
-            if (parent != null) {
-                c = parent.loadClass(name, false);
-            } else {
-                c = findBootstrapClassOrNull(name);
-            }
-        } catch(ClassNotFoundException e) {
-            //如果父类抛出异常，说明父类加载器无法完成加载请求
-        }
-        
-        if (c == null) {
-            //父类无法加载时，调用本身的findClass方法进行类加载
-            c = findClass(name);
-        }
-    }
-    
-    if (resolve) {
-        resolveClass(c);
-    }
-    
-    return c;
-}</code></pre>
-
-
-<p>从JDK1.2之后，不再提倡用户覆盖loadClass()方法，而应当把自己的类加载逻辑放到findClass()方法中。随着用户对程序动态性的要求，双亲委派模型不一定成立。例如在OSGi中，类加载器变成了复杂的网状结构。</p>
-
-<p>OSGi的Bundle类加载器之间只有规则，没有固定的委派关系。例如，某个Bundle声明了一个它依赖的Package，如果有其他Bundle声明发布了这个Package，那么所有对这个Package的类加载动作都会委派给发布它的Bundle类加载器去完成。一个Bundle类加载器为其他Bundle提供服务时，会根据Export-Package列表严格控制访问范围。如果一个类存在于Bundle的类库中但没有被Export，那么这个Bundle的类加载器能找到这个类，但不会提供给其他Bundle使用，而且OSGi平台也不会把其他Bundle的类加载请求分配给这个Bundle来处理。</p>
-
-<p>假设有三个Bundle：A, B和C。A依赖了<code>java.*</code>包；B依赖于A、C和<code>java.*</code>包；C依赖于A。那么这三个Bundle的类加载器如下图所示：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2015-01-21.jpg" alt="image" /></p>
-
-<p>如上图所示，OSGi中类加载器的关系不再是双亲委派模型的树形结构，而是已经发展成网状结构。但带来灵活性的同时，也引入了额外的复杂度，带来了线程死锁和内存泄露的风险。</p>
-
-<h2>2. 方法句柄</h2>
-
-<p>反射代码有很多套路，要捕获各种讨厌的异常，代码看起来也不直观。Java 7为间接调用方法引入了java.lang.invoke包，即方法句柄，可以提高安全性和代码的可读性。</p>
-
-<h4>MethodHandle</h4>
-
-<p>它是对可直接执行的方法（或域、构造方法等）的类型化引用，是一个有能力安全调用方法的对象。</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>MethodHandle mh = getTwoArgMH();
-MyType ret;
-try {
-    //调用obj对象的句柄，传入参数arg0, arg1
-    ret = mh.invokeExact(obj, arg0, arg1);
-} catch(Throwable e) {
-    //...
-}</code></pre>
-
-
-<h4>MethodType</h4>
-
-<p>它表示方法签名类型的不可变对象。每个方法句柄都有一个MethodType实例，用来指明方法的返回类型和参数类型。但它没有方法的名称和接收者类型。通过工厂方法可以得到MethodType实例：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>//第一个参数为返回类型，随后是方法参数的类型。
-//toString()
-MethodType mtToString = MethodType.methodType(String.class);
-//setter方法
-MethodType mtSetter = MethodType.methodType(void.class, Object.class);
-//Comparator&lt;String&gt;定义的compareTo()方法
-MethodType mtStringComparator = MethodType.methodType(int.class, String.Class, String.class);</code></pre>
-
-
-<h4>查找方法句柄</h4>
-
-<p>通过lookup对象，你给出持有所需方法的类、方法名称以及你所需方法签名相匹配的MethodType，就可以得到方法句柄：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public MethodHandle getToStringMH() {
-    MethodHandle mh;
-    MethodType mt = MethodType.methodType(String.class);
-    MethodHandles.Lookup lk = MethodHandles.lookup();
-    
-    try {
-        mh = lk.findVirtual(getClass(), "toString", mt);
-    } catch(NoSuchMethodException | IllegalAccessException mhx) {
-        //...
-    }
-    
-    return mh;
-}</code></pre>
-
-
-<blockquote><p>如果不是从当前类中查找，则只能看到或取得public方法的句柄。方法句柄总是在安全管理之下安全使用。没有反射中setAccessible()那种破解方法。</p></blockquote>
-
-<p>有了方法句柄，就可以执行它了。执行方法有两个：invokeExact()和invoke()。前者要求参数类型完全匹配，后者可以在不太匹配时做些修改后执行（如装箱或拆箱）。</p>
-
-<h4>示例：反射、代理和方法句柄的使用对比</h4>
-
-<p>现在通过一个实例来对比这三种方法。下面的代码演示了如何通过这三种方法来访问私有方法cancel()：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public class ThreadPoolManager {
-    //...
-    private void cancel(final ScheduledFuture&lt;?&gt; hndl) {
-        //...
-    }
-    
-    /* 反射方法
-    * 使用方法简单示例：
-    * Method meth = manager.makeReflective();
-    * meth.invoke(hndl);
-    */
-    public Method makeReflective() {
-        Method method = null;
-        try {
-            Class&lt;?&gt; argTypes = new Class[] {ScheduledFuture.class};
-            method = ThreadPoolManager.class.getDeclaredMethod("cancel", argTypes);
-            method.setAccessible(true);
-        } catch(IllegalArgumentException | NoSuchMethodException | SecurityException e) {
-            //...
-        }
-        
-        return method;
-    }
-    
-    /* 代理方法
-    *  使用方法简单示例：
-    *  CancelProxy proxy = manager.makeProxy();
-    *  proxy.invoke(manager, hndl);
-    */
-    public static class CancelProxy {
-        private CancelProxy() {}
-        public void invoke(ThreadPoolManager mae, ScheduledFuture&lt;?&gt; hndl) {
-            mae.cancel(hndl);
-        }
-    }
-    
-    public CancelProxy makeProxy() {
-        return new CancelProxy();
-    }
-    
-    /* 方法句柄
-    * 使用方法简单示例：
-    * MethodHandle mh = manager.makeMh();
-    * mh.invokeExact(manager, hndl);
-    */
-    public MethodHandle makeMh() {
-        MethodHandle mh;
-        MethodType desc = MethodType.methodType(void.class, ScheduledFuture.class);
-        try {
-            mh = MethodHandles.lookup().findVirtual(ThreadPoolManager.class, "cancel", desc);
-        } catch(NoSuchMethodException | IllegalAccessException e) {
-            //...
-        }
-        
-        return mh;
-    }
-}</code></pre>
-
-
-<p>三种方法的比较：</p>
-
-<table>
-<thead>
-<tr>
-<th>方法 </th>
-<th> 访问控制 </th>
-<th> 类型纪律 </th>
-<th> 性能  </th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>反射 </td>
-<td> 必须使用setAccesible。会被安全管理器禁止 </td>
-<td> 不匹配就抛异常 </td>
-<td> 较慢</td>
-</tr>
-<tr>
-<td>代理 </td>
-<td> 内部类可以访问受限方法 </td>
-<td> 静态，为了代理全部代理类，可能需要更多PermGen </td>
-<td> 跟其他方法一样快</td>
-</tr>
-<tr>
-<td>方法句柄 </td>
-<td> 取决于上下文，与安全管理器没有冲突 </td>
-<td> 运行时是类型安全的，不占用PermGen </td>
-<td> 力求跟其他方法调用一样快</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>方法句柄还有一个特性，可以在静态上下文中确定当前类。例如下面的代码改写了logger的创建方式，可以不用将类名写死：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>Logger logger = LoggerFactory.getLogger(MyClass.class);
-//可改为：
-Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());</code></pre>
-
-
-<h2>3. 了解类文件</h2>
-
-<h3>3.1 类文件的结构</h3>
-
-<p>Class文件是一组以8位字节为基础单位的二进制流，各数据项目严格按照顺序紧凑排列，中间没有添加任何分隔符。当遇到需要占用8位字节以上的数据项时，会按照高位在前（Big-Endian，最高位字节在地址最低位，最低位字节在地址最高位。SPARC, POWERPC是这种方式，而x86则相反）的方式分割成若干个8位字节进行存储。</p>
-
-<p>Class文件格式采用类似C语言结构体的伪结构来存储数据，这种伪结构只有两种数据类型：无符号数和表。无符号数属于基本数据类型，u1, u2,u4,u8分别代表1，2，4，8个字节的无符号数。无符号数用来描述数字、索引引用、数量值或者按照UTF8编码构成字符串值。表是由多个无符号数或者其他表作为数据项构成的复合数据类型。所有表都习惯以“_info”结尾。整个Class文件本质上就是一张表。</p>
-
-<p>无论是无符号数还是表，当需要描述同一类型但数量不定的多个数据时，经常会用一个前置的计数器（表示数量）加若干连续的数据项（某一类型的集合）形式来表示。</p>
-
-<p>每个Class文件的头4个字节称为<strong>魔数</strong>（Magic Number），值为<code>0xCAFEBABE</code>，其作用是确定这个文件是否为虚拟机所接受。紧接魔数之后的是4个字节的<strong>Class文件版本号</strong>。第5，6字节是次版本号，第7，8字节是主版本号。（JDK1.0的版本号是45.0，JDK1.7.0可生成的Class文件主版本号最大值为51）</p>
-
-<p>版本号之后是<strong>常量池</strong>入口。常量池中的常量数量是不固定的，所以先有一项u2类型的数据表示常量池容量数值（constant_pool_count）。它从1开始计数，0被空出来，用于某些指向常量池的索引值的数据在特定情况下表达“不引用任何一个常量池项目”的含义。</p>
-
-<p>常量池主要存放两大类常量：字面量（Literal）和符号引用（Symbolic References）。字面量比较接近于常量概念，如字符串、声明为final的常量值等。而符号引用则包括类和接口的全限定名（Full Qualifed Name）、字段的名称和描述符以及方法的名称和描述符。当虚拟机运行时，需要从常量池获得对应的符号引用，瑞在类创建时或运行时解析、翻译到具体的内存地址中。</p>
-
-<p>常量池中每一项常量都是一个表，JDK1.7之前共有11种不同的表结构数据，1.7又增加了三种以支持动态语言调用。这14种表的第1位是u1类型的标志位，代表当前这个常量属于哪种常量类型。每种常量类型均有自己的结构。</p>
-
-<p><strong>访问标志</strong>紧跟常量池，用两个字节表示。主要用于识别Class是类还是接口，是否public，是否abstract类型，是否final等。</p>
-
-<p><strong>类索引、父类索引和接口索引集合</strong>按顺序排列在访问标志之后。类索引用于确定这个类的全限定名，父类索引用于确定父类的全限定名，他们都用两个u2类型的索引值表示。接口索引集合用于描述这个类实现了哪些接口，由于这是可变的，因为入口有一个计数器表示索引表的容量。</p>
-
-<p><strong>字段表集合</strong>（Field_info）用于描述接口或类中声明的亦是。包括类变量和实例变量，但不包括方法的局域变量。信息包括作用域（public/private/protected）、实例还是类变量(static)、可变性（final）、并发可见性(volatile)、可否序列化（transient）、数据类型、字段名等。字段表集合不会列出父类或实现接口中继承的字段，但可能列出原本Java代码中不存在的字段（如向内部类添加指向外部类实例的字段）。</p>
-
-<p><strong>方法表集合</strong>与字段表集合相似。但方法里的Java代码编译成字节码指令后存放在方法属性表集合中一个名为“Code”的属性里面。Code属性表包含方法的很多信息。只说几个重要的：</p>
-
-<ul>
-<li>max_stack:方法的操作数栈（Operand Stacks）深度最大值</li>
-<li>max_locals:局部变量所需的存储空间。单位为Slot，局部变量分配内存的最小单位。byte,int等长度不超过32位的数据类型，每个局部变量占用1个Slot，doublue和long需要2个Slot。并不是方法中用到多少个局部变量，所占Slot之和就是所需存储空间，Slot是可以重用的，当代码执行超过一个局部变量的作用域时，这个局部变量的Slot就可以被其他局部变量使用。</li>
-<li>code_length:字节码长度</li>
-<li>code: 存储字节码指令的一系列字节流。</li>
-<li>exception_table:异常表，编译器使用异常表而不是简单的跳转命令来实现Java异常及finally处理机制。</li>
-</ul>
-
-
-<p>方法表除了Code属性，还有还有多种其他属性。例如Exceptions属性（即方法声明中的throws列表的异常）、LineNumberTable属性（javac用<code>-g:none</code>或<code>-g:lines</code>参数。如果不生成LineNumberTable属性，则异常中不会显示出错的行号）、LocalVariableTable属性（javac用<code>-g:none</code>或<code>-g:vars</code>参数，如果不生成这项信息，IDE只会显示arg0, arg1等，丢失了原有的参数名）。</p>
-
-<p><strong>属性表集合</strong>，Class文件、字段表、方法表都可以携带自己的属性表集合，以用于描述某些场景专有的信息。</p>
-
-<p>由于类文件是二进制文件，和它打交道并不容易。Oracle JVM的javap这个工具可以用来探视类文件内部和反编译。</p>
-
-<p>我们以一个简单的Java类作为示例：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>public class Sample {
-    private byte b;
-    private char c;
-    private double d;
-    private float f;
-    private int i;
-    private Integer Int;
-    private long l;
-    private String s;
-    private boolean bl;
-    private int[] array;
-    
-    //getter, setter</code></pre>
-
-
-<h3>3.2 查看类文件的方法和属性</h3>
-
-<pre class='line-numbers language-java'><code class='language-java'>$ javap  Sample.class 
-Compiled from "Sample.java"
-public class com.ubone.tdd.chapter1.javaio.Sample {
-  public com.ubone.tdd.chapter1.javaio.Sample();
-  public byte getB();
-  public void setB(byte);
-  public char getC();
-  //其它getter, setter方法...
-}</code></pre>
-
-
-<p>javap默认显示public, protected和包级protected级别的方法和属性。加上-p选项后可以显示private方法和属性。</p>
-
-<h3>3.3 方法签名的内部形式</h3>
-
-<p>JVM内部用的方法签名使用紧凑形式，例如int用I表示。这称为类型描述符：</p>
-
-<ul>
-<li>B: byte</li>
-<li>C: char(16位Unicode字符)</li>
-<li>D: double</li>
-<li>F: float</li>
-<li>I: int</li>
-<li>J: long</li>
-<li>L&lt;类型名称>: 引用类型，如：Ljava/lang/String</li>
-<li>S: short</li>
-<li>Z: boolean</li>
-<li>[: array-of</li>
-</ul>
-
-
-<p>使用javap -s可以输出签名的类型描述符：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>$ javap -s Sample.class 
-Compiled from "Sample.java"
-public class com.ubone.tdd.chapter1.javaio.Sample {
-  public com.ubone.tdd.chapter1.javaio.Sample();
-    Signature: ()V
-
-  public byte getB();
-    Signature: ()B
-
-  public void setB(byte);
-    Signature: (B)V
-
-  public char getC();
-    Signature: ()C
-
-  public void setC(char);
-    Signature: (C)V
-
-  public double getD();
-    Signature: ()D
-
-  public void setD(double);
-    Signature: (D)V
-
-  public float getF();
-    Signature: ()F
-
-  public void setF(float);
-    Signature: (F)V
-
-  public int getI();
-    Signature: ()I
-
-  public void setI(int);
-    Signature: (I)V
-
-  public java.lang.Integer getInt();
-    Signature: ()Ljava/lang/Integer;
-
-  public void setInt(java.lang.Integer);
-    Signature: (Ljava/lang/Integer;)V
-
-  public long getL();
-    Signature: ()J
-
-  public void setL(long);
-    Signature: (J)V
-
-  public java.lang.String getS();
-    Signature: ()Ljava/lang/String;
-
-  public void setS(java.lang.String);
-    Signature: (Ljava/lang/String;)V
-
-  public boolean isBl();
-    Signature: ()Z
-
-  public void setBl(boolean);
-    Signature: (Z)V
-
-  public int[] getArray();
-    Signature: ()[I
-
-  public void setArray(int[]);
-    Signature: ([I)V
-}</code></pre>
-
-
-<h3>3.4 常量池</h3>
-
-<p>常量池是为类文件中的其他（常量）元素提供快捷访问方式的区域。通过javap -v可以查看常量池的信息：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>Constant pool:
-   #1 = Class              #2             //  com/ubone/tdd/chapter1/javaio/Sample
-   #2 = Utf8               com/ubone/tdd/chapter1/javaio/Sample
-   #3 = Class              #4             //  java/lang/Object
-   #4 = Utf8               java/lang/Object
-   #5 = Utf8               b
-   #6 = Utf8               B
-   #7 = Utf8               c
-   #8 = Utf8               C
-   #9 = Utf8               d
-  #10 = Utf8               D
-  #11 = Utf8               f
-  #12 = Utf8               F
-  #13 = Utf8               i
-  #14 = Utf8               I
-  #15 = Utf8               Int
-  #16 = Utf8               Ljava/lang/Integer;
-  #17 = Utf8               l
-  #18 = Utf8               J  
-  ...
-  #70 = Utf8               getL
-  #71 = Utf8               ()J
-  #72 = Fieldref           #1.#73         //  com/ubone/tdd/chapter1/javaio/Sample.l:J
-  #73 = NameAndType        #17:#18        //  l:J
-  #74 = Utf8               setL
-  #75 = Utf8               (J)V
-  ...</code></pre>
-
-
-<p>如上所示，常量池的条目是带有类型的，它们还会相互引用。例如类型为Class的条目会引用类型为Utf8的条目。后者是个字符串，因此第1行为类的名称。</p>
-
-<p>72行的Fieldref定义了一个域，解析这个域需要名称、类型和它所在的类。<code>#1.#73</code>表示来自类<code>#1</code>,域为<code>#73</code>。<code>#73</code>的NameAndType描述名称和类型，分别来自17和18，即类型J(Long)，名称为<code>l</code>。</p>
-
-<h2>4. 字节码</h2>
-
-<p>字节码的基本特性：</p>
-
-<ul>
-<li>字节码是程序的中间表示形式，介于人类可读的源码和机器码之间。</li>
-<li>字节码由javac产生。</li>
-<li>某些高级语言特性在编译时已经从字节码去掉。例如for语句在字节码中被转换成分支指令。</li>
-<li>每个操作码都由一个字节表示（因此叫做字节码）。</li>
-<li>字节码可以进一步编译成机器码，也就是“即时编译”。</li>
-</ul>
-
-
-<h3>反编译类</h3>
-
-<p>javap可以用于反编译类：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>$ javap -c -p Sample.class 
-Compiled from "Sample.java"
-public class com.ubone.tdd.chapter1.javaio.Sample {
-  private byte b;
-
-  private char c;
-  ...
-  
-    public com.ubone.tdd.chapter1.javaio.Sample();
-    Code:
-       0: aload_0       
-       1: invokespecial #28                 // Method java/lang/Object."&lt;init&gt;":()V
-       4: return        
-  ...
-  
-  public long getL();
-    Code:
-       0: aload_0       
-       1: getfield      #72                 // Field l:J
-       4: lreturn       
-
-  public void setL(long);
-    Code:
-       0: aload_0       
-       1: lload_1       
-       2: putfield      #72                 // Field l:J
-       5: return        
-
-</code></pre>
-
-
-<p>代码前的数字表示从方法开始算起的字节码偏移量。先看构造方法，由于void构造方法总会隐式调用父类的构造方法。因此有invokespecial指令。对于方法getL()和setL()也可以看到相应的操作码和参数。</p>
-
-<p>javac产生的字节码没有经过特别优化，是非常简单的表示形式。大部分优化工作由JIT编译器来完成。</p>
-
-<h3>运行时环境</h3>
-
-<p>JVM没有处理器寄存器，而是使用堆栈机完成所有的计算和操作，所以理解堆栈机的操作对理解字节码至关重要。方法在运行时需要一块内存区域作为计算堆栈来计算新值。另外，每个运行的线程都需要一个调用堆栈来记录当前正在执行的方法。来看下面的代码是如何完成计算的：</p>
-
-<p><code>return 3 + petRecords.getNumberOfPets("Ben");</code></p>
-
-<p>系统首先会把3压入操作数栈，然后把接收对象（petRecords）压入计算堆栈，传入的参数尾随其后。然后invoke操作符会调用方法getNumberOfPets，把控制权移交给被调用的方法。进入新方法后，需要启用不同的操作数栈，所以已经在调用者操作数栈中的值不可能影响被调用方法的计算结果。</p>
-
-<p>当getNumberOfPets完成时，返回结果会被放到调用者的操作数栈中，进程中与getNumberOfPets相关的部分也会从调用堆栈中移走。然后相加运算得到结果。</p>
-
-<h3>操作码</h3>
-
-<p>JVM字节码由操作码（opcode）序列构成，每个指令后可能会跟一些参数（Operands，操作数）。每个操作码由一个单字节值表示，所以最多有255个操作码。目前用了200个左右。大致可以分为以下几类，摘要说明如下：</p>
-
-<blockquote><ul>
-<li>参数：操作码参数。如果参数出现在括号中，表示可选。以i打头的参数用来作为常量池或局部变量中的查询索引的几个字节。如果有多个此类参数，会合并在一直。例如i1,i2表示从这两个字节生成一个16位的索引。</li>
-<li>堆栈布局：展示栈在操作码执行前后的状态。</li>
-<li>表中操作码并不全，只用于示例。</li>
-</ul>
-</blockquote>
-
-<p>加载和储存操作码，这个族系负责将值加载到栈或者检索值。有很多不同形式的变体。如dload操作码把双精度数从局部变量加载到栈上。</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-12-05-5-4.jpg" alt="image" /></p>
-
-<p>数学运算操作码用来执行数学运算。</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-12-05-5-5.jpg" alt="image" /></p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-12-05-5-6.jpg" alt="image" /></p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-12-05-5-7.jpg" alt="image" /></p>
-
-<p><strong>平台操作操作码</strong></p>
-
-<p>在字节码这一级，构造方法被转换成带有特殊名称<init>的方法。不能由用户代码调用，但可以由字节码调用。这便形成了一个与对象创建直接相关的不同的字节码模式：new之后跟着一个dup，然后是一个调用<init>方法的invokespecial.</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-12-05-5-8.jpg" alt="image" /></p>
-
-<blockquote><p>为了节省字节，很多字节码都有快捷方式。</p></blockquote>
 ]]></content>
   </entry>
   
