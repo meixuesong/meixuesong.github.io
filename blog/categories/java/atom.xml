@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-04-12T12:27:12+08:00</updated>
+  <updated>2015-04-12T18:23:51+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,147 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[REST 客户端]]></title>
+    <link href="http://blog.ubone.com/blog/2015/04/12/rest-ke-hu-duan/"/>
+    <updated>2015-04-12T17:02:39+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/04/12/rest-ke-hu-duan</id>
+    <content type="html"><![CDATA[<p>JAX-RS 2.0对客户端API进行了标准化。客户端API通过HTTP请求Web资源，同样符合统一接口和REST架构风格。与Apache HTTP Client和HttpURLConnection相比，客户端API具备对REST感知的高层API，可以和Providers集成，返回值直接对应高层的业务类实例。</p>
+
+<!--more-->
+
+
+<h2>1. 客户端接口</h2>
+
+<p>REST客户端主要包括三个接口：javax.ws.rs.client.Client、javax.ws.rs.client.WebTarget和javax.ws.rs.client.Invocation。</p>
+
+<h3>1.1 Client接口</h3>
+
+<p>Client内部要管理客户端通信底层实现所需的各种对象，<strong>它是一个重量级的对象，应该尽量少地构造Client实例</strong>。<strong>此外接口要求其实例要有关闭连接的保障，否则会造成内存泄露</strong>。</p>
+
+<p>Jersey对Client接口的实现类是JerseyClient。通常使用构造模式，使用ClientBuilder创建实例。示例如下：</p>
+
+<p>```java
+ClientConfig clientConfig = new ClientConfig();
+//注册Provider
+clientConfig.register(MyProvider.class);
+//注册Feature
+clientConfig.register(MyFeature.class);
+//注册Filter
+clientConfig.register(new AnotherClientFilter());
+//创建Client
+Client client = ClientBuilder.newClient(clientConfig);
+//通过property设置相关属性
+client.property(&ldquo;MyProperty&rdquo;, &ldquo;MyValue&rdquo;);</p>
+
+<p>//配置完毕后，可以通过getConfiguration()获取配置信息
+Configuration configuration = client.getConfiguration();
+Map&lt;String, Object> properties = configuration.getProperties();
+Iterator&lt;Entry&lt;String, Object>> it = properties.entrySet().iterator();
+&hellip;
+```</p>
+
+<p>Client接口还提供了对客户端的安全连接和异步支持。</p>
+
+<h3>1.2 WebTarget接口</h3>
+
+<p>WebTarget接口为REST客户端实现资源定位，可以定义请求资源的地址、查询参数和媒体类型等信息。Jersey中的WebTarget接口实现类是JerseyWebTarget。</p>
+
+<p>WebTarget对象接收配置参数的方法是通过方法链，采用不变模式完成。如果分开写每次都返回一个新的WebTarget对象，如果不将其覆值会造成信息丢失。</p>
+
+<p><code>java
+WebTarget webTarget = client.target(BASE_URI);
+webTarget.path("books").path("book").queryParam("bookId", "1");
+</code></p>
+
+<h3>1.3 Invocation接口</h3>
+
+<p>当WebTarget接口完成资源定位后，Invocation接口向REST服务端发起请求。请求包括同步和异步方式，由Invocation接口内部的Builder接口定义。Jersey中的Invocation接口实现类是JerseyInvocation。</p>
+
+<p>```java
+final Invocation.Builder invocationBuilder = webTarget.request();</p>
+
+<p>//以多种方式请求数据
+final Book book = invocationBuilder.get(Book.class);
+Response response = invocationBuilder.post(userEntity);
+invocationBuilder.put(userEntity);
+```</p>
+
+<p>JAX-RS 2.0的REST框架无需开发者编码实现对客户端实例的资源管理，Response实例的readEntity()在返回响应实体的同时，就完成了对客户端资源的释放。</p>
+
+<h2>2. Connector</h2>
+
+<p>Connector接口是REST客户端底层连接器接口，Jersey提供了4个实现：</p>
+
+<ul>
+<li>HttpUrlConnector REST客户端的默认连接器</li>
+<li>ApacheConnector</li>
+<li>GrizzlyConnector</li>
+<li>InMemoryConnector 不是真实的HTTP连接器，而是使用JVM调用来模拟HTTP请求访问。</li>
+</ul>
+
+
+<h3>2.1 默认连接器</h3>
+
+<p>默认情况下，Jersey的Client初始化时会构造一个HttpUrlConnector实例作为连接器。</p>
+
+<h3>2.2 Apache连接器</h3>
+
+<p>ApacheConnector是基于Apache HTTP Client的连接器实现，比默认连接器功能更完整。可以实现代理服务器设置、超时设置。示例如下：</p>
+
+<p>```java
+final ClientConfig clientConfig = new ClientConfig();</p>
+
+<p>//代理服务器配置
+clientConfig.property(ApacheClientProperties.PROXY_URI, &ldquo;<a href="http://192.168.0.100">http://192.168.0.100</a>&rdquo;);
+clientConfig.property(ApacheClientProperties.PROXY_USERNAME, &ldquo;user&rdquo;);
+clientConfig.property(ApacheClientProperties.PROXY_PASSWORD , &ldquo;pwd&rdquo;);
+//连接超时配置
+clientConfig.property(ClientProperties.CONNECT_TIMEOUT, 1000);
+//读取超时配置，指连接和资源定位成功后，客户端接收服务响应的最长时间
+clientConfig.property(ClientProperties.READ_TIMEOUT, 2000);</p>
+
+<p>clientConfig.connectorProvider(new ApacheConnectorProvider());
+client = ClientBuilder.newClient(clientConfig);
+```</p>
+
+<h3>2.3 Grizzly连接器</h3>
+
+<p>GrizzlyConnector是Grizzly提供的连接器实现，内部使用异步处理客户端com.ning.http.client.AsyncHttpClient类作为底层的连接。</p>
+
+<p>```java
+final ClientConfig clientConfig = new ClientConfig();
+clientConfig.property(&ldquo;TestKey&rdquo;, &ldquo;TestValue&rdquo;);</p>
+
+<p>clientConfig.connectorProvider(new GrizzlyConnectorProvider());
+Client client = ClientBuilder.newClient(clientConfig);
+```</p>
+
+<h3>2.4 HTTP连接池</h3>
+
+<p>既然Client是一个重型组件，因此频繁地创建Client实例会影响总体性能。一种常见的解决方案是使用HTTP连接池来管理连接。下例使用ApacheConnector来实现HTTP连接池：</p>
+
+<p>```java
+final ClientConfig clientConfig = new ClientConfig();
+final PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+//设置最大连接数
+cm.setMaxTotal(20000);
+//设置每条路由的默认最大连接数
+cm.setDefaultMaxPerRoute(10000);
+clientConfig.property(ApacheClientProperties.CONNECTION_MANAGER, cm);</p>
+
+<p>clientConfig.connectorProvider(new ApacheConnectorProvider());
+client = ClientBuilder.newClient(clientConfig);
+```</p>
+
+<h2>后记</h2>
+
+<p>通常REST式的Web服务会按模块分别提供独立的Web服务，而模块之间的调用通过Web服务的REST API来实现。也就是说每个模块对其他模块的调用就是客户端请求。为了避免每次请求时重复编写构造客户端实例的代码，可以封装Client到公共模块，减少代码冗余。</p>
+
+<p>参考：《Java RESTful Web Service实战》</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[JAX-RS 2.0 REST 请求处理]]></title>
@@ -432,7 +573,7 @@ public class AirNameBindingFilter2 &hellip;
 
 <p>对于ContainerRequest、PreMatchContainerRequest、ClientRequest和读写拦截器，数值越小，优先级越高。对于ContainerResponse和ClientResponse，数值越大，优先级越高。</p>
 
-<p>参考：《Java RESTful Web Service实战》</p>
+<p>参考：《Java RESTful Web Service实战》, <a href="https://jersey.java.net/nonav/documentation/latest/index.html">Jersey</a></p>
 ]]></content>
   </entry>
   
@@ -3359,142 +3500,6 @@ public LinkedHashMap(int initialCapacity,</p>
 <li>ConcurrentHashMap 高并发、高性能的Map。线程安全。</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java Web中文编码]]></title>
-    <link href="http://blog.ubone.com/blog/2015/02/23/java-webzhong-wen-bian-ma/"/>
-    <updated>2015-02-23T15:57:18+08:00</updated>
-    <id>http://blog.ubone.com/blog/2015/02/23/java-webzhong-wen-bian-ma</id>
-    <content type="html"><![CDATA[<p>介绍常见的编码格式，以及Java Web和JavaScript相关的字符集编码。</p>
-
-<!--more-->
-
-
-<h2>1. 常见的编码格式</h2>
-
-<table>
-<thead>
-<tr>
-<th>编码 </th>
-<th> 说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ASCII </td>
-<td> 共128个，用1个字节表示。0～31为控制字符，如换行、回车等。32～126为打印字符。</td>
-</tr>
-<tr>
-<td>ISO-8859-1 </td>
-<td> 扩展ASCII编码，仍然是单字节，共256个字符。</td>
-</tr>
-<tr>
-<td>GB2312 </td>
-<td> 双字节编码，A1~A9是符号区，共682个符号；B0~F7是汉字区，共6763个汉字</td>
-</tr>
-<tr>
-<td>GBK </td>
-<td> 为Win95所制定的汉字内码规范，扩展GB2312，与GB2312兼容，能表示21003个汉字。</td>
-</tr>
-<tr>
-<td>GB18030 </td>
-<td> 可能是单字节、双字节或者四字节编码，与GB2312兼容。虽然是国家标准，但未广泛使用。</td>
-</tr>
-<tr>
-<td>UTF-16 </td>
-<td> 定义了Unicode字符在计算机中的存取方法。Unicode是ISO试图创建一个全新的超语言字典，世界上所有语言都可以通过这个字典相互翻译。Unicode是Java和XML的基础。UTF-16用两个字节来表示Unicode的转化格式，采用定长的表示方法。</td>
-</tr>
-<tr>
-<td>UTF-8 </td>
-<td> 避免UTF-16的空间浪费，采用变长技术，每个编码区域有不同的字码长度。不同类型的字符可以由1～6个字节组成。</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>UTF-8的编码规则：</p>
-
-<ul>
-<li>如果是1个字节，最高位（第8位）为0，表示1个ASCII字符。</li>
-<li>如果是1个字节，以11开着，则连续的1的个数表示这个字符的字节数。例如110xxxxx表示它是双字节UTF-8字符的首字节。</li>
-<li>如果1个字节，以10开始，表示它不是首字节，需要向前查找才能得到当前字符的首字节。</li>
-</ul>
-
-
-<h2>2. Java中的编码场景</h2>
-
-<h3>2.1 在I/O中编码</h3>
-
-<p>在磁盘和网络I/O中，都涉及字节与字符的转换。Reader类是Java的I/O中读字符的父类，而InputStream类是读字节的父类。两者之间的转换由StreamDecoder和StreamEncoder完成。在编、解码过程中必须指定Charset，否则使用本地环境默认字符集，如中文环境使用GBK。</p>
-
-<p>在实际开发过程中，只要保持编码的一致就不会造成乱码：</p>
-
-<p>```java
-String charset = &ldquo;UTF-8&rdquo;;
-String file = &ldquo;c:/stream.txt&rdquo;;</p>
-
-<p>FileOutputStream fos = new FieOutputStream(file);
-OutputStreamWriter writer = new OutputStreamWriter(fos, charset);</p>
-
-<p>&hellip;
-InputStreamReader reader = new InputStreamReader(inputStream, charset);
-```</p>
-
-<h3>2.2 在内存中编码</h3>
-
-<p>String类提供了字符和字节的转换方法：</p>
-
-<p><code>java
-String s= "这是一段中文";
-byte[] b = s.getBytes("UTF-8");
-String n = new String(b, "UTF-8");
-</code></p>
-
-<p>另一种方法是使用Charset类：</p>
-
-<p><code>java
-Charset charset = Charset.forName("UTF-8");
-ByteBuffer byteBuffer = charset.encode("abcd");
-CharBuffer charBuffer = charset.decode(byteBuffer);
-</code></p>
-
-<h2>3. Java Web中的编解码</h2>
-
-<p>用户从浏览器发起一个HTTP请求，需要编码的地方包括URL、Cookie和Parameter。</p>
-
-<h3>3.1 URL的编解码</h3>
-
-<p>URL <code>http://localhost:8080/examples/servlets/servlet/books?author=jason</code> 可分解为：</p>
-
-<ul>
-<li>URI: <code>/examples/servlets/servlet/books</code></li>
-<li>schema: http</li>
-<li>domain: localhost</li>
-<li>port: 8080</li>
-<li>contextPath: examples</li>
-<li>servletPath: servlets/servlet</li>
-<li>PathInfo: books</li>
-<li>QueryString: author=jason</li>
-</ul>
-
-
-<p>对于Tomcat，对URL的URI部分进行解码的字符集是在Connector中定义的。如果没有定义，那么默认为ISO-8859-1。QueryString的解码字符集要么是Header中ContentType定义的Charset，要么是默认的ISO-8859-1。要使用ContentType定义的编码，需要设置Connector。因此Tomcat一般会设置：</p>
-
-<p><code>&lt;Connector URIEncoding="UTF-8" useBodyEncodingForURI="true" /&gt;</code></p>
-
-<h3>3.2 HTTP Header的编解码</h3>
-
-<p>除了URL外，还可能在Header中传递其它参数，如Cookie、redirectPath等。不要在Header中传递非ASCII字符，如果一定要传递，可以先用URLEncoder编码，再添加到Header中。</p>
-
-<h3>3.3 其它编解码</h3>
-
-<p>POST表单也是通过ContentType的Charset编码。用JDBC来存取数据时要和数据的内置编码保持一致，可以通过设置JDBC URL来指定，如MySQL: url=&ldquo;jdbc:mysql://localhost:3306/DB?useUnicode=true&amp;characterEncoding=GBK"。</p>
-
-<h2>4. Javascript中的编码问题</h2>
-
-<p>如果Javascript文件的编码格式与当前页面不一致，需要指定字符集，否则可能出现乱码：<code>&lt;script src="abc.js" charset="gbk"/&gt;</code>。在Javascript中处理URL可以使用<code>encodeURI()</code>和<code>encodeURIComponent()</code>。后者编码得更彻底，除了<code>!</code>、<code>'</code>、<code>(</code>、<code>)</code>、<code>*</code>、<code>-</code>、<code>.</code>、<code>_</code>、<code>~</code>、<code>0-9</code>、<code>a-z</code>和<code>A-Z</code>之外，对其他所有字符都编码，因此通常用于将一个URL当作一个参数放在另一个URL中。</p>
 ]]></content>
   </entry>
   

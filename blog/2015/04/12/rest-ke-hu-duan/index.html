@@ -1,0 +1,381 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>REST 客户端 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="JAX-RS 2.0对客户端API进行了标准化。客户端API通过HTTP请求Web资源，同样符合统一接口和REST架构风格。与Apache HTTP Client和HttpURLConnection相比，客户端API具备对REST感知的高层API，可以和Providers集成， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2015/04/12/rest-ke-hu-duan">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="/stylesheets/prism-default.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
+<style>
+article blockquote {
+  font-size: 0.9em;
+}
+</style>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?28583ca12a9f673dc8d86501f8d02bbe";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">@InfoQ</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">REST 客户端</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-12T17:02:39+08:00" pubdate data-updated="true">2015-04-12</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>JAX-RS 2.0对客户端API进行了标准化。客户端API通过HTTP请求Web资源，同样符合统一接口和REST架构风格。与Apache HTTP Client和HttpURLConnection相比，客户端API具备对REST感知的高层API，可以和Providers集成，返回值直接对应高层的业务类实例。</p>
+
+<!--more-->
+
+
+<h2>1. 客户端接口</h2>
+
+<p>REST客户端主要包括三个接口：javax.ws.rs.client.Client、javax.ws.rs.client.WebTarget和javax.ws.rs.client.Invocation。</p>
+
+<h3>1.1 Client接口</h3>
+
+<p>Client内部要管理客户端通信底层实现所需的各种对象，<strong>它是一个重量级的对象，应该尽量少地构造Client实例</strong>。<strong>此外接口要求其实例要有关闭连接的保障，否则会造成内存泄露</strong>。</p>
+
+<p>Jersey对Client接口的实现类是JerseyClient。通常使用构造模式，使用ClientBuilder创建实例。示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>ClientConfig clientConfig = new ClientConfig();
+//注册Provider
+clientConfig.register(MyProvider.class);
+//注册Feature
+clientConfig.register(MyFeature.class);
+//注册Filter
+clientConfig.register(new AnotherClientFilter());
+//创建Client
+Client client = ClientBuilder.newClient(clientConfig);
+//通过property设置相关属性
+client.property("MyProperty", "MyValue");
+
+//配置完毕后，可以通过getConfiguration()获取配置信息
+Configuration configuration = client.getConfiguration();
+Map&lt;String, Object&gt; properties = configuration.getProperties();
+Iterator&lt;Entry&lt;String, Object&gt;&gt; it = properties.entrySet().iterator();
+...</code></pre>
+
+
+<p>Client接口还提供了对客户端的安全连接和异步支持。</p>
+
+<h3>1.2 WebTarget接口</h3>
+
+<p>WebTarget接口为REST客户端实现资源定位，可以定义请求资源的地址、查询参数和媒体类型等信息。Jersey中的WebTarget接口实现类是JerseyWebTarget。</p>
+
+<p>WebTarget对象接收配置参数的方法是通过方法链，采用不变模式完成。如果分开写每次都返回一个新的WebTarget对象，如果不将其覆值会造成信息丢失。</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>WebTarget webTarget = client.target(BASE_URI);
+webTarget.path("books").path("book").queryParam("bookId", "1");</code></pre>
+
+
+<h3>1.3 Invocation接口</h3>
+
+<p>当WebTarget接口完成资源定位后，Invocation接口向REST服务端发起请求。请求包括同步和异步方式，由Invocation接口内部的Builder接口定义。Jersey中的Invocation接口实现类是JerseyInvocation。</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>final Invocation.Builder invocationBuilder = webTarget.request();
+
+//以多种方式请求数据
+final Book book = invocationBuilder.get(Book.class);
+Response response = invocationBuilder.post(userEntity);
+invocationBuilder.put(userEntity);</code></pre>
+
+
+<p>JAX-RS 2.0的REST框架无需开发者编码实现对客户端实例的资源管理，Response实例的readEntity()在返回响应实体的同时，就完成了对客户端资源的释放。</p>
+
+<h2>2. Connector</h2>
+
+<p>Connector接口是REST客户端底层连接器接口，Jersey提供了4个实现：</p>
+
+<ul>
+<li>HttpUrlConnector REST客户端的默认连接器</li>
+<li>ApacheConnector</li>
+<li>GrizzlyConnector</li>
+<li>InMemoryConnector 不是真实的HTTP连接器，而是使用JVM调用来模拟HTTP请求访问。</li>
+</ul>
+
+
+<h3>2.1 默认连接器</h3>
+
+<p>默认情况下，Jersey的Client初始化时会构造一个HttpUrlConnector实例作为连接器。</p>
+
+<h3>2.2 Apache连接器</h3>
+
+<p>ApacheConnector是基于Apache HTTP Client的连接器实现，比默认连接器功能更完整。可以实现代理服务器设置、超时设置。示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>final ClientConfig clientConfig = new ClientConfig();
+
+//代理服务器配置
+clientConfig.property(ApacheClientProperties.PROXY_URI, "http://192.168.0.100");
+clientConfig.property(ApacheClientProperties.PROXY_USERNAME, "user");
+clientConfig.property(ApacheClientProperties.PROXY_PASSWORD , "pwd");
+//连接超时配置
+clientConfig.property(ClientProperties.CONNECT_TIMEOUT, 1000);
+//读取超时配置，指连接和资源定位成功后，客户端接收服务响应的最长时间
+clientConfig.property(ClientProperties.READ_TIMEOUT, 2000);
+
+clientConfig.connectorProvider(new ApacheConnectorProvider());
+client = ClientBuilder.newClient(clientConfig);</code></pre>
+
+
+<p></p>
+
+<h3>2.3 Grizzly连接器</h3>
+
+<p>GrizzlyConnector是Grizzly提供的连接器实现，内部使用异步处理客户端com.ning.http.client.AsyncHttpClient类作为底层的连接。</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>final ClientConfig clientConfig = new ClientConfig();
+clientConfig.property("TestKey", "TestValue");
+
+clientConfig.connectorProvider(new GrizzlyConnectorProvider());
+Client client = ClientBuilder.newClient(clientConfig);</code></pre>
+
+
+<h3>2.4 HTTP连接池</h3>
+
+<p>既然Client是一个重型组件，因此频繁地创建Client实例会影响总体性能。一种常见的解决方案是使用HTTP连接池来管理连接。下例使用ApacheConnector来实现HTTP连接池：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>final ClientConfig clientConfig = new ClientConfig();
+final PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+//设置最大连接数
+cm.setMaxTotal(20000);
+//设置每条路由的默认最大连接数
+cm.setDefaultMaxPerRoute(10000);
+clientConfig.property(ApacheClientProperties.CONNECTION_MANAGER, cm);
+
+clientConfig.connectorProvider(new ApacheConnectorProvider());
+client = ClientBuilder.newClient(clientConfig);</code></pre>
+
+
+<p></p>
+
+<h2>后记</h2>
+
+<p>通常REST式的Web服务会按模块分别提供独立的Web服务，而模块之间的调用通过Web服务的REST API来实现。也就是说每个模块对其他模块的调用就是客户端请求。为了避免每次请求时重复编写构造客户端实例的代码，可以封装Client到公共模块，减少代码冗余。</p>
+
+<p>参考：《Java RESTful Web Service实战》</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-12T17:02:39+08:00" pubdate data-updated="true">2015-04-12</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+<!-- UY BEGIN 评论-->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1942741"></script>
+<!-- UY END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/04/12/rest-qing-qiu-chu-li/" title="Previous Post: JAX-RS 2.0 REST 请求处理">&laquo; JAX-RS 2.0 REST 请求处理</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (34)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/rest-ke-hu-duan/">REST 客户端</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/rest-qing-qiu-chu-li/">JAX-RS 2.0 REST 请求处理</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/09/rest-apishe-ji/">JAX-RS REST API设计</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/06/xue-xi-zheng-ze-biao-da-shi/">学习正则表达式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/02/intellij-idea-mackuai-jie-jian/">IntelliJ IDEA Mac快捷键</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+</footer>
+  <!--以下为disqus的代码，因为被墙，改用上面的国内代码
+
+
+-->
+
+
+
+
+
+
+
+
+</body>
+</html>

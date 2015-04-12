@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-04-12T12:27:12+08:00</updated>
+  <updated>2015-04-12T18:23:51+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,145 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[REST 客户端]]></title>
+    <link href="http://blog.ubone.com/blog/2015/04/12/rest-ke-hu-duan/"/>
+    <updated>2015-04-12T17:02:39+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/04/12/rest-ke-hu-duan</id>
+    <content type="html"><![CDATA[<p>JAX-RS 2.0对客户端API进行了标准化。客户端API通过HTTP请求Web资源，同样符合统一接口和REST架构风格。与Apache HTTP Client和HttpURLConnection相比，客户端API具备对REST感知的高层API，可以和Providers集成，返回值直接对应高层的业务类实例。</p>
+
+<!--more-->
+
+
+<h2>1. 客户端接口</h2>
+
+<p>REST客户端主要包括三个接口：javax.ws.rs.client.Client、javax.ws.rs.client.WebTarget和javax.ws.rs.client.Invocation。</p>
+
+<h3>1.1 Client接口</h3>
+
+<p>Client内部要管理客户端通信底层实现所需的各种对象，<strong>它是一个重量级的对象，应该尽量少地构造Client实例</strong>。<strong>此外接口要求其实例要有关闭连接的保障，否则会造成内存泄露</strong>。</p>
+
+<p>Jersey对Client接口的实现类是JerseyClient。通常使用构造模式，使用ClientBuilder创建实例。示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>ClientConfig clientConfig = new ClientConfig();
+//注册Provider
+clientConfig.register(MyProvider.class);
+//注册Feature
+clientConfig.register(MyFeature.class);
+//注册Filter
+clientConfig.register(new AnotherClientFilter());
+//创建Client
+Client client = ClientBuilder.newClient(clientConfig);
+//通过property设置相关属性
+client.property("MyProperty", "MyValue");
+
+//配置完毕后，可以通过getConfiguration()获取配置信息
+Configuration configuration = client.getConfiguration();
+Map&lt;String, Object&gt; properties = configuration.getProperties();
+Iterator&lt;Entry&lt;String, Object&gt;&gt; it = properties.entrySet().iterator();
+...</code></pre>
+
+
+<p>Client接口还提供了对客户端的安全连接和异步支持。</p>
+
+<h3>1.2 WebTarget接口</h3>
+
+<p>WebTarget接口为REST客户端实现资源定位，可以定义请求资源的地址、查询参数和媒体类型等信息。Jersey中的WebTarget接口实现类是JerseyWebTarget。</p>
+
+<p>WebTarget对象接收配置参数的方法是通过方法链，采用不变模式完成。如果分开写每次都返回一个新的WebTarget对象，如果不将其覆值会造成信息丢失。</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>WebTarget webTarget = client.target(BASE_URI);
+webTarget.path("books").path("book").queryParam("bookId", "1");</code></pre>
+
+
+<h3>1.3 Invocation接口</h3>
+
+<p>当WebTarget接口完成资源定位后，Invocation接口向REST服务端发起请求。请求包括同步和异步方式，由Invocation接口内部的Builder接口定义。Jersey中的Invocation接口实现类是JerseyInvocation。</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>final Invocation.Builder invocationBuilder = webTarget.request();
+
+//以多种方式请求数据
+final Book book = invocationBuilder.get(Book.class);
+Response response = invocationBuilder.post(userEntity);
+invocationBuilder.put(userEntity);</code></pre>
+
+
+<p>JAX-RS 2.0的REST框架无需开发者编码实现对客户端实例的资源管理，Response实例的readEntity()在返回响应实体的同时，就完成了对客户端资源的释放。</p>
+
+<h2>2. Connector</h2>
+
+<p>Connector接口是REST客户端底层连接器接口，Jersey提供了4个实现：</p>
+
+<ul>
+<li>HttpUrlConnector REST客户端的默认连接器</li>
+<li>ApacheConnector</li>
+<li>GrizzlyConnector</li>
+<li>InMemoryConnector 不是真实的HTTP连接器，而是使用JVM调用来模拟HTTP请求访问。</li>
+</ul>
+
+
+<h3>2.1 默认连接器</h3>
+
+<p>默认情况下，Jersey的Client初始化时会构造一个HttpUrlConnector实例作为连接器。</p>
+
+<h3>2.2 Apache连接器</h3>
+
+<p>ApacheConnector是基于Apache HTTP Client的连接器实现，比默认连接器功能更完整。可以实现代理服务器设置、超时设置。示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>final ClientConfig clientConfig = new ClientConfig();
+
+//代理服务器配置
+clientConfig.property(ApacheClientProperties.PROXY_URI, "http://192.168.0.100");
+clientConfig.property(ApacheClientProperties.PROXY_USERNAME, "user");
+clientConfig.property(ApacheClientProperties.PROXY_PASSWORD , "pwd");
+//连接超时配置
+clientConfig.property(ClientProperties.CONNECT_TIMEOUT, 1000);
+//读取超时配置，指连接和资源定位成功后，客户端接收服务响应的最长时间
+clientConfig.property(ClientProperties.READ_TIMEOUT, 2000);
+
+clientConfig.connectorProvider(new ApacheConnectorProvider());
+client = ClientBuilder.newClient(clientConfig);</code></pre>
+
+
+<p></p>
+
+<h3>2.3 Grizzly连接器</h3>
+
+<p>GrizzlyConnector是Grizzly提供的连接器实现，内部使用异步处理客户端com.ning.http.client.AsyncHttpClient类作为底层的连接。</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>final ClientConfig clientConfig = new ClientConfig();
+clientConfig.property("TestKey", "TestValue");
+
+clientConfig.connectorProvider(new GrizzlyConnectorProvider());
+Client client = ClientBuilder.newClient(clientConfig);</code></pre>
+
+
+<h3>2.4 HTTP连接池</h3>
+
+<p>既然Client是一个重型组件，因此频繁地创建Client实例会影响总体性能。一种常见的解决方案是使用HTTP连接池来管理连接。下例使用ApacheConnector来实现HTTP连接池：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>final ClientConfig clientConfig = new ClientConfig();
+final PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+//设置最大连接数
+cm.setMaxTotal(20000);
+//设置每条路由的默认最大连接数
+cm.setDefaultMaxPerRoute(10000);
+clientConfig.property(ApacheClientProperties.CONNECTION_MANAGER, cm);
+
+clientConfig.connectorProvider(new ApacheConnectorProvider());
+client = ClientBuilder.newClient(clientConfig);</code></pre>
+
+
+<p></p>
+
+<h2>后记</h2>
+
+<p>通常REST式的Web服务会按模块分别提供独立的Web服务，而模块之间的调用通过Web服务的REST API来实现。也就是说每个模块对其他模块的调用就是客户端请求。为了避免每次请求时重复编写构造客户端实例的代码，可以封装Client到公共模块，减少代码冗余。</p>
+
+<p>参考：《Java RESTful Web Service实战》</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[JAX-RS 2.0 REST 请求处理]]></title>
@@ -396,7 +535,7 @@ public class AirNameBindingFilter2 ...</code></pre>
 
 <p>对于ContainerRequest、PreMatchContainerRequest、ClientRequest和读写拦截器，数值越小，优先级越高。对于ContainerResponse和ClientResponse，数值越大，优先级越高。</p>
 
-<p>参考：《Java RESTful Web Service实战》</p>
+<p>参考：《Java RESTful Web Service实战》, <a href="https://jersey.java.net/nonav/documentation/latest/index.html">Jersey</a></p>
 ]]></content>
   </entry>
   
@@ -7918,143 +8057,6 @@ INFO: Server startup in 3418 ms</code></pre>
 
 
 <p>修改后的<code>/dev/urandom</code>没有默认的<code>dev/random</code>安全吗？似乎也不一定，博文<a href="http://www.2uo.de/myths-about-urandom/">Myths about /dev/urandom</a>对两者进行了全面的分析，值得一看。最后作者认为用<code>/dev/urandom</code>就可以了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java运行时数据区与内存溢出异常]]></title>
-    <link href="http://blog.ubone.com/blog/2014/12/15/javayun-xing-shi-shu-ju-qu-yu-nei-cun-yi-chu-yi-chang/"/>
-    <updated>2014-12-15T21:55:31+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/12/15/javayun-xing-shi-shu-ju-qu-yu-nei-cun-yi-chu-yi-chang</id>
-    <content type="html"><![CDATA[<p>JVM定义了各种运行时数据区用于程序执行。有些数据区随着JVM启动而创建，当JVM退出时销毁。另一些数据区则是随着线程而存亡。每个数据区都是内存，因此就存在内存溢出的异常。本文学习JVM有哪些数据区以及常见的内存溢出异常。</p>
-
-<!--more-->
-
-
-<h2>1. 运行时数据区（Run-Time Data Areas）</h2>
-
-<p>根据<a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-2.html#jvms-2.5">JVM规范</a>，运行时数据区主要分为以下部分。</p>
-
-<h3>1.1 程序计数器（Program Counter Register）</h3>
-
-<p>每个JVM线程拥有自己的程序计数器，各线程之间计数器互不影响，这部分区域可以称为线程私有的内存。在任何时间点，一个CPU核心都只会执行一个线程中某个方法的指令，这就是当前方法：</p>
-
-<ul>
-<li>如果当前方法不是Native方法，程序计数器包含正在执行的虚拟机字节码指令的地址。</li>
-<li>如果是Native方法计数器值为Undefined。</li>
-</ul>
-
-
-<p>程序计数器所占内存非常小，也是唯一没有规定任何内存溢出异常的区域。</p>
-
-<h3>1.2 虚拟机栈（JVM Stacks）</h3>
-
-<p>每个线程同时也有一个私有的虚拟机栈，因此虚拟机栈的生命周期与线程相同。每个栈包括帧（frames），帧与方法调用相关，每当方法被调用，就会创建一个新的帧。当方法结束，帧也就被销毁。帧包括局域变量、自己的操作栈和当前方法的运行时常量池引用。</p>
-
-<p>虚拟机栈与C语言中的栈相似，它包括局域变量和部分结果，并在方法调用和返回中扮演角色。除了push和pop帧，虚拟机栈并不提供其它直接操作。帧可能是在堆中分配内存。虚拟机栈的内存并不需要是连续的。</p>
-
-<p>通常人们把Java内存分为堆和栈，其中栈就是虚拟机栈。虚拟机栈的内存可以是固定大小或者根据计算动态扩展。虚拟机栈涉及两个异常：</p>
-
-<ul>
-<li>StackOverflowError: 如果线程请求的栈深度大于允许的深度。</li>
-<li>OutOfMemoryError：如果栈是动态扩展的，扩展时无法申请足够的内存。</li>
-</ul>
-
-
-<p>本地方法栈（Native Method Stack）与虚拟机栈发挥着相似的作用，但它是为Native方法服务。JVM规范并没有对其强制规定。HotSpot直接把本地方法栈和虚拟栈合二为一，相同对待。</p>
-
-<p>栈虽然有两个异常，但实验时，如果是单线程操作，无论是栈帧太大还是虚拟机栈容量太小，基本只会出现StackOverflowError，示例如下：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>/**
-* -Xss128k
-*/
-public class JavaVMStackSOF {
-    private int stackLength = 1;
-    public void stackLeak() {
-        stackLength++;
-        stackLeak();
-    }
-    
-    public static void main(String[] args) {
-        JavaVMStackSOF oom = new JavaVMStackSOF();
-        try {
-            oom.stackLeak();
-        } catch(Throwable e) {
-            ...
-        }
-    }
-}</code></pre>
-
-
-<p>实验中，只有多线程时，才会出现OutOfMemoryError。通过不停地创建线程，并且每个线程不停止，当线程足够多时就可以重现此异常。</p>
-
-<h3>1.3 堆（Heap）</h3>
-
-<p>堆是在JVM所管理的内存中最大的一块，它是所有线程共享的区域。当JVM启动时会创建此区域。所有对象实例和数组都在堆上分配（现在也有例外，参见<a href="http://blog.ubone.com/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">逸出分析</a>）。</p>
-
-<p>堆中存储的对象由垃圾收集器负责回收。堆的大小可以是固定或者动态扩展。堆不需要连续内存空间，只要逻辑上连续即可。根据垃圾收集器的不同，堆内存有不同的管理方式。例如CMS采用分代收集算法，将堆分为年轻代和老年代；而G1则将堆分成大小相同的区域。详见<a href="http://blog.ubone.com/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">理解Java性能调优</a>。</p>
-
-<p>堆涉及的内存异常为OutOfMemoryError，如果堆中没有内存用于实例分配并且无法再扩展时，就会抛出此异常。堆内存溢出很容易模拟，示例如下：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>/**
-* -Xms20m -Xmx20m
-*/
-public static void main(String[] args) {
-    List&lt;SomeObject&gt; list = new ArrayList&lt;&gt;();
-    while(true) {
-        list.add(new SomeObject());
-    }
-}</code></pre>
-
-
-<h3>1.4 方法区（Method Area）</h3>
-
-<p>方法区也是所有线程共享的内存区域。它存储了每个类的信息，例如运行时常量池、属性和方法数据、方法和构造方法代码，包括类和实例初始化和接口初始化的特殊方法。</p>
-
-<p>方法区随着虚拟机启动而创建。逻辑上它是堆的一部分，但JVM实现可以选择不对它进行垃圾收集或者压缩。JVM规范并没有强制规定它的位置和管理已编译代码的策略。它可以是固定大小或者动态扩展，也不需要是连续的。</p>
-
-<p>对于HotSpot虚拟机来说，开发者更愿意把方法区称为永久代（Permanent Generation），但本质上两者并不等价。这仅仅是因为HotSpot设计团队使用永久代来实现方法区而已。但其它虚拟机（如Bea JRocket, IBM J9）并没有永久代的概念。</p>
-
-<p>当方法区无法满足内存分配需求时，将抛出OutOfMemoryError异常。如果一些框架使用CGLib这类字节码技术，增强的类过多，或者JVM上的动态语言（如Groovy）持续创建类来实现语言动态特性，可能出现此异常。</p>
-
-<h3>1.5 运行时常量池</h3>
-
-<p>在<a href="http://blog.ubone.com/blog/2014/12/04/lei-wen-jian-yu-zi-jie-ma/">类文件与字节码</a>中介绍了类文件的常量池，运行时常量池就是这个常量池的运行时表示。运行时常量池相对于类文件常量池主要有两个区别：</p>
-
-<ul>
-<li>除了类文件中描述的符号引用外，还会把翻译出来的直接引用也存储在运行时常量池中。</li>
-<li>运行时常量池可以在运行期间将新的常量加入池中。</li>
-</ul>
-
-
-<p>运行时常量池的内存是从方法区分配出来的。当JVM创建类或接口时，会为它创建运行时常量池。因此它的内存受方法区内存限制，也可能抛出OutOfMemoryError异常。</p>
-
-<h3>1.6 直接内存</h3>
-
-<p>直接内存（Direct Memory）并不是JVM运行时数据区的一部分，也不是JVM规范定义的内存区域。但它也被频繁使用，可能导致OutOfMemoryError异常。</p>
-
-<p>JDK 1.4中加入NIO类，引入了基于Channel与Buffer的I/O方式，可以使用Native函数库直接分配堆外内存，然后通过DirectByteBuffer对象作为这块内存的引用进行操作。由于避免了Java堆与Native堆之间复制数据，在一些场景能显著提高性能。</p>
-
-<p>这部分内存虽然不受Java堆大小限制，但肯定会受本机总内存和寻址空间限制。因此动态扩展时可能出现OutOfMemoryError异常。</p>
-
-<h2>2. 内存Dump分析</h2>
-
-<p>在<a href="http://blog.ubone.com/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">理解Java性能调优</a>中介绍了jmap, jstat等工具可以查看内存映射和垃圾收集活动。这里介绍另一个工具Eclipse Memory Analyzer可以对堆内存溢出问题进行分析。首先需要生成堆转储文件。通过启用参数：</p>
-
-<p><code>-XX:+HeapDumpOnOutOfMemoryError</code></p>
-
-<p>JVM 就会在发生内存泄露时抓拍下当时的内存状态，也就是我们想要的堆转储文件。也可以在未溢出时用jmap创建转储文件。</p>
-
-<p>有了转储文件，利用Eclipse Memory Analyzer tool打开该文件，就可以进行分析了。分析通常分为三步：</p>
-
-<ul>
-<li>对内存状态获取一个整体印象。</li>
-<li>找到最有可能导致内存泄露的元凶，通常也就是消耗内存最多的对象。</li>
-<li>进一步查看这个内存消耗大户的具体情况，看看是否有什么异常行为。</li>
-</ul>
-
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-12-17-20.30.59.jpg" alt="image" /></p>
 ]]></content>
   </entry>
   

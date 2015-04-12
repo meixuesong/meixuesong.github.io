@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="人们总是猜不对系统变慢的原因在哪里，你必须量体裁衣。没有评测就没有合适的调优。本文重点学习性能相关的内存管理、垃圾收集、相关工具并简单了解HotSpot。 ">
+  <meta name="description" content="JVM定义了各种运行时数据区用于程序执行。有些数据区随着JVM启动而创建，当JVM退出时销毁。另一些数据区则是随着线程而存亡。每个数据区都是内存，因此就存在内存溢出的异常。本文学习JVM有哪些数据区以及常见的内存溢出异常。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +83,47 @@ var _hmt = _hmt || [];
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/15/javayun-xing-shi-shu-ju-qu-yu-nei-cun-yi-chu-yi-chang/">Java运行时数据区与内存溢出异常</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-15T21:55:31+08:00" pubdate data-updated="true">2014-12-15</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>JVM定义了各种运行时数据区用于程序执行。有些数据区随着JVM启动而创建，当JVM退出时销毁。另一些数据区则是随着线程而存亡。每个数据区都是内存，因此就存在内存溢出的异常。本文学习JVM有哪些数据区以及常见的内存溢出异常。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/12/15/javayun-xing-shi-shu-ju-qu-yu-nei-cun-yi-chu-yi-chang/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -455,59 +496,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/03/zui-duan-lu-jing/">最短路径</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-03T20:22:31+08:00" pubdate data-updated="true">2014-11-03</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>最短路径算法可以解决很多问题，例如地图导航、任务调度和网络路由等。本章的主题就是找到从一个顶点到达另一个顶点的成本最小的路径。</p>
-
-<blockquote><p>在一幅加权有向图中，从顶点s到顶点t的最短路径是所有从s到t的路径中的权重最小者。</p></blockquote>
-
-<p>本章要涉及以下问题：</p>
-
-<ul>
-<li>加权有向图的API、单点最短路径的API及它们的实现；</li>
-<li>解决边的权重非负的最短路径问题的经典Dijkstra算法；</li>
-<li>在无环加权有向图中解决该问题的一种快速算法，边的权重甚至可以是负值；</li>
-<li>适用于一般情况的经典Bellman-Ford算法，其中图可以含有环，边的权重也可以是负值。</li>
-</ul>
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/03/zui-duan-lu-jing/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -529,10 +517,14 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (33)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (34)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/rest-ke-hu-duan/">REST 客户端</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/04/12/rest-qing-qiu-chu-li/">JAX-RS 2.0 REST 请求处理</a>
@@ -548,10 +540,6 @@ var _hmt = _hmt || [];
     
       <li class="post">
         <a href="/blog/2015/04/02/intellij-idea-mackuai-jie-jian/">IntelliJ IDEA Mac快捷键</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/03/28/linux-crontabding-shi-ren-wu/">Linux Crontab定时任务</a>
       </li>
     
   </ul>
