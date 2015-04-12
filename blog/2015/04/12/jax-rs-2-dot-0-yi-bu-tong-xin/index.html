@@ -1,0 +1,453 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>JAX-RS 2.0 异步通信 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="JAX-RS 2.0的异步处理是通过两个线程实现的。其中一个线程用于处理客户端请求，另一个线程为此次请求新生成，用于处理业务。在后一个线程处理开始前，前一个线程可以响应客户端请求正在执行，然后进入挂起状态，保持连接。当后一个线程完毕后，唤醒前一个线程。线程的管理由容器实现。 1. 服务端实现 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2015/04/12/jax-rs-2-dot-0-yi-bu-tong-xin">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="/stylesheets/prism-default.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
+<style>
+article blockquote {
+  font-size: 0.9em;
+}
+</style>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?28583ca12a9f673dc8d86501f8d02bbe";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">@InfoQ</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">JAX-RS 2.0 异步通信</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-12T21:54:22+08:00" pubdate data-updated="true">2015-04-12</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>JAX-RS 2.0的异步处理是通过两个线程实现的。其中一个线程用于处理客户端请求，另一个线程为此次请求新生成，用于处理业务。在后一个线程处理开始前，前一个线程可以响应客户端请求正在执行，然后进入挂起状态，保持连接。当后一个线程完毕后，唤醒前一个线程。线程的管理由容器实现。</p>
+
+<!--more-->
+
+
+<h2>1. 服务端实现</h2>
+
+<p>服务端实现异步通信主要包括两个技术点，一是资源方法中对AsyncResponse的使用，另一个是对异步通信的CompletionCallback和TimeoutHandler接口的实现。</p>
+
+<h3>1.1 异步资源类实现</h3>
+
+<p>下面的示例代码模拟指保存大量数据：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@Path("books")
+public class AsyncResource {
+    public static final long TIMEOUT = 120;        
+    @Autowired private BookService bookService;
+
+    public AsyncResource() {
+    }
+
+    @POST
+    @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
+    public void asyncBatchSave(
+            //异步资源方法需要@Suspended注解和AsyncResponse参数
+            @Suspended final AsyncResponse asyncResponse,
+            final Books books) {
+        //设置超时和回调
+        configResponse(asyncResponse);
+        //处理业务
+        final BatchRunner batchTask = new BatchRunner(books.getBookList());
+        Future&lt;String&gt; bookIdsFuture =
+                Executors.newSingleThreadExecutor().submit(batchTask);
+        String ids;
+        try {
+            //获取结果
+            ids = bookIdsFuture.get();
+            //唤醒请求线程，将resume方法的参数作为返回值响应给客户端
+            asyncResponse.resume(ids);
+        } catch (InterruptedException | ExecutionException e) {
+            LOGGER.error(e.getMessage());
+        }
+    }
+}        </code></pre>
+
+
+<p>任务执行的代码如下所示：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>class BatchRunner implements Callable&lt;String&gt; {
+    private List&lt;Book&gt; bookList;
+    public BatchRunner(List&lt;Book&gt; bookList) {
+        this.bookList = bookList;
+    }
+
+    @Override
+    public String call() {
+        String ids = null;
+        try {
+            ids = batchSave();
+            LOGGER.info("&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; " + ids);
+        } catch (InterruptedException e) {
+            LOGGER.error(e);
+        }
+        return ids;
+    }
+
+    private String batchSave() throws InterruptedException {
+        if (!CollectionUtils.isEmpty(bookList)) {
+            ...
+            return ...
+        } else {
+            return "";
+        }
+    }
+}</code></pre>
+
+
+<h3>1.2 超时和回调实现</h3>
+
+<p>分别通过CompletionCallback、ConnectionCallback和TimeoutHandler接口实现处理完成的回调、请求-响应模型的连接断开时的回调和处理超时的回调。默认情况下AsyncResource永不超时。</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>private void configResponse(final AsyncResponse asyncResponse) {
+    //处理完成的回调
+    asyncResponse.register(new CompletionCallback() {
+        @Override
+        public void onComplete(Throwable throwable) {
+            if (throwable == null) {
+                LOGGER.info("CompletionCallback-onComplete: OK");
+            } else {
+                LOGGER.info("CompletionCallback-onComplete: ERROR: " 
+                        + throwable.getMessage());
+            }
+        }
+    });
+    
+    //连接断开的回调
+    asyncResponse.register(new ConnectionCallback() {
+        @Override
+        public void onDisconnect(AsyncResponse disconnected) {
+            //Status.GONE=410
+            LOGGER.info("ConnectionCallback-onDisconnect");
+            disconnected.resume(Response.status(Response.Status.GONE)
+                    .entity("disconnect!").build());
+        }
+    });
+
+    //超时的回调，当超时时，主动唤醒AsyncResource实例并设置HTTP状态码
+    asyncResponse.setTimeoutHandler(new TimeoutHandler() {
+        @Override
+        public void handleTimeout(AsyncResponse asyncResponse) {
+            //Status.SERVICE_UNAVAILABLE=503
+            LOGGER.info("TIMEOUT");
+            asyncResponse.resume(Response.status(
+                    Response.Status.SERVICE_UNAVAILABLE)
+                    .entity("Operation time out.").build());
+        }
+    });
+    asyncResponse.setTimeout(TIMEOUT, TimeUnit.SECONDS);
+}</code></pre>
+
+
+<h2>2. 客户端实现与测试</h2>
+
+<h3>2.1 异步测试类</h3>
+
+<p>不需要额外的配置，继承JerseyTest就可以进行异步测试，示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>public class TIAsyncJFTTest extends JerseyTest {
+    private final static Logger LOGGER = Logger.getLogger(TIAsyncJFTTest.class);
+    private static final int COUNT = 2;
+
+    @Override
+    protected Application configure() {
+        enable(TestProperties.LOG_TRAFFIC);
+        enable(TestProperties.DUMP_ENTITY);
+        return new ResourceConfig(AsyncResource.class);
+    }
+
+    @Test
+    public void testAsyncBatchSave() throws InterruptedException, ExecutionException {
+        List&lt;Book&gt; bookList = new ArrayList&lt;&gt;(COUNT);
+        try {
+            //...初始化bookList
+            Books books = new Books(bookList);
+            final Entity&lt;Books&gt; booksEntity = Entity.entity(books, MediaType.APPLICATION_XML_TYPE);
+            final Builder request = target("books").request();
+            //请求方法的调用使用AsyncInvoker实例
+            final AsyncInvoker async = request.async();
+            //使用post()方法提交异步请求
+            final Future&lt;String&gt; responseFuture = async.post(booksEntity, String.class);
+            //第一次响应返回
+            TIAsyncJFTTest.LOGGER.debug("First response @" + System.currentTimeMillis());
+            String result = null;
+            try {
+                //...可以以非阻塞方式处理其他业务
+                //异步获取服务器的最终响应
+                result = responseFuture.get(AsyncResource.TIMEOUT + 1, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+                //...
+            } finally {
+                //...
+            }
+        } finally {
+            TIAsyncJFTTest.LOGGER.debug("&lt;-**Test Batch Save");
+        }
+    }
+}</code></pre>
+
+
+<h3>2.2 异步回调</h3>
+
+<p>在AsyncInvoker接口的post()方法中，定义一个InvocationCallback接口的实例，实现REST调用的回调，示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>Books books = new Books(bookList);
+final Entity&lt;Books&gt; booksEntity = 
+        Entity.entity(books, MediaType.APPLICATION_XML_TYPE);
+final AsyncInvoker async = target("books").request().async();
+final Future&lt;String&gt; responseFuture = 
+        async.post(booksEntity, new InvocationCallback&lt;String&gt;() {
+    @Override
+    public void completed(String result) {
+        LOGGER.debug("On Completed: " + result);
+    }
+
+    @Override
+    public void failed(Throwable throwable) {
+        LOGGER.debug("On Failed: " + throwable.getMessage());
+        throwable.printStackTrace();
+    }
+});
+LOGGER.debug("First response @" + System.currentTimeMillis());
+String result = null;
+try {
+    result = responseFuture.get(TIMEOUT + 1, TimeUnit.SECONDS);
+} catch (TimeoutException e) {
+    LOGGER.debug("%%%% " + e.getMessage());
+} finally {
+    LOGGER.debug("Second response @" + System.currentTimeMillis());
+    LOGGER.debug("&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; book id array: " + result);
+}</code></pre>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-12T21:54:22+08:00" pubdate data-updated="true">2015-04-12</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+<!-- UY BEGIN 评论-->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1942741"></script>
+<!-- UY END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/04/12/rest-ke-hu-duan/" title="Previous Post: JAX-RS 2.0 REST 客户端">&laquo; JAX-RS 2.0 REST 客户端</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (35)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/jax-rs-2-dot-0-yi-bu-tong-xin/">JAX-RS 2.0 异步通信</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/rest-ke-hu-duan/">JAX-RS 2.0 REST 客户端</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/rest-qing-qiu-chu-li/">JAX-RS 2.0 REST 请求处理</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/09/rest-apishe-ji/">JAX-RS REST API设计</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/06/xue-xi-zheng-ze-biao-da-shi/">学习正则表达式</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+</footer>
+  <!--以下为disqus的代码，因为被墙，改用上面的国内代码
+
+
+-->
+
+
+
+
+
+
+
+
+</body>
+</html>

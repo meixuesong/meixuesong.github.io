@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="JVM定义了各种运行时数据区用于程序执行。有些数据区随着JVM启动而创建，当JVM退出时销毁。另一些数据区则是随着线程而存亡。每个数据区都是内存，因此就存在内存溢出的异常。本文学习JVM有哪些数据区以及常见的内存溢出异常。 ">
+  <meta name="description" content="昨天晚上在Tomcat上部署一个小应用时，Tomcat启动非常慢，有时甚至需要10分钟。查看日志，发现一直停在Deploying阶段： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +83,47 @@ var _hmt = _hmt || [];
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/20/%5B%3F%5D-ci-jie-jue-tomcatqi-dong-guo-man-de-jing-li/">SecureRandom导致Tomcat启动过慢</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-20T12:08:33+08:00" pubdate data-updated="true">2014-12-20</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>昨天晚上在Tomcat上部署一个小应用时，Tomcat启动非常慢，有时甚至需要10分钟。查看日志，发现一直停在Deploying阶段：</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/12/20/%5B%3F%5D-ci-jie-jue-tomcatqi-dong-guo-man-de-jing-li/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -453,49 +494,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/12/androidying-multidex/">Android应用打破65K方法数限制</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-12T16:52:42+08:00" pubdate data-updated="true">2014-11-12</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>普通Android应用的方法总数不能超过65536，这是开发者长期以来非常头疼的一个问题。最近Google发布了新的Multidex支持库，为方法总数超过65K的Android应用提供官方支持。</p>
-
-<p>本文已经发表在<a href="http://www.infoq.com/cn/news/2014/11/android-multidex">InfoQ</a>。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/12/androidying-multidex/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -517,13 +515,17 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (34)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (35)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2015/04/12/rest-ke-hu-duan/">REST 客户端</a>
+        <a href="/blog/2015/04/12/jax-rs-2-dot-0-yi-bu-tong-xin/">JAX-RS 2.0 异步通信</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/rest-ke-hu-duan/">JAX-RS 2.0 REST 客户端</a>
       </li>
     
       <li class="post">
@@ -536,10 +538,6 @@ var _hmt = _hmt || [];
     
       <li class="post">
         <a href="/blog/2015/04/06/xue-xi-zheng-ze-biao-da-shi/">学习正则表达式</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/02/intellij-idea-mackuai-jie-jian/">IntelliJ IDEA Mac快捷键</a>
       </li>
     
   </ul>

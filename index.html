@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="JAX-RS 2.0对客户端API进行了标准化。客户端API通过HTTP请求Web资源，同样符合统一接口和REST架构风格。与Apache HTTP Client和HttpURLConnection相比，客户端API具备对REST感知的高层API，可以和Providers集成， &hellip;">
+  <meta name="description" content="JAX-RS 2.0的异步处理是通过两个线程实现的。其中一个线程用于处理客户端请求，另一个线程为此次请求新生成，用于处理业务。在后一个线程处理开始前，前一个线程可以响应客户端请求正在执行，然后进入挂起状态，保持连接。当后一个线程完毕后，唤醒前一个线程。线程的管理由容器实现。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -89,7 +89,48 @@ var _hmt = _hmt || [];
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2015/04/12/rest-ke-hu-duan/">REST 客户端</a></h1>
+      <h1 class="entry-title"><a href="/blog/2015/04/12/jax-rs-2-dot-0-yi-bu-tong-xin/">JAX-RS 2.0 异步通信</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-12T21:54:22+08:00" pubdate data-updated="true">2015-04-12</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>JAX-RS 2.0的异步处理是通过两个线程实现的。其中一个线程用于处理客户端请求，另一个线程为此次请求新生成，用于处理业务。在后一个线程处理开始前，前一个线程可以响应客户端请求正在执行，然后进入挂起状态，保持连接。当后一个线程完毕后，唤醒前一个线程。线程的管理由容器实现。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/04/12/jax-rs-2-dot-0-yi-bu-tong-xin/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/04/12/rest-ke-hu-duan/">JAX-RS 2.0 REST 客户端</a></h1>
     
     
       <p class="meta">
@@ -453,55 +494,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/03/08/redisxue-xi-bi-ji/">Redis学习笔记</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-03-08T11:37:07+08:00" pubdate data-updated="true">2015-03-08</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Redis是一个高性能的key-value数据库，完全开源免费，遵守BSD协议。它的主要优势：</p>
-
-<ul>
-<li>性能极高 – Redis能读的速度是110000次/s,写的速度是81000次/s 。</li>
-<li>丰富的数据类型 – Redis支持二进制案例的 Strings, Lists, Hashes, Sets 及 Ordered Sets 数据类型操作。</li>
-<li>原子 – Redis的所有操作都是原子性的，同时Redis还支持对几个操作全并后的原子性执行。</li>
-<li>丰富的特性 – Redis还支持 publish/subscribe, 通知, key 过期等等特性。</li>
-</ul>
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/03/08/redisxue-xi-bi-ji/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -521,13 +513,17 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (34)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (35)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2015/04/12/rest-ke-hu-duan/">REST 客户端</a>
+        <a href="/blog/2015/04/12/jax-rs-2-dot-0-yi-bu-tong-xin/">JAX-RS 2.0 异步通信</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/rest-ke-hu-duan/">JAX-RS 2.0 REST 客户端</a>
       </li>
     
       <li class="post">
@@ -540,10 +536,6 @@ var _hmt = _hmt || [];
     
       <li class="post">
         <a href="/blog/2015/04/06/xue-xi-zheng-ze-biao-da-shi/">学习正则表达式</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/02/intellij-idea-mackuai-jie-jian/">IntelliJ IDEA Mac快捷键</a>
       </li>
     
   </ul>

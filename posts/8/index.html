@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="缺省适配模式其实很简单，就是一个接口有很多方法，通过一个抽象类为这些方法提供默认实现，而具体的类继承这个抽象类，实现自己关心的方法即可。其结构如下： 什么情况下用缺省适配模式？如果不准备实现一个接口的所有方法时，可以通过一个抽象类，给出所有方法的实现。有用的方法要有实现，没用的方法也要有空的、 &hellip;">
+  <meta name="description" content="组合模式将对象以树状结构组织起来，达成“部分－整体”的层次结构，使得客户端对单个对象和组合对象的使用具有一致性。结构示意图： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +83,49 @@ var _hmt = _hmt || [];
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/">设计模式:组合（Composite）模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-31T21:08:30+08:00" pubdate data-updated="true">2014-07-31</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>组合模式将对象以树状结构组织起来，达成“部分－整体”的层次结构，使得客户端对单个对象和组合对象的使用具有一致性。结构示意图：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-31_21.14.15.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -479,47 +522,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/25/mac-eclipsekuai-jie-jian/">Mac Eclipse快捷键</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-25T22:08:33+08:00" pubdate data-updated="true">2014-07-25</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>快捷键是提高开发效率的必要手段。下表是常用快捷键：</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/25/mac-eclipsekuai-jie-jian/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/9">&larr; Older</a>
@@ -541,13 +543,17 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (34)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (35)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2015/04/12/rest-ke-hu-duan/">REST 客户端</a>
+        <a href="/blog/2015/04/12/jax-rs-2-dot-0-yi-bu-tong-xin/">JAX-RS 2.0 异步通信</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/rest-ke-hu-duan/">JAX-RS 2.0 REST 客户端</a>
       </li>
     
       <li class="post">
@@ -560,10 +566,6 @@ var _hmt = _hmt || [];
     
       <li class="post">
         <a href="/blog/2015/04/06/xue-xi-zheng-ze-biao-da-shi/">学习正则表达式</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/02/intellij-idea-mackuai-jie-jian/">IntelliJ IDEA Mac快捷键</a>
       </li>
     
   </ul>

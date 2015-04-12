@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-04-12T18:23:51+08:00</updated>
+  <updated>2015-04-12T22:43:45+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -14,7 +14,248 @@
 
   
   <entry>
-    <title type="html"><![CDATA[REST 客户端]]></title>
+    <title type="html"><![CDATA[JAX-RS 2.0 异步通信]]></title>
+    <link href="http://blog.ubone.com/blog/2015/04/12/jax-rs-2-dot-0-yi-bu-tong-xin/"/>
+    <updated>2015-04-12T21:54:22+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/04/12/jax-rs-2-dot-0-yi-bu-tong-xin</id>
+    <content type="html"><![CDATA[<p>JAX-RS 2.0的异步处理是通过两个线程实现的。其中一个线程用于处理客户端请求，另一个线程为此次请求新生成，用于处理业务。在后一个线程处理开始前，前一个线程可以响应客户端请求正在执行，然后进入挂起状态，保持连接。当后一个线程完毕后，唤醒前一个线程。线程的管理由容器实现。</p>
+
+<!--more-->
+
+
+<h2>1. 服务端实现</h2>
+
+<p>服务端实现异步通信主要包括两个技术点，一是资源方法中对AsyncResponse的使用，另一个是对异步通信的CompletionCallback和TimeoutHandler接口的实现。</p>
+
+<h3>1.1 异步资源类实现</h3>
+
+<p>下面的示例代码模拟指保存大量数据：</p>
+
+<p>```java
+@Path(&ldquo;books&rdquo;)
+public class AsyncResource {</p>
+
+<pre><code>public static final long TIMEOUT = 120;        
+@Autowired private BookService bookService;
+
+public AsyncResource() {
+}
+
+@POST
+@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
+public void asyncBatchSave(
+        //异步资源方法需要@Suspended注解和AsyncResponse参数
+        @Suspended final AsyncResponse asyncResponse,
+        final Books books) {
+    //设置超时和回调
+    configResponse(asyncResponse);
+    //处理业务
+    final BatchRunner batchTask = new BatchRunner(books.getBookList());
+    Future&lt;String&gt; bookIdsFuture =
+            Executors.newSingleThreadExecutor().submit(batchTask);
+    String ids;
+    try {
+        //获取结果
+        ids = bookIdsFuture.get();
+        //唤醒请求线程，将resume方法的参数作为返回值响应给客户端
+        asyncResponse.resume(ids);
+    } catch (InterruptedException | ExecutionException e) {
+        LOGGER.error(e.getMessage());
+    }
+}
+</code></pre>
+
+<p>}      <br/>
+```</p>
+
+<p>任务执行的代码如下所示：</p>
+
+<p>```java
+class BatchRunner implements Callable<String> {</p>
+
+<pre><code>private List&lt;Book&gt; bookList;
+public BatchRunner(List&lt;Book&gt; bookList) {
+    this.bookList = bookList;
+}
+
+@Override
+public String call() {
+    String ids = null;
+    try {
+        ids = batchSave();
+        LOGGER.info("&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; " + ids);
+    } catch (InterruptedException e) {
+        LOGGER.error(e);
+    }
+    return ids;
+}
+
+private String batchSave() throws InterruptedException {
+    if (!CollectionUtils.isEmpty(bookList)) {
+        ...
+        return ...
+    } else {
+        return "";
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>1.2 超时和回调实现</h3>
+
+<p>分别通过CompletionCallback、ConnectionCallback和TimeoutHandler接口实现处理完成的回调、请求-响应模型的连接断开时的回调和处理超时的回调。默认情况下AsyncResource永不超时。</p>
+
+<p>```java
+private void configResponse(final AsyncResponse asyncResponse) {</p>
+
+<pre><code>//处理完成的回调
+asyncResponse.register(new CompletionCallback() {
+    @Override
+    public void onComplete(Throwable throwable) {
+        if (throwable == null) {
+            LOGGER.info("CompletionCallback-onComplete: OK");
+        } else {
+            LOGGER.info("CompletionCallback-onComplete: ERROR: " 
+                    + throwable.getMessage());
+        }
+    }
+});
+
+//连接断开的回调
+asyncResponse.register(new ConnectionCallback() {
+    @Override
+    public void onDisconnect(AsyncResponse disconnected) {
+        //Status.GONE=410
+        LOGGER.info("ConnectionCallback-onDisconnect");
+        disconnected.resume(Response.status(Response.Status.GONE)
+                .entity("disconnect!").build());
+    }
+});
+
+//超时的回调，当超时时，主动唤醒AsyncResource实例并设置HTTP状态码
+asyncResponse.setTimeoutHandler(new TimeoutHandler() {
+    @Override
+    public void handleTimeout(AsyncResponse asyncResponse) {
+        //Status.SERVICE_UNAVAILABLE=503
+        LOGGER.info("TIMEOUT");
+        asyncResponse.resume(Response.status(
+                Response.Status.SERVICE_UNAVAILABLE)
+                .entity("Operation time out.").build());
+    }
+});
+asyncResponse.setTimeout(TIMEOUT, TimeUnit.SECONDS);
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>2. 客户端实现与测试</h2>
+
+<h3>2.1 异步测试类</h3>
+
+<p>不需要额外的配置，继承JerseyTest就可以进行异步测试，示例如下：</p>
+
+<p>```java
+public class TIAsyncJFTTest extends JerseyTest {</p>
+
+<pre><code>private final static Logger LOGGER = Logger.getLogger(TIAsyncJFTTest.class);
+private static final int COUNT = 2;
+
+@Override
+protected Application configure() {
+    enable(TestProperties.LOG_TRAFFIC);
+    enable(TestProperties.DUMP_ENTITY);
+    return new ResourceConfig(AsyncResource.class);
+}
+
+@Test
+public void testAsyncBatchSave() throws InterruptedException, ExecutionException {
+    List&lt;Book&gt; bookList = new ArrayList&lt;&gt;(COUNT);
+    try {
+        //...初始化bookList
+        Books books = new Books(bookList);
+        final Entity&lt;Books&gt; booksEntity = Entity.entity(books, MediaType.APPLICATION_XML_TYPE);
+        final Builder request = target("books").request();
+        //请求方法的调用使用AsyncInvoker实例
+        final AsyncInvoker async = request.async();
+        //使用post()方法提交异步请求
+        final Future&lt;String&gt; responseFuture = async.post(booksEntity, String.class);
+        //第一次响应返回
+        TIAsyncJFTTest.LOGGER.debug("First response @" + System.currentTimeMillis());
+        String result = null;
+        try {
+            //...可以以非阻塞方式处理其他业务
+            //异步获取服务器的最终响应
+            result = responseFuture.get(AsyncResource.TIMEOUT + 1, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            //...
+        } finally {
+            //...
+        }
+    } finally {
+        TIAsyncJFTTest.LOGGER.debug("&lt;-**Test Batch Save");
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>2.2 异步回调</h3>
+
+<p>在AsyncInvoker接口的post()方法中，定义一个InvocationCallback接口的实例，实现REST调用的回调，示例如下：</p>
+
+<p>```java
+Books books = new Books(bookList);
+final Entity<Books> booksEntity =</p>
+
+<pre><code>    Entity.entity(books, MediaType.APPLICATION_XML_TYPE);
+</code></pre>
+
+<p>final AsyncInvoker async = target(&ldquo;books&rdquo;).request().async();
+final Future<String> responseFuture =</p>
+
+<pre><code>    async.post(booksEntity, new InvocationCallback&lt;String&gt;() {
+@Override
+public void completed(String result) {
+    LOGGER.debug("On Completed: " + result);
+}
+
+@Override
+public void failed(Throwable throwable) {
+    LOGGER.debug("On Failed: " + throwable.getMessage());
+    throwable.printStackTrace();
+}
+</code></pre>
+
+<p>});
+LOGGER.debug(&ldquo;First response @&rdquo; + System.currentTimeMillis());
+String result = null;
+try {</p>
+
+<pre><code>result = responseFuture.get(TIMEOUT + 1, TimeUnit.SECONDS);
+</code></pre>
+
+<p>} catch (TimeoutException e) {</p>
+
+<pre><code>LOGGER.debug("%%%% " + e.getMessage());
+</code></pre>
+
+<p>} finally {</p>
+
+<pre><code>LOGGER.debug("Second response @" + System.currentTimeMillis());
+LOGGER.debug("&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; book id array: " + result);
+</code></pre>
+
+<p>}
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[JAX-RS 2.0 REST 客户端]]></title>
     <link href="http://blog.ubone.com/blog/2015/04/12/rest-ke-hu-duan/"/>
     <updated>2015-04-12T17:02:39+08:00</updated>
     <id>http://blog.ubone.com/blog/2015/04/12/rest-ke-hu-duan</id>
@@ -2600,906 +2841,6 @@ import org.junit.Test;</p>
 ```</p>
 
 <p>❶ 从EasyMock和类自身中导入静态辅助方法。 ❷ 让EasyMock为指定接口创建模拟对象。 ❸ 记录期望的交互操作。 ❹ 功能上与上一条语句等价，但语法不同。 ❺ 记录完期望的信息后，转换为应答模式。 ❻ 一切都准备好以后，做个练习。 ❼ 让模拟对象验证是否发生了期望的交互行为。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java Collections]]></title>
-    <link href="http://blog.ubone.com/blog/2015/03/14/java-collections/"/>
-    <updated>2015-03-14T20:51:05+08:00</updated>
-    <id>http://blog.ubone.com/blog/2015/03/14/java-collections</id>
-    <content type="html"><![CDATA[<p>Java提供了一套完整的Collection框架，能够帮助我们减少开发工作量、提高程序运行速度和代码质量。本文学习Java Collection框架。</p>
-
-<!--more-->
-
-
-<h2>1. 接口层级结构</h2>
-
-<p>核心Collection接口封装了各种类型的集合，它是Java Collections框架的基石。接口继承层次如下图所示：</p>
-
-<p><img src="/myresource/images/image_blog_2015-03-14-colls-coreInterfaces.png" alt="image" /></p>
-
-<p>注意，从上图可以看出，Map并不是真正的Collection。所有核心Collection接口都支持泛型。在声明Collection实例时，你可以也应该指明集合的元素类型，让编译器帮你校验放入集合的元素类型是否匹配，从而降低运行时错误。</p>
-
-<p>类结构图</p>
-
-<p><img src="/myresource/images/image_blog_2015-03-14-colls-classdiagram.jpg" alt="image" /></p>
-
-<h2>2. Collection接口</h2>
-
-<p>Collection类都有很方便的构造器。例如你有一个<code>Collection&lt;String&gt; c</code>，它可能是一个List、Set或其它Collection类型。通过构造方法可以转换成另一种Collection：</p>
-
-<p><code>java
-List&lt;String&gt; list = new ArrayList&lt;String&gt;(c);
-</code></p>
-
-<p>基本的Collection操作包括：</p>
-
-<ul>
-<li><code>int size()</code></li>
-<li><code>boolean isEmpty()</code></li>
-<li><code>boolean contains(Object element)</code></li>
-<li><code>boolean add(E element)</code></li>
-<li><code>boolean remove(Object element)</code></li>
-<li><code>Iterator&lt;E&gt; iterator()</code></li>
-</ul>
-
-
-<p>操作整个Collection的相关方法：</p>
-
-<ul>
-<li><code>boolean containsAll(Collection&lt;?&gt; c)</code></li>
-<li><code>boolean addAll(Collection&lt;? extends E&gt; c)</code></li>
-<li><code>boolean removeAll(Collection&lt;?&gt; c)</code></li>
-<li><code>boolean retainAll(Collection&lt;?&gt; c</code>)（交集，只保留c中存在的元素）</li>
-<li><code>void clear()</code></li>
-</ul>
-
-
-<p>此外还有数组的操作：<code>Object[] toArray()</code>,  <code>&lt;T&gt; T[] toArray(T[] a)</code></p>
-
-<h3>2.1 遍历Collection</h3>
-
-<p>有三种方法遍历Collection：聚合操作、for-each和Iterator。</p>
-
-<h4>2.1.1 聚合操作</h4>
-
-<p>JDK8之后，推荐使用聚合操作来遍历Collection。聚合操作常常与lambda表达式一起让代码更具表达力。下面的代码完成遍历并打印红色的对象的name:</p>
-
-<p>```java
-myShapesCollection.stream()</p>
-
-<pre><code>.filter(e -&gt; e.getColor() == Color.RED)
-.forEach(e -&gt; System.out.println(e.getName()));
-</code></pre>
-
-<p>```</p>
-
-<p>对多核系统，还可以请求并行流，这对超大Collection有帮助：</p>
-
-<p>```java
-myShapesCollection.parallelStream()</p>
-
-<pre><code>.filter(e -&gt; e.getColor() == Color.RED)
-.forEach(e -&gt; System.out.println(e.getName()));
-</code></pre>
-
-<p>```</p>
-
-<p>更多例子：</p>
-
-<p>```java
-//将Collection中的元素转换成一个String，用逗号分隔：
-String joined = elements.stream()</p>
-
-<pre><code>.map(Object::toString)
-.collect(Collectors.joining(", "));
-</code></pre>
-
-<p>//计算合计
-int total = employees.stream()</p>
-
-<pre><code>.collect(Collectors.summingInt(Employee::getSalary)));
-</code></pre>
-
-<p>```</p>
-
-<h4>2.1.2 for-each</h4>
-
-<p>```java
-for (Object o : collection)</p>
-
-<pre><code>System.out.println(o);
-</code></pre>
-
-<p>```</p>
-
-<h4>2.1.3 Iterator</h4>
-
-<p>```java
-public interface Iterator<E> {</p>
-
-<pre><code>boolean hasNext();
-E next();
-void remove(); //optional
-</code></pre>
-
-<p>}
-```</p>
-
-<p>注意remove方法删除最后一次next()方法返回的对象。因此，每调用一次remove方法之前都必须调用next方法，否则会抛出异常。remove方法也是迭代过程中唯一安全的修改Collection的方法。以下场景需要使用Iterator而不是for-each:</p>
-
-<ul>
-<li>删除当前元素</li>
-<li>并行遍历多个Collection</li>
-</ul>
-
-
-<p>下面的代码演示了如何使用Iterator过滤Collection:</p>
-
-<p>```java
-static void filter(Collection&lt;?> c) {</p>
-
-<pre><code>for (Iterator&lt;?&gt; it = c.iterator(); it.hasNext(); )
-    if (!cond(it.next()))
-        it.remove();
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>2.2 Collection批量操作</h3>
-
-<p>Collection批量操作的方法大部分返回值都是boolean，如果Collection有变化则返回true:</p>
-
-<ul>
-<li><code>boolean containsAll(Collection&lt;?&gt; c)</code></li>
-<li><code>boolean addAll(Collection&lt;? extends E&gt; c)</code></li>
-<li><code>boolean removeAll(Collection&lt;?&gt; c)</code></li>
-<li><code>boolean retainAll(Collection&lt;?&gt; c)</code>（取交集）</li>
-<li><code>void clear()</code>.</li>
-</ul>
-
-
-<p>Collections.singleton(T o)用于创建包含一个元素“o”的Set，类似的方法还包括：<code>List&lt;T&gt; singletonList(T o)</code>， <code>&lt;K,V&gt; Map&lt;K,V&gt; singletonMap(K key, V value)</code>。示例：</p>
-
-<p><code>
-//移除某个元素的所有实例
-c.removeAll(Collections.singleton(e));
-//移除所有null
-c.removeAll(Collections.singleton(null));
-</code></p>
-
-<h3>2.3 Collections工具类</h3>
-
-<p>除了singleton方法，Collections工具类还有一些常用的方法，如：</p>
-
-<ul>
-<li><code>unmodifiableXXX()</code>返回一个只读视图。(xxx可能是Collection, List, Map, Set, SortedMap, SortedSet)</li>
-<li><code>synchronizedXXX()</code>返回一个同步（线程安全）的Collection。</li>
-<li><code>sort(List&lt;T&gt; list, Comparator&lt;? super T&gt; c)</code>方法</li>
-<li><code>shuffle</code>方法（打乱顺序）</li>
-<li><code>min/max</code> 可传Comparator</li>
-<li><code>copy(List&lt;? super T&gt; dest, List&lt;? extends T&gt; src)</code> 复制所有元素到另一个List。dest的数量必须大于等于src，操作完成后，src中的所有元素会覆盖dest中相应位置（index）的元素。</li>
-<li><code>int frequency(Collection&lt;?&gt; c,Object o)</code> 返回c中o出现的次数。</li>
-<li><code>fill(List&lt;? super T&gt; list, T obj)</code> 将所有元素替换成obj。</li>
-</ul>
-
-
-<h3>2.4 Array操作</h3>
-
-<p>Collection提供了toArray()方法，用于转换成数组。示例：</p>
-
-<p><code>
-Object[] a = c.toArray();
-</code></p>
-
-<p>如果已知Collection中的元素是字符串类型，如Collection<String> c，则可以直接转换成字符串数组：</p>
-
-<p><code>
-String[] a = c.toArray(new String[0]);  //0没有意义，只是和new String一起表示是字符串数组。
-</code></p>
-
-<h2>3. Set</h2>
-
-<p>Set是一种不能包含重复元素的Collection。Set接口只继承了Collection接口的方法，并增加了禁止重复元素的限制，它依赖于equals和hashCode方法的行为。Set包括三种类型：</p>
-
-<ul>
-<li>HashSet 元素保存在hash表中，高性能，但无法保证迭代顺序。</li>
-<li>TreeSet 元素保存在红黑树中，有序，但比HashSet慢不少。</li>
-<li>LinkedHashSet hash表加linked list实现，顺序为插入顺序。避免HashSet顺序的不确定性，同时性能接近HashSet。</li>
-</ul>
-
-
-<p>对于HashSet，需要注意的是遍历性能与entry数量和bucket数量(容量)之和成线性关系。如果初始容量太大，则浪费空间和时间；反过来，如果初始容量太小则浪费增容时的复制时间。如果不指定初始容量，默认值为16. 过去通过指定一个初始容量能提高性能，但现在已经没必要了。LinkedHashSet的迭代时间与容量没有关系。</p>
-
-<p>除了上面三种标准Set实现，还有两个特殊的Set实现：EnumSet和CopyOnWriteArraySet.</p>
-
-<p>EnumSet是用于枚举类型的高性能Set实现。所有元素必须是同一种枚举类型。内部采用bit-vector实现，通常是一个long。它支持在指定范围内遍历，也可以替代传统的标志位。示例如下：</p>
-
-<p>```
-for (Day d : EnumSet.range(Day.MONDAY, Day.FRIDAY))</p>
-
-<pre><code>System.out.println(d);
-</code></pre>
-
-<p>EnumSet.of(Style.BOLD, Style.ITALIC)
-```</p>
-
-<p>CopyOnWriteArraySet是由copy-on-write数组实现的Set. 所有修改操作，如add, set, remove都会复制一个新的数组拷贝，因此不需要锁。只适合于很少修改、但频繁遍历的Set。</p>
-
-<p>HashSet、TreeSet和LinkedHashSet的实现并不是同步的。因此如果多个线程同时访问一个Set，且有线程会修改Set，就必须进行同步处理，或者使用Collections.synchronizedSet方法对其封装。最好在创建时就完成此操作，以HashSet为例：</p>
-
-<p><code>
-Set s = Collections.synchronizedSet(new HashSet(...));
-</code></p>
-
-<h3>3.1 基本操作</h3>
-
-<p>假设你有一个Collection c，下面的代码可以让你方便地去除重复：</p>
-
-<p>```java
-Collection<Type> noDups = new HashSet<Type>&copy;;
-//如果要保持原来的顺序，可以：
-Collection<Type> noDups = new LinkedHashSet<Type>&copy;;</p>
-
-<p>//如果是JDK8，你还可以这么玩：
-c.stream().collect(Collectors.toSet()); // no duplicates
-//另一个例子，将姓名放到一个TreeSet中
-Set<String> set = people.stream()
-.map(Person::getName)
-.collect(Collectors.toCollection(TreeSet::new));
-```</p>
-
-<table>
-<thead>
-<tr>
-<th>方法 </th>
-<th> 描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>int size() </td>
-<td> 返回元素数量</td>
-</tr>
-<tr>
-<td>boolean isEmpty() </td>
-<td> 是否为空</td>
-</tr>
-<tr>
-<td>boolean add() </td>
-<td> 增加元素，如果之前不存在，返回true</td>
-</tr>
-<tr>
-<td>boolean remove() </td>
-<td> 删除元素，如果之前存在此元素，返回true</td>
-</tr>
-<tr>
-<td><code>Iterator&lt;E&gt; iterator()</code> </td>
-<td> 迭代器</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>JDK8聚合操作与for-each操作示例：</p>
-
-<p>```java
-//JDK8
-public class FindDups {</p>
-
-<pre><code>public static void main(String[] args) {
-    Set&lt;String&gt; distinctWords = Arrays.asList(args).stream()
-        .collect(Collectors.toSet()); 
-    System.out.println(distinctWords.size()+ 
-          " distinct words: " + distinctWords);
-}
-</code></pre>
-
-<p>}
-//for-each
-public class FindDups {</p>
-
-<pre><code>public static void main(String[] args) {
-    Set&lt;String&gt; s = new HashSet&lt;String&gt;();
-    for (String a : args)
-       s.add(a);
-    System.out.println(s.size() + " distinct words: " + s);
-}
-</code></pre>
-
-<p>}
-//运行
-java FindDups i came i saw i left
-//结果：
-4 distinct words: [left, came, saw, i]
-```</p>
-
-<p>上面的代码使用的是HashSet，所以顺序是乱的。如果你改成TreeSet/LinkedHashSet，则结果变为：</p>
-
-<p><code>
-//TreeSet
-4 distinct words: [came, i, left, saw]
-//LinkedHashSet
-4 distinct words: [i, came, saw, left]
-</code></p>
-
-<h3>3.2 批量操作</h3>
-
-<p>Set的批量操作并没有什么特殊的方法，但是利用Set元素不会重复这个特性，可以做一些有意思的事情。例如修改FindDups，找到不重复的单词和重复的单词：</p>
-
-<p>```
-public class FindDups2 {</p>
-
-<pre><code>public static void main(String[] args) {
-    Set&lt;String&gt; uniques = new HashSet&lt;String&gt;();
-    Set&lt;String&gt; dups    = new HashSet&lt;String&gt;();
-
-    for (String a : args)
-        if (!uniques.add(a))
-            dups.add(a);
-
-    // Destructive set-difference
-    uniques.removeAll(dups);
-
-    System.out.println("Unique words:    " + uniques);
-    System.out.println("Duplicate words: " + dups);
-}
-</code></pre>
-
-<p>}</p>
-
-<p>//output:
-Unique words:    [left, saw, came]
-Duplicate words: [i]
-```</p>
-
-<h3>3.3 HashSet</h3>
-
-<p>HashSet通过hash table（实际上就是一个HashMap实例）实现。允许null元素。基本方法（如add, remove, contains, size）为常量时间，而遍历性能则与元素数量加桶数量之和成正比。因此，如果迭代性能要求高的话，不要将初始容量设置得太大。</p>
-
-<h3>3.4 TreeSet</h3>
-
-<p>TreeSet是基于TreeMap的NavigableSet实现。元素按natural ordering或Comparator排序。注意要正确地实现Set接口，就应该让Comparable与equals接口实现保持一致。因为Set不重复由equals决定，而顺序由Comparable决定。TreeSet提供降序或升序视图，但升序一般比降序性能更优。</p>
-
-<p>TreeSet允许null元素，但一些方法的返回值也可能是null（不存在时），这样就会造成混乱。因此建议不要加入null元素。基本操作（add, remove, contains）的时间成本为log(n). TreeSet增加了NavigableSet接口的方法，常用方法如下表：</p>
-
-<table>
-<thead>
-<tr>
-<th>方法 </th>
-<th> 说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>E ceiling(E e) </td>
-<td> 返回大于等于e的最小元素，如果没有返回null</td>
-</tr>
-<tr>
-<td>E higher(E e) </td>
-<td> 返回大于e的最小元素，如果没有返回null</td>
-</tr>
-<tr>
-<td>E floor(E e) </td>
-<td> 返回小于等于e的最大元素，如果没有返回null</td>
-</tr>
-<tr>
-<td>E lower(E e) </td>
-<td> 返回小于e的最大元素，如果没有返回null</td>
-</tr>
-<tr>
-<td><code>Iterator&lt;E&gt;</code> descendingIterator() </td>
-<td> 返回降序迭代器。</td>
-</tr>
-<tr>
-<td><code>NavigableSet&lt;E&gt;</code> descendingSet() </td>
-<td> 返回降序视图</td>
-</tr>
-<tr>
-<td>E first() </td>
-<td> 返回第一个（最小的）元素</td>
-</tr>
-<tr>
-<td>E last() </td>
-<td> 返回最后一个（最大的）元素</td>
-</tr>
-<tr>
-<td><code>NavigableSet&lt;E&gt;</code> headSet(E toElement, boolean inclusive) </td>
-<td> 返回小于toElement的元素，如果inclusive=true表示返回结果包含toElement。</td>
-</tr>
-<tr>
-<td><code>NavigableSet&lt;E&gt;</code> tailSet(E fromElement, boolean inclusive) </td>
-<td> 返回大于（等于，如果inclusive=true）的元素。</td>
-</tr>
-<tr>
-<td>E pollFirst() </td>
-<td> Retrieves and removes the first (lowest) element, or returns null if this set is empty.</td>
-</tr>
-<tr>
-<td>E pollLast() </td>
-<td> Retrieves and removes the last (highest) element, or returns null if this set is empty.</td>
-</tr>
-<tr>
-<td><code>NavigableSet&lt;E&gt;</code> subSet(E fromElement, boolean fromInclusive, E toElement, boolean toInclusive) </td>
-<td> 取子集。</td>
-</tr>
-<tr>
-<td>Object clone() </td>
-<td> 返回TreeSet实例的浅拷贝</td>
-</tr>
-</tbody>
-</table>
-
-
-<h3>3.5 LinkedHashSet</h3>
-
-<p>LinkedHashSet会保持插入的顺序，但是如果多次添加一个元素，并不会改变元素原来的的位置。允许null元素。</p>
-
-<p>与HashSet一样，有两个参数影响其性能：初始容量和load factor。</p>
-
-<h3>3.6 EnumSet</h3>
-
-<p>EnumSet的所有元素必须是同一个枚举类型的值，不允许null元素。它的效率很高，是替代传统标志位的推荐方案，用long实现。Iterator按自然顺序（枚举中声明的顺序）返回元素。常用方法如下表：</p>
-
-<table>
-<thead>
-<tr>
-<th>方法</th>
-<th> 说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>static &lt;E extends Enum&lt;E&gt;&gt; EnumSet&lt;E&gt;  allOf(Class&lt;E&gt; elementType)</code> </td>
-<td> 创建一个包括枚举类型所有值的EnumSet</td>
-</tr>
-<tr>
-<td><code>EnumSet&lt;E&gt; clone()</code> </td>
-<td> 复制一份。</td>
-</tr>
-<tr>
-<td><code>static &lt;E extends Enum&lt;E&gt;&gt; EnumSet&lt;E&gt; complementOf(EnumSet&lt;E&gt; s)</code> </td>
-<td> 创建一个同类型的EnumSet，其中的元素为枚举类型所有值减去s中的值。</td>
-</tr>
-<tr>
-<td><code>static &lt;E extends Enum&lt;E&gt;&gt; EnumSet&lt;E&gt; copyOf(Collection&lt;E&gt; c)</code> </td>
-<td> 创建EnumSet，元素来自c。</td>
-</tr>
-<tr>
-<td><code>static &lt;E extends Enum&lt;E&gt;&gt; EnumSet&lt;E&gt; noneOf(Class&lt;E&gt; elementType)</code> </td>
-<td> 创建一个空的EnumSet</td>
-</tr>
-<tr>
-<td><code>static &lt;E extends Enum&lt;E&gt;&gt; EnumSet&lt;E&gt; of(E e, E... rest)</code> </td>
-<td> 创建包括指定元素的EnumSet</td>
-</tr>
-<tr>
-<td><code>static &lt;E extends Enum&lt;E&gt;&gt; EnumSet&lt;E&gt; range(E from, E to)</code> </td>
-<td> 创建指定元素范围的EnumSet</td>
-</tr>
-</tbody>
-</table>
-
-
-<h3>3.7 CopyOnWriteArraySet</h3>
-
-<p>CopyOnWriteArraySet内部使用CopyOnWriteArrayList来实现所有操作。因此：</p>
-
-<ul>
-<li>最适合那些size小，读操作远多于修改操作，在遍历中需要防止其它线程干扰的场景。</li>
-<li>它是线程安全的。</li>
-<li>修改操作成本较高，因为通常要复制整个数组。</li>
-<li>Iterator不支持remove操作。</li>
-<li>通过iterator遍历很快，不会受其它线程影响，因为它依赖一个在iterator创建时的数组只读镜像。</li>
-</ul>
-
-
-<p>示例代码：</p>
-
-<p>```
-class Handler { void handle(); &hellip; }</p>
-
-<p>class X {
-   private final CopyOnWriteArraySet<Handler> handlers</p>
-
-<pre><code> = new CopyOnWriteArraySet&lt;Handler&gt;();
-</code></pre>
-
-<p>   public void addHandler(Handler h) { handlers.add(h); }</p>
-
-<p>   private long internalState;
-   private synchronized void changeState() { internalState = &hellip;; }</p>
-
-<p>   public void update() {</p>
-
-<pre><code> changeState();
- for (Handler handler : handlers)
-   handler.handle();
-</code></pre>
-
-<p>   }
-}
-```</p>
-
-<h2>4. List接口</h2>
-
-<p>List接口继承自Collection，它比后者增加了以下类型的方法：</p>
-
-<ul>
-<li>Positional access 基于位置的访问方法，如get, set, addAll</li>
-<li>Search 搜索指定对象并返回数字索引，如indexOf, lastIndexOf</li>
-<li>Iteration 继承Iterator，增加增了List的特性。ListIterator。</li>
-<li>Rang-View sublist方法提供range相关操作。</li>
-</ul>
-
-
-<p>Java提供两种普通List实现：ArrayList和LinkedList，前者通常有更好的性能，后者在特定场景有更好性能。如果你需要频繁地在List的起始位置插入元素，或者频繁遍历元素并删除，则使用LinkedList更合适。</p>
-
-<p>另一个特殊的实现是CopyOnWriteArrayList，与CopyOnWriteArraySet类似。无需同步操作，不会有ConcurrentModificationException.</p>
-
-<p>Arrays工具类提供了<code>asList()</code>方法，这样可以用List的方式查看数组。但是该操作并不是复制整个数组，对List的修改操作将会影响array，反过来也是如此。因此这个List并不是真正的List，它没有add, remove方法，因为数组不是变长的。如果List是定长的，也没有containsAll之类的bulk操作，可以考虑使用Arrays.asList。</p>
-
-<p>ListIterator提供两个方向迭代的能力，因此多了hasPrevious和previous方法。ListIterator的构造方法有两种格式，默认格式不带参数，表示从头遍历。带int参数的格式表示从指定位置遍历。ListIterator提供了安全的修改方法add, remove和set。它们能够在迭代的过程中安全地修改List的内容。</p>
-
-<ul>
-<li>add()方法，在List当前位置插入一个对象。所谓当前位置就是：add方法增加对象后，调用previous()方法将返回这个对象。</li>
-<li>remove()方法，将当前元素删除。所谓当前元素就是：如果刚调用了next()或previous()方法，当前元素就是它们返回的元素。注：每调用一次remove()，都需要先调用一次next()或者previous()，如果刚调用了add()，也必须先调用一次next()或者previous()。</li>
-<li>set()方法，更新当前元素。当前元素的定义与remove()方法相同。每次set()之前，也必须调用next()或previous()。</li>
-</ul>
-
-
-<p><code>subList(int fromIndex, int toIndex)</code>方法提供了range-view操作。由于subList返回的只是List的一个view，因此对返回结果的修改会影响原List。例如下面的代码删除指定范围内的数据：</p>
-
-<p><code>
-list.subList(fromIndex, toIndex).clear();
-</code></p>
-
-<h3>4.1 LinkedList</h3>
-
-<p>Doubly-linked列表，实现了List和Deque接口。由于是链表结构，因此基于索引的操作将导致从头遍历。常用的方法：</p>
-
-<table>
-<thead>
-<tr>
-<th>方法 </th>
-<th> 说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>void addFirst(E e)</code> </td>
-<td> 在最前面插入</td>
-</tr>
-<tr>
-<td><code>void addLast(E e)</code> </td>
-<td> 加到最后面</td>
-</tr>
-<tr>
-<td><code>boolean offer(E e)</code>, <code>boolean offerFirst(E e)</code>, <code>boolean offerLast(E e)</code> </td>
-<td> 增加操作。默认是加到最后。如果操作成功返回true</td>
-</tr>
-<tr>
-<td><code>E element()</code> </td>
-<td> 获取但不删除第1个元素</td>
-</tr>
-<tr>
-<td><code>E getFirst()/getLast()</code> </td>
-<td> 返回第1个/最后一个元素</td>
-</tr>
-<tr>
-<td><code>E peek()</code> </td>
-<td> 获取但不移除第一个元素</td>
-</tr>
-<tr>
-<td><code>E peekFirst()/peakLast()</code> </td>
-<td> 获取但不移除第一个/最后一个元素，如果list为空则返回null</td>
-</tr>
-<tr>
-<td><code>E poll()</code> </td>
-<td> 获取并删除第1个元素, 如果list为空则抛出NoSuchElementException</td>
-</tr>
-<tr>
-<td><code>E pollFirst()/pollLast()</code> </td>
-<td> 获取并删除第一个/最后一个元素，如果list为空则返回null, 如果list为空则抛出NoSuchElementException</td>
-</tr>
-<tr>
-<td><code>E pop()</code> </td>
-<td> stack pop</td>
-</tr>
-<tr>
-<td><code>void push(E e)</code> </td>
-<td> stack push</td>
-</tr>
-<tr>
-<td><code>boolean remove(Object o)</code>, <code>E removeFirst()</code>, <code>boolean removeFirstOccurrence(Object o)</code>, <code>E removeLast()</code>, <code>boolean removeLastOccurrence(Object o)</code> </td>
-<td> 与删除相关的操作，如果list为空则抛出NoSuchElementException</td>
-</tr>
-</tbody>
-</table>
-
-
-<h3>4.2 Stack</h3>
-
-<table>
-<thead>
-<tr>
-<th>方法 </th>
-<th> 说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>boolean empty()</code> </td>
-<td> Tests if this stack is empty.</td>
-</tr>
-<tr>
-<td><code>E peek()</code> </td>
-<td> Looks at the object at the top of this stack without removing it from the stack.</td>
-</tr>
-<tr>
-<td><code>E pop()</code> </td>
-<td> Removes the object at the top of this stack and returns that object as the value of this function.</td>
-</tr>
-<tr>
-<td><code>E push(E item)</code> </td>
-<td> Pushes an item onto the top of this stack.</td>
-</tr>
-<tr>
-<td>int search(Object o) </td>
-<td> Returns the 1-based position where an object is on this stack</td>
-</tr>
-</tbody>
-</table>
-
-
-<h2>5. Queue接口</h2>
-
-<p>Queue接口增加了以下方法，它们的返回值有两种类型：抛出异常、返回特殊值：</p>
-
-<p>```
-public interface Queue<E> extends Collection<E> {</p>
-
-<pre><code>E element();
-boolean offer(E e);
-E peek();
-E poll();
-E remove();
-</code></pre>
-
-<p>}
-```</p>
-
-<table>
-<thead>
-<tr>
-<th>操作类型 </th>
-<th> 抛出异常 </th>
-<th> 返回特殊值</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>插入操作 </td>
-<td> add(e) </td>
-<td> offer(e) 成功返回true</td>
-</tr>
-<tr>
-<td>删除操作 </td>
-<td> remove() 队列为空时异常 </td>
-<td> poll() 队列为空返回null</td>
-</tr>
-<tr>
-<td>检查操作 </td>
-<td> element() 队列为空时异常 </td>
-<td> peek() 队列为空返回null</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>队列通常是FIFO的行为，但优先队列的顺序取决于它的值。java.util.concurrent下的一些队列有数量限制（bounded），但java.util下的队列没有数量限制。java.util.concurrent.BlockingQueue 继承自Queue，提供了阻塞的机制。</p>
-
-<h3>5.1 普通队列</h3>
-
-<p>LinkedList实现了Queue接口，提供FIFO队列操作add, poll等等。优先队列PriorityQueue的顺序取决于元素的natural ordering或构造方法的Comparator参数。</p>
-
-<h3>5.2 多线程队列</h3>
-
-<p>java.util.concurrent.BlockingQueue继承自Queue，其实现是线程安全的。所有队列方法使用内部锁或其它多线程控制实现原子操作。但是bulk操作，如addAll, containsAll, retainAll, removeAll并没有实现原子操作。例如<code>addAll(c)</code>执行时，如果另一线程在c中添加了元素则会导致addAll失败。</p>
-
-<p>BlockingQueue不支持null元素。它可能有数量限制，否则最大为Integer.MAX_VALUE。它的方法有四种模式：</p>
-
-<table>
-<thead>
-<tr>
-<th>操作类型 </th>
-<th>Throws exception </th>
-<th> Special value </th>
-<th> Blocks </th>
-<th> Times out</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Insert</td>
-<td>add(e) </td>
-<td> offer(e)</td>
-<td> put(e) </td>
-<td> offer(e, time, unit)</td>
-</tr>
-<tr>
-<td>Remove</td>
-<td>remove() </td>
-<td> poll() </td>
-<td> take() </td>
-<td> poll(time, unit)</td>
-</tr>
-<tr>
-<td>Examine</td>
-<td>element() </td>
-<td> peek() </td>
-<td> not applicable </td>
-<td> not applicable</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>JDK提供了以下实现：</p>
-
-<ul>
-<li>LinkedBlockingQueue — an optionally bounded FIFO blocking queue backed by linked nodes</li>
-<li>ArrayBlockingQueue — a bounded FIFO blocking queue backed by an array</li>
-<li>PriorityBlockingQueue — an unbounded blocking priority queue backed by a heap</li>
-<li>DelayQueue — a time-based scheduling queue backed by a heap</li>
-<li>SynchronousQueue — a simple rendezvous mechanism that uses the BlockingQueue interface</li>
-<li>LinkedTransferQueue — an unbounded TransferQueue based on linked nodes</li>
-</ul>
-
-
-<h2>6. Deque接口</h2>
-
-<p>音（deck），支持从两端插入和删除的队列。它同时包含了Queue和Stack接口方法。ArrayDeque和LinkedList实现了Deque接口。Deque支持FIFO和LIFO。</p>
-
-<p>相关的方法参考LinkedList。LinkedBlockingDeque实现了多线程Deque。</p>
-
-<h2>7. Map接口</h2>
-
-<p>Java提供了三种通用的Map实现：HashMap, TreeMap和LinkedHashMap。它们的行为与HashSet, TreeSet和LinkedHashSet相似。如果你想要有序的Map，能够提供有序的keySet，使用TreeMap；如果想要最优性能，使用HashMap。如果既想要高性能，又想保持插入的顺序，使用LinkedHashSet。</p>
-
-<p>JDK8中引入了相关的聚合操作，示例如下：</p>
-
-<p>```
-// Group employees by department
-Map&lt;Department, List<Employee>> byDept = employees.stream()</p>
-
-<pre><code>.collect(Collectors.groupingBy(Employee::getDepartment));
-</code></pre>
-
-<p>// Compute sum of salaries by department
-Map&lt;Department, Integer> totalByDept = employees.stream()</p>
-
-<pre><code>.collect(Collectors.groupingBy(Employee::getDepartment, Collectors.summingInt(Employee::getSalary)));
-</code></pre>
-
-<p>// Partition students into passing and failing
-Map&lt;Boolean, List<Student>> passingFailing = students.stream()</p>
-
-<pre><code>.collect(Collectors.partitioningBy(s -&gt; s.getGrade()&gt;= PASS_THRESHOLD)); 
-</code></pre>
-
-<p>// Classify Person objects by city
-Map&lt;String, List<Person>> peopleByCity</p>
-
-<pre><code>= personStream.collect(Collectors.groupingBy(Person::getCity));
-</code></pre>
-
-<p>//cascade two collectors to classify people by state
-Map&lt;String, Map&lt;String, List<Person>>> peopleByStateAndCity</p>
-
-<pre><code>= personStream.collect(Collectors.groupingBy(Person::getState,
-</code></pre>
-
-<p>  Collectors.groupingBy(Person::getCity)))
-```</p>
-
-<p>Map提供了Collecton view，有三种方法：</p>
-
-<ul>
-<li>keySet 所有key的集合</li>
-<li>values 所有值。这不是一个Set，因为value会有重复。</li>
-<li>entrySet 所有key-value的集合</li>
-</ul>
-
-
-<p>Map的遍历方法有多种：</p>
-
-<p>```
-for (KeyType key : m.keySet())</p>
-
-<pre><code>System.out.println(key);
-</code></pre>
-
-<p>// Filter a map based on some
-// property of its keys.
-for (Iterator<Type> it = m.keySet().iterator(); it.hasNext(); )</p>
-
-<pre><code>if (it.next().isBogus())
-    it.remove();
-</code></pre>
-
-<p>for (Map.Entry&lt;KeyType, ValType> e : m.entrySet())</p>
-
-<pre><code>System.out.println(e.getKey() + ": " + e.getValue());            
-</code></pre>
-
-<p>```</p>
-
-<p>不用担心Map创建Collection view的性能。通过Collecton view iterator遍历时，可以调用Iterator的remove方法来删除map中的键值对。利用Map.Entry遍历时也可以调用entry.setValue方法来修改值。Collection view支持remove, removeAll, retainAll, clear, Iterator.remove操作。例如，以下命令会清空所有数据：</p>
-
-<p><code>
-Set&lt;Integer&gt; set = map.keySet();
-set.clear();
-</code></p>
-
-<p>Map的Collection view在很多场合能起到便利作用。以下是一些示例：</p>
-
-<p>```
-//判断一个Map的key是否包含另一个Map的key
-if (m1.entrySet().containsAll(m2.entrySet())) {</p>
-
-<pre><code>...
-</code></pre>
-
-<p>}</p>
-
-<p>//判断两个Map的key是否相同
-if (m1.keySet().equals(m2.keySet())) {</p>
-
-<pre><code>...
-</code></pre>
-
-<p>}</p>
-
-<p>//判断两个Map的key交集（注意新建了一个set，避免对Map产生影响）
-Set<KeyType>commonKeys = new HashSet<KeyType>(m1.keySet());
-commonKeys.retainAll(m2.keySet());
-```</p>
-
-<h3>7.1 LinkedHashMap</h3>
-
-<p>LinkedHashMap的顺序通常是插入顺序，同一元素多次重复插入并不会修改它的位置。</p>
-
-<p>LinkedHashMap还提供了一个特殊的构造方法，它创建的LinkedHashMap顺序是entry被访问的顺序。元素的访问时间越近，则它越靠前。因此这种LinkedHashMap非常适合做LRU(least recently used)缓存。构造方法如下：</p>
-
-<p>```
-public LinkedHashMap(int initialCapacity,</p>
-
-<pre><code>                 float loadFactor,
-                 boolean accessOrder)
-</code></pre>
-
-<p>```</p>
-
-<p>影响这种LinkedHashMap元素顺序的访问方法包括：put, putInfoAbsent, get, getOrDefault, compute, computeIfAbsent, computeIfPresent, merge, replace(如果之前存在，替换动作成功)和putAll方法。其中putAll方法会对指定map中的所有元素都产生一次访问，访问的顺序取决于指定map的entryset iterator。除了以上方法外，其他方法都不会影响元素顺序，特别是作用于Collection view的方法也不会对元素顺序产生影响。</p>
-
-<p>覆盖removeEldestEntry(Map.Entry)方法可以在Map移除旧Entry时自定义一些策略。</p>
-
-<p>LinkedHashMap性能接近于HashMap，在遍历时性能比HashMap更优。因为LinkedHashMap的迭代性能只与size相关，而HashMap还与容量相关。</p>
-
-<h3>7.2 其它Map实现类</h3>
-
-<p>除了HashMap, TreeMap和LinkedHashMap, 还有一些其它的Map实现：</p>
-
-<ul>
-<li>EnumMap与EnumSet类似。</li>
-<li>WeakHashMap 弱引用，便于垃圾收集</li>
-<li>IdentityHashMap 在此Map中，当且仅当k1==k2时，认为两个key是相等的。（HashMap判断相等使用的是equals）很少用。</li>
-<li>ConcurrentHashMap 高并发、高性能的Map。线程安全。</li>
-</ul>
-
 ]]></content>
   </entry>
   

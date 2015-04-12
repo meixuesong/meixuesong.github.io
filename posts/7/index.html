@@ -9,8 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="模板方法（Template Method）模式是最常见的模式，几乎每个人都用过。它将部分逻辑以具体方法以及具体构造子的形式实现。抽象类定义顶级逻辑，具体类实现具体方法。类图如下： 抽象模板角色：定义一个或多个抽象操作，以便让子类实现。定义并实现一个模板方法，给出顶级逻辑的骨架。
-具体模板角色： &hellip;">
+  <meta name="description" content="观察者模式也称为发布-订阅模式，它定义了一种一对多的依赖关系，让多个观察者同时监听一个主题对象。当主题对象的状态发生变化时，会通知观察者对象，使它们能够自动更新自己。它的类图如下所示： 在实际应用中，如果有多个ConcreteSubject，也可以将Subject变成抽象类， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -84,6 +83,46 @@ var _hmt = _hmt || [];
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/10/she-ji-mo-shi-guan-cha-zhe-mo-shi/">设计模式:观察者模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-10T11:36:40+08:00" pubdate data-updated="true">2014-08-10</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>观察者模式也称为发布-订阅模式，它定义了一种一对多的依赖关系，让多个观察者同时监听一个主题对象。当主题对象的状态发生变化时，会通知观察者对象，使它们能够自动更新自己。它的类图如下所示：</p>
+
+<p><img src="/myresource/images/image_blog_20140810_115301.jpg" alt="image" /></p>
+
+<p>在实际应用中，如果有多个ConcreteSubject，也可以将Subject变成抽象类，将observers和notifyObservers方法上移到抽象Subject。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -474,49 +513,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/">设计模式:组合（Composite）模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-31T21:08:30+08:00" pubdate data-updated="true">2014-07-31</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>组合模式将对象以树状结构组织起来，达成“部分－整体”的层次结构，使得客户端对单个对象和组合对象的使用具有一致性。结构示意图：</p>
-
-<p><img src="/myresource/images/image_blog_2014-07-31_21.14.15.jpg" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/31/she-ji-mo-shi-zu-he-mo-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/8">&larr; Older</a>
@@ -538,13 +534,17 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (34)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (35)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2015/04/12/rest-ke-hu-duan/">REST 客户端</a>
+        <a href="/blog/2015/04/12/jax-rs-2-dot-0-yi-bu-tong-xin/">JAX-RS 2.0 异步通信</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/rest-ke-hu-duan/">JAX-RS 2.0 REST 客户端</a>
       </li>
     
       <li class="post">
@@ -557,10 +557,6 @@ var _hmt = _hmt || [];
     
       <li class="post">
         <a href="/blog/2015/04/06/xue-xi-zheng-ze-biao-da-shi/">学习正则表达式</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/02/intellij-idea-mackuai-jie-jian/">IntelliJ IDEA Mac快捷键</a>
       </li>
     
   </ul>

@@ -4,7 +4,14 @@
   <link>http://rss2epub.appspot.com/</link>
   <description></description>
   <item>
-      <title><![CDATA[REST 客户端]]></title>
+      <title><![CDATA[JAX-RS 2.0 异步通信]]></title>
+      <link>http://blog.ubone.com/blog/2015/04/12/jax-rs-2-dot-0-yi-bu-tong-xin/</link>
+      <description></description>
+      <pubDate>2015-04-12T21:54:22+08:00</pubDate>
+      <guid><![CDATA[http://blog.ubone.com/blog/2015/04/12/jax-rs-2-dot-0-yi-bu-tong-xin/]]></guid>
+  </item>
+  <item>
+      <title><![CDATA[JAX-RS 2.0 REST 客户端]]></title>
       <link>http://blog.ubone.com/blog/2015/04/12/rest-ke-hu-duan/</link>
       <description></description>
       <pubDate>2015-04-12T17:02:39+08:00</pubDate>
