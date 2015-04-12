@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "REST 客户端"
+title: "JAX-RS 2.0 REST 客户端"
 date: 2015-04-12 17:02:39 +0800
 comments: true
 categories: 
