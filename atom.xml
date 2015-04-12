@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-04-11T23:14:51+08:00</updated>
+  <updated>2015-04-12T12:22:14+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,393 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[JAX-RS 2.0 REST 请求处理]]></title>
+    <link href="http://blog.ubone.com/blog/2015/04/12/rest-qing-qiu-chu-li/"/>
+    <updated>2015-04-12T09:57:39+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/04/12/rest-qing-qiu-chu-li</id>
+    <content type="html"><![CDATA[<p>本章学习REST请求的完整处理过程，其中涉及JAX-RS 2.0定义的Provider及其两个特殊类型：过滤器和拦截器。</p>
+
+<!--more-->
+
+
+<p>REST风格的框架都从容器级别支持AOP式开发，Jersey内置AOP支持，可以不依赖于Spring等AOP框架。Jersey的AOP功能来自GlassFish的HK2项目（轻量级DI架构，jersey-common依赖HK2），它包括hk2-api和hk2-locator。hk2-locator致力于AOP方向。</p>
+
+<p>Jersey提供的REST过滤器和拦截器为开发者提供了方便的扩展点，开发者无须像在Spring中为了某个类的方法进行AOP扩展而写配置文件。Jersey中只要实现相应扩展点的接口，即可实现REST请求流程中特定事件的拦截、扩展。</p>
+
+<h2>1. Providers详解</h2>
+
+<p>javax.ws.rs.ext.Providers是JAX-RS 2.0定义的一个辅助接口，其实现类用于完成过滤和读写拦截功能。@Provider标注的实现类，可以在运行时自动探测、加载。Provider实例可以通过@Context注解被依赖注入到其他实例中。Providers接口定义了4个方法，分别用来获取MessageBodyReader、MessageBodyWriter、ExceptionMapper和ContextResolver实例。</p>
+
+<h3>1.1 实体Providers</h3>
+
+<p>Jersey之所以可以支持多种响应实体的传输格式，是因为其底层实体Providers具备对不同格式的处理能力。它内部提供了丰富的MessageBodyReader和MessageBodyWriter接口实现类，用于处理不同的格式。</p>
+
+<h4>1.1.1 MessageBodyReader</h4>
+
+<p><code>MessageBodyReader&lt;T&gt;</code>用于将传输流转换成Java类型的对象。泛型类型即是该实现类所支持的转换类型。业务系统启用该实现类有两种方式：一是使用@Provider定义实现类，启动时自动加载；二是通过编码注册到Application类或子类中。</p>
+
+<p><code>MessageBodyReader&lt;T&gt;</code>接口定义了两个方法：</p>
+
+<ul>
+<li>isReadable() 判断实现类是否支持将当前请求的数据类型反序列化。</li>
+<li>readFrom() 反序列化处理，将流转换为Java类型对象。</li>
+</ul>
+
+
+<h4>1.1.2 MessageBodyWriter</h4>
+
+<p><code>MessageBodyWriter&lt;T&gt;</code>接口用于将Java类型对象转换成流，完成序列化过程。与MessageBodyReader类似，它也有两个对应的方法：isWriteable()和writeTo()。</p>
+
+<h4>1.1.3 MessageBodyWorkers</h4>
+
+<p>MessageBodyReader和MessageBodyWriter的实现类非常多，选择哪个实现类处理当前请求的算法非常繁重，MessageBodyWorkers就是用于抽象这一遴选工作。它的实现类可以通过@Context依赖注入到使用MessageBodyWorkers的类中。MessageBodyFactory是MessageBodyWorkers接口的实现类。</p>
+
+<h3>1.2 上下文Providers</h3>
+
+<p><code>ContextResolver&lt;T&gt;</code>接口是用于提供资源类和其他Provider上下文信息的接口，它定义了getContext()方法，参数为表述对象的类型(响应实体的传输格式)，输出是上下文泛型。</p>
+
+<h2>2. REST请求流程</h2>
+
+<p>一个请求始于请求的发送，止于调用Response类的readEntity()方法，获取响应实体。整个流程如下图所示：</p>
+
+<p><img src="http://blog.ubone.com/myresource/images/image_blog_-2015-04-12_jerseyrest.jpg" alt="image" /></p>
+
+<ol>
+<li>客户端接收请求，进入扩展点ClientRequestFilter实现类的filter()方法。</li>
+<li>第二个扩展点：客户端写拦截器WriterInterceptor实现类的aroundWriteTo()方法，实现对客户端序列化操作的拦截。</li>
+<li>客户端消息体写处理器MessageBodyWriter执行序列化，过渡到服务端。</li>
+<li>进入第三个扩展点：服务器前置请求过滤器ContainerRequestFilter实现类的filter()方法。</li>
+<li>过滤处理完毕后，找到匹配资源方法。</li>
+<li>进入第四个扩展点：服务器后置请求过滤器ContainerRequestFilter实现类的filter()方法。</li>
+<li>服务器消息体读处理器MessageBodyReader完成数据流的反序列化。</li>
+<li>执行资源方法。</li>
+<li>进入第六个扩展点：服务器响应过滤器ContainerResponseFilter实现类的filter()方法。</li>
+<li>进入第七个扩展点：服务器写拦截器WriterInterceptor实现类的aroundWriteTo()方法，实现对服务端序列化到客户端这个操作的拦截。</li>
+<li>服务器消息体写处理器MessageBodyWriter执行序列化。流程返回客户端。</li>
+<li>客户端接收响应，进入第八个扩展点：客户端响应过滤器ClientResponseFilter实现类的filter方法。</li>
+<li>客户端响应实例response返回到用户侧，用户执行response.readEntity()，进入第九个扩展点：客户端读拦截器ReaderInterceptor实现类的aroundReadFrom()方法，对客户端反序列化进行拦截。</li>
+<li>客户端消息体读处理器MessageBodyReader执行反序列化，将Java类型的对象最终作为readEntity()方法的返回值。</li>
+</ol>
+
+
+<h2>3. REST过滤器</h2>
+
+<p>在上面的流程中，JAX-RS 2.0定义了4种过滤器扩展点接口，供开发者实现业务逻辑，先后为：</p>
+
+<ul>
+<li>ClientRequestFilter</li>
+<li>ContainerRequestFilter</li>
+<li>ContainerResponseFilter</li>
+<li>ClientResponseFilter</li>
+</ul>
+
+
+<h3>3.1 ClientRequestFilter</h3>
+
+<p>通常可以通过filter()方法的参数ClientRequestContext获取请求方法(getMethod)、获取请求资源地址(getUri)和获取请求头信息（getHeaders）等。利用这些信息覆写该方法以实现过滤功能。示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@Override
+public filter(ClientRequestContext rc) throws IOException {
+    if (!rc.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
+      rc.getHeaders().add(HttpHeaders.AUTHORIZATION, authentication);
+    }
+}</code></pre>
+
+
+<h3>3.2 ContainerRequestFilter</h3>
+
+<p>该接口的实现类可以定义为前置处理和后置处理。分别对应服务器处理接收到的请求之前和之后执行过滤。如果希望实现前置处理，要在类名上定义注解@PreMatching。该接口的filter(ContainerRequestContext tx)与Client类似。</p>
+
+<h3>3.3 ContainerResponseFilter</h3>
+
+<p>该接口定义的过滤方法：void filter(ContainerRequestContext request, ContainerResponseContext response)。</p>
+
+<h3>3.4 ClientResponseFilter</h3>
+
+<p>该接口定义的过滤方法：void filter(ClientRequestContext requestContext, ClientResponseContext responseContext).</p>
+
+<h3>3.5 过滤器示例</h3>
+
+<p>下面的示例用于实现访问日志功能。</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>//pugm4wh阶段的filter
+@PreMatching
+public class AirLogFilter implements ContainerRequestFilter, 
+        ClientRequestFilter, ContainerResponseFilter, 
+        ClientResponseFilter {
+    private static final Logger LOGGER = Logger.getLogger(AirLogFilter.class);
+    private static final String NOTIFICATION_PREFIX = "* ";
+    private static final String SERVER_REQUEST = "&gt; ";
+    private static final String SERVER_RESPONSE = "&lt; ";
+    private static final String CLIENT_REQUEST = "/ ";
+    private static final String CLIENT_RESPONSE = "\\ ";
+    private static final AtomicLong logSequence = new AtomicLong(0);
+
+    @Override
+    public void filter(ClientRequestContext context) throws IOException {
+        long id = logSequence.incrementAndGet();
+        StringBuilder b = new StringBuilder();
+        //获取请求方法和地址
+        printRequestLine(CLIENT_REQUEST, b, id, 
+            context.getMethod(), context.getUri());
+        //获取请求头信息
+        printPrefixedHeaders(CLIENT_REQUEST, b, id, 
+            /*HeadersFactory*/HeaderUtils.asStringHeaders(context.getHeaders()));
+        LOGGER.info(b.toString());
+    }
+
+    @Override
+    public void filter(ClientRequestContext requestContext, 
+        ClientResponseContext responseContext) throws IOException {
+        long id = logSequence.incrementAndGet();
+        StringBuilder b = new StringBuilder();
+        printResponseLine(CLIENT_RESPONSE, b, id, responseContext.getStatus());
+        printPrefixedHeaders(CLIENT_RESPONSE, b, id, responseContext.getHeaders());
+        LOGGER.info(b.toString());
+    }
+
+    @Override
+    public void filter(ContainerRequestContext context) throws IOException {
+        long id = logSequence.incrementAndGet();
+        StringBuilder b = new StringBuilder();
+        printRequestLine(SERVER_REQUEST, b, id,
+             context.getMethod(), context.getUriInfo().getRequestUri());
+        printPrefixedHeaders(SERVER_REQUEST, b, id, context.getHeaders());
+        LOGGER.info(b.toString());
+    }
+
+    @Override
+    public void filter(ContainerRequestContext requestContext, 
+        ContainerResponseContext responseContext) throws IOException {
+        long id = logSequence.incrementAndGet();
+        StringBuilder b = new StringBuilder();
+        //获取容器响应状态
+        printResponseLine(SERVER_RESPONSE, b, id, responseContext.getStatus());
+        printPrefixedHeaders(SERVER_RESPONSE, b, id, 
+            /*HeadersFactory*/HeaderUtils.asStringHeaders(responseContext.getHeaders()));
+        LOGGER.info(b.toString());
+    }
+
+    private StringBuilder prefixId(StringBuilder b, long id) {
+        b.append(Long.toString(id)).append(" ");
+        return b;
+    }
+
+    private void printRequestLine(final String prefix, 
+            StringBuilder b, long id, String method, URI uri) {
+        prefixId(b, id).append(NOTIFICATION_PREFIX)
+            .append("AirLog - Request received on thread ")
+            .append(Thread.currentThread().getName()).append("\n");
+        prefixId(b, id).append(prefix).append(method)
+            .append(" ").append(uri.toASCIIString()).append("\n");
+    }
+
+    private void printResponseLine(final String prefix, 
+        StringBuilder b, long id, int status) {
+        prefixId(b, id).append(NOTIFICATION_PREFIX)
+            .append("AirLog - Response received on thread ")
+            .append(Thread.currentThread().getName()).append("\n");
+        prefixId(b, id).append(prefix)
+            .append(Integer.toString(status)).append("\n");
+    }
+
+    private void printPrefixedHeaders(final String prefix, 
+        StringBuilder b, long id, MultivaluedMap&lt;String, String&gt; headers) {
+        for (Map.Entry&lt;String, List&lt;String&gt;&gt; e : headers.entrySet()) {
+            List&lt;?&gt; val = e.getValue();
+            String header = e.getKey();
+
+            if (val.size() == 1) {
+                prefixId(b, id).append(prefix).append(header)
+                    .append(": ").append(val.get(0)).append("\n");
+            } else {
+                StringBuilder sb = new StringBuilder();
+                boolean add = false;
+                for (Object s : val) {
+                    if (add) {
+                        sb.append(',');
+                    }
+                    add = true;
+                    sb.append(s);
+                }
+                prefixId(b, id).append(prefix).append(header)
+                    .append(": ").append(sb.toString()).append("\n");
+            }
+        }
+    }
+}
+
+
+//测试类
+public class TIResourceJtfTest extends JerseyTest {
+    private static final Logger LOGGER = Logger.getLogger(TIResourceJtfTest.class);
+    private static final String BASEURI = "books/";
+
+    @Override
+    protected Application configure() {
+        ResourceConfig config = new ResourceConfig(BookResource.class);
+        return config.register(com.example.filter.log.AirLogFilter.class);
+    }
+
+    @Override
+    protected void configureClient(ClientConfig config) {
+        config.register(new AirLogFilter());
+    }
+    
+    @Test
+    public void testPathGetJSON() {
+        TIResourceJtfTest.LOGGER.debug("&gt;&gt;Test Path Get");
+        final WebTarget pathTarget = target(TIResourceJtfTest.BASEURI + "1");
+        final Invocation.Builder invocationBuilder = pathTarget.request(MediaType.APPLICATION_JSON_TYPE);
+        final Book result = invocationBuilder.get(Book.class);
+        TIResourceJtfTest.LOGGER.debug(result);
+        Assert.assertNotNull(result.getBookId());
+        TIResourceJtfTest.LOGGER.debug("&lt;&lt;Test Path Get");
+    }
+}</code></pre>
+
+
+<p>注意在测试类中，需要在服务端和客户端分别注册服务日志类AirLogFilter。</p>
+
+<h2>4. REST拦截器</h2>
+
+<p>拦截器与过滤器都是一种在请求-响应模型中用做切面处理的Provider。但两种除了功能不一样外，形式也不同。拦截器通常读写成对，而且没有服务端和客户端的区分。例如GZiPEncoder同时实现了读/写拦截器。</p>
+
+<p>读拦截器接口ReaderInterceptor定义的拦截方法是：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>Object aroundReadFrom(ReaderInterceptorContext context)
+    throws IOException, javax.ws.rs.WebApplicationException;</code></pre>
+
+
+<p>写拦截器接口WriterInterceptor定义的拦截方法是：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>void aroundWriteTo(WriterInterceptorContext context)
+    throws IOException, javax.ws.rs.WebApplicationException;</code></pre>
+
+
+<h2>5. Providers绑定机制</h2>
+
+<p>通过下面的方式定义的过滤器或拦截器是全局有效的：</p>
+
+<ul>
+<li>通过手动注册到Application或者Configuration。</li>
+<li>注解为@Provider，被自动探测。</li>
+</ul>
+
+
+<p>除了全局Provider，还可以进行名称绑定和动态绑定。</p>
+
+<h3>5.1 名称绑定</h3>
+
+<p>过滤器和拦截器可以通过名称绑定来指定其作用范围。@NameBinding注解可以定义一个运行时的自定义注解，该注解用于定义类级别的名称和类的方法名：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@NameBinding
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(value = RetentionPolicy.RUNTIME)
+public @interface AirLog {
+}</code></pre>
+
+
+<p>然后将该注解绑定Provider，下例中的AirNameBindingFilter就实现了名称绑定：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@AirLog
+@Priority(Priorities.USER)
+public class AirNameBindingFilter implements ContainerRequestFilter, ContainerResponseFilter {
+    private static final Logger LOGGER = 
+        Logger.getLogger(AirNameBindingFilter.class);
+
+    public AirNameBindingFilter() {
+        LOGGER.info("Air-NameBinding-Filter initialized");
+    }
+
+    @Override
+    public void filter(final ContainerRequestContext containerRequest) 
+    throws IOException {
+        LOGGER.debug("Air-ContainerRequestFilter invoked:" + 
+            containerRequest.getMethod());          
+        LOGGER.debug(containerRequest
+            .getUriInfo().getRequestUri());
+    }</code></pre>
+
+
+<p>完成了Provider的名称绑定后，就可以在资源类的指定方法上使用自定义注解@AirLog，从而实现在该方法上启用Provider对应的过滤器。示例如下 ：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@AirLog
+@GET
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+public Books getBooks() {
+    ...
+}</code></pre>
+
+
+<h3>5.2 动态绑定</h3>
+
+<p>动态绑定无须新增注解，而是使用编码的方式实现接口javax.ws.rs.container.DynamicFeature，定义扩展点方法的名称、请求方法类型等匹配信息。在运行期，一旦Provider匹配当前处理类或方法，面向切面的Provider方法即被触发。</p>
+
+<h4>5.2.1 定义绑定Provider</h4>
+
+<pre class='line-numbers language-java'><code class='language-java'>public class AirDynamicFeature implements DynamicFeature {
+    @Override
+    public void configure(final ResourceInfo resourceInfo, 
+            final FeatureContext context) {
+        boolean classMatched = BookResource.class
+            .isAssignableFrom(resourceInfo.getResourceClass());
+        boolean methodNameMatched = resourceInfo
+            .getResourceMethod().getName().contains("getBookBy");
+        boolean methodTypeMatched = resourceInfo
+            .getResourceMethod().isAnnotationPresent(POST.class);
+            
+        //匹配成功才注册
+        if (classMatched && (methodNameMatched || methodTypeMatched)) {
+            context.register(AirDynamicBindingFilter.class);
+        }
+    }
+}</code></pre>
+
+
+<p>上面的示例代码启用了如下匹配规则：</p>
+
+<ul>
+<li>类匹配：对BookResource类及其子类匹配。</li>
+<li>方法名称匹配：方法名包含getBookBy。</li>
+<li>请求方法类型匹配：匹配POST方法。</li>
+</ul>
+
+
+<p>当匹配成功后，会触发下面的Provider:</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>public class AirDynamicBindingFilter implements ContainerRequestFilter {
+    private static final Logger LOGGER = Logger.getLogger(AirDynamicBindingFilter.class);
+
+    public AirDynamicBindingFilter() {
+        LOGGER.info("Air-Dynamic-Binding-Filter initialized");
+    }
+
+    @Override
+    public void filter(final ContainerRequestContext requestContext) throws IOException {
+        LOGGER.debug("Air-Dynamic-Binding-Filter invoked");
+    }
+}</code></pre>
+
+
+<h2>6. 优先级</h2>
+
+<p>对于同一个扩展点，如果有多个Provider，其执行先后顺序是靠优先级排序的。优先级使用@Priority，一个整型值，常量定义在javax.ws.rs.Priorities中。</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@Priority(Priorities.USER)
+public class AirNameBindingFilter ...
+
+@Priority(Priorities.USER + 1)
+public class AirNameBindingFilter2 ...</code></pre>
+
+
+<p>对于ContainerRequest、PreMatchContainerRequest、ClientRequest和读写拦截器，数值越小，优先级越高。对于ContainerResponse和ClientResponse，数值越大，优先级越高。</p>
+
+<p>参考：《Java RESTful Web Service实战》</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[JAX-RS REST API设计]]></title>
@@ -7668,433 +8055,6 @@ public static void main(String[] args) {
 
 
 <p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-12-17-20.30.59.jpg" alt="image" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[理解Java性能调优]]></title>
-    <link href="http://blog.ubone.com/blog/2014/12/06/li-jie-javaxing-neng-diao-you/"/>
-    <updated>2014-12-06T21:00:37+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/12/06/li-jie-javaxing-neng-diao-you</id>
-    <content type="html"><![CDATA[<p>人们总是猜不对系统变慢的原因在哪里，你必须量体裁衣。没有评测就没有合适的调优。本文重点学习性能相关的内存管理、垃圾收集、相关工具并简单了解HotSpot。</p>
-
-<!--more-->
-
-
-<h2>1. 性能指标</h2>
-
-<h3>评价性能的常用指标</h3>
-
-<ul>
-<li>等待时间(Latency)：在给定工作量的情况下，处理一个任务单元所消耗的时长。通常用响应时间随负载增长的变化曲线来反映。</li>
-<li>吞吐量(Throughput)：在某一参考平台（硬件配置、OS和软件环境）上的每秒事务处理数。</li>
-<li>利用率(Utilization)：在可用资源中处理工作单元的资源百分比。例如CPU的利用率。</li>
-<li>效率(Efficiency)：吞吐量除以所用资源。</li>
-<li>容量(Capacity)：任一时刻能通过系统的工作单元数量。</li>
-<li>扩展性(Scalability)：当系统得到更多资源时，吞吐量或等待时间的变化。如果方案A可用的服务器数量翻倍，它的吞吐量也能翻倍，那么它就实现了完美的线性扩展。</li>
-<li>退化(Degradation)：分为正面退化和负面退化。当工作单元增加时，性能通常会降低，即负面退化。但也存在正面退化，例如负载超过阈值，使系统切换到高性能模式，处理时间可能缩短。JVM是动态非常强的运行时系统，有几部分可以达成这种效果。</li>
-</ul>
-
-
-<p>性能分析时要了解一些概念：</p>
-
-<blockquote><p>中位数（又称中值，Median），统计学中的专有名词，代表一个样本、种群或概率分布中的一个数值，其可将数值集合划分为相等的上下两部分。对于有限的数集，可以通过把所有观察值高低排序后找出正中间的一个作为中位数。如果观察值有偶数个，通常取最中间的两个数值的平均数作为中位数。</p>
-
-<p>方差是各个数据分别与其和的平均数之差的平方的和的平均数，用字母D表示。在概率论和数理统计中，方差（Variance）用来度量随机变量和其数学期望（即均值）之间的偏离程度。在许多实际问题中，研究随机变量和均值之间的偏离程度有着重要意义。</p>
-
-<p>百分位数是统计学术语，如果将一组数据从小到大排序，并计算相应的累计百分位，则某一百分位所对应数据的值就称为这一百分位的百分位数。可表示为：一组n个观测值按数值大小排列。如，处于p%位置的值称第p百分位数。</p>
-
-<p>标准差（Standard Deviation） ，中文环境中又常称均方差，但不同于均方误差（mean squared error，均方误差是各数据偏离真实值的距离平方的平均数，也即误差平方和的平均数，计算公式形式上接近方差，它的开方叫均方根误差，均方根误差才和标准差形式上接近），标准差是离均差平方和平均后的方根，用σ表示。标准差是方差的算术平方根。标准差能反映一个数据集的离散程度。平均数相同的，标准差未必相同。</p></blockquote>
-
-<h2>2. 务实的性能分析法</h2>
-
-<p>做性能分析最重要的是知道哪个可测环节最重要。应该把测量结果、目标和结论跟一个或多个可测环节结合起来。以下是常见的可测项，都是性能调优的好对象：</p>
-
-<ul>
-<li>方法handelRequest()运行所需的平均时间。</li>
-<li>并发10客户端时，系统等待时间的第90个百分位数。</li>
-<li>并发用户从1增长到1000时，响应时间的退化。</li>
-</ul>
-
-
-<p>要精确确定一个方法或代码片段运行需要多长时间，只有两种方法：</p>
-
-<ul>
-<li>直接测量，在源码中插入测量代码。最容易理解，但是侵入式的。如果测量结果不断增多，代码很容易就被数据淹没。</li>
-<li>在类加载时把类转换成受测类。使用特殊的类加载器，在方法开始和结束的地方加上记录时间的字节码。典型的有OpTier CoreFirst等性能监测工具，但似乎还没有开源工具。</li>
-</ul>
-
-
-<h2>3. 时间问题</h2>
-
-<p>为了进行性能调优，需要对时间有深刻认识。</p>
-
-<h4>硬件时钟</h4>
-
-<p>基于x64的机器有四种不同的硬件时间源：</p>
-
-<ul>
-<li>RTC: 实时时钟（RTC）基本和电子表里的元件一样，在系统断电时由主板上的电池供电。系统启动时从它那得到时间。很多系统会在OS启动后通过网络时间协议（Network Time Protocol, NTP）与时间服务器同步。</li>
-<li>8254：是可编程计时芯片，现在基本不需要了。</li>
-<li>TSC：时间戳计时器，这是应用最广泛的现代计时器。可认为是一个跟踪CPU运行了多少周期的CPU计数器。由于与CPU相关，因此运行时可能受节能或其它因素影响。不同的CPU会互相偏离，不能跟钟表时间保持一致。</li>
-<li>HPET，高精度事件计时器，最近几年才出现。精度非常高，但不是所有硬件都可用，也不是所有操作系统都支持。</li>
-</ul>
-
-
-<h4>Java获取时间的方法</h4>
-
-<p>Java提供了两个获取时间的方法：</p>
-
-<ul>
-<li>System.currentTimeMillis()，解析度为毫秒级，几乎所有情况下都跟钟表时间相符。</li>
-<li>System.nanoTime()，用于测量比毫秒更精确的时间，时间源来自TSC，可能偏离钟表时间。</li>
-</ul>
-
-
-<p>对于较长的间隔时间，nanoTime()基本是不可信的，应该使用currentTimeMillis()，nanoTime()它只能测量较短的时间间隔。</p>
-
-<h2>4. 垃圾收集</h2>
-
-<h3>4.1 内存管理</h3>
-
-<p>内存自动管理是Java平台最重要的组成部分之一。Java内存分为栈和堆。</p>
-
-<p>栈内存，即虚拟机栈。每个方法被执行的时候都会同时创建一个栈帧，用来存储局部变量，操作栈，动态链接，方法出口等信息。<strong>局部变量包括各种基本类型的变量和对象的引用变量都是在方法的栈内存中分配。</strong>其中，64位长度的long和double类型的数据占用2个局部变量的空间，其他数据类型只占用1个。局部变量所需要的内存空间是在编译期间完成的，当进入一个方法时候，这个方法所需的局部变量空间已经确定，在方法运行期间不会改变。当在一段代码块中定义一个变量时，java就在栈中为这个变量分配内存空间，当超过变量的作用域后，java会自动释放掉为该变量分配的内存空间，该内存空间可以立刻被另作他用。当线程请求的栈深度大于虚拟机所允许的深度，则抛出StackOverflowError异常。当虚拟机栈无法扩展时候则抛出OutOfMemoryError异常。</p>
-
-<p>堆内存，在虚拟机启动时创建。堆内存的唯一目的就是创建对象实例，所有的对象实例和数组都要在堆上分配。对象的域即使是原始类型，也仍然分配在堆内存中。堆内存的回收由垃圾回收负责。</p>
-
-<h4>标记和清除</h4>
-
-<p>标记和清除是最简单、也是出现最早的垃圾收集算法。Perl和PHP等语言则采用引用计数法。</p>
-
-<p>最简单的标记和清除算法会暂停所有正在运行的线程，并从一组“活”对象（任何用户线程的任何堆栈帧中存在引用的对象）开始遍历其引用树，标记出路径上的所有活对象。遍历完成后，所有没被标记的被当作垃圾，可以回收。被清除的内存不是还给OS，而是JVM。</p>
-
-<p>Java平台对基本的标记清除算法进行了改进，采用“分代式垃圾收集”。内存分成了几个不同的区域：</p>
-
-<p><img src="http://blog.ubone.com/myresource/images/image_blog_2014-12-07-Java-Memory-Model-450x186.png" alt="image" /></p>
-
-<ul>
-<li>Eden(伊甸园)：对象最初降生的堆区域。</li>
-<li>Survivor(幸存者乐园)：分为两个空间（S0, S1）,除非正在执行垃圾收集，否则总有一个空间是空的。</li>
-<li>Old Generation：老年代。是那些“足够老”的幸存对象的归宿。</li>
-<li>PermGen：为内部结构分配的内存，例如类定义。它不是严格的堆内存，并且普通的对象最后不会在这里结束。</li>
-</ul>
-
-
-<p>上面这些内存区域的垃圾收集方式不尽相同。</p>
-
-<h4>年轻代收集（Minor GC）</h4>
-
-<p>年轻代收集只会清理“年轻的”空间（伊甸园和幸存者乐园），其过程如下：</p>
-
-<ul>
-<li>在标记阶段发现的所有仍然存活的年轻对象都会被挪走：那些足够老的对象（从次数足够多的GC中幸存下来的）进入老年代；所有Eden中存活的对象被移到幸存者乐园的其中一个空间，幸存者乐园中的存活对象也会被移到该空间。（S0, S1总有一个是空的）</li>
-<li>伊甸园和最近腾空的幸存者乐园可以重用了，因为它们里面已经全是垃圾了。</li>
-</ul>
-
-
-<h4>完全收集（Major GC）</h4>
-
-<p>当年轻代收集不能把对象放进老年代时（空间不够了），就会触发一次完全收集，这通常要更长的时间。根据老年代所用的收集器，可能会牵涉到老年代对象的内部迁移。以确保必要时能从老年代对象所占的内存中给大的对象腾出足够的空间。这被称为压缩。</p>
-
-<p>由于Major GC会消耗更长时间，消耗的时间取决于垃圾收集策略，这期间应用将无响应。因此在高响应应用中，有必要监视和优化垃圾回收以避免超时。</p>
-
-<h4>安全点</h4>
-
-<p>因为垃圾收集时，要暂停所有应用线程，因此线程给执行GC留出了特定的位置——安全点。常见的安全点是方法被调用的地方（调用点），不过也有其它安全点。当执行垃圾收集时，所有应用线程都必须停在安全点。</p>
-
-<h3>4.2 工具</h3>
-
-<p>借助一些工具可以帮你了解运行中的进程和垃圾收集。</p>
-
-<h4>jmap</h4>
-
-<p>jmap是Oracle JVM自带的一个工具，用来显示Java进程的内存映射，也能分析Java核心文件（Java core file，主要保存各应用线程在某一时刻的执行栈以及stack trace的显示）。</p>
-
-<p><strong>默认视图</strong></p>
-
-<p>jmap最简单的用法是查看连接到进程里的本地类库。用处不大，用得最多的是后面两种视图。</p>
-
-<pre  class='line-numbers language-bash'><code class='language-bash'>$ jmap 25154
-Attaching to process ID 25154, please wait...
-Debugger attached successfully.
-Server compiler detected.
-JVM version is 24.65-b04</code></pre>
-
-
-<p><strong>堆视图</strong></p>
-
-<p>使用-heap选项，jmap会抓取进程当前的堆快照。以下是输出结果示例：</p>
-
-<pre  class='line-numbers language-bash'><code class='language-bash'>$ jmap -heap 25164
-Attaching to process ID 25164, please wait...
-Debugger attached successfully.
-Server compiler detected.
-JVM version is 24.65-b04
-
-using thread-local object allocation.
-Parallel GC with 4 thread(s)
-
-Heap Configuration:
-   MinHeapFreeRatio = 0
-   MaxHeapFreeRatio = 100
-   MaxHeapSize      = 2147483648 (2048.0MB)
-   NewSize          = 1310720 (1.25MB)
-   MaxNewSize       = 17592186044415 MB
-   OldSize          = 5439488 (5.1875MB)
-   NewRatio         = 2
-   SurvivorRatio    = 8      //Eden = (From+To)*幸存比例
-   PermSize         = 21757952 (20.75MB)
-   MaxPermSize      = 85983232 (82.0MB)
-   G1HeapRegionSize = 0 (0.0MB)
-
-Heap Usage:
-PS Young Generation
-Eden Space:
-   capacity = 69206016 (66.0MB)
-   used     = 22857000 (21.798133850097656MB)
-   free     = 46349016 (44.201866149902344MB)
-   33.02747553045099% used
-From Space:
-   capacity = 5242880 (5.0MB)
-   used     = 5223552 (4.9815673828125MB)
-   free     = 19328 (0.0184326171875MB)
-   99.63134765625% used
-To Space:
-   capacity = 5242880 (5.0MB)
-   used     = 0 (0.0MB)
-   free     = 5242880 (5.0MB)
-   0.0% used
-PS Old Generation
-   capacity = 89128960 (85.0MB)
-   used     = 14067336 (13.415657043457031MB)
-   free     = 75061624 (71.58434295654297MB)
-   15.78312593347886% used
-PS Perm Generation
-   capacity = 22020096 (21.0MB)
-   used     = 15539944 (14.820045471191406MB)
-   free     = 6480152 (6.179954528808594MB)
-   70.57164510091145% used
-
-10750 interned Strings occupying 1540688 bytes.</code></pre>
-
-
-<p>可以看到，堆的大小是年轻代、老年代加上PermGen的总和。年轻代分为Eden和幸存者乐园（From + To）。要知道堆里面有什么，需要柱状视图。</p>
-
-<p><strong>柱状视图</strong></p>
-
-<p>柱状视图显示了系统中每个类型的实例占用的内存量，并按占用内存倒序排序，非常直观：</p>
-
-<pre  class='line-numbers language-bash'><code class='language-bash'>$ jmap -histo 25164 | head -30
-
- num     #instances         #bytes  class name
-----------------------------------------------
-   1:         46155       20826544  [B
-   2:         78977       13845352  [C
-   3:          1777       10259592  [I
-   4:         28606        3977416  &lt;constMethodKlass&gt;
-   5:         28606        3670320  &lt;methodKlass&gt;
-   6:          2464        2990888  &lt;constantPoolKlass&gt;
-   7:          2193        1756960  &lt;constantPoolCacheKlass&gt;
-   8:          2464        1728800  &lt;instanceKlassKlass&gt;
-   9:         53032        1272768  java.lang.String
-  10:         12669         405408  java.util.HashMap$Entry
-  11:          2740         333816  java.lang.Class
-  12:          4131         330480  java.lang.reflect.Method
-  13:          4488         297968  [S
-  14:          4204         287432  [Ljava.lang.Object;
-  15:           524         271024  &lt;methodDataKlass&gt;
-  16:          4277         228680  [[I
-  17:          2107         185416  org.apache.naming.resources.FileDirContext$FileResourceAttributes
-  18:          3047         170632  java.util.zip.ZipFile$ZipFileInputStream
-  19:           987         167256  [Ljava.util.HashMap$Entry;
-  20:          2929         164024  java.util.zip.ZipFile$ZipFileInflaterInputStream
-  21:           259         140896  &lt;objArrayKlassKlass&gt;
-  22:          4282         137024  java.io.File
-  23:          2194         131888  [Ljava.lang.String;
-  24:          5483         131592  java.lang.StringBuilder
-  25:          2656         127488  java.util.HashMap
-  26:          2520         100800  java.lang.ref.Finalizer
-  27:          2341          93640  java.util.LinkedHashMap$Entry</code></pre>
-
-
-<p>结果使用的是类型内部名称，例如byte数组会写成[B，char数组会写成[C（字符数组数据经常出现在String对象里）。参考<a href="http://blog.ubone.com/blog/2014/12/04/lei-wen-jian-yu-zi-jie-ma/">类文件与字节码</a>。以char数组为例，共有78977个实例，占用约13.8MB。</p>
-
-<p>使用-histo:live选项，jmap将只处理活对象，而不是整个堆：</p>
-
-<pre  class='line-numbers language-bash'><code class='language-bash'>$ jmap -histo:live 25164 | head -7
-
- num     #instances         #bytes  class name
-----------------------------------------------
-   1:         28573        5905704  [C
-   2:         28606        3977416  &lt;constMethodKlass&gt;
-   3:         28606        3670320  &lt;methodKlass&gt;
-   4:          2464        2990888  &lt;constantPoolKlass&gt;</code></pre>
-
-
-<p>活的字符串只有28573个实例，占用约5.9MB，证明有（13.8-5.9）MB在等待回收。需要注意的是，如果jmap正在执行时，JVM做了垃圾回收，有可能看到奇怪或太好的结果，所以应该多运行几次。</p>
-
-<p><strong>产生离线导出文件</strong></p>
-
-<p>jmap能创建导出文件：</p>
-
-<pre  class='line-numbers language-bash'><code class='language-bash'>$ jmap -dump:live,format=b,file=heap.hprof 25164
-Dumping heap to /Users/mxs/Documents/blog/heap.hprof ...
-Heap dump file created</code></pre>
-
-
-<p>导出结果可以用来做离线分析，留给jmap以后使用，或者留给Oracle的jhat（Java堆分析工具）做高级分析。</p>
-
-<h4>jstat</h4>
-
-<p>Oracle JVM自带的jstat可以查看内存和垃圾收集的活动，并能循环显示。下例以每秒一次的频率显示内存状况：</p>
-
-<pre  class='line-numbers language-bash'><code class='language-bash'>meixuesongdeMacBook-Pro:blog mxs$ jstat -gc 25164 1000
- S0C    S1C    S0U    S1U      EC       EU        OC         OU       PC     PU    YGC     YGCT    FGC    FGCT     GCT   
-14336.0 13312.0  0.0    0.0   133632.0 85887.5   52224.0    10313.5   33280.0 15221.9      7    0.064   3      0.171    0.236
-14336.0 13312.0  0.0    0.0   133632.0 85887.5   52224.0    10313.5   33280.0 15221.9      7    0.064   3      0.171    0.236</code></pre>
-
-
-<ul>
-<li>S0C和S1C: Survivor0和Survivor1的大小（KB）</li>
-<li>S0U和S1U: Survivor0和Survivor1的已使用大小（KB）</li>
-<li>EC and EU：Eden空间的大小和已经使用大小（KB）</li>
-<li>OC and OU: 老年代空间的大小和已经使用大小（KB）</li>
-<li>PC and PU: Perm空间的大小和已经使用大小（KB）</li>
-<li>YGC and YGCT：YGC为年轻代GC的次数。YGCT显示年轻代GC的累计时间。</li>
-<li>FGC and FGCT：Full GC的次数和累计时间</li>
-<li>GCT：GC总时间，包括年轻代和Full GC。</li>
-</ul>
-
-
-<h4>Java VisualVM</h4>
-
-<p>另一个可视化的工具是Java VisualVM，在命令行执行<code>jvisualvm</code>即可。</p>
-
-<h3>4.3 与GC相关的JVM参数</h3>
-
-<p>JVM的参数非常多。以<code>-X</code>开头的选项不是标准选项，在其它JVM上可能不可用。而<code>-XX</code>开头的是扩展选项，不要随便使用。很多与性能相关的选项都是扩展选项。</p>
-
-<p>基本的垃圾收集选项可以见本文前面的内存分布图片。主要包括：</p>
-
-<ul>
-<li><code>-Xms</code>: 堆的初始大小</li>
-<li><code>-Xmx</code>: 堆的最大大小</li>
-<li><code>-Xmn</code>: 堆中年轻大的大小</li>
-<li><code>-XX:-DisableExplicitGC</code>: 让System.gc()调用不产生任何作用。</li>
-</ul>
-
-
-<h3>4.4 逸出分析</h3>
-
-<p>这是JVM最近的一项修改，开发者不能直接控制或影响这项修改。从Java 6u23之后，逸出分析是默认打开的。</p>
-
-<p>它的基本思路是分析方法并确认其中哪个局部变量只用在方法内部，以及哪些变量不会传入其他方法或从当前方法中返回。JVM可以在当前方法的栈内部创建这个对象，不再使用堆内存。在当前方法返回时，被局部变量占用的内存就自动释放了，因此将减少程序年轻代收集的次数，提高性能。</p>
-
-<h3>4.5 并发标记清除（CMS）</h3>
-
-<p>CMS是Java 5推荐的高性能收集器，在Java 6仍保持了旺盛的生命力。通过以下选项激活：</p>
-
-<table>
-<thead>
-<tr>
-<th>选项 </th>
-<th> 效果</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-XX:+UseConcMarkSweepGC</code> </td>
-<td> 打开CMS收集</td>
-</tr>
-<tr>
-<td><code>-XX:+CMSIncrementalMode</code> </td>
-<td> 增量模式（一般都需要）</td>
-</tr>
-<tr>
-<td><code>-XX:+CMSIncrementalPacing</code> </td>
-<td> 配合增量模式，根据应用的行为自动调整每次执行垃圾回收任务的幅度（一般都需要）</td>
-</tr>
-<tr>
-<td><code>-XX:+UseParNewGC</code> </td>
-<td> 并发收集年轻代</td>
-</tr>
-<tr>
-<td><code>-XX:ParallelGCThreads=&lt;N&gt;</code> </td>
-<td> GC使用的线程数</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>并发方式是如何工作的，以下是重要事实：</p>
-
-<ul>
-<li>某种世界停转（SWT）的暂停是不可避免的；</li>
-<li>GC子系统绝对不能漏掉存活对象，这样做会导致JVM垮掉（或更糟）</li>
-<li>只有所有应用线程都为整体收集暂停下来，才能保证收集所有的垃圾。</li>
-</ul>
-
-
-<p>CMS利用最后一点，制造两个非常短暂的STW暂停，并且在GC周期的剩余时间和应用程序的线程一起运行。CMS要在运行时做复杂的记账工作，记录哪些是垃圾，哪些不是。CMS在更多CPU核心的机器上表现会更好，并且会制造更频繁的短暂暂停。</p>
-
-<h3>4.6 新的收集器：G1</h3>
-
-<p>G1是Java平台最新的收集器，预发布于Java 6，到Java 7时已是成品。G1有望成为高性能应用的默认选择。</p>
-
-<p>G1与原来的收集器完全不同，开发人员有更多控制权。其核心思想是暂停目标（Pause gaol），也就是程序能为GC暂停多长时间（如每5分钟20ms）。G1会努力达成该目标。</p>
-
-<p>尽管G1仍然使用标记清除法，但它不是真正的分代式垃圾收集器。它把堆分成大小相同的区域（如每个1MB），不区分年轻、老年代。暂停时，对象被撤到其他区域（就像Eden挪到Survivor），清空的区域被放回到空白区自由列表上。</p>
-
-<p>这个新的收集策略让Java平台统计收集单个区域所需平均时长。然后你就可以指定一个合理的暂停目标。G1只会在有限的时间内收集尽可能多的区域。与G1相关的选项如下表：</p>
-
-<table>
-<thead>
-<tr>
-<th>选项 </th>
-<th> 效果</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-XX:+UseG1GC</code> </td>
-<td> 打开G1收集</td>
-</tr>
-<tr>
-<td><code>-XX:MaxGCPauseMillis=50</code> </td>
-<td> 收集一次暂停的时间应尽量保持在50ms以内</td>
-</tr>
-<tr>
-<td><code>-XX:GCPauseIntervalMillis=200</code> </td>
-<td> 两次收集的时间间隔尽量保持在200ms以上。</td>
-</tr>
-</tbody>
-</table>
-
-
-<h2>5. HotSpot的JIT编译</h2>
-
-<p>Java是一种“动态编译”语言。方法一开始都是以字节码形态存在，JVM对其解释并执行，同时会记录被调用的次数。当调用次数超过某个阈值（默认1万次）时，后台就会把字节码编译成机器码。如果编译成功，以后就会调用该方法的编译结果。编译后的机器码运行速度可能会快1000倍。</p>
-
-<p>那为什么要动态编译，先编译好岂不是性能更好？原因之一是与平台无关的东西作为基本部署单位要更轻松。原因之二是动态编译能提供给编译器更多信息，例如某个指令是否可用，代码运行情况的统计数据等。因此Java这样的动态编译语言实际上可能会比提前编译的语言运行得更快。</p>
-
-<p>HotSpot有两种运行模式：客户端模式和服务器模式，分别对应JVM启动选项：<code>-client</code>和<code>-server</code>。前者编译时会确保操作的一致性，较为保守。后者编译时会大胆假设，做一次运行时检查，以确保假设有效。编译结果性能好很多。</p>
-
-<p><strong>实时Java</strong>是近年出现的，它并不一定是最快的。它关注的是让执行操作的时间尽量保持一致。为了达成这个目的，它可能会牺牲一些平均等待时间，整体性能可以受到轻微影响。</p>
-
-<p><strong>内联</strong>是HotSpot的最大卖点之一。内联的方法不再是被调用，而是直接放到调用者内部。HotSpot会根据运行时的统计数据（方法调用频率）和其他因素来决定如何处理内联。这比提前编译更智能。它完全是自动的，通常不需要修改选项（用处不大）。</p>
-
-<p><strong>独占调用</strong></p>
-
-<p>独占调用是大胆优化的例子之一，只有服务端编译器才会做这种大胆优化，实时和客户端编译器都不会这样做。它是基于大量观察做出的优化，以下面的代码为例：</p>
-
-<pre  class='line-numbers language-bash'><code class='language-bash'>MyActualClassNotInterface obj = getInstance();
-obj.callMyMethod();</code></pre>
-
-
-<p>如果上面的代码只会在一种类型的对象上调用（基于统计），也就是obj.callMyMethod()几乎不会同时碰到一个类和它的子类。这时就可以把Java方法查找替换为callMyMethod()编译结果的直接调用。为了防止getInstance()可能返回的是其他类，运行时会检查，确保对象的类型是由编译器按预期插入的。如果这个预期被违背，运行时会取消优化。程序不会注意到这些动作也不会犯任何错误。</p>
-
-<p>通过启动选项<code>-XX:+PrintCompilation</code>可以告诉JIT编译线程输出标准日志。</p>
 ]]></content>
   </entry>
   

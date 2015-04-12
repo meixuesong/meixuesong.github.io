@@ -1,0 +1,629 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>JAX-RS 2.0 REST 请求处理 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="本章学习REST请求的完整处理过程，其中涉及JAX-RS 2.0定义的Provider及其两个特殊类型：过滤器和拦截器。 REST风格的框架都从容器级别支持AOP式开发，Jersey内置AOP支持，可以不依赖于Spring等AOP框架。Jersey的AOP功能来自GlassFish的HK2项目（ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2015/04/12/rest-qing-qiu-chu-li">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="/stylesheets/prism-default.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
+<style>
+article blockquote {
+  font-size: 0.9em;
+}
+</style>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?28583ca12a9f673dc8d86501f8d02bbe";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">@InfoQ</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">JAX-RS 2.0 REST 请求处理</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-12T09:57:39+08:00" pubdate data-updated="true">2015-04-12</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>本章学习REST请求的完整处理过程，其中涉及JAX-RS 2.0定义的Provider及其两个特殊类型：过滤器和拦截器。</p>
+
+<!--more-->
+
+
+<p>REST风格的框架都从容器级别支持AOP式开发，Jersey内置AOP支持，可以不依赖于Spring等AOP框架。Jersey的AOP功能来自GlassFish的HK2项目（轻量级DI架构，jersey-common依赖HK2），它包括hk2-api和hk2-locator。hk2-locator致力于AOP方向。</p>
+
+<p>Jersey提供的REST过滤器和拦截器为开发者提供了方便的扩展点，开发者无须像在Spring中为了某个类的方法进行AOP扩展而写配置文件。Jersey中只要实现相应扩展点的接口，即可实现REST请求流程中特定事件的拦截、扩展。</p>
+
+<h2>1. Providers详解</h2>
+
+<p>javax.ws.rs.ext.Providers是JAX-RS 2.0定义的一个辅助接口，其实现类用于完成过滤和读写拦截功能。@Provider标注的实现类，可以在运行时自动探测、加载。Provider实例可以通过@Context注解被依赖注入到其他实例中。Providers接口定义了4个方法，分别用来获取MessageBodyReader、MessageBodyWriter、ExceptionMapper和ContextResolver实例。</p>
+
+<h3>1.1 实体Providers</h3>
+
+<p>Jersey之所以可以支持多种响应实体的传输格式，是因为其底层实体Providers具备对不同格式的处理能力。它内部提供了丰富的MessageBodyReader和MessageBodyWriter接口实现类，用于处理不同的格式。</p>
+
+<h4>1.1.1 MessageBodyReader</h4>
+
+<p><code>MessageBodyReader&lt;T&gt;</code>用于将传输流转换成Java类型的对象。泛型类型即是该实现类所支持的转换类型。业务系统启用该实现类有两种方式：一是使用@Provider定义实现类，启动时自动加载；二是通过编码注册到Application类或子类中。</p>
+
+<p><code>MessageBodyReader&lt;T&gt;</code>接口定义了两个方法：</p>
+
+<ul>
+<li>isReadable() 判断实现类是否支持将当前请求的数据类型反序列化。</li>
+<li>readFrom() 反序列化处理，将流转换为Java类型对象。</li>
+</ul>
+
+
+<h4>1.1.2 MessageBodyWriter</h4>
+
+<p><code>MessageBodyWriter&lt;T&gt;</code>接口用于将Java类型对象转换成流，完成序列化过程。与MessageBodyReader类似，它也有两个对应的方法：isWriteable()和writeTo()。</p>
+
+<h4>1.1.3 MessageBodyWorkers</h4>
+
+<p>MessageBodyReader和MessageBodyWriter的实现类非常多，选择哪个实现类处理当前请求的算法非常繁重，MessageBodyWorkers就是用于抽象这一遴选工作。它的实现类可以通过@Context依赖注入到使用MessageBodyWorkers的类中。MessageBodyFactory是MessageBodyWorkers接口的实现类。</p>
+
+<h3>1.2 上下文Providers</h3>
+
+<p><code>ContextResolver&lt;T&gt;</code>接口是用于提供资源类和其他Provider上下文信息的接口，它定义了getContext()方法，参数为表述对象的类型(响应实体的传输格式)，输出是上下文泛型。</p>
+
+<h2>2. REST请求流程</h2>
+
+<p>一个请求始于请求的发送，止于调用Response类的readEntity()方法，获取响应实体。整个流程如下图所示：</p>
+
+<p><img src="/myresource/images/image_blog_-2015-04-12_jerseyrest.jpg" alt="image" /></p>
+
+<ol>
+<li>客户端接收请求，进入扩展点ClientRequestFilter实现类的filter()方法。</li>
+<li>第二个扩展点：客户端写拦截器WriterInterceptor实现类的aroundWriteTo()方法，实现对客户端序列化操作的拦截。</li>
+<li>客户端消息体写处理器MessageBodyWriter执行序列化，过渡到服务端。</li>
+<li>进入第三个扩展点：服务器前置请求过滤器ContainerRequestFilter实现类的filter()方法。</li>
+<li>过滤处理完毕后，找到匹配资源方法。</li>
+<li>进入第四个扩展点：服务器后置请求过滤器ContainerRequestFilter实现类的filter()方法。</li>
+<li>服务器消息体读处理器MessageBodyReader完成数据流的反序列化。</li>
+<li>执行资源方法。</li>
+<li>进入第六个扩展点：服务器响应过滤器ContainerResponseFilter实现类的filter()方法。</li>
+<li>进入第七个扩展点：服务器写拦截器WriterInterceptor实现类的aroundWriteTo()方法，实现对服务端序列化到客户端这个操作的拦截。</li>
+<li>服务器消息体写处理器MessageBodyWriter执行序列化。流程返回客户端。</li>
+<li>客户端接收响应，进入第八个扩展点：客户端响应过滤器ClientResponseFilter实现类的filter方法。</li>
+<li>客户端响应实例response返回到用户侧，用户执行response.readEntity()，进入第九个扩展点：客户端读拦截器ReaderInterceptor实现类的aroundReadFrom()方法，对客户端反序列化进行拦截。</li>
+<li>客户端消息体读处理器MessageBodyReader执行反序列化，将Java类型的对象最终作为readEntity()方法的返回值。</li>
+</ol>
+
+
+<h2>3. REST过滤器</h2>
+
+<p>在上面的流程中，JAX-RS 2.0定义了4种过滤器扩展点接口，供开发者实现业务逻辑，先后为：</p>
+
+<ul>
+<li>ClientRequestFilter</li>
+<li>ContainerRequestFilter</li>
+<li>ContainerResponseFilter</li>
+<li>ClientResponseFilter</li>
+</ul>
+
+
+<h3>3.1 ClientRequestFilter</h3>
+
+<p>通常可以通过filter()方法的参数ClientRequestContext获取请求方法(getMethod)、获取请求资源地址(getUri)和获取请求头信息（getHeaders）等。利用这些信息覆写该方法以实现过滤功能。示例如下：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@Override
+public filter(ClientRequestContext rc) throws IOException {
+    if (!rc.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
+      rc.getHeaders().add(HttpHeaders.AUTHORIZATION, authentication);
+    }
+}</code></pre>
+
+
+<h3>3.2 ContainerRequestFilter</h3>
+
+<p>该接口的实现类可以定义为前置处理和后置处理。分别对应服务器处理接收到的请求之前和之后执行过滤。如果希望实现前置处理，要在类名上定义注解@PreMatching。该接口的filter(ContainerRequestContext tx)与Client类似。</p>
+
+<h3>3.3 ContainerResponseFilter</h3>
+
+<p>该接口定义的过滤方法：void filter(ContainerRequestContext request, ContainerResponseContext response)。</p>
+
+<h3>3.4 ClientResponseFilter</h3>
+
+<p>该接口定义的过滤方法：void filter(ClientRequestContext requestContext, ClientResponseContext responseContext).</p>
+
+<h3>3.5 过滤器示例</h3>
+
+<p>下面的示例用于实现访问日志功能。</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>//pugm4wh阶段的filter
+@PreMatching
+public class AirLogFilter implements ContainerRequestFilter, 
+        ClientRequestFilter, ContainerResponseFilter, 
+        ClientResponseFilter {
+    private static final Logger LOGGER = Logger.getLogger(AirLogFilter.class);
+    private static final String NOTIFICATION_PREFIX = "* ";
+    private static final String SERVER_REQUEST = "&gt; ";
+    private static final String SERVER_RESPONSE = "&lt; ";
+    private static final String CLIENT_REQUEST = "/ ";
+    private static final String CLIENT_RESPONSE = "\\ ";
+    private static final AtomicLong logSequence = new AtomicLong(0);
+
+    @Override
+    public void filter(ClientRequestContext context) throws IOException {
+        long id = logSequence.incrementAndGet();
+        StringBuilder b = new StringBuilder();
+        //获取请求方法和地址
+        printRequestLine(CLIENT_REQUEST, b, id, 
+            context.getMethod(), context.getUri());
+        //获取请求头信息
+        printPrefixedHeaders(CLIENT_REQUEST, b, id, 
+            /*HeadersFactory*/HeaderUtils.asStringHeaders(context.getHeaders()));
+        LOGGER.info(b.toString());
+    }
+
+    @Override
+    public void filter(ClientRequestContext requestContext, 
+        ClientResponseContext responseContext) throws IOException {
+        long id = logSequence.incrementAndGet();
+        StringBuilder b = new StringBuilder();
+        printResponseLine(CLIENT_RESPONSE, b, id, responseContext.getStatus());
+        printPrefixedHeaders(CLIENT_RESPONSE, b, id, responseContext.getHeaders());
+        LOGGER.info(b.toString());
+    }
+
+    @Override
+    public void filter(ContainerRequestContext context) throws IOException {
+        long id = logSequence.incrementAndGet();
+        StringBuilder b = new StringBuilder();
+        printRequestLine(SERVER_REQUEST, b, id,
+             context.getMethod(), context.getUriInfo().getRequestUri());
+        printPrefixedHeaders(SERVER_REQUEST, b, id, context.getHeaders());
+        LOGGER.info(b.toString());
+    }
+
+    @Override
+    public void filter(ContainerRequestContext requestContext, 
+        ContainerResponseContext responseContext) throws IOException {
+        long id = logSequence.incrementAndGet();
+        StringBuilder b = new StringBuilder();
+        //获取容器响应状态
+        printResponseLine(SERVER_RESPONSE, b, id, responseContext.getStatus());
+        printPrefixedHeaders(SERVER_RESPONSE, b, id, 
+            /*HeadersFactory*/HeaderUtils.asStringHeaders(responseContext.getHeaders()));
+        LOGGER.info(b.toString());
+    }
+
+    private StringBuilder prefixId(StringBuilder b, long id) {
+        b.append(Long.toString(id)).append(" ");
+        return b;
+    }
+
+    private void printRequestLine(final String prefix, 
+            StringBuilder b, long id, String method, URI uri) {
+        prefixId(b, id).append(NOTIFICATION_PREFIX)
+            .append("AirLog - Request received on thread ")
+            .append(Thread.currentThread().getName()).append("\n");
+        prefixId(b, id).append(prefix).append(method)
+            .append(" ").append(uri.toASCIIString()).append("\n");
+    }
+
+    private void printResponseLine(final String prefix, 
+        StringBuilder b, long id, int status) {
+        prefixId(b, id).append(NOTIFICATION_PREFIX)
+            .append("AirLog - Response received on thread ")
+            .append(Thread.currentThread().getName()).append("\n");
+        prefixId(b, id).append(prefix)
+            .append(Integer.toString(status)).append("\n");
+    }
+
+    private void printPrefixedHeaders(final String prefix, 
+        StringBuilder b, long id, MultivaluedMap&lt;String, String&gt; headers) {
+        for (Map.Entry&lt;String, List&lt;String&gt;&gt; e : headers.entrySet()) {
+            List&lt;?&gt; val = e.getValue();
+            String header = e.getKey();
+
+            if (val.size() == 1) {
+                prefixId(b, id).append(prefix).append(header)
+                    .append(": ").append(val.get(0)).append("\n");
+            } else {
+                StringBuilder sb = new StringBuilder();
+                boolean add = false;
+                for (Object s : val) {
+                    if (add) {
+                        sb.append(',');
+                    }
+                    add = true;
+                    sb.append(s);
+                }
+                prefixId(b, id).append(prefix).append(header)
+                    .append(": ").append(sb.toString()).append("\n");
+            }
+        }
+    }
+}
+
+
+//测试类
+public class TIResourceJtfTest extends JerseyTest {
+    private static final Logger LOGGER = Logger.getLogger(TIResourceJtfTest.class);
+    private static final String BASEURI = "books/";
+
+    @Override
+    protected Application configure() {
+        ResourceConfig config = new ResourceConfig(BookResource.class);
+        return config.register(com.example.filter.log.AirLogFilter.class);
+    }
+
+    @Override
+    protected void configureClient(ClientConfig config) {
+        config.register(new AirLogFilter());
+    }
+    
+    @Test
+    public void testPathGetJSON() {
+        TIResourceJtfTest.LOGGER.debug("&gt;&gt;Test Path Get");
+        final WebTarget pathTarget = target(TIResourceJtfTest.BASEURI + "1");
+        final Invocation.Builder invocationBuilder = pathTarget.request(MediaType.APPLICATION_JSON_TYPE);
+        final Book result = invocationBuilder.get(Book.class);
+        TIResourceJtfTest.LOGGER.debug(result);
+        Assert.assertNotNull(result.getBookId());
+        TIResourceJtfTest.LOGGER.debug("&lt;&lt;Test Path Get");
+    }
+}</code></pre>
+
+
+<p>注意在测试类中，需要在服务端和客户端分别注册服务日志类AirLogFilter。</p>
+
+<h2>4. REST拦截器</h2>
+
+<p>拦截器与过滤器都是一种在请求-响应模型中用做切面处理的Provider。但两种除了功能不一样外，形式也不同。拦截器通常读写成对，而且没有服务端和客户端的区分。例如GZiPEncoder同时实现了读/写拦截器。</p>
+
+<p>读拦截器接口ReaderInterceptor定义的拦截方法是：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>Object aroundReadFrom(ReaderInterceptorContext context)
+    throws IOException, javax.ws.rs.WebApplicationException;</code></pre>
+
+
+<p>写拦截器接口WriterInterceptor定义的拦截方法是：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>void aroundWriteTo(WriterInterceptorContext context)
+    throws IOException, javax.ws.rs.WebApplicationException;</code></pre>
+
+
+<h2>5. Providers绑定机制</h2>
+
+<p>通过下面的方式定义的过滤器或拦截器是全局有效的：</p>
+
+<ul>
+<li>通过手动注册到Application或者Configuration。</li>
+<li>注解为@Provider，被自动探测。</li>
+</ul>
+
+
+<p>除了全局Provider，还可以进行名称绑定和动态绑定。</p>
+
+<h3>5.1 名称绑定</h3>
+
+<p>过滤器和拦截器可以通过名称绑定来指定其作用范围。@NameBinding注解可以定义一个运行时的自定义注解，该注解用于定义类级别的名称和类的方法名：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@NameBinding
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(value = RetentionPolicy.RUNTIME)
+public @interface AirLog {
+}</code></pre>
+
+
+<p>然后将该注解绑定Provider，下例中的AirNameBindingFilter就实现了名称绑定：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@AirLog
+@Priority(Priorities.USER)
+public class AirNameBindingFilter implements ContainerRequestFilter, ContainerResponseFilter {
+    private static final Logger LOGGER = 
+        Logger.getLogger(AirNameBindingFilter.class);
+
+    public AirNameBindingFilter() {
+        LOGGER.info("Air-NameBinding-Filter initialized");
+    }
+
+    @Override
+    public void filter(final ContainerRequestContext containerRequest) 
+    throws IOException {
+        LOGGER.debug("Air-ContainerRequestFilter invoked:" + 
+            containerRequest.getMethod());          
+        LOGGER.debug(containerRequest
+            .getUriInfo().getRequestUri());
+    }</code></pre>
+
+
+<p>完成了Provider的名称绑定后，就可以在资源类的指定方法上使用自定义注解@AirLog，从而实现在该方法上启用Provider对应的过滤器。示例如下 ：</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@AirLog
+@GET
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+public Books getBooks() {
+    ...
+}</code></pre>
+
+
+<h3>5.2 动态绑定</h3>
+
+<p>动态绑定无须新增注解，而是使用编码的方式实现接口javax.ws.rs.container.DynamicFeature，定义扩展点方法的名称、请求方法类型等匹配信息。在运行期，一旦Provider匹配当前处理类或方法，面向切面的Provider方法即被触发。</p>
+
+<h4>5.2.1 定义绑定Provider</h4>
+
+<pre class='line-numbers language-java'><code class='language-java'>public class AirDynamicFeature implements DynamicFeature {
+    @Override
+    public void configure(final ResourceInfo resourceInfo, 
+            final FeatureContext context) {
+        boolean classMatched = BookResource.class
+            .isAssignableFrom(resourceInfo.getResourceClass());
+        boolean methodNameMatched = resourceInfo
+            .getResourceMethod().getName().contains("getBookBy");
+        boolean methodTypeMatched = resourceInfo
+            .getResourceMethod().isAnnotationPresent(POST.class);
+            
+        //匹配成功才注册
+        if (classMatched && (methodNameMatched || methodTypeMatched)) {
+            context.register(AirDynamicBindingFilter.class);
+        }
+    }
+}</code></pre>
+
+
+<p>上面的示例代码启用了如下匹配规则：</p>
+
+<ul>
+<li>类匹配：对BookResource类及其子类匹配。</li>
+<li>方法名称匹配：方法名包含getBookBy。</li>
+<li>请求方法类型匹配：匹配POST方法。</li>
+</ul>
+
+
+<p>当匹配成功后，会触发下面的Provider:</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>public class AirDynamicBindingFilter implements ContainerRequestFilter {
+    private static final Logger LOGGER = Logger.getLogger(AirDynamicBindingFilter.class);
+
+    public AirDynamicBindingFilter() {
+        LOGGER.info("Air-Dynamic-Binding-Filter initialized");
+    }
+
+    @Override
+    public void filter(final ContainerRequestContext requestContext) throws IOException {
+        LOGGER.debug("Air-Dynamic-Binding-Filter invoked");
+    }
+}</code></pre>
+
+
+<h2>6. 优先级</h2>
+
+<p>对于同一个扩展点，如果有多个Provider，其执行先后顺序是靠优先级排序的。优先级使用@Priority，一个整型值，常量定义在javax.ws.rs.Priorities中。</p>
+
+<pre class='line-numbers language-java'><code class='language-java'>@Priority(Priorities.USER)
+public class AirNameBindingFilter ...
+
+@Priority(Priorities.USER + 1)
+public class AirNameBindingFilter2 ...</code></pre>
+
+
+<p>对于ContainerRequest、PreMatchContainerRequest、ClientRequest和读写拦截器，数值越小，优先级越高。对于ContainerResponse和ClientResponse，数值越大，优先级越高。</p>
+
+<p>参考：《Java RESTful Web Service实战》</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-12T09:57:39+08:00" pubdate data-updated="true">2015-04-12</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+<!-- UY BEGIN 评论-->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1942741"></script>
+<!-- UY END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/04/09/rest-apishe-ji/" title="Previous Post: JAX-RS REST API设计">&laquo; JAX-RS REST API设计</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (33)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/rest-qing-qiu-chu-li/">JAX-RS 2.0 REST 请求处理</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/09/rest-apishe-ji/">JAX-RS REST API设计</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/06/xue-xi-zheng-ze-biao-da-shi/">学习正则表达式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/02/intellij-idea-mackuai-jie-jian/">IntelliJ IDEA Mac快捷键</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/28/linux-crontabding-shi-ren-wu/">Linux Crontab定时任务</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+</footer>
+  <!--以下为disqus的代码，因为被墙，改用上面的国内代码
+
+
+-->
+
+
+
+
+
+
+
+
+</body>
+</html>

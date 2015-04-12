@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="REST式的Web服务和RPC式的Web服务在接口定义上的区别是，前者使用HTTP的方法作为统一接口的标准词汇，而后者所提供的方法信息在SOAP/HTTP信封里，每个RPC式的Web服务都会公布一套自己的方法词汇。 ">
+  <meta name="description" content="本章学习REST请求的完整处理过程，其中涉及JAX-RS 2.0定义的Provider及其两个特殊类型：过滤器和拦截器。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +83,47 @@ var _hmt = _hmt || [];
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/04/12/rest-qing-qiu-chu-li/">JAX-RS 2.0 REST 请求处理</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-12T09:57:39+08:00" pubdate data-updated="true">2015-04-12</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>本章学习REST请求的完整处理过程，其中涉及JAX-RS 2.0定义的Provider及其两个特殊类型：过滤器和拦截器。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/04/12/rest-qing-qiu-chu-li/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -461,47 +502,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/23/java-webzhong-wen-bian-ma/">Java Web中文编码</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-02-23T15:57:18+08:00" pubdate data-updated="true">2015-02-23</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>介绍常见的编码格式，以及Java Web和JavaScript相关的字符集编码。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/02/23/java-webzhong-wen-bian-ma/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -521,10 +521,14 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (32)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (33)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/rest-qing-qiu-chu-li/">JAX-RS 2.0 REST 请求处理</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/04/09/rest-apishe-ji/">JAX-RS REST API设计</a>
@@ -540,10 +544,6 @@ var _hmt = _hmt || [];
     
       <li class="post">
         <a href="/blog/2015/03/28/linux-crontabding-shi-ren-wu/">Linux Crontab定时任务</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/03/25/du-gu-ge-he-ya-ma-xun-ru-he-zuo-chan-pin/">读《谷歌和亚马逊如何做产品》</a>
       </li>
     
   </ul>

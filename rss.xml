@@ -4,6 +4,13 @@
   <link>http://rss2epub.appspot.com/</link>
   <description></description>
   <item>
+      <title><![CDATA[JAX-RS 2.0 REST 请求处理]]></title>
+      <link>http://blog.ubone.com/blog/2015/04/12/rest-qing-qiu-chu-li/</link>
+      <description></description>
+      <pubDate>2015-04-12T09:57:39+08:00</pubDate>
+      <guid><![CDATA[http://blog.ubone.com/blog/2015/04/12/rest-qing-qiu-chu-li/]]></guid>
+  </item>
+  <item>
       <title><![CDATA[JAX-RS REST API设计]]></title>
       <link>http://blog.ubone.com/blog/2015/04/09/rest-apishe-ji/</link>
       <description></description>
