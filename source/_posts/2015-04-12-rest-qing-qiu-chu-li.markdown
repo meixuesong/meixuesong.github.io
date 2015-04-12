@@ -362,14 +362,5 @@ public class AirNameBindingFilter2 ...
 对于ContainerRequest、PreMatchContainerRequest、ClientRequest和读写拦截器，数值越小，优先级越高。对于ContainerResponse和ClientResponse，数值越大，优先级越高。
 
 
-
-
-
-
-
-
-
-
-
-参考：《Java RESTful Web Service实战》
+参考：《Java RESTful Web Service实战》, [Jersey](https://jersey.java.net/nonav/documentation/latest/index.html)
 
