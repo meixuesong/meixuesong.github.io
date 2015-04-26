@@ -4,6 +4,13 @@
   <link>http://rss2epub.appspot.com/</link>
   <description></description>
   <item>
+      <title><![CDATA[Git常用命令]]></title>
+      <link>http://blog.ubone.com/blog/2015/04/24/gitchang-yong-ming-ling/</link>
+      <description></description>
+      <pubDate>2015-04-24T18:27:40+08:00</pubDate>
+      <guid><![CDATA[http://blog.ubone.com/blog/2015/04/24/gitchang-yong-ming-ling/]]></guid>
+  </item>
+  <item>
       <title><![CDATA[JAX-RS 2.0 异步通信]]></title>
       <link>http://blog.ubone.com/blog/2015/04/12/jax-rs-2-dot-0-yi-bu-tong-xin/</link>
       <description></description>

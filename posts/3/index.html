@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="昨天晚上在Tomcat上部署一个小应用时，Tomcat启动非常慢，有时甚至需要10分钟。查看日志，发现一直停在Deploying阶段： ">
+  <meta name="description" content="在理解Java性能调优中，了解了Java的内存管理和垃圾收集。本文再深入学习垃圾收集算法和HotSpot中垃圾收集的实现。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +83,47 @@ var _hmt = _hmt || [];
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/26/la-ji-shou-ji-qi-yu-nei-cun-fen-pei-ce-lue/">Java垃圾收集与内存分配</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-26T20:20:12+08:00" pubdate data-updated="true">2014-12-26</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在<a href="/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">理解Java性能调优</a>中，了解了Java的内存管理和垃圾收集。本文再深入学习垃圾收集算法和HotSpot中垃圾收集的实现。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/12/26/la-ji-shou-ji-qi-yu-nei-cun-fen-pei-ce-lue/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -453,47 +494,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/15/zi-fu-chuan-pai-xu/">字符串排序</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-15T09:49:02+08:00" pubdate data-updated="true">2014-11-15</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>字符串是最常用的数据类型，因此它的排序算法非常重要。虽然Java的字符串排序已经非常快，但了解一些字符串的排序算法仍然很必要，也是进一步了解字符串其它应用的基础。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/15/zi-fu-chuan-pai-xu/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/4">&larr; Older</a>
@@ -515,10 +515,14 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (35)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (6)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (35)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (7)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/04/24/gitchang-yong-ming-ling/">Git常用命令</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/04/12/jax-rs-2-dot-0-yi-bu-tong-xin/">JAX-RS 2.0 异步通信</a>
@@ -534,10 +538,6 @@ var _hmt = _hmt || [];
     
       <li class="post">
         <a href="/blog/2015/04/09/rest-apishe-ji/">JAX-RS REST API设计</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/06/xue-xi-zheng-ze-biao-da-shi/">学习正则表达式</a>
       </li>
     
   </ul>

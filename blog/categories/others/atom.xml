@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Others | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/others/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-04-12T22:43:45+08:00</updated>
+  <updated>2015-04-26T21:49:27+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,303 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Git常用命令]]></title>
+    <link href="http://blog.ubone.com/blog/2015/04/24/gitchang-yong-ming-ling/"/>
+    <updated>2015-04-24T18:27:40+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/04/24/gitchang-yong-ming-ling</id>
+    <content type="html"><![CDATA[<p>Git是一个分布式版本控制系统。分布式版本控制系统最大的反传统之处在于，可以不需要集中式的版本库，每个人都工作在通过克隆建立的本地版本库中。也就是说每个人都拥有一个完整的版本库，查看提交日志、提交、创建里程碑和分支、合并分支、回退等所有操作都直接在本地完成而不需要网络连接。</p>
+
+<!--more-->
+
+
+<h2>1. Git配置</h2>
+
+<p>在开始Git之旅之前，我们需要设置一下Git的配置变量，这是一次性的工作。即这些设置会在全局文件（用户主目录下的.gitconfig）或系统文件（如/etc/gitconfig）中做永久的记录。</p>
+
+<p><code>
+git config --global user.name "meixuesong"   
+git config --global user.email "meixuesong@gmail.com"
+git config --global color.ui true #在Git命令输出中开启颜色显示
+git config --global alias.co checkout #设置别名
+git config --global alias.ci commit #设置别名
+git config --global alias.st status #设置别名
+git config --global alias.br branch #设置别名
+git config -l  # 列出所有配置
+</code></p>
+
+<h2>2. 创建版本库</h2>
+
+<p>```</p>
+
+<h1>在工作目录中初始化新仓库</h1>
+
+<p>git init</p>
+
+<h1>从现有仓库克隆</h1>
+
+<p>git clone git://github.com/schacon/grit.git</p>
+
+<h1>从现有仓库克隆，并重命名文件夹</h1>
+
+<p>git clone git://github.com/schacon/grit.git myproject
+```</p>
+
+<h2>3. Git的基本概念</h2>
+
+<p>Git工作在三个区，理解这几个概念有助于理解git相关命令：</p>
+
+<ul>
+<li>工作目录：git clone 后获得的一份本地的代码，也包括新编辑的，尚未加入版本控制的代码。</li>
+<li>暂存区域：git add 后暂存起来，尚未git commit 的代码。</li>
+<li>本地仓库：git commit 后正式被版本控制记录起来的代码。</li>
+</ul>
+
+
+<p>如下图所示：</p>
+
+<p><img src="/myresource/images/image_blog_-2015-04-24git_3_kingdom.png" alt="image" /></p>
+
+<p>在工作目录中做的变更，如增加/修改/删除文件，需要使用git add/rm命令将其放到暂存区，git commit命令将暂存区的内容提交到本地仓库。</p>
+
+<h2>4. Git基本操作</h2>
+
+<h3>4.1 检查当前文件状态</h3>
+
+<p><code>git status</code>命令用于确定哪些文件当前处于什么状态。</p>
+
+<p><code>
+git status
+git status -s
+</code></p>
+
+<h3>4.2 跟踪文件</h3>
+
+<p>```</p>
+
+<h1>将指定文件放入暂存区</h1>
+
+<p>git add <file></p>
+
+<h1>将所有修改过的工作文件放入暂存区</h1>
+
+<p>git add .</p>
+
+<h1>进入交互模式，对添加多个文件比较方便</h1>
+
+<p>git add -i
+```</p>
+
+<p>对于修改的文件，也是使用git add命令进行暂存。如果同一个文件修改了两次，第一次修改使用git add进行了暂存，第二次没有暂存，则git commit时，只会提交第一次修改的内容。</p>
+
+<h3>4.3 忽略文件</h3>
+
+<p>编辑.gitignore文件，列出要忽略的文件模式。文件 .gitignore 的格式规范如下：</p>
+
+<ul>
+<li>所有空行或者以注释符号<code>＃</code>开头的行都会被 Git 忽略。</li>
+<li>可以使用标准的 glob 模式匹配。</li>
+<li>匹配模式最后跟反斜杠<code>/</code>说明要忽略的是目录。</li>
+<li>要忽略指定模式以外的文件或目录，可以在模式前加上惊叹号<code>!</code>取反。</li>
+</ul>
+
+
+<p>所谓的 glob 模式是指 shell 所使用的简化了的正则表达式。星号（*）匹配零个或多个任意字符；[abc] 匹配任何一个列在方括号中的字符（这个例子要么匹配一个 a，要么匹配一个 b，要么匹配一个 c）；问号（?）只匹配一个任意字符；如果在方括号中使用短划线分隔两个字符，表示所有在这两个字符范围内的都可以匹配（比如 [0-9] 表示匹配所有 0 到 9 的数字）。示例如下：</p>
+
+<p>```</p>
+
+<h1>此为注释 – 将被 Git 忽略</h1>
+
+<h1>忽略所有 .a 结尾的文件</h1>
+
+<p>*.a</p>
+
+<h1>但 lib.a 除外</h1>
+
+<p>!lib.a</p>
+
+<h1>仅仅忽略项目根目录下的 TODO 文件，不包括 subdir/TODO</h1>
+
+<p>/TODO</p>
+
+<h1>忽略 build/ 目录下的所有文件</h1>
+
+<p>build/</p>
+
+<h1>会忽略 doc/notes.txt 但不包括 doc/server/arch.txt</h1>
+
+<p>doc/*.txt</p>
+
+<h1>ignore all .txt files in the doc/ directory</h1>
+
+<p>doc/<em>*/</em>.txt
+```</p>
+
+<h3>4.4 查看已暂存和未暂存的更新</h3>
+
+<p>尚未暂存的文件更新了哪些部分，不加参数直接输入git diff. 此命令比较的是工作目录中当前文件和暂存区域快照之间的差异，也就是修改之后还没有暂存起来的变化内容。</p>
+
+<p>若要看已经暂存起来的文件和上次提交时的快照之间的差异，可以用 git diff &mdash;cached 命令。（Git 1.6.1 及更高版本还允许使用 git diff &mdash;staged，效果是相同的）</p>
+
+<h3>4.5 提交更新</h3>
+
+<p>将暂存区的内容提交到本地版本库。</p>
+
+<p>```</p>
+
+<h1>会启动文本编辑器以便输入备注</h1>
+
+<p>git commit</p>
+
+<h1>直接加上备注</h1>
+
+<p>git commit -m &ldquo;Story 182: Fix benchmarks for speed&rdquo;</p>
+
+<h1>自动把所有已经跟踪过的文件暂存起来一并提交，相当于add和commit</h1>
+
+<p>git commit -a -m &lsquo;added new benchmarks&rsquo;
+```</p>
+
+<h3>4.6 移除文件</h3>
+
+<p>git rm 从已跟踪文件清单中移除文件，并从工作目录中删除指定的文件。如果删除之前文件修改过并且已经放到暂存区域的话，则必须要用强制删除选项 -f，以防误删除文件后丢失修改的内容。</p>
+
+<p>如果我们想把文件从 Git 仓库中删除（亦即从暂存区域移除），但仍然希望保留在当前工作目录中，可以使用: git rm &mdash;cached readme.txt</p>
+
+<p>也可以在移除命令中使用glob 模式，例如：</p>
+
+<p>```</p>
+
+<h1>删除log文件夹下的所有.log文件(*之前的\为转义符)</h1>
+
+<p>$ git rm log/*.log</p>
+
+<h1>递归删除当前目录及其子目录中所有.log文件</h1>
+
+<p>$ git rm *.log
+```</p>
+
+<h3>4.7 移动文件</h3>
+
+<p>Git 并不跟踪文件移动操作。如果在 Git 中重命名了某个文件，仓库中存储的元数据并不会体现出这是一次改名操作。不过 Git 非常聪明，它会推断出究竟发生了什么。</p>
+
+<p><code>
+$ git mv file_from file_to
+</code></p>
+
+<h2>5. 查看提交历史</h2>
+
+<p>git log用于查看提交历史。常用的选项包括：</p>
+
+<ul>
+<li>git log -p 展开显示每次提交的内容差异</li>
+<li>git log -2 限制输出数量，只显示最近2两次的提交</li>
+<li>git log &mdash;pretty=format:&ldquo;%an, %cr %s&rdquo; 格式化输出，显示为：“作者 提交时间 备注”</li>
+</ul>
+
+
+<p>还有按照时间作限制的选项，比如 &mdash;since 和 &mdash;until。下面的命令列出所有最近两周内的提交：<code>$ git log --since=2.weeks</code>. 你可以给出各种时间格式，比如说具体的某一天（“2008-01-15”），或者是多久以前（“2 years 1 day 3 minutes ago”）。</p>
+
+<p>还可以给出若干搜索条件，列出符合的提交。用 &mdash;author 选项显示指定作者的提交，用 &mdash;grep 选项搜索提交说明中的关键字。（请注意，如果要得到同时满足这两个选项搜索条件的提交，就必须用 &mdash;all-match 选项。否则，满足任意一个条件的提交都会被匹配出来）。</p>
+
+<p>另一个真正实用的git log选项是路径(path)，如果只关心某些文件或者目录的历史提交，可以在 git log 选项的最后指定它们的路径。因为是放在最后位置上的选项，所以用两个短划线（&mdash;）隔开之前的选项和后面限定的路径名。</p>
+
+<p>```</p>
+
+<h1>2008 年 10 月期间，gitster提交的但未合并的位于项目t/ 目录下的文件</h1>
+
+<p>$ git log &mdash;pretty=&ldquo;%h &ndash; %s&rdquo; &mdash;author=gitster &mdash;since=&ldquo;2008-10-01&rdquo; \
+   &mdash;before=&ldquo;2008-11-01&rdquo; &mdash;no-merges &mdash; t/
+```</p>
+
+<h2>6. 撤消操作</h2>
+
+<h3>6.1 修改最后一次提交</h3>
+
+<p>可以使用<code>--amend</code>选项修改最后一次提交。例如下面的三条命令只产生一个提交：</p>
+
+<p><code>
+$ git commit -m 'initial commit'
+$ git add forgotten_file
+$ git commit --amend
+</code></p>
+
+<p>第一条命令是普通的提交，提交后才想起来少暂存了一个文件，因此使用第二条命令进行暂存，然后第三条命令修改上一次提交。最终只产生了一次提交。</p>
+
+<h3>6.2 取消已经暂存的文件</h3>
+
+<p>当文件已经暂存，运行<code>git reset HEAD &lt;file&gt;</code>可以取消暂存，即文件又回到已修改未暂存的状态。</p>
+
+<h3>6.3 取消工作区中文件的修改</h3>
+
+<p>相当于svn的revert命令。在git中使用的命令是：<code>git checkout -- &lt;file&gt;</code>。注意，文件将恢复到修改前的版本，可能造成数据丢失。</p>
+
+<h2>7. 远程仓库的使用</h2>
+
+<h3>7.1 查看当前的远程库</h3>
+
+<p><code>git remote</code>会列出每个远程仓库的简短名称。如果克隆了某个项目，至少可以看到一个名为origin的远程库。Git 默认使用这个名字来标识你所克隆的原始仓库。<code>git remote -v</code>显示对应的克隆地址。</p>
+
+<h3>7.2 从远程仓库抓取数据</h3>
+
+<p><code>git fetch [remote-name]</code>会到远程仓库中拉取所有你本地仓库中还没有的数据。<code>git pull</code>从原始克隆的远端仓库中抓取数据后，合并到工作目录中的当前分支。</p>
+
+<h3>7.3 推送数据到远程仓库</h3>
+
+<p><code>git push [remote-name] [branch-name]</code>将本地仓库中的数据推送到远程仓库。通常为：<code>git push origin master</code></p>
+
+<h2>8. 分支</h2>
+
+<p>关于分支，此处只列出常用命令。<a href="http://git-scm.com/book/zh/v1/Git-%E5%88%86%E6%94%AF-%E4%BD%95%E8%B0%93%E5%88%86%E6%94%AF">这篇教程</a>以图示方式对分支进行了详细说明。</p>
+
+<table>
+<thead>
+<tr>
+<th>命令 </th>
+<th> 说明 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>git branch </td>
+<td> 列出所有分支</td>
+</tr>
+<tr>
+<td>git branch testing </td>
+<td> 创建分支testing</td>
+</tr>
+<tr>
+<td>git checkout testing </td>
+<td> 切换到testing 分支</td>
+</tr>
+<tr>
+<td>git checkout -b testing </td>
+<td> 相当于执行了上面两个命令</td>
+</tr>
+<tr>
+<td>git merge hotfix </td>
+<td> 将hotfix分支修改的内容合并到当前分支</td>
+</tr>
+<tr>
+<td>git branch -d hotfix </td>
+<td> 删除hotfix分支</td>
+</tr>
+<tr>
+<td>git branch &mdash;merged </td>
+<td> 查看哪些分支已被并入当前分支</td>
+</tr>
+<tr>
+<td>git branch &mdash;no-merged </td>
+<td> 查看尚未与当前分支合并的分支</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>参考： <a href="http://git-scm.com/book/zh/v1">http://git-scm.com/book/zh/v1</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[IntelliJ IDEA Mac快捷键]]></title>
@@ -690,170 +987,6 @@ jekyll-ebook manifest.yml
 分别在原生Kindle和多看系统下查看这个mobi电子书，整体效果还是不错的，但是相比EPUB来说，还是差了那么一点点。例如h1到h3的标题下方空白的内容太多，也就是CSS中的margin-bottom值太大，但不论怎么修改，Mobi格式的显示效果好像都没有变化。最后还是选择继续使用多看系统，阅读EPUB格式的电子书。</p>
 
 <p>【Update,2014-12-21】现在使用<a href="http://rss2epub.appspot.com/">RSS2EPUB</a>已经可以直接生成Epub或Kindle电子书了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Mac Eclipse快捷键]]></title>
-    <link href="http://blog.ubone.com/blog/2014/07/25/mac-eclipsekuai-jie-jian/"/>
-    <updated>2014-07-25T22:08:33+08:00</updated>
-    <id>http://blog.ubone.com/blog/2014/07/25/mac-eclipsekuai-jie-jian</id>
-    <content type="html"><![CDATA[<p>快捷键是提高开发效率的必要手段。下表是常用快捷键：</p>
-
-<!--more-->
-
-
-<table>
-<thead>
-<tr>
-<th>快捷键 </th>
-<th> 说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Command + shift + L</code> </td>
-<td> 显示快捷键</td>
-</tr>
-<tr>
-<td><code>Option + Command + X</code> </td>
-<td> 运行快捷键，单元测试（T），Java(J)</td>
-</tr>
-<tr>
-<td><code>Command + O</code> </td>
-<td> （不是数字0）显示大纲</td>
-</tr>
-<tr>
-<td><code>Command + 1</code> </td>
-<td> 快速修复</td>
-</tr>
-<tr>
-<td><code>Command + 2</code> </td>
-<td> 多个菜单：赋值给实例变量（F）,局域变量（L）</td>
-</tr>
-<tr>
-<td><code>Command + D</code> </td>
-<td> 删除当前行</td>
-</tr>
-<tr>
-<td><code>Command + .</code> </td>
-<td> 跳转到下一个错误或警告</td>
-</tr>
-<tr>
-<td><code>Option + ↓</code> </td>
-<td> 当前行和下面一行交互位置</td>
-</tr>
-<tr>
-<td><code>Option + ↑</code> </td>
-<td> 当前行和上面一行交互位置</td>
-</tr>
-<tr>
-<td><code>Option + Return</code> </td>
-<td> 显示当前选择资源的属性</td>
-</tr>
-<tr>
-<td><code>Shift + Return</code> </td>
-<td> 在当前行的下一行插入空行</td>
-</tr>
-<tr>
-<td><code>Shift + Command + Return</code> </td>
-<td> 在当前行插入空行</td>
-</tr>
-<tr>
-<td><code>Control + Q</code> </td>
-<td> 定位到最后编辑的地方</td>
-</tr>
-<tr>
-<td><code>Control + M</code> </td>
-<td> 最大化当前的Edit或View（再按则最小化）</td>
-</tr>
-<tr>
-<td><code>Command + /</code> </td>
-<td> 注释当前行，再按则取消注释</td>
-</tr>
-<tr>
-<td><code>Command + T</code> </td>
-<td> 快速显示当前类的继承结构</td>
-</tr>
-<tr>
-<td><code>Command + W</code> </td>
-<td> 关闭当前Editer</td>
-</tr>
-<tr>
-<td><code>Command + K</code> </td>
-<td> 参照当前选中的Word快速定位到下一个</td>
-</tr>
-<tr>
-<td><code>Command + E</code> </td>
-<td> 快速显示当前已打开文件的下拉列表（如果当前页面没有显示的用黑体表示）</td>
-</tr>
-<tr>
-<td><code>Option + /</code> </td>
-<td> 代码助手完成一些代码的插入（俗称“智能提示”）</td>
-</tr>
-<tr>
-<td><code>Command + J</code> </td>
-<td> 正向增量查找（按下Command + J后，你所输入的每个字母编辑器都提供快速匹配定位到某个单词，如果没有，则在Stutes Line中显示没有找到了）</td>
-</tr>
-<tr>
-<td><code>Command + Option + ↓</code> </td>
-<td> 复制当前行到下一行</td>
-</tr>
-<tr>
-<td><code>Command + Option + ↑</code> </td>
-<td> 复制当前行到上一行</td>
-</tr>
-<tr>
-<td><code>Command + Shift + E</code> </td>
-<td> 显示管理当前打开的所有的View的管理器</td>
-</tr>
-<tr>
-<td><code>Command + Shift + F</code> </td>
-<td> 格式化当前代码</td>
-</tr>
-<tr>
-<td><code>Command + shift + G</code> </td>
-<td> 查看当前选中方法名的所有reference</td>
-</tr>
-<tr>
-<td><code>Command + Shift + J</code> </td>
-<td> 反向增量查找</td>
-</tr>
-<tr>
-<td><code>Command + Shift + P</code> </td>
-<td> 定位到对于的匹配符（譬如{}）（从前面定位后面时，光标要在匹配符里面，后面到前面，则反之）</td>
-</tr>
-<tr>
-<td><code>Command + shift + R</code> </td>
-<td> 打开资源</td>
-</tr>
-<tr>
-<td><code>Command + Shift + W</code> </td>
-<td> 关闭所有打开的Editer</td>
-</tr>
-<tr>
-<td><code>Command + Shift + X</code> </td>
-<td> 把当前选中的文本全部变为大写</td>
-</tr>
-<tr>
-<td><code>Command + Shift + Y</code> </td>
-<td> 把当前选中的文本全部变为小写</td>
-</tr>
-<tr>
-<td><code>Option + Command + R</code> </td>
-<td> 重命名（尤其是变量和类的Rename效果比较明显）</td>
-</tr>
-<tr>
-<td><code>Option + Command + M</code> </td>
-<td> 抽取方法（这是重构里面最常用的方法之一了，尤其是对一大堆泥团代码有用）</td>
-</tr>
-<tr>
-<td><code>Option + Command + L</code> </td>
-<td> 抽取本地变量（可以直接把一些魔法数字和字符串抽取成一个变量，尤其是多处调用的时候）</td>
-</tr>
-</tbody>
-</table>
-
 ]]></content>
   </entry>
   

@@ -1,0 +1,492 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Git常用命令 - 码出人生</title>
+  <meta name="author" content="梅雪松">
+
+  
+  <meta name="description" content="Git是一个分布式版本控制系统。分布式版本控制系统最大的反传统之处在于，可以不需要集中式的版本库，每个人都工作在通过克隆建立的本地版本库中。也就是说每个人都拥有一个完整的版本库，查看提交日志、提交、创建里程碑和分支、合并分支、回退等所有操作都直接在本地完成而不需要网络连接。 1. Git配置 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ubone.com/blog/2015/04/24/gitchang-yong-ming-ling">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="/stylesheets/prism-default.css" rel="stylesheet" />
+<script src="/javascripts/prism.js"></script>
+<style>
+article blockquote {
+  font-size: 0.9em;
+}
+</style>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?28583ca12a9f673dc8d86501f8d02bbe";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+  
+
+  
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">码出人生</a></h1>
+  
+    <h2>专业、专注</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.ubone.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">博客</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="http://www.infoq.com/cn/author/%E6%A2%85%E9%9B%AA%E6%9D%BE" target="_blank">@InfoQ</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Git常用命令</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-24T18:27:40+08:00" pubdate data-updated="true">2015-04-24</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Git是一个分布式版本控制系统。分布式版本控制系统最大的反传统之处在于，可以不需要集中式的版本库，每个人都工作在通过克隆建立的本地版本库中。也就是说每个人都拥有一个完整的版本库，查看提交日志、提交、创建里程碑和分支、合并分支、回退等所有操作都直接在本地完成而不需要网络连接。</p>
+
+<!--more-->
+
+
+<h2>1. Git配置</h2>
+
+<p>在开始Git之旅之前，我们需要设置一下Git的配置变量，这是一次性的工作。即这些设置会在全局文件（用户主目录下的.gitconfig）或系统文件（如/etc/gitconfig）中做永久的记录。</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>git config --global user.name "meixuesong"   
+git config --global user.email "meixuesong@gmail.com"
+git config --global color.ui true #在Git命令输出中开启颜色显示
+git config --global alias.co checkout #设置别名
+git config --global alias.ci commit #设置别名
+git config --global alias.st status #设置别名
+git config --global alias.br branch #设置别名
+git config -l  # 列出所有配置</code></pre>
+
+
+<h2>2. 创建版本库</h2>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>#在工作目录中初始化新仓库
+git init
+#从现有仓库克隆
+git clone git://github.com/schacon/grit.git
+#从现有仓库克隆，并重命名文件夹
+git clone git://github.com/schacon/grit.git myproject</code></pre>
+
+
+<h2>3. Git的基本概念</h2>
+
+<p>Git工作在三个区，理解这几个概念有助于理解git相关命令：</p>
+
+<ul>
+<li>工作目录：git clone 后获得的一份本地的代码，也包括新编辑的，尚未加入版本控制的代码。</li>
+<li>暂存区域：git add 后暂存起来，尚未git commit 的代码。</li>
+<li>本地仓库：git commit 后正式被版本控制记录起来的代码。</li>
+</ul>
+
+
+<p>如下图所示：</p>
+
+<p><img src="/myresource/images/image_blog_-2015-04-24git_3_kingdom.png" alt="image" /></p>
+
+<p>在工作目录中做的变更，如增加/修改/删除文件，需要使用git add/rm命令将其放到暂存区，git commit命令将暂存区的内容提交到本地仓库。</p>
+
+<h2>4. Git基本操作</h2>
+
+<h3>4.1 检查当前文件状态</h3>
+
+<p><code>git status</code>命令用于确定哪些文件当前处于什么状态。</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>git status
+git status -s</code></pre>
+
+
+<h3>4.2 跟踪文件</h3>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>#将指定文件放入暂存区
+git add &lt;file&gt;
+#将所有修改过的工作文件放入暂存区
+git add . 
+#进入交互模式，对添加多个文件比较方便
+git add -i</code></pre>
+
+
+<p>对于修改的文件，也是使用git add命令进行暂存。如果同一个文件修改了两次，第一次修改使用git add进行了暂存，第二次没有暂存，则git commit时，只会提交第一次修改的内容。</p>
+
+<h3>4.3 忽略文件</h3>
+
+<p>编辑.gitignore文件，列出要忽略的文件模式。文件 .gitignore 的格式规范如下：</p>
+
+<ul>
+<li>所有空行或者以注释符号<code>＃</code>开头的行都会被 Git 忽略。</li>
+<li>可以使用标准的 glob 模式匹配。</li>
+<li>匹配模式最后跟反斜杠<code>/</code>说明要忽略的是目录。</li>
+<li>要忽略指定模式以外的文件或目录，可以在模式前加上惊叹号<code>!</code>取反。</li>
+</ul>
+
+
+<p>所谓的 glob 模式是指 shell 所使用的简化了的正则表达式。星号（*）匹配零个或多个任意字符；[abc] 匹配任何一个列在方括号中的字符（这个例子要么匹配一个 a，要么匹配一个 b，要么匹配一个 c）；问号（?）只匹配一个任意字符；如果在方括号中使用短划线分隔两个字符，表示所有在这两个字符范围内的都可以匹配（比如 [0-9] 表示匹配所有 0 到 9 的数字）。示例如下：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'># 此为注释 – 将被 Git 忽略
+# 忽略所有 .a 结尾的文件
+*.a
+# 但 lib.a 除外
+!lib.a
+# 仅仅忽略项目根目录下的 TODO 文件，不包括 subdir/TODO
+/TODO
+# 忽略 build/ 目录下的所有文件
+build/
+# 会忽略 doc/notes.txt 但不包括 doc/server/arch.txt
+doc/*.txt
+# ignore all .txt files in the doc/ directory
+doc/**/*.txt</code></pre>
+
+
+<h3>4.4 查看已暂存和未暂存的更新</h3>
+
+<p>尚未暂存的文件更新了哪些部分，不加参数直接输入git diff. 此命令比较的是工作目录中当前文件和暂存区域快照之间的差异，也就是修改之后还没有暂存起来的变化内容。</p>
+
+<p>若要看已经暂存起来的文件和上次提交时的快照之间的差异，可以用 git diff &mdash;cached 命令。（Git 1.6.1 及更高版本还允许使用 git diff &mdash;staged，效果是相同的）</p>
+
+<h3>4.5 提交更新</h3>
+
+<p>将暂存区的内容提交到本地版本库。</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>#会启动文本编辑器以便输入备注
+git commit
+#直接加上备注
+git commit -m "Story 182: Fix benchmarks for speed"
+#自动把所有已经跟踪过的文件暂存起来一并提交，相当于add和commit
+git commit -a -m 'added new benchmarks'</code></pre>
+
+
+<h3>4.6 移除文件</h3>
+
+<p>git rm 从已跟踪文件清单中移除文件，并从工作目录中删除指定的文件。如果删除之前文件修改过并且已经放到暂存区域的话，则必须要用强制删除选项 -f，以防误删除文件后丢失修改的内容。</p>
+
+<p>如果我们想把文件从 Git 仓库中删除（亦即从暂存区域移除），但仍然希望保留在当前工作目录中，可以使用: git rm &mdash;cached readme.txt</p>
+
+<p>也可以在移除命令中使用glob 模式，例如：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>#删除log文件夹下的所有.log文件(*之前的\为转义符)
+$ git rm log/\*.log
+#递归删除当前目录及其子目录中所有.log文件
+$ git rm \*.log</code></pre>
+
+
+<h3>4.7 移动文件</h3>
+
+<p>Git 并不跟踪文件移动操作。如果在 Git 中重命名了某个文件，仓库中存储的元数据并不会体现出这是一次改名操作。不过 Git 非常聪明，它会推断出究竟发生了什么。</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>$ git mv file_from file_to</code></pre>
+
+
+<h2>5. 查看提交历史</h2>
+
+<p>git log用于查看提交历史。常用的选项包括：</p>
+
+<ul>
+<li>git log -p 展开显示每次提交的内容差异</li>
+<li>git log -2 限制输出数量，只显示最近2两次的提交</li>
+<li>git log &mdash;pretty=format:&ldquo;%an, %cr %s&rdquo; 格式化输出，显示为：“作者 提交时间 备注”</li>
+</ul>
+
+
+<p>还有按照时间作限制的选项，比如 &mdash;since 和 &mdash;until。下面的命令列出所有最近两周内的提交：<code>$ git log --since=2.weeks</code>. 你可以给出各种时间格式，比如说具体的某一天（“2008-01-15”），或者是多久以前（“2 years 1 day 3 minutes ago”）。</p>
+
+<p>还可以给出若干搜索条件，列出符合的提交。用 &mdash;author 选项显示指定作者的提交，用 &mdash;grep 选项搜索提交说明中的关键字。（请注意，如果要得到同时满足这两个选项搜索条件的提交，就必须用 &mdash;all-match 选项。否则，满足任意一个条件的提交都会被匹配出来）。</p>
+
+<p>另一个真正实用的git log选项是路径(path)，如果只关心某些文件或者目录的历史提交，可以在 git log 选项的最后指定它们的路径。因为是放在最后位置上的选项，所以用两个短划线（&mdash;）隔开之前的选项和后面限定的路径名。</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>#2008 年 10 月期间，gitster提交的但未合并的位于项目t/ 目录下的文件
+$ git log --pretty="%h - %s" --author=gitster --since="2008-10-01" \
+   --before="2008-11-01" --no-merges -- t/</code></pre>
+
+
+<h2>6. 撤消操作</h2>
+
+<h3>6.1 修改最后一次提交</h3>
+
+<p>可以使用<code>--amend</code>选项修改最后一次提交。例如下面的三条命令只产生一个提交：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>$ git commit -m 'initial commit'
+$ git add forgotten_file
+$ git commit --amend</code></pre>
+
+
+<p>第一条命令是普通的提交，提交后才想起来少暂存了一个文件，因此使用第二条命令进行暂存，然后第三条命令修改上一次提交。最终只产生了一次提交。</p>
+
+<h3>6.2 取消已经暂存的文件</h3>
+
+<p>当文件已经暂存，运行<code>git reset HEAD &lt;file&gt;</code>可以取消暂存，即文件又回到已修改未暂存的状态。</p>
+
+<h3>6.3 取消工作区中文件的修改</h3>
+
+<p>相当于svn的revert命令。在git中使用的命令是：<code>git checkout -- &lt;file&gt;</code>。注意，文件将恢复到修改前的版本，可能造成数据丢失。</p>
+
+<h2>7. 远程仓库的使用</h2>
+
+<h3>7.1 查看当前的远程库</h3>
+
+<p><code>git remote</code>会列出每个远程仓库的简短名称。如果克隆了某个项目，至少可以看到一个名为origin的远程库。Git 默认使用这个名字来标识你所克隆的原始仓库。<code>git remote -v</code>显示对应的克隆地址。</p>
+
+<h3>7.2 从远程仓库抓取数据</h3>
+
+<p><code>git fetch [remote-name]</code>会到远程仓库中拉取所有你本地仓库中还没有的数据。<code>git pull</code>从原始克隆的远端仓库中抓取数据后，合并到工作目录中的当前分支。</p>
+
+<h3>7.3 推送数据到远程仓库</h3>
+
+<p><code>git push [remote-name] [branch-name]</code>将本地仓库中的数据推送到远程仓库。通常为：<code>git push origin master</code></p>
+
+<h2>8. 分支</h2>
+
+<p>关于分支，此处只列出常用命令。<a href="http://git-scm.com/book/zh/v1/Git-%E5%88%86%E6%94%AF-%E4%BD%95%E8%B0%93%E5%88%86%E6%94%AF">这篇教程</a>以图示方式对分支进行了详细说明。</p>
+
+<table>
+<thead>
+<tr>
+<th>命令 </th>
+<th> 说明 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>git branch </td>
+<td> 列出所有分支</td>
+</tr>
+<tr>
+<td>git branch testing </td>
+<td> 创建分支testing</td>
+</tr>
+<tr>
+<td>git checkout testing </td>
+<td> 切换到testing 分支</td>
+</tr>
+<tr>
+<td>git checkout -b testing </td>
+<td> 相当于执行了上面两个命令</td>
+</tr>
+<tr>
+<td>git merge hotfix </td>
+<td> 将hotfix分支修改的内容合并到当前分支</td>
+</tr>
+<tr>
+<td>git branch -d hotfix </td>
+<td> 删除hotfix分支</td>
+</tr>
+<tr>
+<td>git branch &mdash;merged </td>
+<td> 查看哪些分支已被并入当前分支</td>
+</tr>
+<tr>
+<td>git branch &mdash;no-merged </td>
+<td> 查看尚未与当前分支合并的分支</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>参考： <a href="http://git-scm.com/book/zh/v1">http://git-scm.com/book/zh/v1</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">梅雪松</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-24T18:27:40+08:00" pubdate data-updated="true">2015-04-24</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/others/'>others</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  
+  <!-- JiaThis Button BEGIN -->
+  <div class="jiathis_style">
+  	<span class="jiathis_txt">分享到：</span>
+  	<a class="jiathis_button_qzone">QQ空间</a>
+  	<a class="jiathis_button_tsina">新浪微博</a>
+  	<a class="jiathis_button_tqq">腾讯微博</a>
+  	<a class="jiathis_button_weixin">微信</a>
+  	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+  </div>
+  <br/>
+  <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+  <!-- JiaThis Button END -->
+  
+</div>
+
+<!-- UY BEGIN 评论-->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1942741"></script>
+<!-- UY END -->
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/04/12/jax-rs-2-dot-0-yi-bu-tong-xin/" title="Previous Post: JAX-RS 2.0 异步通信">&laquo; JAX-RS 2.0 异步通信</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <p>
+  	如果说职场的第一阶段，是在各种忙碌中度过的，我希望第二阶段能够在专业度和深度方面取得进步。 我将在这里记录我的工作、技术和生活。码出人生！<br/><br/>
+	meixuesong at gmail dot com
+	
+  </p>
+</section><section>
+  <h1>分类</h1>
+    <ul id="category-list"><li><a href='/blog/categories/java/'>java (35)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (7)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
+</section><section>
+  <h1>最新博客</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/04/24/gitchang-yong-ming-ling/">Git常用命令</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/jax-rs-2-dot-0-yi-bu-tong-xin/">JAX-RS 2.0 异步通信</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/rest-ke-hu-duan/">JAX-RS 2.0 REST 客户端</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/12/rest-qing-qiu-chu-li/">JAX-RS 2.0 REST 请求处理</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/09/rest-apishe-ji/">JAX-RS REST API设计</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 梅雪松 -
+  <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
+</p>
+</footer>
+  <!--以下为disqus的代码，因为被墙，改用上面的国内代码
+
+
+-->
+
+
+
+
+
+
+
+
+</body>
+</html>
