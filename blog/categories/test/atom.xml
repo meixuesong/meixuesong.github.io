@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Test | 码出人生]]></title>
+  <link href="http://blog.ubone.com/blog/categories/test/atom.xml" rel="self"/>
+  <link href="http://blog.ubone.com/"/>
+  <updated>2015-05-01T22:36:32+08:00</updated>
+  <id>http://blog.ubone.com/</id>
+  <author>
+    <name><![CDATA[梅雪松]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Test2dd]]></title>
+    <link href="http://blog.ubone.com/blog/2015/05/01/test2/"/>
+    <updated>2015-05-01T20:46:01+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/05/01/test2</id>
+    <content type="html"><![CDATA[<p>asdfasldfkjasdlfjwf
+asjfoweif
+asjf</p>
+
+<p>safjjweoifjowefi</p>
+]]></content>
+  </entry>
+  
+</feed>
