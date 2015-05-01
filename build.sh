@@ -1,8 +1,8 @@
 rake generate
 echo "生成RSS"
-cd /Users/mxs/Develop/projects/rss2epub/OctopressRSS/bin/
-java -classpath ./:/Users/mxs/Develop/projects/rss2epub/OctopressRSS/jsoup-1.8.1.jar com.ubone.octopress.rss.GenerateOctopressRss /Users/mxs/Documents/blog/public/blog/archives/index.html /Users/mxs/Documents/blog/public/rss.xml http://blog.ubone.com
-cd /Users/mxs/Documents/blog
+cd /Users/meixuesong/Develop/projects/OctopressRSS/bin/
+java -classpath ./:/Users/meixuesong/Develop/projects/OctopressRSS/jsoup-1.8.1.jar com.ubone.octopress.rss.GenerateOctopressRss /Users/meixuesong/Documents/blog/public/blog/archives/index.html /Users/meixuesong/Documents/blog/public/rss.xml http://blog.ubone.com
+cd /Users/meixuesong/Documents/blog
 rake deploy
 git add .
 git commit -m '写博客'
