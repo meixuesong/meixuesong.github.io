@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-05-01T22:37:44+08:00</updated>
+  <updated>2015-05-15T22:06:49+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,19 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Test2dd]]></title>
-    <link href="http://blog.ubone.com/blog/2015/05/01/test2/"/>
-    <updated>2015-05-01T20:46:01+08:00</updated>
-    <id>http://blog.ubone.com/blog/2015/05/01/test2</id>
-    <content type="html"><![CDATA[<p>asdfasldfkjasdlfjwf
-asjfoweif
-asjf</p>
-
-<p>safjjweoifjowefi</p>
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[Git常用命令]]></title>
@@ -8179,6 +8166,119 @@ app/views/win2.xml
 
 
 <p>打包时，主题下的assets资源和样式将覆盖app下的资源与样式。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[JVM监控与故障处理工具]]></title>
+    <link href="http://blog.ubone.com/blog/2015/01/04/jvmjian-kong-yu-gu-zhang-chu-li-gong-ju/"/>
+    <updated>2015-01-04T21:42:42+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/01/04/jvmjian-kong-yu-gu-zhang-chu-li-gong-ju</id>
+    <content type="html"><![CDATA[<p>本文介绍常用的Java虚拟机性能监控与故障处理工具。</p>
+
+<!--more-->
+
+
+<h2>1. JDK命令行工具</h2>
+
+<h3>1.1 <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jps.html">jps</a></h3>
+
+<p>与Unix下的ps命令相似，可以列出正在运行的虚拟机进程并显示主类（main()函数所在类）类名以及LVMID(Local Virtual Machine Identifier)。LVMID与PID是一致的。命令格式：</p>
+
+<p><code>jps [options] [hostid]</code></p>
+
+<table>
+<thead>
+<tr>
+<th>选项 </th>
+<th> 用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-q </td>
+<td> 只输出LVMID</td>
+</tr>
+<tr>
+<td>-m </td>
+<td> 输出JVM启动时传递给主类main()函数的参数</td>
+</tr>
+<tr>
+<td>-l </td>
+<td> 输出主类全名</td>
+</tr>
+<tr>
+<td>-v </td>
+<td> 输出JVM启动时的JVM参数</td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>1.2 <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jstat.html">jstat</a>，虚拟机统计信息监视工具</h3>
+
+<p>在<a href="http://blog.ubone.com/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">理解Java性能调优</a>中已经有描述。</p>
+
+<h3>1.3 <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jinfo.html">jinfo</a>, Java配置信息工具</h3>
+
+<p>用于实时查看和调整虚拟机各项参数。</p>
+
+<h3>1.4 <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jmap.html">jmap</a>, Java内存映像工具</h3>
+
+<p>在<a href="http://blog.ubone.com/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">理解Java性能调优</a>中已经有描述。</p>
+
+<h3>1.5 <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jhat.html">jhat</a>， 堆转储快照分析工具</h3>
+
+<p>用于分析堆转储快照，内置一个微型HTTP服务器，分析结果后可在浏览器中查看。但这个工具并不常用。</p>
+
+<h3>1.6 <a href="http://docs.oracle.com/javase/7/docs/technotes/tools/share/jstack.html">jstack</a>, Java堆栈跟踪工具</h3>
+
+<p>用于生成虚拟机当前时刻的线程快照（threaddump），即当前每一条线程正在执行的方法堆栈集合。主要目的是定位线程出现长时间停顿的原因，如死锁、死循环、请求外部资源等。</p>
+
+<p>当线程出现停顿时，通过jstack查看各线程的调用堆栈，就可以知道没有响应的线程到底在后台做什么。</p>
+
+<table>
+<thead>
+<tr>
+<th>选项 </th>
+<th> 用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-F </td>
+<td> 当正常输出的请求不被响应时，强制输出线程堆栈</td>
+</tr>
+<tr>
+<td>-l </td>
+<td> 除堆栈外，显示关于锁的附加信息</td>
+</tr>
+<tr>
+<td>-m </td>
+<td> 如果调用本地方法的话，显示C/C++堆栈</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>2. JDK的可视化工具</h2>
+
+<h3>2.1 JConsole</h3>
+
+<p>基于JMX的可视化监视、管理工具。直接通过集令后运行jconsol。</p>
+
+<h3>2.2 <a href="http://visualvm.java.net/">VisualVM</a>，多合一故障处理工具</h3>
+
+<p>VisualVM Is Designed For You:</p>
+
+<ul>
+<li><strong>Application Developer</strong>: Monitor, profile, take thread dumps, browse heap dumps</li>
+<li><strong>System Administrator</strong>: Monitor and control Java applications across the entire network</li>
+<li><strong>Java Application User</strong>: Create bug reports containing all the necessary information</li>
+</ul>
+
+
+<p>在命令行执行<code>jvisualvm</code>即可</p>
 ]]></content>
   </entry>
   
