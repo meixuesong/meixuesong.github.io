@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="迭代子模式是最常见的几个设计模式之一，Java Collection广泛使用迭代子来遍历其元素。之所以需要迭代子模式，是因为它将迭代逻辑与聚集对象分离，两者可以自由演变。其结构示意图如下： ">
+  <meta name="description" content="多个对象和下家的引用连接起来形成一条链。请求在这个链上传递，直到链上的某个对象处理此请求。类图如下： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +88,49 @@ var _hmt = _hmt || [];
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/10/she-ji-mo-shi-ze-ren-lian-mo-shi/">设计模式:责任链模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-10T23:24:28+08:00" pubdate data-updated="true">2014-08-10</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>多个对象和下家的引用连接起来形成一条链。请求在这个链上传递，直到链上的某个对象处理此请求。类图如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140810_235454.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/10/she-ji-mo-shi-ze-ren-lian-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -475,49 +518,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/">设计模式:代理模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-03T11:56:48+08:00" pubdate data-updated="true">2014-08-03</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>代理模式是对象的结构模式。代理模式给某一个对象提供一个代理对象，并由代理对象控制对原对象的引用。代理模式的结构如下图：</p>
-
-<p><img src="/myresource/images/image_blog_20140803_120304.jpg" alt="image" /></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/08/03/she-ji-mo-shi-dai-li-mo-shi/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/8">&larr; Older</a>
@@ -539,10 +539,14 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/java/'>java (35)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (7)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/db/'>db (1)</a></li><li><a href='/blog/categories/java/'>java (35)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (7)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/05/19/mongodbxue-xi/">MongoDB学习</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/04/24/gitchang-yong-ming-ling/">Git常用命令</a>
@@ -558,10 +562,6 @@ var _hmt = _hmt || [];
     
       <li class="post">
         <a href="/blog/2015/04/12/rest-qing-qiu-chu-li/">JAX-RS 2.0 REST 请求处理</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/09/rest-apishe-ji/">JAX-RS REST API设计</a>
       </li>
     
   </ul>

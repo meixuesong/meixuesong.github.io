@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Db | 码出人生]]></title>
+  <link href="http://blog.ubone.com/blog/categories/db/atom.xml" rel="self"/>
+  <link href="http://blog.ubone.com/"/>
+  <updated>2015-05-24T19:13:11+08:00</updated>
+  <id>http://blog.ubone.com/</id>
+  <author>
+    <name><![CDATA[梅雪松]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[MongoDB学习]]></title>
+    <link href="http://blog.ubone.com/blog/2015/05/19/mongodbxue-xi/"/>
+    <updated>2015-05-19T22:09:05+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/05/19/mongodbxue-xi</id>
+    <content type="html"><![CDATA[<p>MongoDB是一款强大、灵活的通用型面向文档的数据库。它被设计成具有非常好的水平扩展能力，很容易在多台服务器之间进行数据分隔。它能自动处理跨集群的数据和负载，自动重新分配文档，以及将用户请求路由到正确的机器上。本篇学习MongoDB的基础知识。</p>
+
+<!--more-->
+
+
+<h2>1. MongoDB Intall and launch</h2>
+
+<p>```
+$ brew install mongodb
+==> Downloading <a href="https://homebrew.bintray.com/bottles/mongodb-3.0.2.yosemite.bott">https://homebrew.bintray.com/bottles/mongodb-3.0.2.yosemite.bott</a></p>
+
+<h6>################################################################## 100.0%</h6>
+
+<p>==> Pouring mongodb-3.0.2.yosemite.bottle.2.tar.gz
+==> Caveats
+To have launchd start mongodb at login:</p>
+
+<pre><code>ln -sfv /usr/local/opt/mongodb/*.plist ~/Library/LaunchAgents
+</code></pre>
+
+<p>Then to load mongodb now:</p>
+
+<pre><code>launchctl load ~/Library/LaunchAgents/homebrew.mxcl.mongodb.plist
+</code></pre>
+
+<p>Or, if you don&rsquo;t want/need launchctl, you can just run:</p>
+
+<pre><code>mongod --config /usr/local/etc/mongod.conf
+</code></pre>
+
+<p>```</p>
+
+<h2>2. MongoDB基础知识</h2>
+
+<h4>文档</h4>
+
+<p><code>{“name”: “Jason”, “gender”: “male”}</code>就是一个文档，文档由键值对组成，相当于RDB的一行。键有以下约束：</p>
+
+<ul>
+<li>不能含有<code>\0</code>（空字符串），它用于表示键结尾</li>
+<li><code>.</code>和<code>$</code>有特殊意义，也不要使用</li>
+</ul>
+
+
+<h4>集合</h4>
+
+<p>相当于RDB的表，但集合中的每个文档的键和值类型都可以不一样。集合的命名有以下约束：</p>
+
+<ul>
+<li>必须是UTF-8字符串</li>
+<li>集合名不能是空字符串、不能包含<code>\0</code>、不能以system.开头，不能包含<code>$</code></li>
+</ul>
+
+
+<p>可以使用子集合来分隔不同命名空间。例如：blog.posts，blog.authors。</p>
+
+<h4>数据库</h4>
+
+<p>多个集合组成数据库。一个MongoDB实例可以有多个数据库。数据库名就是相应的文件名，因此文件名的约束也适用于数据库名。同时不能使用以下数据库名：admin, local和config。</p>
+
+<h4>MongoDB shell</h4>
+
+<p>MongoDB自带JavaScript shell。在命令行运行: <code>mongo</code>。shell内置了帮助文档，使用help命令查看。</p>
+
+<p>使用shell执行脚本：<code>mongo script1.js script2.js</code>, 或者：<code>&gt; load("script1.js")</code></p>
+
+<p>shell辅助函数：<code>use DBNAME</code>, <code>show dbs</code>, <code>show collections</code></p>
+
+<p>如果希望某些脚本在shell启动时自动运行，可以放到~/.mongorc.js中。</p>
+
+<h4>数据类型</h4>
+
+<ul>
+<li>null</li>
+<li>boolean</li>
+<li>数值，默认使用64位浮点型。对于整数可以使用NumberInt(4byte)和NumberLong(8字节) <code>{"x": NumberInt("3")}</code></li>
+<li>字符串</li>
+<li>日期，<code>{"x": new Date()}</code> 注意一定要使用<code>new Date()</code>而非<code>Date(...)</code>。前者是日期类型，而后者是日期的字符串。</li>
+<li>正则表达式，<code>{"x": /foobar/i}</code></li>
+<li>数组</li>
+<li>内嵌文档</li>
+<li>对象id, 12字节ID，是文档的唯一标识.</li>
+<li>二进制数据，不能直接在shell中使用</li>
+<li>代码，<code>{"x": function(){/*...*/}}</code></li>
+</ul>
+
+
+<p>MongoDB的文档必须有<code>_id</code>键，如果没有的话系统会自动创建一个。它可以是任何类型，默认为ObjectId对象。ObjectId为12字节，格式如下：</p>
+
+<p><img src="/myresource/images/image-blog-2015-05-23-10.09.09.png" alt="image" /></p>
+
+<h2>3. 插入</h2>
+
+<p>```</p>
+
+<blockquote><p>db.foo.insert({&ldquo;bar&rdquo;: &ldquo;baz&rdquo;})
+批量插入
+db.foo.batchInsert([{&ldquo;a&rdquo;: &ldquo;a&rdquo;}, {&ldquo;b&rdquo;: &ldquo;b&rdquo;}])
+```</p></blockquote>
+
+<p>如果需要从MySQL导入原始数据，可以使用命令mongoimport。</p>
+
+<h2>4. 删除</h2>
+
+<p>```</p>
+
+<blockquote><p>db.foo.remove({&ldquo;price&rdquo;: 0})
+删除所有foo集合的所有文档!
+db.foo.remove()
+整个集合被干掉
+db.foo.drop()
+```</p></blockquote>
+
+<h2>5. 更新</h2>
+
+<h3>5.1 文档替换</h3>
+
+<p>```</p>
+
+<blockquote><p>var joe = db.people.findOne({&ldquo;name&rdquo;:&ldquo;joe&rdquo;})
+joe.name = &ldquo;joe2&rdquo;
+db.people.update({&ldquo;<em>id&rdquo;: joe.</em>id}, joe)
+```</p></blockquote>
+
+<h3>5.2 使用修改器</h3>
+
+<h4>5.2.1 <code>$inc</code></h4>
+
+<p>```</p>
+
+<blockquote><p>db.people.update({&ldquo;name&rdquo;: &ldquo;someone&rdquo;},</p>
+
+<pre><code>{"$inc": {"salary": 1000}})
+</code></pre>
+
+<p>```</p></blockquote>
+
+<h4>5.2.2 <code>$set</code> 修改指定字段，如果不存在就创建</h4>
+
+<p>```</p>
+
+<blockquote><p>db.blog.update({&ldquo;<em>id&rdquo;: joe.</em>id},</p>
+
+<pre><code>{"$set": {"favorite book": "War and Peace"}})
+</code></pre>
+
+<p>```</p></blockquote>
+
+<h4>5.2.3 <code>$unset</code> 删除键</h4>
+
+<p>```</p>
+
+<blockquote><p>db.blog.update({&ldquo;<em>id&rdquo;: joe.</em>id}, {&ldquo;$unset&rdquo;: {&ldquo;favorite book&rdquo;: 1}})
+```</p></blockquote>
+
+<h3>5.3 数组修改</h3>
+
+<h4>5.3.1 <code>$push</code>向数组添加元素</h4>
+
+<p>```
+//在comments数组末尾加入一元素，如果数组不存在则自动创建</p>
+
+<blockquote><p>db.blog.update({&ldquo;<em>id&rdquo;: joe.</em>id},</p>
+
+<pre><code>{"$push": 
+    {"favorite books": {"title":"Book A"} }
+})
+</code></pre>
+
+<p>//一次添加多个元素, 使用$each
+db.blog.update({&ldquo;<em>id&rdquo;: joe.</em>id},</p>
+
+<pre><code>{"$push": 
+    {"favorite books": 
+        {"$each": [{"title": "Book B"}, {"title": "Book C"}]} 
+    }
+}) 
+</code></pre>
+
+<p>//添加元素时，限制数组最大10个元素
+db.blog.update({&ldquo;<em>id&rdquo;: joe.</em>id},</p>
+
+<pre><code>{"$push": 
+    {"favorite books": 
+        {"$each": [{"title": "Book D"}, {"title": "Book E"}],
+         "$slice": -10
+        } 
+    }
+})  
+</code></pre>
+
+<p>//添加元素时，限制数组最大6个元素，并且先进行排序
+db.blog.update({&ldquo;<em>id&rdquo;: joe.</em>id},</p>
+
+<pre><code>{"$push": 
+    {"favorite books": 
+        {"$each": [{"title": "Book J"}, {"title": "Book K"}],
+         "$slice": -6,
+         "$sort" : {"title": 1}  //1表示按title升充，-1表示降序
+        } 
+    }
+})        
+</code></pre>
+
+<p>```</p></blockquote>
+
+<h4>5.3.2 <code>$addToSet</code> 将数组当集合用，避免重复元素</h4>
+
+<p>可将上例中的<code>$push</code>换成<code>$addToSet</code>。</p>
+
+<h4>5.3.3 删除数组元素的方法：</h4>
+
+<ul>
+<li>把数组当成队列或栈，从任一端删除元素：{&ldquo;$pop&rdquo;: {&ldquo;key&rdquo;: 1}} 从数组key的末尾删除，如果把1改成-1则从头部删除。</li>
+<li>删除特定元素：{&ldquo;$pull&rdquo;: {&ldquo;todo&rdquo;: &ldquo;laundry&rdquo;}}, 将删除所有匹配的元素。</li>
+</ul>
+
+
+<h3>5.4 Upsert修改</h3>
+
+<p>相当于Oracle的merge语句，存在则修改，不存在则创建。update的第3个参数设置为true表示这是个upsert:</p>
+
+<p>```</p>
+
+<blockquote><p>db.analytics.update({&ldquo;url&rdquo;: &ldquo;/blog&rdquo;}, {&ldquo;$inc&rdquo;, {&ldquo;pageviews&rdquo;:1}}, true)
+```</p></blockquote>
+
+<p>save是一个shell函数，只有一个参数。如果文档含有“_id”键，则save调用upsert，否则调用insert。</p>
+
+<h3>5.5 更新多个文档</h3>
+
+<p>默认update方法只更新匹配的第一个文档，将update的第4个参数设置为true则更新所有匹配文档。</p>
+
+<h3>5.6 返回被更新的文档</h3>
+
+<p>如果有一个队列，需要进行原子性的取值和赋值，使用findAndModify就非常方便。它能够在一个操作中返回匹配的结果并且进行更新。</p>
+
+<h2>6. 查询</h2>
+
+<h3>6.1 find</h3>
+
+<p>find方法用于查询，第1个参数是条件，为空时表示查询所有文档。</p>
+
+<p>```</p>
+
+<blockquote><p>db.blog.find()
+db.blog.find({&ldquo;title&rdquo;: &ldquo;My bolg&rdquo;, &ldquo;author&rdquo;: &ldquo;joe&rdquo;})
+```</p></blockquote>
+
+<p>与RDB的select语句一样，find方法的第2个参数可以设置返回哪些键值对（字段值）。默认情况下“_id”键总是被返回。下例中“1”表示返回，“0”表示不返回：</p>
+
+<p>```</p>
+
+<blockquote><p>db.users.find({}, {“username”: 1, &ldquo;email&rdquo;: 1})
+db.users.find({}, {“username”: 1, &ldquo;_id&rdquo;: 0})
+```</p></blockquote>
+
+<h3>6.2 查询条件</h3>
+
+<p>可以使用"$lt"、"$lte"、"$gt"、"$gte"和"$ne" 作为比较符，分别对应 <code>&lt;, &lt;=, &gt;, &gt;=, &lt;&gt;</code>:</p>
+
+<p>```</p>
+
+<blockquote><p>db.users.find({&ldquo;age&rdquo;: {&ldquo;$gt&rdquo;: 18, &ldquo;$lte&rdquo;: 30}})
+db.users.find({&ldquo;username&rdquo;: {&ldquo;$ne&rdquo;: &ldquo;joe&rdquo;}})
+```</p></blockquote>
+
+<p>也可以使用"$in"、"$or"、"$and"和"$mod"等操作符：</p>
+
+<p>```</p>
+
+<blockquote><p>db.raffle.find({&ldquo;ticket_no&rdquo;: {&ldquo;$in&rdquo;: [725, 511, 339]}})
+db.raffle.find({&ldquo;$or&rdquo;, [{&ldquo;ticket_no&rdquo;: 725}, {&ldquo;winner&rdquo;: true]})
+db.raffle.find({&ldquo;$or&rdquo;, [{&ldquo;ticket_no&rdquo;: {&ldquo;$in&rdquo;: [725, 511, 339]}},</p>
+
+<pre><code>{"winner": true]})
+</code></pre>
+
+<p>//$mod表示取模，用id_num / 5 ，余数是否为1  <br/>
+db.users.find({&ldquo;id_num&rdquo;: {&ldquo;$not&rdquo;: {&ldquo;$mod&rdquo;: [5,1]}}})
+```</p></blockquote>
+
+<h3>6.3 特定类型的查询</h3>
+
+<h4>6.3.1 null</h4>
+
+<p>与RDB一样，null作为条件时不能使用=。应该使用：</p>
+
+<p>```</p>
+
+<blockquote><p>db.c.find({&ldquo;z&rdquo;: null})
+```</p></blockquote>
+
+<p>但上面的例子不仅匹配了z为null的文档，还包括键“z”不存在的文档。因此还可以使用'$exists'进行判断：</p>
+
+<p>```</p>
+
+<blockquote><p>db.c.find({&ldquo;z&rdquo;: {&ldquo;$in&rdquo;: [null], &ldquo;$exists&rdquo;: true}})
+```</p></blockquote>
+
+<h4>6.3.2 正则表达式</h4>
+
+<p>MongoDB使用Perl兼容的正则表达式库。如要查找所有名为Joe，且不区分大小写：</p>
+
+<p>```</p>
+
+<blockquote><p>db.users.find({&ldquo;name&rdquo;: /joe/i})
+```</p></blockquote>
+
+<h4>6.3.3 查询数组</h4>
+
+<p>假设我们有这样一个数组：{&ldquo;fruit&rdquo;: [&ldquo;apple&rdquo;, &ldquo;banana&rdquo;, &ldquo;peach&rdquo;]}，下表演示了各种数组查询：</p>
+
+<table>
+<thead>
+<tr>
+<th>匹配 </th>
+<th> 查询语句 </th>
+<th> 说明 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Y </td>
+<td> db.food.find({&ldquo;fruit&rdquo;, &ldquo;banana&rdquo;}) </td>
+<td> 匹配1个元素</td>
+</tr>
+<tr>
+<td>Y </td>
+<td> db.food.find({&ldquo;fruit&rdquo;: {&ldquo;$all&rdquo;:[&ldquo;apple&rdquo;, &ldquo;peach&rdquo;]}}) </td>
+<td> $all用于多个元素匹配</td>
+</tr>
+<tr>
+<td>Y </td>
+<td> db.food.find({&ldquo;fruit&rdquo;: [&ldquo;apple&rdquo;, &ldquo;banana&rdquo;, &ldquo;peach&rdquo;]}) </td>
+<td> 完全匹配</td>
+</tr>
+<tr>
+<td>N </td>
+<td> db.food.find({&ldquo;fruit&rdquo;: [&ldquo;apple&rdquo;, &ldquo;banana&rdquo;, &ldquo;peach2&rdquo;]}) </td>
+<td> </td>
+</tr>
+<tr>
+<td>N </td>
+<td> db.food.find({&ldquo;fruit&rdquo;: [&ldquo;peach&rdquo;, &ldquo;apple&rdquo;, &ldquo;banana&rdquo;]}) </td>
+<td> </td>
+</tr>
+<tr>
+<td>Y </td>
+<td> db.food.find({&ldquo;fruit.2&rdquo;: &ldquo;peach&rdquo;}) </td>
+<td> 使用key.index指定下标</td>
+</tr>
+<tr>
+<td>Y </td>
+<td> db.food.find({&ldquo;fruit&rdquo;: {&ldquo;$size&rdquo;: 3}}) </td>
+<td> 数组长度匹配，注$size不能与$gt组合使用，这种情况可能需要增加一个键来表示size</td>
+</tr>
+</tbody>
+</table>
+
+
+<p><strong>$slice操作符</strong></p>
+
+<p>前面提到find的第二个参数是可选的，用于指定要返回的键。$slice操作符可以用来返回数组的一个子集，也是放到find的第二个参数中。</p>
+
+<p>```
+//返回数组的前面2个</p>
+
+<blockquote><p>db.food.find({}, {&ldquo;fruit&rdquo;: {&ldquo;$slice&rdquo;: 2}})
+{ &ldquo;<em>id&rdquo; : ObjectId(&ldquo;55618ad3a13452c2fde037bd&rdquo;), &ldquo;fruit&rdquo; : [ &ldquo;apple&rdquo;, &ldquo;banana&rdquo; ] }
+//返回数组的后面2个
+db.food.find({}, {&ldquo;fruit&rdquo;: {&ldquo;$slice&rdquo;: -2}})
+{ &ldquo;</em>id&rdquo; : ObjectId(&ldquo;55618ad3a13452c2fde037bd&rdquo;), &ldquo;fruit&rdquo; : [ &ldquo;banana&rdquo;, &ldquo;peach&rdquo; ] }
+//跳过前5个元素，返回第6-15个元素
+db.food.find({}, {&ldquo;fruit&rdquo;: {&ldquo;$slice&rdquo;: [5, 10]}})
+```</p></blockquote>
+
+<p>除非特别声明，否则使用$slice时将返回文档中的所有键。</p>
+
+<h4>6.3.4 查询内嵌文档</h4>
+
+<p>以下演示内嵌文档的查询，假设有如下文档：</p>
+
+<p>```
+{</p>
+
+<pre><code>"name": {
+    "first": "Joe",
+    "last": "Schmoe"
+},
+"age": 45
+</code></pre>
+
+<p>}</p>
+
+<p>查询方法：</p>
+
+<blockquote><p>db.people.find({&ldquo;name.first&rdquo;: &ldquo;Joe&rdquo;, &ldquo;name.last&rdquo;: &ldquo;Schmoe&rdquo;})
+```</p></blockquote>
+
+<h3>6.4 $where查询</h3>
+
+<p>要严格限制或消除$where查询，禁止终端用户使用任意的$where语句。因为它的效率非常低，其过程是将BSON转换成JavaScript对象，然后执行$where的JavaScript方法，所以性能非常差。示例如下：</p>
+
+<p>```</p>
+
+<blockquote><p>db.foo.find({&ldquo;$where&rdquo;: function() {</p>
+
+<pre><code>for(var current in this) {
+    if (...) {
+        return true;
+    }
+}
+</code></pre>
+
+<p> }});
+```</p></blockquote>
+
+<h3>6.5 服务端脚本</h3>
+
+<p>要特别注意服务器上执行JavaScript的安全性，它同样存在注入的风险。确保不直接将用户输入的内容传递给mongod。例如：</p>
+
+<p>```
+//危险代码！如果name是用户定义的变量，就可能被替换成危险操作</p>
+
+<blockquote><p>func = &ldquo;function(){ print(&lsquo;Hello, &rdquo;+name+&ldquo;!&rsquo;);}&rdquo;
+//Python的解决办法：
+func = pymongo.code.Code(&ldquo;function() { print(&lsquo;Hello, &rsquo;+username+&lsquo;!&rsquo;); }&rdquo;, {&ldquo;username&rdquo;: name})
+```</p></blockquote>
+
+<h3>6.6 游标</h3>
+
+<p>```</p>
+
+<blockquote><p>var cursor = db.blog.find();
+while (cursor.hasNext()) {</p>
+
+<pre><code>obj = cursor.next();
+//...
+</code></pre>
+
+<p>  }</p></blockquote>
+
+<p>or</p>
+
+<blockquote><p>var cursor = db.blog.find();
+cursor.forEach(function(x) {</p>
+
+<pre><code>print(x.name);
+</code></pre>
+
+<p>  });</p></blockquote>
+
+<p>其它功能：</p>
+
+<blockquote><p>db.c.find().limit(3)
+db.c.find().skip(3)
+//排序：1为升序，-1为倒序
+db.c.find().sort({username: 1, age: -1}) <br/>
+db.stock.find({&ldquo;desc&rdquo;: &ldquo;mp3&rdquo;}).limit(50).sort({&ldquo;price&rdquo;, -1})
+```</p></blockquote>
+
+<p>注意，尽量不要使用skip来进行分页，当数据比较多时，速度会变得很慢。</p>
+]]></content>
+  </entry>
+  
+</feed>
