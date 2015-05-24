@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-05-24T19:13:11+08:00</updated>
+  <updated>2015-05-24T19:26:21+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -18,12 +18,12 @@
     <link href="http://blog.ubone.com/blog/2015/05/19/mongodbxue-xi/"/>
     <updated>2015-05-19T22:09:05+08:00</updated>
     <id>http://blog.ubone.com/blog/2015/05/19/mongodbxue-xi</id>
-    <content type="html"><![CDATA[<p>MongoDB是一款强大、灵活的通用型面向文档的数据库。它被设计成具有非常好的水平扩展能力，很容易在多台服务器之间进行数据分隔。它能自动处理跨集群的数据和负载，自动重新分配文档，以及将用户请求路由到正确的机器上。本篇学习MongoDB的基础知识。</p>
+    <content type="html"><![CDATA[<p>MongoDB是一款强大、灵活的通用型面向文档的数据库。它被设计成具有非常好的水平扩展能力，很容易在多台服务器之间进行数据分隔。它能自动处理跨集群的数据和负载，自动重新分配文档，以及将用户请求路由到正确的机器上。本篇学习MongoDB的基础知识：安装、启动以及CRUD操作。</p>
 
 <!--more-->
 
 
-<h2>1. MongoDB Intall and launch</h2>
+<h2>1. MongoDB install and launch</h2>
 
 <pre  class='line-numbers language-bash'><code class='language-bash'>$ brew install mongodb
 ==&gt; Downloading https://homebrew.bintray.com/bottles/mongodb-3.0.2.yosemite.bott
@@ -192,7 +192,7 @@ Or, if you don't want/need launchctl, you can just run:
 </ul>
 
 
-<h3>5.4 Upsert修改</h3>
+<h3>5.4 upsert修改</h3>
 
 <p>相当于Oracle的merge语句，存在则修改，不存在则创建。update的第3个参数设置为true表示这是个upsert:</p>
 
