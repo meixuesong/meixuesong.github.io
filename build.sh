@@ -5,7 +5,7 @@ java -classpath ./:/Users/meixuesong/Develop/projects/OctopressRSS/jsoup-1.8.1.j
 cd /Users/meixuesong/Documents/blog
 rake deploy
 git add .
-git commit -m 'Add TOC support'
+git commit -m 'write blog'
 git push origin source
 echo "发布结束"
 #cd _deploy

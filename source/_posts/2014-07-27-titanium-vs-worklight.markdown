@@ -6,7 +6,6 @@ comments: true
 toc: true
 categories: 
 - 移动开发
-
 ---
 
 因工作需要，对两个跨平台移动开发工具（Titanium，Worklight）进行比较的。本文主要从跨平台特性、性能、社区等进行比较。实际上，本文同样适用于Titanium VS Phonegap。
