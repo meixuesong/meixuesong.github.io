@@ -27,6 +27,10 @@
   <!--script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script -->
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+<script src="/javascripts/libs/jquery.tableofcontents.min.js" type="text/javascript"></script>
+<script src="/javascripts/generate-toc.js" type="text/javascript"></script>
+
 <link href="/stylesheets/prism-default.css" rel="stylesheet" />
 <script src="/javascripts/prism.js"></script>
 <style>
@@ -44,6 +48,7 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>
+
   
 
   
@@ -182,6 +187,24 @@ disqus_show_comment_count: true</code></pre>
 
 
 <p>prismjs部分按照官方文档配置即可。</p>
+
+<p>【Update 2015-05-24】增加TOC（目录）功能。参考此<a href="http://brizzled.clapper.org/blog/2012/02/04/generating-a-table-of-contents-in-octopress/">博客</a>。该方案采用JavaScript实现，需要在MD文档中增加一行：toc: true。因此需要将原来所有文件都加上此行，通过sed实现：</p>
+
+<pre class='line-numbers language-ruby'><code class='language-ruby'>#toc.sed，表示在comments开头的行后面加入一行
+/^comments: /a\
+toc: true
+
+#toc.sh 脚本批量执行sed命令
+for i in `ls *.markdown`
+do
+  echo "working on $i ..."
+  sed -f toc.sed &lt; $i &gt; ${i}.tmp
+  mv ${i}.tmp $i
+done
+</code></pre>
+
+
+
 </div>
 
 
@@ -318,6 +341,16 @@ disqus_show_comment_count: true</code></pre>
 
 
 
+
+
+
+
+  <script type="text/javascript">
+  jQuery(document).ready(function() {
+    // Put a TOC right before the entry content.
+    generateTOC('.entry-content', 'Table of Contents');
+  });
+  </script>
 
 
 
