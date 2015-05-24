@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:命令模式"
 date: 2014-08-11 22:58:11 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---

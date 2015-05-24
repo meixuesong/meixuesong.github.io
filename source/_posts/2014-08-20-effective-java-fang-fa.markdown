@@ -3,6 +3,7 @@ layout: post
 title: "Effective Java-方法"
 date: 2014-08-20 19:32:51 +0800
 comments: true
+toc: true
 categories: 
 - java
 ---

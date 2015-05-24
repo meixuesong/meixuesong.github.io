@@ -3,6 +3,7 @@ layout: post
 title: "设计模式在序列生成器的应用"
 date: 2014-07-28 22:21:23 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---

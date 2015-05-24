@@ -3,6 +3,7 @@ layout: post
 title: "符号表"
 date: 2014-10-02 11:26:20 +0800
 comments: true
+toc: true
 categories: 
 - 算法
 ---

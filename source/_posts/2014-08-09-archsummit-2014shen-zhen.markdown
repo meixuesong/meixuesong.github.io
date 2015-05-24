@@ -3,6 +3,7 @@ layout: post
 title: "ArchSummit 2014深圳"
 date: 2014-07-19 21:10:46 +0800
 comments: true
+toc: true
 categories: 
 - 生活
 ---

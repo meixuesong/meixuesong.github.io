@@ -3,6 +3,8 @@ layout: post
 title: "Git常用命令"
 date: 2015-04-24 18:27:40 +0800
 comments: true
+toc: true
+toc: true
 categories: 
 - others
 ---

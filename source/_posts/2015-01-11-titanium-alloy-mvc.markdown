@@ -3,6 +3,7 @@ layout: post
 title: "Titanium Alloy MVC"
 date: 2015-01-11 19:25:14 +0800
 comments: true
+toc: true
 categories: 
 - 移动开发
 ---

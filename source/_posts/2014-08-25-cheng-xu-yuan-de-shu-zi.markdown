@@ -3,6 +3,7 @@ layout: post
 title: "程序员的数学"
 date: 2014-08-25 22:22:26 +0800
 comments: true
+toc: true
 categories: 
 - 算法
 ---

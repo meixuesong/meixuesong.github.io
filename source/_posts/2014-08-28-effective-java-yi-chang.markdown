@@ -3,6 +3,7 @@ layout: post
 title: "Effective Java - 异常"
 date: 2014-08-28 23:15:18 +0800
 comments: true
+toc: true
 categories: 
 - java
 ---

@@ -3,6 +3,7 @@ layout: post
 title: "Java泛型"
 date: 2014-07-02 22:24:37 +0800
 comments: true
+toc: true
 categories: 
 - Java
 

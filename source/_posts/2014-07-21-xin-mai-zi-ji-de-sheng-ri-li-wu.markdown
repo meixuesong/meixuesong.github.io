@@ -3,6 +3,7 @@ layout: post
 title: "Macbook pro，送给自己的生日礼物"
 date: 2014-07-21 23:08:33 +0800
 comments: true
+toc: true
 categories: 
 - 生活
 

@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:状态模式"
 date: 2014-08-18 20:22:06 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---

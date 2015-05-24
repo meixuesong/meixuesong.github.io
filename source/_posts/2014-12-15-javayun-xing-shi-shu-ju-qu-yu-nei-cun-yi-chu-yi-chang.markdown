@@ -3,6 +3,7 @@ layout: post
 title: "Java运行时数据区与内存溢出异常"
 date: 2014-12-15 21:55:31 +0800
 comments: true
+toc: true
 categories: 
 - java
 ---

@@ -3,6 +3,7 @@ layout: post
 title: "基于Jekyll(Octopress)将博客生成EPUB和Mobi电子书"
 date: 2014-10-05 21:03:50 +0800
 comments: true
+toc: true
 categories: 
 - others
 ---

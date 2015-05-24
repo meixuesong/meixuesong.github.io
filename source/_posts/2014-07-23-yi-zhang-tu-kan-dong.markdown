@@ -3,6 +3,7 @@ layout: post
 title: "一张图看懂UML类图的关系"
 date: 2014-07-23 23:37:18 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 

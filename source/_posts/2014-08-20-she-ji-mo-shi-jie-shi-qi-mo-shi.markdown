@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:解释器模式与调停者模式"
 date: 2014-08-20 22:31:36 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---

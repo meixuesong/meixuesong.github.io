@@ -3,6 +3,7 @@ layout: post
 title: "Effective Java-类和接口"
 date: 2014-07-08 18:58:31 +0800
 comments: true
+toc: true
 categories: 
 - Java
 

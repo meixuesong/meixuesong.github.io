@@ -3,6 +3,7 @@ layout: post
 title: "类文件与字节码"
 date: 2014-12-04 20:40:02 +0800
 comments: true
+toc: true
 categories: 
 - java
 ---

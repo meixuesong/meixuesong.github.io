@@ -3,6 +3,7 @@ layout: post
 title: "利用反射和代理创建简单的安全账号"
 date: 2014-06-28 11:42:34 +0800
 comments: true
+toc: true
 categories: 
 - Java
 

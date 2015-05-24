@@ -3,6 +3,7 @@ layout: post
 title: "JVM字节码执行引擎"
 date: 2015-01-20 06:40:46 +0800
 comments: true
+toc: true
 categories: 
 - java
 ---

@@ -3,6 +3,7 @@ layout: post
 title: "在GitHub上写博客"
 date: 2014-06-25 22:54:07 +0800
 comments: true
+toc: true
 categories: 
 - others
 ---
@@ -86,7 +87,22 @@ disqus_show_comment_count: true
 prismjs部分按照官方文档配置即可。      
 
 
+【Update 2015-05-24】增加TOC（目录）功能。参考此[博客](http://brizzled.clapper.org/blog/2012/02/04/generating-a-table-of-contents-in-octopress/)。该方案采用JavaScript实现，需要在MD文档中增加一行：toc: true。因此需要将原来所有文件都加上此行，通过sed实现：
 
+```
+#toc.sed，表示在comments开头的行后面加入一行
+/^comments: /a\
+toc: true
+
+#toc.sh 脚本批量执行sed命令
+for i in `ls *.markdown`
+do
+  echo "working on $i ..."
+  sed -f toc.sed < $i > ${i}.tmp
+  mv ${i}.tmp $i
+done
+
+```
 
 
 

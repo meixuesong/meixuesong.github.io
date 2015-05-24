@@ -3,6 +3,7 @@ layout: post
 title: "Java随机存取文件"
 date: 2014-06-26 21:56:12 +0800
 comments: true
+toc: true
 categories: 
 - Java
 ---

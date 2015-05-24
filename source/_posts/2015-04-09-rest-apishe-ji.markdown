@@ -3,6 +3,7 @@ layout: post
 title: "JAX-RS REST API设计"
 date: 2015-04-09 19:54:14 +0800
 comments: true
+toc: true
 categories: 
 - java
 ---

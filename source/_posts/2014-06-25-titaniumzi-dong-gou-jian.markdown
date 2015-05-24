@@ -3,6 +3,7 @@ layout: post
 title: "Titanium移动开发之每日自动构建"
 date: 2014-06-25 11:19:18 +0800
 comments: true
+toc: true
 categories: 
 - 移动开发
 ---

@@ -3,6 +3,7 @@ layout: post
 title: "Effective Java-创建和销毁对象"
 date: 2014-06-27 09:20:04 +0800
 comments: true
+toc: true
 categories: 
 - Java
 

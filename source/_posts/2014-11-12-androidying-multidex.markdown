@@ -3,6 +3,7 @@ layout: post
 title: "Android应用打破65K方法数限制"
 date: 2014-11-12 16:52:42 +0800
 comments: true
+toc: true
 categories: 
 - 移动开发
 ---

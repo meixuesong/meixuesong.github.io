@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:组合（Composite）模式"
 date: 2014-07-31 21:08:30 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---

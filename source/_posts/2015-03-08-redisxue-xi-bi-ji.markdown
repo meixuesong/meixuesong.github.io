@@ -3,6 +3,7 @@ layout: post
 title: "Redis学习笔记"
 date: 2015-03-08 11:37:07 +0800
 comments: true
+toc: true
 categories: 
 - Web相关
 ---

@@ -3,6 +3,7 @@ layout: post
 title: "学习正则表达式"
 date: 2015-04-06 20:39:05 +0800
 comments: true
+toc: true
 categories: 
 - web相关
 ---

@@ -3,6 +3,7 @@ layout: post
 title: "Java Web中文编码"
 date: 2015-02-23 15:57:18 +0800
 comments: true
+toc: true
 categories: 
 - java
 ---

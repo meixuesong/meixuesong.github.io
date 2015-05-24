@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:适配器模式"
 date: 2014-07-30 22:31:42 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---

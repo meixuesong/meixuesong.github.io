@@ -3,6 +3,7 @@ layout: post
 title: "优先队列"
 date: 2014-09-27 23:08:56 +0800
 comments: true
+toc: true
 categories: 
 - 算法
 ---

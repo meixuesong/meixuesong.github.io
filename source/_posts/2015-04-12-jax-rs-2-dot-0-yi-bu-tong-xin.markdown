@@ -3,6 +3,7 @@ layout: post
 title: "JAX-RS 2.0 异步通信"
 date: 2015-04-12 21:54:22 +0800
 comments: true
+toc: true
 categories: 
 - java
 ---

@@ -3,6 +3,7 @@ layout: post
 title: "一些设计原则"
 date: 2014-07-25 21:01:51 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 

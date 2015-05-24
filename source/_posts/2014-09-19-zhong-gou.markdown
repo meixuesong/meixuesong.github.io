@@ -3,6 +3,7 @@ layout: post
 title: "再读《重构》"
 date: 2014-09-19 20:04:48 +0800
 comments: true
+toc: true
 categories: 
 - java
 ---

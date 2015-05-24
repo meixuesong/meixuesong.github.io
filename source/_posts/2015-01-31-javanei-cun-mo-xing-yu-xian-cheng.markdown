@@ -3,6 +3,7 @@ layout: post
 title: "Java内存模型与线程"
 date: 2015-01-31 19:45:39 +0800
 comments: true
+toc: true
 categories: 
 - java
 ---

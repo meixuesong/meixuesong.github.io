@@ -3,6 +3,7 @@ layout: post
 title: "Java Collections"
 date: 2015-03-14 20:51:05 +0800
 comments: true
+toc: true
 categories: 
 - java
 ---

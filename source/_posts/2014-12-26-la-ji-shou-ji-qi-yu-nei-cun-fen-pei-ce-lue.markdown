@@ -3,6 +3,7 @@ layout: post
 title: "Java垃圾收集与内存分配"
 date: 2014-12-26 20:20:12 +0800
 comments: true
+toc: true
 categories: 
 - java
 ---

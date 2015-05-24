@@ -3,6 +3,7 @@ layout: post
 title: "最小生成树"
 date: 2014-10-31 22:38:49 +0800
 comments: true
+toc: true
 categories: 
 - 算法
 ---

@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:缺省适配模式"
 date: 2014-07-31 20:31:57 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---

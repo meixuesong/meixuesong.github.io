@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:策略模式"
 date: 2014-08-09 22:55:42 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---

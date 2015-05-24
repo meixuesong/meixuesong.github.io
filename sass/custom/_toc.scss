@@ -1,0 +1,45 @@
+@import "mixins";
+
+$toc-bg: #f2f2f2 url('/images/noise.png?1403631714') top left;
+
+$toc-incr: 5px;
+
+div#tocBlock {
+    //@include drop-shadow-right-bottom(5px, #999);
+    @include rounded-border(0.4em);
+    float: right;
+    font-size: 10pt;
+    width: 220px;
+    padding-left: 20px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 0px;
+
+    background: $toc-bg;
+    border: solid 1px #d0d0d0;
+    margin: 0 0 10px 15px;
+
+    .tocHeading {
+        font-weight: bold;
+        font-size: 125%;
+    }
+
+    #toc {
+        background: $toc-bg;
+        list-style-type: none; 
+        margin-left:0;
+        ul {
+            margin-left: 0.5em;
+            list-style-type: none; 
+            li {
+                margin-left: $toc-incr !important;
+                padding: 0 !important;
+            }
+        }
+        a {
+          color: #1863a1;
+          font-style: normal;
+          text-decoration: none;
+        }
+    }
+}

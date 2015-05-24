@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:享元模式"
 date: 2014-08-03 19:10:40 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---

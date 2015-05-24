@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:备忘录模式"
 date: 2014-08-13 23:00:58 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---

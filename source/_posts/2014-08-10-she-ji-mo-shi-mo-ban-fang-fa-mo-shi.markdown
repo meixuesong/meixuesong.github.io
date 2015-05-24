@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:模板方法模式"
 date: 2014-08-10 09:52:25 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---

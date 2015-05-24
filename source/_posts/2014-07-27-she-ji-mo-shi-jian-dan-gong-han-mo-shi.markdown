@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:简单工厂模式"
 date: 2014-07-27 09:44:35 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 

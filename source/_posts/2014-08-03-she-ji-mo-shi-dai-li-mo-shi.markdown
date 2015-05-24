@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:代理模式"
 date: 2014-08-03 11:56:48 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---

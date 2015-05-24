@@ -3,6 +3,7 @@ layout: post
 title: "初级排序算法"
 date: 2014-09-25 20:25:11 +0800
 comments: true
+toc: true
 categories: 
 - 算法
 ---

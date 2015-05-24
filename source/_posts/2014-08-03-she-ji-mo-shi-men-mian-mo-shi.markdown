@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:门面模式"
 date: 2014-08-03 21:59:42 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---

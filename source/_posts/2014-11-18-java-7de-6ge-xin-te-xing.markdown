@@ -3,6 +3,7 @@ layout: post
 title: "Java 7的6个新特性"
 date: 2014-11-18 22:20:52 +0800
 comments: true
+toc: true
 categories: 
 - java
 ---

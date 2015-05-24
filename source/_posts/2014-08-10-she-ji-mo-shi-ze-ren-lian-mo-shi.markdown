@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:责任链模式"
 date: 2014-08-10 23:24:28 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---

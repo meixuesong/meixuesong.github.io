@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:访问者模式"
 date: 2014-08-19 22:17:28 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---

@@ -3,6 +3,7 @@ layout: post
 title: "归并排序算法"
 date: 2014-09-25 21:07:58 +0800
 comments: true
+toc: true
 categories: 
 - 算法
 ---

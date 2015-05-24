@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:观察者模式"
 date: 2014-08-10 11:36:40 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---

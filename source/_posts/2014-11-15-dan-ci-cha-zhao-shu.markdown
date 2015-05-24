@@ -3,6 +3,7 @@ layout: post
 title: "单词查找树"
 date: 2014-11-16 22:37:38 +0800
 comments: true
+toc: true
 categories: 
 - 算法
 ---

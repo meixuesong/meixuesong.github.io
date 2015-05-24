@@ -3,6 +3,7 @@ layout: post
 title: "Effective Java-通用程序设计"
 date: 2014-08-22 20:06:07 +0800
 comments: true
+toc: true
 categories: 
 - java
 ---

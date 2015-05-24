@@ -3,6 +3,7 @@ layout: post
 title: "Linux基础"
 date: 2015-02-24 11:37:23 +0800
 comments: true
+toc: true
 categories: 
 - linux
 ---

@@ -3,6 +3,7 @@ layout: post
 title: "设计模式: 原型（Prototype）模式"
 date: 2014-07-30 20:58:15 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---

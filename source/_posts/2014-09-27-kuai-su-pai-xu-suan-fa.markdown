@@ -3,6 +3,7 @@ layout: post
 title: "快速排序算法"
 date: 2014-09-27 10:38:32 +0800
 comments: true
+toc: true
 categories:
 - 算法 
 ---

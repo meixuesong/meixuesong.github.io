@@ -3,6 +3,7 @@ layout: post
 title: "Mac Eclipse快捷键"
 date: 2014-07-25 22:08:33 +0800
 comments: true
+toc: true
 categories: 
 - others
 ---

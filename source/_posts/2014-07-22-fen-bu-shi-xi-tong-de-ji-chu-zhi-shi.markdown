@@ -3,6 +3,7 @@ layout: post
 title: "分布式系统的基础知识"
 date: 2014-07-22 20:04:40 +0800
 comments: true
+toc: true
 categories: 
 - java
 ---

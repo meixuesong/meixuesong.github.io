@@ -3,6 +3,7 @@ layout: post
 title: "IntelliJ IDEA Mac快捷键"
 date: 2015-04-02 11:12:07 +0800
 comments: true
+toc: true
 categories: 
 - others
 ---

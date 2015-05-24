@@ -3,6 +3,7 @@ layout: post
 title: "TDD学习笔记"
 date: 2015-03-17 11:42:46 +0800
 comments: true
+toc: true
 categories: 
 - java
 ---

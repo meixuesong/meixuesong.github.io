@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:Builder模式"
 date: 2014-07-29 22:28:54 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 

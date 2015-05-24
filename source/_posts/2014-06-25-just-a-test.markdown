@@ -3,6 +3,7 @@ layout: post
 title: "单例与枚举"
 date: 2014-06-25 09:21:22 +0800
 comments: true
+toc: true
 categories: 
 - Java
 ---

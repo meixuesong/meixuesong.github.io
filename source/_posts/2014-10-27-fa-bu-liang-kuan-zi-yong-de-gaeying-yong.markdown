@@ -3,6 +3,7 @@ layout: post
 title: "发布两款自用的GAE应用"
 date: 2014-10-27 22:58:19 +0800
 comments: true
+toc: true
 categories: 
 - others
 ---

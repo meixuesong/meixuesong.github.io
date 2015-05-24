@@ -3,6 +3,7 @@ layout: post
 title: "有向图"
 date: 2014-10-30 20:10:54 +0800
 comments: true
+toc: true
 categories: 
 - 算法
 ---

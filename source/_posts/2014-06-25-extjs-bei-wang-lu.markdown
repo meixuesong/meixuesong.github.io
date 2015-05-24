@@ -3,6 +3,7 @@ layout: post
 title: "Extjs 备忘录"
 date: 2014-06-25 12:13:29 +0800
 comments: true
+toc: true
 categories: 
 - Web相关
 ---

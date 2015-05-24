@@ -3,6 +3,7 @@ layout: post
 title: "设计模式:不变模式"
 date: 2014-08-09 18:08:28 +0800
 comments: true
+toc: true
 categories: 
 - 设计模式
 ---
