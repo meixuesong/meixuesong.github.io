@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: English | 码出人生]]></title>
+  <link href="http://blog.ubone.com/blog/categories/english/atom.xml" rel="self"/>
+  <link href="http://blog.ubone.com/"/>
+  <updated>2015-07-25T17:06:32+08:00</updated>
+  <id>http://blog.ubone.com/</id>
+  <author>
+    <name><![CDATA[梅雪松]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[语法笔记-基本句型]]></title>
+    <link href="http://blog.ubone.com/blog/2015/07/25/yu-fa-bi-ji-ji-ben-ju-xing/"/>
+    <updated>2015-07-25T16:06:31+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/07/25/yu-fa-bi-ji-ji-ben-ju-xing</id>
+    <content type="html"><![CDATA[<p>这是一篇英语语法学习笔记，摘录自旋元佑《英语魔法师之语法俱乐部》</p>
+
+<!--more-->
+
+
+<p>5种单句的基本句型(S：主语 V：动词 O：宾语 C：补语)：</p>
+
+<table>
+<thead>
+<tr>
+<th>基本句型 </th>
+<th> 例句</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. S+V </td>
+<td> John Smith died.</td>
+</tr>
+<tr>
+<td>2. S+V+O </td>
+<td> John Smith killed three enemy soldiers.</td>
+</tr>
+<tr>
+<td>3. S+V+C </td>
+<td> Smith was a soldier. That dress looks pretty.</td>
+</tr>
+<tr>
+<td>3. S+V+O+O </td>
+<td> John&rsquo;s father gave him a dog.</td>
+</tr>
+<tr>
+<td>4. S+V+O+C </td>
+<td> I find the dress pretty. John&rsquo;s father called him a dog</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>例句：</p>
+
+<p><code>
+John Smith died in World War Two.
+John Smith killed three enemy soldiers.
+</code></p>
+
+<p>上例中，Die是<strong>不及物动词</strong>，因为可以独立发生。而kill这种动作必须发生在另一个对象身上，得有个东西被杀才行，后面必须跟一个宾语。所以kill是<strong>及物动词</strong>。</p>
+
+<p>在所有英语动词中，表示“是”的动词是空的，没有意义，只扮演引导叙述部分的角色，所以它也称为“<strong>Linking Verb</strong>”。这种动词后面跟的部分补足句子使得它获得完整的意思，称之为“<strong>补语(Complement)</strong>”如：John Smith was a soldier. 动词be也不需要翻译，如: The soup is too hot.</p>
+
+<p>所有Linking Verb，都可以解释为各种各样的“是”，例如：seem, appear, sound, feel, taste, turn, prove, become, make:</p>
+
+<p><code>
+I feel sick.
+The story proved false.
+He became a teacher.
+</code></p>
+
+<p>当然，be动词有时候没有补语。这时通常表示“存在”的意思，属于S+V句型。例如I think; therefore I am. 我思故我在。</p>
+
+<h3>S+V+O+C</h3>
+
+<p>I find the dress pretty. 宾语和补语间暗含了“是”的关系：dress is pretty。判断是否属于这个句型最简单的办法就是把宾语和补语拿出来，中间加be，看能否改成S+V+C。其他示例：</p>
+
+<p><code>
+The meat made the dog friendly.
+He found the trip exciting.
+The food made me sick.
+</code></p>
+
+<p>补语一般为名词或形容词。注意下面的句型：</p>
+
+<p><code>
+The magician moved his fingers quickly. (S+V+O)
+The president has gone abroad on a visit. (S+V: The president has gone)
+It never rains in California. (S+V: It rains)
+I can see better without these reading glasses. (S+V: I see)
+</code></p>
+
+<h3>S+V+O+O/S+V+O+C</h3>
+
+<p>有一种动词，后面可以跟两个宾语(S+V+O+O)。例如：John&rsquo;s father gave him a dog. him是给的对象，dog是给的东西。两个都是宾语。对比另一个句子：</p>
+
+<p>John&rsquo;s father called him a dog(骂他是狗)。这时候就是S+V+O+C句型了。因为你可以在him和dog间加一个be: he is a dog.</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>设计模式:状态模式 - 码出人生</title>
+  <title>语法笔记-基本句型 - 码出人生</title>
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="状态模式把对象的行为包装在不同的状态对象里，所有状态对象都属于抽象状态类的子类。状态模式的意图是让一个对象在其内部状态改变的时候，其行为也随之改变。类图示意如下： State角色：定义接口，用于封装Context对象的一个特定的状态所对应的行为。
-ConcreteState角色： &hellip;">
+  <meta name="description" content="这是一篇英语语法学习笔记，摘录自旋元佑《英语魔法师之语法俱乐部》 5种单句的基本句型(S：主语 V：动词 O：宾语 C：补语)： 基本句型 例句 1. S+V John Smith died. 2. S+V+O John Smith killed three enemy soldiers. 3. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@ ConcreteState角色： &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.ubone.com/blog/2014/08/18/she-ji-mo-shi-zhuang-tai-mo-shi">
+  <link rel="canonical" href="http://blog.ubone.com/blog/2015/07/25/yu-fa-bi-ji-ji-ben-ju-xing">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="码出人生" type="application/atom+xml">
@@ -92,7 +91,7 @@ var _hmt = _hmt || [];
   
   <header>
     
-      <h1 class="entry-title">设计模式:状态模式</h1>
+      <h1 class="entry-title">语法笔记-基本句型</h1>
     
     
       <p class="meta">
@@ -108,50 +107,93 @@ var _hmt = _hmt || [];
   
 
 
-<time datetime="2014-08-18T20:22:06+08:00" pubdate data-updated="true">2014-08-18</time>
+<time datetime="2015-07-25T16:06:31+08:00" pubdate data-updated="true">2015-07-25</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>状态模式把对象的行为包装在不同的状态对象里，所有状态对象都属于抽象状态类的子类。状态模式的意图是让一个对象在其内部状态改变的时候，其行为也随之改变。类图示意如下：</p>
-
-<p><img src="/myresource/images/image_blog_20140818_224041.jpg" alt="image" /></p>
+<div class="entry-content"><p>这是一篇英语语法学习笔记，摘录自旋元佑《英语魔法师之语法俱乐部》</p>
 
 <!--more-->
 
 
-<ol>
-<li>State角色：定义接口，用于封装Context对象的一个特定的状态所对应的行为。</li>
-<li>ConcreteState角色：每个具体状态类实现Context的一个状态所对应的行为。</li>
-<li>Context角色：定义客户端所感兴趣的接口，并且保留一个具体状态类的实例，即当前的状态。上图中Context.someOperation的行为是委派给具体State类来执行的。当Context.state变化时，动态地将具体类指向另一个具体状态类，从而改变改变其行为。</li>
-</ol>
+<p>5种单句的基本句型(S：主语 V：动词 O：宾语 C：补语)：</p>
+
+<table>
+<thead>
+<tr>
+<th>基本句型 </th>
+<th> 例句</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. S+V </td>
+<td> John Smith died.</td>
+</tr>
+<tr>
+<td>2. S+V+O </td>
+<td> John Smith killed three enemy soldiers.</td>
+</tr>
+<tr>
+<td>3. S+V+C </td>
+<td> Smith was a soldier. That dress looks pretty.</td>
+</tr>
+<tr>
+<td>3. S+V+O+O </td>
+<td> John&rsquo;s father gave him a dog.</td>
+</tr>
+<tr>
+<td>4. S+V+O+C </td>
+<td> I find the dress pretty. John&rsquo;s father called him a dog</td>
+</tr>
+</tbody>
+</table>
 
 
-<h3>什么情况下使用状态模式</h3>
+<p>例句：</p>
 
-<ol>
-<li>对象的行为依赖于它所处的状态，对象的行为必须随着其状态的改变而改变。</li>
-<li>对象在某个方法里依赖于一重或多重的条件转移语句，其中有大量的代码。状态模式可以把条件转移语句的每一个分支包装到一个状态类中。</li>
-</ol>
+<pre  class='line-numbers language-bash'><code class='language-bash'>John Smith died in World War Two.
+John Smith killed three enemy soldiers.</code></pre>
 
 
-<p>TcpConnection就是一个状态模式的经典例子，TCP连接的三个状态（Established, Listening, Closed）分别对应三个状态类（TcpEstablished, TcpListen, TcpClosed）。</p>
+<p>上例中，Die是<strong>不及物动词</strong>，因为可以独立发生。而kill这种动作必须发生在另一个对象身上，得有个东西被杀才行，后面必须跟一个宾语。所以kill是<strong>及物动词</strong>。</p>
 
-<p>在绘图软件中，状态模式广泛用于建立编辑器框架。使客户端能够轻易地挂接新工具。</p>
+<p>在所有英语动词中，表示“是”的动词是空的，没有意义，只扮演引导叙述部分的角色，所以它也称为“<strong>Linking Verb</strong>”。这种动词后面跟的部分补足句子使得它获得完整的意思，称之为“<strong>补语(Complement)</strong>”如：John Smith was a soldier. 动词be也不需要翻译，如: The soup is too hot.</p>
 
-<h3>模式实现</h3>
+<p>所有Linking Verb，都可以解释为各种各样的“是”，例如：seem, appear, sound, feel, taste, turn, prove, become, make:</p>
 
-<p>状态的变化由谁来定义？状态模式并没有对此进行规定。可以由外部事件、Context控制或者具体State自行决定。</p>
+<pre  class='line-numbers language-bash'><code class='language-bash'>I feel sick.
+The story proved false.
+He became a teacher.</code></pre>
 
-<p>状态对象的创建和销毁，可以按需创建或者预先创建。</p>
 
-<h3>与其它模式的关系</h3>
+<p>当然，be动词有时候没有补语。这时通常表示“存在”的意思，属于S+V句型。例如I think; therefore I am. 我思故我在。</p>
 
-<p>状态模式与策略模式很相似，类图也很相似。但是策略模式的特点是，一旦环境类选择了一个具体策略，那么在其生命周期内就不会改变这个具体策略类。而状态模式在环境类的生命周期中会有多个不同的状态对象被使用。</p>
+<h3>S+V+O+C</h3>
 
-<p>——《Java与模式》读书笔记</p>
+<p>I find the dress pretty. 宾语和补语间暗含了“是”的关系：dress is pretty。判断是否属于这个句型最简单的办法就是把宾语和补语拿出来，中间加be，看能否改成S+V+C。其他示例：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>The meat made the dog friendly.
+He found the trip exciting.
+The food made me sick.</code></pre>
+
+
+<p>补语一般为名词或形容词。注意下面的句型：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>The magician moved his fingers quickly. (S+V+O)
+The president has gone abroad on a visit. (S+V: The president has gone)
+It never rains in California. (S+V: It rains)
+I can see better without these reading glasses. (S+V: I see)</code></pre>
+
+
+<h3>S+V+O+O/S+V+O+C</h3>
+
+<p>有一种动词，后面可以跟两个宾语(S+V+O+O)。例如：John&rsquo;s father gave him a dog. him是给的对象，dog是给的东西。两个都是宾语。对比另一个句子：</p>
+
+<p>John&rsquo;s father called him a dog(骂他是狗)。这时候就是S+V+O+C句型了。因为你可以在him和dog间加一个be: he is a dog.</p>
 </div>
 
 
@@ -174,12 +216,12 @@ var _hmt = _hmt || [];
   
 
 
-<time datetime="2014-08-18T20:22:06+08:00" pubdate data-updated="true">2014-08-18</time>
+<time datetime="2015-07-25T16:06:31+08:00" pubdate data-updated="true">2015-07-25</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/she-ji-mo-shi/'>设计模式</a>
+    <a class='category' href='/blog/categories/english/'>english</a>
   
 </span>
 
@@ -214,10 +256,8 @@ var _hmt = _hmt || [];
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/08/13/she-ji-mo-shi-bei-wang-lu-mo-shi/" title="Previous Post: 设计模式:备忘录模式">&laquo; 设计模式:备忘录模式</a>
+        <a class="basic-alignment left" href="/blog/2015/05/19/mongodbxue-xi/" title="Previous Post: MongoDB学习">&laquo; MongoDB学习</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/08/19/she-ji-mo-shi-fang-wen-zhe-mo-shi/" title="Next Post: 设计模式:访问者模式">设计模式:访问者模式 &raquo;</a>
       
     </p>
   </footer>
@@ -291,13 +331,6 @@ var _hmt = _hmt || [];
 
 
 
-
-  <script type="text/javascript">
-  jQuery(document).ready(function() {
-    // Put a TOC right before the entry content.
-    generateTOC('.entry-content', 'Table of Contents');
-  });
-  </script>
 
 
 
