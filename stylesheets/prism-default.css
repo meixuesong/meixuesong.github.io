@@ -9,7 +9,8 @@ code[class*="language-"],
 pre[class*="language-"] {
 	color: black;
 	text-shadow: 0 1px white;
-	font-family: Consolas, Monaco, 'Andale Mono', monospace;
+	font-family: 'Lantinghei SC', 'Open Sans', Arial, 'Hiragino Sans GB', 'Microsoft YaHei', 微软雅黑, STHeiti, 'WenQuanYi Micro Hei', SimSun, Helvetica, sans-serif;
+/*	font-family: Consolas, Monaco, 'Andale Mono', monospace;*/
 	direction: ltr;
 	text-align: left;
 	white-space: pre;
@@ -51,6 +52,7 @@ pre[class*="language-"] {
 	padding: 1em;
 	margin: .5em 0;
 	overflow: auto;
+	margin-bottom: 2em;
 }
 
 :not(pre) > code[class*="language-"],
