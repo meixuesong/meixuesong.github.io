@@ -205,6 +205,8 @@ git branch --no-merged | 查看尚未与当前分支合并的分支
 
 参考： http://git-scm.com/book/zh/v1
 
+![image](/myresource/images/git-2015-07-26.png)
+
 
 
 
