@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-07-26T00:55:49+08:00</updated>
+  <updated>2015-07-26T01:04:39+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -853,6 +853,8 @@ $ git commit --amend</code></pre>
 
 
 <p>参考： <a href="http://git-scm.com/book/zh/v1">http://git-scm.com/book/zh/v1</a></p>
+
+<p><img src="http://blog.ubone.com/myresource/images/git-2015-07-26.png" alt="image" /></p>
 ]]></content>
   </entry>
   
