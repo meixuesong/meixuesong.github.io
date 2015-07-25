@@ -7,3 +7,10 @@ ul, ol {
 }
 
 blockquote {border-radius: 0.4em; color: #555;}
+
+
+@media only screen {
+	strong, dfn {
+  		color: #EC9488;
+	}
+}
