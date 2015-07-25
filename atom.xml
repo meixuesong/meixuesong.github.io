@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-07-25T17:07:56+08:00</updated>
+  <updated>2015-07-25T21:21:17+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -14,11 +14,132 @@
 
   
   <entry>
+    <title type="html"><![CDATA[语法笔记-名词词组与冠词]]></title>
+    <link href="http://blog.ubone.com/blog/2015/07/25/yu-fa-bi-ji-ming-ci-ci-zu-yu-guan-ci/"/>
+    <updated>2015-07-25T17:08:58+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/07/25/yu-fa-bi-ji-ming-ci-ci-zu-yu-guan-ci</id>
+    <content type="html"><![CDATA[<p>这是一篇英语语法学习笔记，摘录自旋元佑《英语魔法师之语法俱乐部》。学习名词短语和冠词。</p>
+
+<!--more-->
+
+
+<h3>名词短语</h3>
+
+<p>名词短语通常由三部分组成：限定词+形容词+名词。例如：</p>
+
+<ul>
+<li>a new book</li>
+<li>the best answer</li>
+<li>those sweet roses</li>
+</ul>
+
+
+<p>这三个部分中，每个部分都可能省略。变成：</p>
+
+<ul>
+<li>a book (省略 new)</li>
+<li>the best (eg. this one is the best)</li>
+<li>those （eg. I want those.）</li>
+</ul>
+
+
+<h3>什么时候不需要限定词？</h3>
+
+<p>冠词a(n)可以视为one的弱化结果，代表“一个”的概念。</p>
+
+<p>如果后面的名词不适合以“一个”来交代，就不适合加a(n)。例如：Unmarried men are a rare species these days. 句中men已经表示复数，所以不能要a(n)。</p>
+
+<p>抽象名称（如honesty诚实, bribery贿赂）不能以“一个”来表示，所以不需要限定词。</p>
+
+<p>物质名称（water, food）虽然是具体的东西，可是形状不固定，也不能以“一个”来表示，所以不需要限定词。</p>
+
+<p><strong>总的来说，如果一个单词没办法数，没有复数形式，也就自然不能说是“一个”了，这时候就可以不用限定词。</strong></p>
+
+<h3>专有名词</h3>
+
+<p>专有名称（如人名，地名）代表的对象只有一个，也不适合加a(n)，可以不用限定词。例如：如果a Genghis Khan表示one Genghis Khan，难道还有第二个成吉思汗？</p>
+
+<p><strong>所以，如果一个名称没有复数形式，它就不能加a(n). 这同样适用于专有名词。</strong></p>
+
+<p>但是，有时候专有名词要放到语境中进行判断。例如：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>There are five Sundays this month. 有5个Sunday，这时候Sunday就不是专有名词。
+I have an appointment on Sunday. 一个星期只有一个Sunday，是专有名词。</code></pre>
+
+
+<p>在补语位置的专有名词最难判断。<strong>补语和主语（或宾语）之间有同等关系，因此如果满足这两个条件，则补语也被视为专有名词，不需要限定词：1. 主语（或宾语）是专有名词；2.补语位置上的名词具有“唯一”的性质。</strong>例如：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>Mr. Elson was president of the high school.
+Some say he was a better president than Mr. Robert.</code></pre>
+
+
+<p>第一句中，Mr. Elson是主语，且是专有名词。president是补语。虽然president是普通名词，而且一个学校有过多个president，但由于它满足两个条件：主语是专有名词且当时只有一个校长，所以president也被视为专有名称，不加限定词。</p>
+
+<p>在第二句的从属子句中，he是主语，president仍然是主语补语，但由于是两任校长的比较，因此president不满足唯一性，所以要加限定词。</p>
+
+<p>当同位语是补语时，要注意是否为专有名词。例如：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>Mattin Wales, Head of the football team, at the time, wore a mustache.(当时的足球队长，留有小胡子)</code></pre>
+
+
+<p>Head of the football team是同位语，也就是who was Head of the football team at the time。所以Head是主语补语，与Mattin Wales是同等关系，不必加限定词。对于宾语补语，也是相同的判断方法。</p>
+
+<h3>定冠词the的用法</h3>
+
+<p>the 可以视为that或those的弱化形式。凡是上下文中有明指或暗示时，也就是有“那个”的指示功能时，要用定冠词the。例如：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>I need a book to read on my trip.
+I have finished the book you lent me.</code></pre>
+
+
+<p>第一个例句没有特指哪一本，第二个例句中the book就是that book，特指你借给我的那本。所以要the.</p>
+
+<p>我们来看看<strong>the与专有名词的关系</strong>。专有名词是指只有一个对象存在的名词，既然只有一个对象，就不存在这个、那个之分。所以不能加定冠词the. 如果加了the，就不是专有名词了：</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>This is not the John Smith I know. (暗示还有另一个，或者另一面)
+This is a photography show of the Taibei 50 years ago. (暗示两个台北，50年前和现在的台北)</code></pre>
+
+
+<p>最后，有些语法书上列出了一些专有名词要加the，如一些海洋、河流等专有名词。其实这些都不是例外，只不过是因为省略了括号中的内容。</p>
+
+<ul>
+<li>the Pacific (Ocean) 太平洋</li>
+<li>the Atlantic (Ocean) 大西洋</li>
+<li>the Indian Ocean</li>
+<li>the Mediterranean (Sea) 地中海</li>
+<li>the Dead Sea</li>
+</ul>
+
+
+<p>上面的例子中，the其实是配合Ocean或者Sea的，用来特指那个洋或海。其它的例子还包括：the Mississippi (River), the Titanic (Ship), the Hilton (Hotel) 等等。</p>
+
+<h3>总结</h3>
+
+<p>其实本课不用死记硬背，只要记住三点：</p>
+
+<ol>
+<li>名词短语包括限定词、形容词和名词三部分，任一部分都可能省略。</li>
+<li>如果名词短语中不用限定词，是因为该名词不适合加a(n)</li>
+<li>a(n)是one的弱化结果，而the是that/those的弱化结果。</li>
+</ol>
+
+
+<h3>其它</h3>
+
+<p>所有格有两种表示方式：人与其他生物可用<code>'s</code>的形式，非生物则用of &hellip;</p>
+
+<p>当用来表示上文说过的一句话时，可以用this或that作代名词。例如：There&rsquo;s going to be a raise. Isn&rsquo;t this(that) great? 但如果是代表下文要说的一句话，就只能用this。如：This is what he said: Don&rsquo;t go out!</p>
+
+<p>两者之间任选其一时，用eigher，三者以上才用any, 例如：Whether you serve coffee or tea doesn&rsquo;t matter; either will do.</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[语法笔记-基本句型]]></title>
     <link href="http://blog.ubone.com/blog/2015/07/25/yu-fa-bi-ji-ji-ben-ju-xing/"/>
     <updated>2015-07-25T16:06:31+08:00</updated>
     <id>http://blog.ubone.com/blog/2015/07/25/yu-fa-bi-ji-ji-ben-ju-xing</id>
-    <content type="html"><![CDATA[<p>这是一篇英语语法学习笔记，摘录自旋元佑《英语魔法师之语法俱乐部》</p>
+    <content type="html"><![CDATA[<p>这是一篇英语语法学习笔记，摘录自旋元佑《英语魔法师之语法俱乐部》。学习5种单句的基本句型。</p>
 
 <!--more-->
 
@@ -7527,536 +7648,6 @@ win.remove(view);
 view = null; // deletes the view, button, and their proxies</code></pre>
 
 
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Titanium Alloy MVC]]></title>
-    <link href="http://blog.ubone.com/blog/2015/01/11/titanium-alloy-mvc/"/>
-    <updated>2015-01-11T19:25:14+08:00</updated>
-    <id>http://blog.ubone.com/blog/2015/01/11/titanium-alloy-mvc</id>
-    <content type="html"><![CDATA[<p>这是一篇学习笔记，主要内容是Alloy的Controller, Model, Collection, View以及Widget.</p>
-
-<!--more-->
-
-
-<h2>1. Alloy Controllers</h2>
-
-<p>创建Controller和获得View: Alloy.createController and Controller.getView.</p>
-
-<p>可以继承：exports.baseController = &lsquo;baseControllerName&#8217;，子类继承父类export的方法，并可以重写。</p>
-
-<p>可以在Controller中判断当前平台：OS_ANDROID, OS_BLACKBERRY, OS_IOS, OS_MOBILEWEB, ENV_DEV, ENV_TEST, ENV_PRODUCTION, DIST_ADHOC, DIST_STORE:</p>
-
-<p><code>if (OS_IOS) {...}</code></p>
-
-<p>传参：</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>//index.js
-var arg = {
-        title: source[i].postTitle,
-        url: source[i].postLink
-    };
-    data.push(Alloy.createController('row', arg).getView());
-
-//row.js
-var args = arguments[0] || {};
-$.rowView.title = args.title || '';
-$.rowView.url = args.url || '';
-</code></pre>
-
-
-<p>使用Alloy.Globals命名空间可以保存全局变量：<code>Alloy.Globals.xxx = ...</code></p>
-
-<p>alloy.js运行于应用的生命周期之前，会在index.js加载之前调用，也就是任何UI加载之前。</p>
-
-<p>lib文件夹用于类库，也可以建立平台子文件夹（如ios）。但require时，不需要指定平台名。</p>
-
-<p>当前，Controller已经默认加载了Alloy, Underscore.js和Backbone.js，但以后可能需要自己加载：</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>var Alloy = require('alloy'), _ = require("alloy/underscore")._, Backbone = require("alloy/backbone");</code></pre>
-
-
-<h2>2. Alloy Models</h2>
-
-<h3>2.1 Alloy Collection and Model Objexts</h3>
-
-<h4>2.1.1 Models</h4>
-
-<p>In Alloy, models inherit from the <a href="http://docs.appcelerator.com/backbone/0.9.2/#Model">Backbone.Model</a> class.</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>exports.definition = {
-    config : {
- // table schema and adapter information
-    },
-    extendModel: function(Model) {      
-        _.extend(Model.prototype, {
- // Extend, override or implement Backbone.Model 
-        });
- 
- return Model;
-    },
-    extendCollection: function(Collection) {        
-        _.extend(Collection.prototype, {
- // Extend, override or implement Backbone.Collection 
-        });
- 
- return Collection;
-    }
-}</code></pre>
-
-
-<p>在Controller中访问Model:</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>var book = Alloy.createModel('book', {title:'Green Eggs and Ham', author:'Dr. Seuss'}); 
-var title = book.get('title');
-var author = book.get('author');
-// Label object in the view with id = 'label'
-$.label.text = title + ' by ' + author;</code></pre>
-
-
-<p>全局Model单例：</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>// This will create a singleton if it has not been previously created,
-// or retrieves the singleton if it already exists.
-var book = Alloy.Models.instance('book');</code></pre>
-
-
-<h5>2.1.1.1 定义表结构</h5>
-
-<p>config对象有三部分：columns, defaults和adapter.</p>
-
-<p>columns定义表结构。对应SQLite，支持以下类型：string, varchar, int, tinyint, smallint, bigint, double, float, decimal, number, date, datetime and boolean，其它未知类型将视为TEXT。</p>
-
-<p>defaults对象用于设置默认值。</p>
-
-<p>adapter对象定义存储接口。</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>exports.definition = {
-    config: {
- "columns": {
- "title": "String",
- "author": "String",
- "book_id": "INTEGER PRIMARY KEY AUTOINCREMENT" //自增长
-        },
- "defaults": { //默认值
- "title": "-",
- "author": "-"
-        },
- "adapter": { 
- "type": "sql", //存储类型SQLite
- "collection_name": "books", //表名
-  "idAttribute": "book_id" //主键
-        }
-    }
-}</code></pre>
-
-
-<h5>2.1.1.2 Extending the Backbone.Model Class</h5>
-
-<p>在extendModel中扩展方法，例如validate方法.</p>
-
-<h4>2.1.2 Collections</h4>
-
-<p>在Controller中创建Collection，作用域为本Controller:</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>var library = Alloy.createCollection('book'); 
-library.fetch(); // Grab data from persistent storage </code></pre>
-
-
-<p>创建全局单例Collection:</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>// This will create a singleton if it has not been previously created,
-// or retrieves the singleton if it already exists.
-var library = Alloy.Collections.instance('book');</code></pre>
-
-
-<p>在extendCollection中定义扩展Backbone的方法，例如：</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>// Implement the comparator method.
-comparator : function(book) {
-    return book.get('title');
-}</code></pre>
-
-
-<p></p>
-
-<p>Backbone.Collection继承了underscore的一些集合操作方法，例如迭代：</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>var data = [];
-library.map(function(book) {
- // The book argument is an individual model object in the collection
-    var title = book.get('title');
-    var row = Ti.UI.createTableViewRow({"title":title});
-    data.push(row);
-});
-// TableView object in the view with id = 'table'
-$.table.setData(data);</code></pre>
-
-
-<p>事件处理：use the Backbone.Events on, off and trigger methods</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>var library = Alloy.createCollection('book');
-function event_callback (context) {
-    var output = context || 'change is bad.';
-    Ti.API.info(output);
-};
-// Bind the callback to the change event of the collection.
-library.on('change', event_callback);
-// Trigger the change event and pass context to the handler.
-library.trigger('change', 'change is good.');
-// Passing no parameters to the off method unbinds all event callbacks to the object.
-library.off();
-// This trigger does not have a response.
-library.trigger('change');</code></pre>
-
-
-<p>注意：如果事件名称不要使用空格。因为Backbone使用了空格来处理多事件。</p>
-
-<h3>2.2 Alloy Data Binding</h3>
-
-<p>当Collection或Model变化时，View也跟随变化，这就是绑定.</p>
-
-<p><strong>注意：如果使用绑定，必须在controller关闭时，调用<code>$.destroy()</code>方法，以避免内存泄露:</strong></p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>$.win.addEventListener("close", function(){
-    $.destroy();
-} </code></pre>
-
-
-<h4>2.2.1 Collection-View Binding</h4>
-
-<p>以下View对象支持Collection绑定：</p>
-
-<table>
-<thead>
-<tr>
-<th>View Object </th>
-<th> Add data binding attributes to&hellip; </th>
-<th> Repeater Object</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ButtonBar </td>
-<td> <code>&lt;Labels&gt;</code> </td>
-<td> <code>&lt;Label/&gt;</code></td>
-</tr>
-<tr>
-<td>CoverFlowView </td>
-<td> <code>&lt;Images&gt;</code> </td>
-<td> <code>&lt;Image/&gt;</code></td>
-</tr>
-<tr>
-<td>ListView </td>
-<td> <code>&lt;ListSection&gt;</code> </td>
-<td> <code>&lt;ListItem/&gt;</code></td>
-</tr>
-<tr>
-<td>Map Module </td>
-<td> <code>&lt;Module module="ti.map" method="createView"&gt;</code>  </td>
-<td> <code>&lt;Annotation/&gt;</code></td>
-</tr>
-<tr>
-<td>Picker </td>
-<td> <code>&lt;PickerColumn&gt;</code> or <code>&lt;Column&gt;</code> </td>
-<td> <code>&lt;PickerRow/&gt;</code> or <code>&lt;Row/&gt;</code></td>
-</tr>
-<tr>
-<td>ScrollableView </td>
-<td> <code>&lt;ScrollableView&gt;</code> </td>
-<td> <code>&lt;View/&gt;</code></td>
-</tr>
-<tr>
-<td>TableView </td>
-<td> <code>&lt;TableView&gt;</code> </td>
-<td> <code>&lt;TableViewRow/&gt;</code></td>
-</tr>
-<tr>
-<td>TabbedBar </td>
-<td> <code>&lt;Labels&gt;</code> </td>
-<td> <code>&lt;Label/&gt;</code></td>
-</tr>
-<tr>
-<td>Toolbar </td>
-<td> <code>&lt;Items&gt;</code> </td>
-<td> <code>&lt;Item/&gt;</code></td>
-</tr>
-<tr>
-<td>View </td>
-<td> <code>&lt;View&gt;</code> </td>
-<td> 除了Window和TabGroup之外的View对象</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>在XML中定义以下元素，其中只有dataCollection是必须的：</p>
-
-<ul>
-<li>dataCollection: 指定一个Collection</li>
-<li>dataTransform: 回调方法，传入model，返回修改的JSON对象</li>
-<li>dataFilter: 过滤collection, 传入collection, 返回model数组</li>
-<li>dataFunction: 指定一个方法名，controller使用这个方法来更新view。这个方法不是controller中声明的方法。该属性创建一个别名访问内在的绑定方法。（<a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Alloy_Data_Binding-section-36739592_AlloyDataBinding-BackboneBinding">没搞懂</a>）</li>
-</ul>
-
-
-<p>对于Collection中的model，xml中可以使用<code>{}</code>来获取model的值，例如：<code>&lt;Label text="{title} by {author}" /&gt;</code>。</p>
-
-<p>在repeater对象的controller中，可以使用<code>$model</code>来引用当前model。如<code>$model.title</code></p>
-
-<p>Collection绑定示例：</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>app/views/index.xml
-&lt;Alloy&gt;
-    &lt;Collection src="book"/&gt;
-    &lt;Window backgroundColor="white" onClose="cleanup"&gt;
-        &lt;ScrollableView dataCollection="book"&gt;
-            &lt;View layout="vertical"&gt;
-                &lt;ImageView image="{cover}" /&gt;
-                &lt;Label text="{title} by {artist}" /&gt;
-            &lt;/View&gt;
-        &lt;/ScrollableView&gt; 
-    &lt;/Window&gt;
-&lt;/Alloy&gt;
-
-app/controllers/index.js
-$.index.open();
-Alloy.Collections.album.fetch();
- 
-function cleanup() {
-    $.destroy();
-}
-</code></pre>
-
-
-<h4>2.2.2 Model-View Binding</h4>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>&lt;Alloy&gt;
-    &lt;Model src="settings"/&gt;
-    &lt;Window backgroundColor="white" onClose="cleanup"&gt;
-        &lt;View layout="vertical"&gt;
-            &lt;Label text="Text Size" /&gt;
-            &lt;Slider value="{settings.textsize}" max="5" min="1"/&gt;
-            &lt;Label text="Bold"/&gt;
-            &lt;Switch value="{settings.bold}" /&gt;
-            &lt;Label text="Italics"/&gt;
-            &lt;Switch value="{settings.italics}" /&gt;
-        &lt;/View&gt;
-    &lt;/Window&gt;
-&lt;/Alloy&gt;</code></pre>
-
-
-<p>上例中，获取值使用的格式为：<code>{modelName.attrName}</code></p>
-
-<h4>2.2.3 Collection方法示例</h4>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>app/views/index.xml
-&lt;Alloy&gt;
-    &lt;Collection src="book" /&gt;
-    &lt;Window class="container"&gt;
-        &lt;TableView dataCollection="book"
-                   dataTransform="transformFunction"
-                   dataFilter="filterFunction"
-                   dataFunction="updateUI"
-                   onDragEnd="refreshTable"&gt;
-            &lt;!-- Also can use Require --&gt;
-            &lt;TableViewRow title="{title}" /&gt;
-        &lt;/TableView&gt;
-    &lt;/Window&gt;
-&lt;/Alloy&gt;
-
-app/controllers/index.js
-$.index.open();
- 
-// Encase the title attribute in square brackets
-function transformFunction(model) {
- // Need to convert the model to a JSON object
-    var transform = model.toJSON();
-    transform.title = '[' + transform.title + ']';
- // Example of creating a custom attribute, reference in the view using {custom}
-    transform.custom = transform.title + " by " + transform.author;
- return transform;
-}
-// Show only book models by Mark Twain
-function filterFunction(collection) {
- return collection.where({author:'Mark Twain'});
-}
- 
-function refreshTable(){
- // Trigger the binding function identified by the dataFunction attribute
-    updateUI();
-}
-// Trigger the synchronization
-var library = Alloy.Collections.book;
-library.fetch();
- 
-// Free model-view data binding resources when this view-controller closes
-$.index.addEventListener('close', function() {
-    $.destroy();
-});</code></pre>
-
-
-<p>当数据变化时，上面的例子中的界面会跟着变化。如果想避免发生变化，可以在调用Backbone方法修改model数据时指定参数：<code>{silent:true}</code>.</p>
-
-<h3>2.3 Alloy数据持久化与升级</h3>
-
-<p>Model数据可以同步到本地或远程服务器。这项功能使用的是Backbone sync方法。</p>
-
-<h4>2.3.1 Backbone同步方式</h4>
-
-<p>Backbone sync时，默认会执行RESTful JSON请求到Model.urlRoot或者Collection.url。读操作使用GET方法，写操作使用POST方法。不论Model是否定义了自己的主键，Backbone都会创建Client ID(cid)。在未保存前，可以使用Model.cid或者Collection.getByCid方法来存取数据。Backbone同步示例：</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>// Since the urlRoot attribute is defined, all HTTP commands are to /library
-var Book = Backbone.Model.extend({urlRoot:'/library'})
-var book = new Book();
- 
-// Performs a POST on /library with the arguments as a payload and the server returns the id as 1
-book.save({title:'Bossypants',author:'Tina Fey',checkout:false}) 
- 
-// Performs a GET on /library/1
-book.fetch({id:1}); 
- 
-// Performs a PUT on /library/1 with the entire modified object as a payload.
-book.save({checkout:true});
- 
-// Performs a DELETE on /library/1
-book.destroy();</code></pre>
-
-
-<h4>2.3.2Alloy的同步方式</h4>
-
-<p>Alloy支持SQLite或者properties来保存数据。Alloy查询SQLite时，可以使用简单查询或者prepared statement:</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>var library = Alloy.createCollection('book');
-// The table name is the same as the collection_name value from the 'config.adapter' object. This may be different from the model name.
-var table = library.config.adapter.collection_name;
-// use a simple query
-library.fetch({query:'SELECT * from ' + table + ' where author="' + searchAuthor + '"'});
-// or a prepared statement
-library.fetch({query: { statement: 'SELECT * from ' + table + ' where author = ?', params: [searchAuthor] }});
-
-//查询1条记录：
-myModel.fetch({id: 123});
-// is equivalent to
-myModel.fetch({query: 'select * from ... where id = ' + 123 });</code></pre>
-
-
-<h4>2.3.3 数据库迁移（升级或降级）</h4>
-
-<p>Alloy采用migration对象来迁移数据库。首先，要将相应的JavaScript文件放在app/migrations文件夹下。文件名采用以下格式：<code>YYYYMMDDHHmmss_MODELNAME.js</code>，例如20150120160155_book.js。Alloy将升序执行js文件以完成数据库迁移。</p>
-
-<p>JavaScript文件中要实现两个方法：migration.up(migrator) 和 migration.down(migrator)。migrator对象的值如下：</p>
-
-<table>
-<thead>
-<tr>
-<th>Key </th>
-<th> Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>db </td>
-<td> Ti.Database实例，可以调用db.execute方法执行SQL。<strong>注意不要关闭或打开另一个实例。</strong></td>
-</tr>
-<tr>
-<td>dbname </td>
-<td> 数据库名</td>
-</tr>
-<tr>
-<td>table </td>
-<td> table名，也就是Model的config.adapter.collection_name值</td>
-</tr>
-<tr>
-<td>idAttribute </td>
-<td> 主键字段名</td>
-</tr>
-<tr>
-<td>createTable </td>
-<td> 创建表的方法，参数为Model config.columns</td>
-</tr>
-<tr>
-<td>dropTable </td>
-<td> 删除表</td>
-</tr>
-<tr>
-<td>insertRow </td>
-<td> 插入行, 参数为待插入的数据对象</td>
-</tr>
-<tr>
-<td>deleteRow </td>
-<td> 删除行，参数为待删除的数据对象</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>下面的示例先创建表将初始数据，之后进行了升级:</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>app/migrations/20120610049877_book.js
-var preload_data = [
-    {title: 'To Kill a Mockingbird', author:'Harper Lee'}
-];
- 
-migration.up = function(migrator)
-{
-    migrator.createTable({
- "columns":
-        {
- "book": "TEXT",
- "author": "TEXT"
-        }
-    });
- for (var i = 0; i &lt; preload_data.length; i++) { 
-        migrator.insertRow(preload_data[i]);
-    }
-};
- 
-migration.down = function(migrator)
-{
-    migrator.dropTable();
-};
-
-//升级app/migrations/20130118069778_book.js
-migration.up = function(migrator) {
-    migrator.db.execute('ALTER TABLE ' + migrator.table + ' ADD COLUMN isbn INT;');
-};
-migration.down = function(migrator) {
-    var db = migrator.db;
-    var table = migrator.table;
-    db.execute('CREATE TEMPORARY TABLE book_backup(title,author,alloy_id);')
-    db.execute('INSERT INTO book_backup SELECT title,author,alloy_id FROM ' + table + ';');
-    migrator.dropTable();
-    migrator.createTable({
-        columns: {
-            title:"TEXT",
-            author:"TEXT",
-        },
-    });
-    db.execute('INSERT INTO ' + table + ' SELECT title,author,alloy_id FROM book_backup;');
-    db.execute('DROP TABLE book_backup;');
-};</code></pre>
-
-
-<h2>3. Alloy Widgets</h2>
-
-<p>在Alloy XML Markup中已经介绍了如何使用Widgets，这里主要介绍如何创建Widgets。</p>
-
-<p>Widgets应放在app/Widgets文件夹下，与app文件夹一相，每个Widget也有自己的views, controllers, models, styles and assets等。在Widget中不能访问除了i18n之外的文件。其它主要区别如下：</p>
-
-<ul>
-<li>使用WPATH()来自动处理assets和libs的路径总是。例如要在Widget中require <code>app/widgets/foo/lib/helper.js</code>，可以<code>require(WPATH('helper'))</code>。对于<code>app/widgets/foo/assets/images/foo.png</code>使用<code>WPATH('images/foo.png')</code>。</li>
-<li>Widgets使用自己的配置文件widget.json</li>
-<li>Widgets的主controller是widget.js，而不是index.js。创建widget内的另一个controller需要使用Widget.createController方法。</li>
-<li>所有Widget控制器中的方法均为私有方法，除非使用$，例如<code>$.init=function(){...}</code>，然后就可以在项目中调用：<code>$.fooWidget.init()</code>.</li>
-<li>Widget中也可以创建Model和Collection, 但要使用Widget.createModel和Widget.createCollection方法。</li>
-<li>样式文件为widget.tss</li>
-<li>Widget同样可以有Theme, 相关样式和资源要放到：<code>app/themes/&lt;THEME_NAME&gt;/&lt;WIDGET_NAME&gt;</code>。</li>
-<li>Widget的主View是widget.xml而不是index.xml。当Widget中的某个view指定了id(eg. buttonId)时，在项目中可以这样引用：<code>$.fooWidget.buttonId.xxx</code></li>
-<li>Widget可以包含其它Widget。需要在widget.json中定义依赖。在controller中可以调用：<code>Widget.createWidget(widget_name, [controller_name])</code></li>
-</ul>
 
 ]]></content>
   </entry>
