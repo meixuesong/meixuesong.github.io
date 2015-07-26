@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="门面(Facade)模式的作用是屏蔽众多子系统的复杂性，为客户端提供一个统一的门面(Facade)对象，方便客户端调用。门面模式没有统一的结构。一般是一个子系统提供一个门面。要注意的是门面只负责协调子系统去服务客户端的请求，不能在门面类中增加功能和职责。 什么情况下使用门面模式？ &hellip;">
+  <meta name="description" content="桥梁模式的用意是“将抽象化与实现化解耦，使二者可以独立变化。”这里的解耦就是将它们之间的强关联改变成弱关联。所谓强关联就是继承关系，在编译期就已经确定。而弱关联就是动态确定并且可以在运行期动态改变的关联。因此对于Java，继承是强关联，而聚合关系是弱关联。因此桥梁模式中的解耦， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +88,49 @@ var _hmt = _hmt || [];
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/">设计模式:桥梁模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-03T22:09:23+08:00" pubdate data-updated="true">2014-08-03</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>桥梁模式的用意是“将抽象化与实现化解耦，使二者可以独立变化。”这里的解耦就是将它们之间的强关联改变成弱关联。所谓强关联就是继承关系，在编译期就已经确定。而弱关联就是动态确定并且可以在运行期动态改变的关联。因此对于Java，继承是强关联，而聚合关系是弱关联。因此桥梁模式中的解耦，就是指将抽象化与实现化之间的继承关系换成组合/聚合关系，使两者可以独立变化。桥梁模式的结构图如下：</p>
+
+<p><img src="/myresource/images/image_blog_20140803_233716.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/03/she-ji-mo-shi-qiao-liang-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -476,56 +519,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong/">设计模式在序列生成器的应用</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-28T22:21:23+08:00" pubdate data-updated="true">2014-07-28</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>序列生成器是常见的一个应用组件。Oracle数据库有Sequence，但不是所有数据库都有序列。本文尝试将单例模式、多例模式应用于序列生成器。采用了以下方式实现：</p>
-
-<ol>
-<li>没有数据库的单例实现</li>
-<li>有数据库的单例实现</li>
-<li>有缓存的单例实现</li>
-<li>有缓存的多序列实现</li>
-<li>多序列的多例实现。</li>
-</ol>
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/28/she-ji-mo-shi-zai-xu-lie-sheng-cheng-qi-de-ying-yong/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/9">&larr; Older</a>
@@ -547,10 +540,14 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/db/'>db (1)</a></li><li><a href='/blog/categories/english/'>english (2)</a></li><li><a href='/blog/categories/java/'>java (35)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (7)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/db/'>db (1)</a></li><li><a href='/blog/categories/english/'>english (3)</a></li><li><a href='/blog/categories/java/'>java (35)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (7)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (3)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/07/26/yu-fa-bi-ji-dong-ci-shi-tai/">语法笔记-动词时态</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/07/25/yu-fa-bi-ji-ming-ci-ci-zu-yu-guan-ci/">语法笔记-名词词组与冠词</a>
@@ -566,10 +563,6 @@ var _hmt = _hmt || [];
     
       <li class="post">
         <a href="/blog/2015/04/24/gitchang-yong-ming-ling/">Git常用命令</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/12/jax-rs-2-dot-0-yi-bu-tong-xin/">JAX-RS 2.0 异步通信</a>
       </li>
     
   </ul>

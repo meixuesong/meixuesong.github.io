@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-07-26T01:04:39+08:00</updated>
+  <updated>2015-07-26T22:43:33+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,124 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[语法笔记-动词时态]]></title>
+    <link href="http://blog.ubone.com/blog/2015/07/26/yu-fa-bi-ji-dong-ci-shi-tai/"/>
+    <updated>2015-07-26T21:27:13+08:00</updated>
+    <id>http://blog.ubone.com/blog/2015/07/26/yu-fa-bi-ji-dong-ci-shi-tai</id>
+    <content type="html"><![CDATA[<p>这是一篇英语语法学习笔记，摘录自旋元佑《英语魔法师之语法俱乐部》。学习动词时态。</p>
+
+<!--more-->
+
+
+<p><strong>英语语法中，时间和状态是分开处理的。时间比较简单，包括现在、过去和将来。而状态就比较麻烦，还包括主动和被动。但简单来看，可以把be动词当做动词，其后的分词视为形容词补语。这样就只剩下be动词写的简单式和have been写的完成式这两种状态。</strong></p>
+
+<h2>1. 简单式</h2>
+
+<p>简单式的动词可以清楚交待动作发生在哪个时段。与它搭配的时间副词通常会明确标示出一个时段，这个时段我们可以用括弧括起来。</p>
+
+<h3>1.1 过去时间</h3>
+
+<p>动作发生在过去的某个时间。</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>The U.S. established diplomatic relations with the P.R.C. in 1979.
+解说：建交时间是1979年
+
+The movable print was introduced to England in 1485.
+解说：活版印刷于1485年被引进英国。有被动语态。过去分词introduced当作形容词补语看待。-ed视为一个表达被动意味的形容词字尾。
+
+I was visiting clients the whole day yesterday.
+解说：the whole day yesterday也是一个过去时间段。visiting clients是现在分词短语，视为形容词补语来形容主语。现在分词表示一种持续性，相当于“正在”、“一直在”
+
+The witness was being questioned in court when he had a heart attack.
+解说，证人心脏病突发时，他正在法庭上被质询。时间副词when he had a heart attack表示发生那一个瞬间，所以是简单式。be后面的部分仍当形容词补语看。being存在的主要意义不是be，而是-ing，表示正在。</code></pre>
+
+
+<h3>1.2 现在时间</h3>
+
+<p>如果时间副词是now，或是以now为中心的或大或小的括弧（如真理就是以now为中心，涵盖过去与未来的时间段），就要用现在时间的简单式。</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>Obama is the U.S. President.
+解说：奥巴马是美国总统。
+
+All mothers love their children.
+解说：相当于真理。
+
+7-11 is selling big cokes at a discount this month.
+解说：这个月打折，并且是正在持续的活动，所以用现在分词做补语强调持续性。
+
+According to the NASA survey, the ozone layer is being depleted.
+解说：臭氧层正在补消耗中。being同样只有-ing有意义，表示正在。-ed表示被动，被消耗。</code></pre>
+
+
+<h3>1.3 未来时间</h3>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>There will be a major election in March.
+
+Don't call me at six tomorrow. I'll still be sleeping then.
+
+The building will be razed next month.
+这房子下月将被拆除。</code></pre>
+
+
+<h2>2. 完成式</h2>
+
+<p>相对于简单式用括弧形状来表达时间，完成式则以箭头形状来表示动作的截止时间。<strong>简单式是交待动作发生的时段，而完成式并不对动作发生的时段作明确交代，只表示“曾经”、“做过”的意思。</strong></p>
+
+<h3>2.1 现在时间</h3>
+
+<p>截止到现在，曾经、已经&hellip;</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>I'm sure I have seen this face somewhere.
+解说：我肯定曾经见过这张脸。没有时间交代是什么时候看过，只知道一定有见过。
+
+We have been working overtime for a week to fill your order.
+解说：时间副词for a week表示到现在算已经一个星期了，强调的是截止时间。所以用have been。后面的补语working表示持续性。用来形容主语we一直在加班。
+
+The house has been redecorated twice since they moved in.
+解说：从搬进来到现在，已经装修两次了。被装修。</code></pre>
+
+
+<h3>2.2 过去时间</h3>
+
+<p>截止到过去的某个时间，在那之前有过&hellip;</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>Many soldiers had died from pneumonia before the discovery of penicilin.
+解说：发现盘尼西林以前，已经有很多士兵死于肺炎。截止过去（发现盘尼西林），所以用had
+
+I had been smoking three packs of cigarettes a day before I decided to quit.
+解说：截止过去（我决定戒烟），一直如此（smoing）
+
+Japan had not been defeated yet by the time Germany surrendered.
+解说：截止过去（德国无条件投降），日本还未被打败。</code></pre>
+
+
+<h3>2.3 未来时间</h3>
+
+<p>截止到未来的某个时间，将有过&hellip;</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>Next April, I will have worked here for 20 years.
+
+Come back at 5:00. Your car will have been fixed by then.
+
+In two more minutes, she will have been talking on he phone for three hours!
+解说：再过两分钟。一直</code></pre>
+
+
+<h2>3. 总结</h2>
+
+<p>英语动词时态看似复杂，其实只要在句型上转个弯，就会豁然开朗：</p>
+
+<ol>
+<li>把be动词当动词看，句子就只剩两种状态：简单式与完成式。</li>
+<li>简单式以括弧型的时间来表达，表示的是动作发生的时段。</li>
+<li>完成式以箭头型的时间来表达，表示的是截止某个时间，已经&hellip;</li>
+<li>be动词后面的分词当作形容词补语。现在分词有正在进行的意思，过去分词有被动的意思。</li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[语法笔记-名词词组与冠词]]></title>
@@ -7182,475 +7300,6 @@ stack=2, Locals=4, Args_size=1
 
 
 <p>上面的示例可以看出中间变量都以操作数栈的入栈和出栈为信息交换途径。以上执行过程只是概念模型，实际执行时虚拟机会做优化。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Titanium UI及最佳实践]]></title>
-    <link href="http://blog.ubone.com/blog/2015/01/13/titanium-uiji-zui-jia-shi-jian/"/>
-    <updated>2015-01-13T21:05:37+08:00</updated>
-    <id>http://blog.ubone.com/blog/2015/01/13/titanium-uiji-zui-jia-shi-jian</id>
-    <content type="html"><![CDATA[<p>学习Titanium的UI，以及Titanium相关的最佳实践。</p>
-
-<!--more-->
-
-
-<h2>1. User Interface</h2>
-
-<h3>1.1 基础</h3>
-
-<p>布局属性：</p>
-
-<ul>
-<li>width</li>
-<li>height</li>
-<li>left</li>
-<li>right</li>
-<li>top</li>
-<li>bottom</li>
-<li>center: 其属性x和y，表示view中心相对父容器的left, top</li>
-<li>layout: &ldquo;vertical&rdquo;, &ldquo;horizontal&rdquo; or &ldquo;composite&#8221;，默认为composite，值absolute也是composite</li>
-<li>size: 只读，当自己与下级渲染完后才有值。</li>
-<li>rect: 只读</li>
-<li>zIndex: 整数，值大的位于上层</li>
-</ul>
-
-
-<p>Titanium.UI.FILL and Titanium.UI.SIZE</p>
-
-<table>
-<thead>
-<tr>
-<th>Name </th>
-<th> Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>width </td>
-<td> If width is defined, it takes precedence and the positioning pins are not used to determine the view&rsquo;s width. If width is not defined, and at least two horizontal positioning pins are defined, the width is calculated implicitly from the pins. For example, left and right or left and center.x. If all three horizontal pins are defined, the width is determined by the left and center.x pins. If width cannot be implicitly calculated it follows the view&rsquo;s default sizing behavior.</td>
-</tr>
-<tr>
-<td>left </td>
-<td> If left is defined, it always takes precedence for positioning the view horizontally.</td>
-</tr>
-<tr>
-<td>center.x </td>
-<td> Used to position the view horizontally if left is not set. If left is set, this property is not used to position the view, although it may be used to determine its width.</td>
-</tr>
-<tr>
-<td>right </td>
-<td> Used to position the view horizontally when neither left or center.x is set. If either left or center.x is set, this property is not used to position the view, although it may be used to determine its width.</td>
-</tr>
-<tr>
-<td>height </td>
-<td> If height is defined, it takes precedence and the positioning pins are not used to determine the view&rsquo;s height. If height is not defined, and at least two vertical positioning pins are defined, the height is determined implicitly from the pins. If all three vertical pins are defined, the height is determined by the top and center.y pins. If height cannot be implicitly calculated it follows the view&rsquo;s default sizing behavior.</td>
-</tr>
-<tr>
-<td>top </td>
-<td> If specified, always takes precedence for positioning the view horizontally.</td>
-</tr>
-<tr>
-<td>center.y </td>
-<td> Used to position the view vertically if top is not set. If top is defined, this property is not used to position the view, although it may be used to determine its height.</td>
-</tr>
-<tr>
-<td>bottom </td>
-<td> Used to position the view vertically if neither top or center.y is set. If either top or center.y is set, this property is ignored. this property is not used to position the view, although it may be used to determine its height.</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>为了防止重新布局影响性能，可以使用批量操作：</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>myView.applyProperties({
-  top: 50,
-  left: 50,
-  width: 200
-});</code></pre>
-
-
-<p>使用rect属性可以获取控件的位置、大小。由于布局是异步发生，因此可能需要在postlayout事件之后去获取rect。示例如下：</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>var postLayoutCallback  = function(e){
-  Ti.API.info(String.format("Layout done, left: %f, width: %f", myView.rect.x, myView.rect.width));
-  myView.removeEventListener('postlayout', postLayoutCallback);
-}
-myView.addEventListener('postlayout', postLayoutCallback);
-myView.updateLayout({
-  left: '25%',
-  width: '25%'
-});</code></pre>
-
-
-<p>注意！如果在postlayout事件中修改view的大小，会导致死循环！此外，为了性能，只监听特定view的postlayout事件，而不是整个窗口。一些非布局的参数变化也可能导致触发此事件，例如设置label的text。</p>
-
-<p><strong>尺寸单位</strong></p>
-
-<table>
-<thead>
-<tr>
-<th>Unit </th>
-<th> Abbreviation </th>
-<th> Note</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>pixels </td>
-<td> px </td>
-<td></td>
-</tr>
-<tr>
-<td>density-independent pixels </td>
-<td> dip or dp </td>
-<td> Equivalent to Apple &ldquo;points.&rdquo;</td>
-</tr>
-<tr>
-<td>inches  </td>
-<td> in </td>
-<td></td>
-</tr>
-<tr>
-<td>millimeters </td>
-<td> mm</td>
-<td> Android, iOS only</td>
-</tr>
-<tr>
-<td>centimeters </td>
-<td> cm </td>
-<td> Android, iOS only</td>
-</tr>
-<tr>
-<td>points </td>
-<td> pt</td>
-<td> 1/72 of an inch. Android only. Not to be confused with Apple &ldquo;points.&rdquo;</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>On Android, a density-independent pixel (DIP) corresponds to one pixel on a 160DPI display.</p>
-
-<p>On iOS, a DIP corresponds to one pixel on a non-Retina display, which is 163DPI for iPhone/iPod touch and 132DPI for the iPad. A DIP corresponds to 2 pixels of width or height on a Retina display.</p>
-
-<p>如果未指定，系统默认为：Android(pixels), iOS(DIP), WEB(DIP)</p>
-
-<p><strong>Horizontal and Vertical Layouts</strong></p>
-
-<p>对于垂直布局，child.width = FILL时，充满父容器的width; child.height = FILL时，充满父容器剩余的高度，后续加入的child将超出父容器高度，因此不可见。</p>
-
-<p>对于水平布局，child一个一个往右排。如果horizontalWrap=true, 排不下时会换行，否则只会排成一行。</p>
-
-<p>这两种情况，left和right都用于水平padding, top和bottom用于垂直位置。</p>
-
-<p><strong>冲突时的解决办法：</strong></p>
-
-<ul>
-<li>当控件使用SIZE，而计算出来的尺寸超过父容器，则以父容器边界为准。</li>
-<li>当控件使用FILL，父容器使用SIZE，则父容器按控件FILL走，不停扩大，直到遇到边界限制（例如祖父有限制）。</li>
-<li>当控件使用百分比，而父容器使用SIZE，结果不确定。</li>
-</ul>
-
-
-<p>查看<a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Transitioning_to_the_New_UI_Layout_System-section-30088148_TransitioningtotheNewUILayoutSystem-BehaviorChangesinRelease2.0">布局示例</a>。</p>
-
-<h3>1.2 事件处理</h3>
-
-<p>常用事件：click、swipe、scroll、dblclick、doubletap、touchstart, touchmove, touchend等等。一些模块还有自己的事件。</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>element.addEventListener('event_type', function(e) {
- // code here is run when the event is fired
- // properties of the event object 'e' describe the event and object that received it
-    Ti.API.info('The '+e.type+' event happened');
-});</code></pre>
-
-
-<p>回调方法的e通常包含以下信息：</p>
-
-<ul>
-<li>x和y，事件（如touch）发生时，在view内的坐标。</li>
-<li>globalPoint: （仅iOS）事件发生时，在屏幕中的坐标。</li>
-<li>type: 事件类型名</li>
-<li>source: 事件主体</li>
-</ul>
-
-
-<p>事件可以从当前View往parent View bubbling。Titanium.Event有两个参数控制bubbling: bubbles(boolean)表示事件是否能buggle，只读；cancelBubble(boolean)，如果设置为true则停止bubble。此外，所有View类组件还有一个属性bubbleParent，是可改的。用于表示事件是否bubble给上级。需要注意的是，当手指拿起时，可能触发了touchup, click, tap事件，在touchup事件中设置cancelBubble=true并不会阻止tap或click事件触发和bubble. 在代码中也可以触发事件：</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>someButton.fireEvent('click');
-//或者传参
-someButton.fireEvent('click', {kitchen: 'sink'});
-//注意获取kitchen的代码
-someButton.addEventListener('click', function(e){
-    Ti.APP.info('The value of kitchen is '+e.kitchen);
-});</code></pre>
-
-
-<p><strong>自定义事件</strong>：</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>deleteButton.addEventListener('click', function(e){
- // when something happens in your app
-    database.doDelete(e.whichRecord);
- // fire an event so components can react
-    theTable.fireEvent('db_updated');
-});
-// ... elsewhere in your code
-theTable.addEventListener('db_updated', function(e){
-    theTable.setData(database.getCurrentRecords());
-});</code></pre>
-
-
-<p><strong>全局事件</strong>，使用Ti.APP。<strong>注意尽量避免使用全局事件</strong>，因为很容易导致内存无法正确释放。</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>deleteButton.addEventListener('click', function(e){
- // when something happens in your app
-    database.doDelete(e.whichRecord);
- // fire a global event so components can react
-    Ti.App.fireEvent('db_updated');
-});
-// ... elsewhere in your code
-Ti.App.addEventListener('db_updated', function(e){
-    theTable.setData(database.getCurrentRecords());
-    someOtherComponent.doSomethingElse();
-});</code></pre>
-
-
-<p><strong>移除事件监听：</strong></p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>function doSomething(e) {
- // do something
-}
-deleteButton.addEventListener('click', doSomething);
-// ... elsewhere in your code ...
-deleteButton.removeEventListener('click', doSomething);
-});</code></pre>
-
-
-<p><strong>特殊事件：</strong></p>
-
-<table>
-<thead>
-<tr>
-<th>Event </th>
-<th> Fired when &hellip;</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>androidback </td>
-<td> The back button is released</td>
-</tr>
-<tr>
-<td>androidhome </td>
-<td> The home button is released</td>
-</tr>
-<tr>
-<td>androidsearch </td>
-<td> The search button is released</td>
-</tr>
-<tr>
-<td>androidcamera </td>
-<td> The camera button is released</td>
-</tr>
-<tr>
-<td>androidfocus </td>
-<td> Fired when the camera button is pressed halfway and then released.</td>
-</tr>
-<tr>
-<td>androidvolup </td>
-<td> The volume-up rocker button is released</td>
-</tr>
-<tr>
-<td>androidvoldown </td>
-<td> The volume-down rocker button is released</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>所有涉及Ti.的事件都需要在JavaScript与Native之间进行转换，因此尽量使用Underscore的事件处理。另外，将事件监听尽可能地延后，有助于提高系统响应速度。所有全局事件监听一直是活着的，因此监听中引用的局域变量也一直活着，这将可能导致内存泄露。</p>
-
-<h2>2. Titanium最佳实践</h2>
-
-<h3>2.1 JavaScript建议</h3>
-
-<p>避免使用全局变量，Objects are placed in the global scope when:</p>
-
-<ul>
-<li>You declare a variable outside of a function or CommonJS module. Using a modular pattern will alleviate this problem.</li>
-<li>You omit the var keyword when declaring a variable (within or outside of a function). So always use var when declaring variables.</li>
-</ul>
-
-
-<p>避免在全局事件监听中引用局部对象，下面的代码是个坏例子：</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>var someFunction = function() {
-    var table = Ti.UI.createTableView(),
-        label = Ti.UI.createLabel(),
-        view = Ti.UI.createView();
-    Ti.App.addEventListener('bad:move', function(e) {
-        table.setData(e.data);
-    });
-    view.add(table);
-    view.add(label);
- return view;
-};</code></pre>
-
-
-<p>所有Ti命名空间都与Native相关，因此应避免通过prototype扩展，同时使用缓存来避免多次调用Native方法。如下例：</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>var isAndroid = (Ti.Platform.osname=='android') ? true : false;
-if(isAndroid) {
- // do Android specific stuff
-} else {
- // do iOS stuff
-}</code></pre>
-
-
-<p>多个Controller以及CommonJS Module之间，可以使用trigger， on等方法实现事件触发和监听。不要使用Ti相关fireEvent，因为只要涉及Ti都会产生Native与Javascript之间的接口。</p>
-
-<p>变量、属性和方法等不要使双下划线，这是Alloy内部使用的。不要使用JavaScript保留关键字。</p>
-
-<p>Wrap self-calling functions in parenthesis， 这种模式有利于包装局部变量。</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>var myValue = function() {
- //do stuff
- return someValue;
-}();
-
-//这样写更容易明白返回的是值，而不是一个方法。
-var myValue = (function() {
- //do stuff
- return someValue;
-})();</code></pre>
-
-
-<p><strong>提高遍历的效率</strong>，通过保存数组的length:</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>var names = ['Jeff','Nolan','Marshall','Don'];
-for(var i=0;i&lt;names.length;i++){
-    process(names[i]);
-}
-
-// I can check the array length only once
-var names = ['Jeff','Nolan','Marshall','Don'];
-for(var i=0,j=names.length;i&lt;j;i++){
-    process(names[i]);
-}</code></pre>
-
-
-<h3>2.2 CommonJS Module</h3>
-
-<p>主要有两种方式来创建CommonJS Module。方式一采用exports方法：</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>exports.sayHello = function(name) {
-    Ti.API.info('Hello '+name+'!');
-};
-exports.version = 1.4;
-exports.author = 'Don Thorp';</code></pre>
-
-
-<p>另一种方式公开的方法主要以对象构造器的方式：</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>function Person(firstName,lastName) {
- this.firstName = firstName;
- this.lastName = lastName;
-}
-Person.prototype.fullName = function() {
- return this.firstName+' '+this.lastName;
-};
-//注意是module.exports
-module.exports = Person;</code></pre>
-
-
-<p>前者使用<code>exports.xxx</code>，后者使用<code>module.exports</code>，这两种方式不要在同一个module中混合使用！</p>
-
-<p>每个module都有自己的scope，只有export的方法才是公开的。注意如果exports属性，该值可能不会改变：</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>//statefulModule.js
-var _stepVal = 5; // default
-exports.setPointStep = function(value) {
-  _stepVal = value;
-};
-exports.getPointStep = function() {
- return _stepVal;
-};
-exports.stepVal = _stepVal;
-
-//app.js
-var stateful = require('statefulModule');
-stateful.setPointStep(10);
-stateful.getPointStep(); //10
-stateful.stepVal //值永远是初始值5.</code></pre>
-
-
-<h3>2.3 数据库</h3>
-
-<p><strong>每次操作都打开并关闭数据库和resultset</strong></p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>cityWeatherRS.close(); // close the resultset when you're done reading from it
-db.close(); // and close the database connection</code></pre>
-
-
-<p><strong>批量操作时，使用事务</strong></p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>var db = Ti.Database.open('myDatabase');
-db.execute('BEGIN'); // begin the transaction
-for(var i=0, var j=playlist.length; i &lt; j; i++) {
-    var item = playlist[i];
-    db.execute('INSERT INTO albums (disc, artist, rating) VALUES (?, ?, ?)', item.disc, item.artist, item.comment);
-}
-db.execute('COMMIT');
-db.close();</code></pre>
-
-
-<h3>2.4 图片</h3>
-
-<blockquote><ul>
-<li>PNG – PNG images are in a lossless-compressed format that can support high-color images. This format is best suited to line-art, text, and icons. It is a better choice than GIF in almost all cases.</li>
-<li>JPG – JPG (or JPEG) is lossy-compressed file format best suited for photographs. It is not well-suited for text, line drawings, or icons because of visual artifacts created during the compression process that will reduce quality and readability.</li>
-<li>因此：</li>
-<li>Photos? Use JPG</li>
-<li>Text, line drawings, icons, button graphics? Use PNG</li>
-<li>Flip-book style animations (for which animated GIFs would be the traditional choice)? Use the ImageView&rsquo;s images property and pass to it an array of PNG or optimized JPG files.</li>
-</ul>
-</blockquote>
-
-<p>注意：显示JPG图片时，会在内存中解压缩，因此不要一次创建太多的JPG ImageView，否则将耗尽内存。将imageView从view中移除并不会回收内存，还要将imageView设置为null.</p>
-
-<p>为了减少ipa/apk的大小，需要对图片进行优化。见<a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Image_Best_Practices">Titanium文档</a>。</p>
-
-<p>ImageView已经能够显示本地和远程的图片。显示远程图片时，可以先设置defaultImage，下载成功后会自动显示远程图片。这些图片会缓存，对于Android会缓存到应用退出。要自己控制缓存到本地目录，参考<a href="http://docs.appcelerator.com/titanium/latest/#!/guide/Image_Best_Practices">文档</a>。</p>
-
-<h3>2.5 管理内存</h3>
-
-<p>除了把View移除外，还需要将它设置为null.</p>
-
-<pre class='line-numbers language-javascript'><code class='language-javascript'>var button = Ti.UI.createButton({
- // parameters go here...
-});
-var view = Ti.UI.createView({
- // some parameters here...
-});
-view.add(button);
-// ... later
-win.remove(view);  // view & button still exist
-view = null; // deletes the view and its proxy, but not the button!
-// compare that to:
-var view = Ti.UI.createView({
- // some parameters here...
-});
-view.add(Ti.UI.createButton({
- // parameters go here...
-}));
-// ... later
-win.remove(view);
-view = null; // deletes the view, button, and their proxies</code></pre>
-
-
-
 ]]></content>
   </entry>
   
