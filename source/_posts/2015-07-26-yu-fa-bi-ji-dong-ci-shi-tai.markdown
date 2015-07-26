@@ -25,13 +25,20 @@ The U.S. established diplomatic relations with the P.R.C. in 1979.
 解说：建交时间是1979年
 
 The movable print was introduced to England in 1485.
-解说：活版印刷于1485年被引进英国。有被动语态。过去分词introduced当作形容词补语看待。-ed视为一个表达被动意味的形容词字尾。
+解说：活版印刷于1485年被引进英国。有被动语态。
+过去分词introduced当作形容词补语看待。
+-ed视为一个表达被动意味的形容词字尾。
 
 I was visiting clients the whole day yesterday.
-解说：the whole day yesterday也是一个过去时间段。visiting clients是现在分词短语，视为形容词补语来形容主语。现在分词表示一种持续性，相当于“正在”、“一直在”
+解说：the whole day yesterday也是一个过去时间段。
+visiting clients是现在分词短语，视为形容词补语来形容主语。
+现在分词表示一种持续性，相当于“正在”、“一直在”
 
 The witness was being questioned in court when he had a heart attack.
-解说，证人心脏病突发时，他正在法庭上被质询。时间副词when he had a heart attack表示发生那一个瞬间，所以是简单式。be后面的部分仍当形容词补语看。being存在的主要意义不是be，而是-ing，表示正在。
+解说:证人心脏病突发时，他正在法庭上被质询。
+时间副词when he had a heart attack表示发生那一个瞬间，所以是简单式。
+be后面的部分仍当形容词补语看。
+being存在的主要意义不是be，而是-ing，表示正在。
 ```
 
 ### 1.2 现在时间
@@ -48,7 +55,9 @@ All mothers love their children.
 解说：这个月打折，并且是正在持续的活动，所以用现在分词做补语强调持续性。
 
 According to the NASA survey, the ozone layer is being depleted.
-解说：臭氧层正在补消耗中。being同样只有-ing有意义，表示正在。-ed表示被动，被消耗。
+解说：臭氧层正在补消耗中。
+being同样只有-ing有意义，表示正在。
+-ed表示被动，被消耗。
 ```
 
 ### 1.3 未来时间
@@ -70,10 +79,12 @@ The building will be razed next month.
 
 ```
 I'm sure I have seen this face somewhere.
-解说：我肯定曾经见过这张脸。没有时间交代是什么时候看过，只知道一定有见过。
+解说：我肯定曾经见过这张脸。
+没有时间交代是什么时候看过，只知道一定有见过。
 
 We have been working overtime for a week to fill your order.
-解说：时间副词for a week表示到现在算已经一个星期了，强调的是截止时间。所以用have been。后面的补语working表示持续性。用来形容主语we一直在加班。
+解说：时间副词for a week表示到现在算已经一个星期了，强调的是截止时间,所以用have been。
+后面的补语working表示持续性。用来形容主语we一直在加班。
 
 The house has been redecorated twice since they moved in.
 解说：从搬进来到现在，已经装修两次了。被装修。
@@ -84,7 +95,8 @@ The house has been redecorated twice since they moved in.
 
 ```
 Many soldiers had died from pneumonia before the discovery of penicilin.
-解说：发现盘尼西林以前，已经有很多士兵死于肺炎。截止过去（发现盘尼西林），所以用had
+解说：发现盘尼西林以前，已经有很多士兵死于肺炎。
+截止过去（发现盘尼西林），所以用had
 
 I had been smoking three packs of cigarettes a day before I decided to quit.
 解说：截止过去（我决定戒烟），一直如此（smoing）
