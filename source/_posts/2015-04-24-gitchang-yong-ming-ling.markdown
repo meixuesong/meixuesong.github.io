@@ -198,15 +198,27 @@ git branch -d hotfix | 删除hotfix分支
 git branch --merged | 查看哪些分支已被并入当前分支
 git branch --no-merged | 查看尚未与当前分支合并的分支
 
+附示例：将现有项目提交到Github
+
+```
+cd projectHome
+git init
+git remote add origin git@github.com:someone/fooproject.git
+git pull origin master
+# pushes up the repo and its refs for the first time
+git push -u origin --all 
+
+#日常上传
+git push origin master
+```
 
 
 
 
-
-参考： http://git-scm.com/book/zh/v1
+附常用命令：
 
 ![image](/myresource/images/git-2015-07-26.png)
 
-
+参考： http://git-scm.com/book/zh/v1
 
 
