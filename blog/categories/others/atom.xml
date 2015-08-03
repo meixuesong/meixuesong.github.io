@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Others | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/others/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-07-26T22:53:36+08:00</updated>
+  <updated>2015-08-03T09:28:48+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -306,9 +306,28 @@ $ git commit --amend
 </table>
 
 
-<p>参考： <a href="http://git-scm.com/book/zh/v1">http://git-scm.com/book/zh/v1</a></p>
+<p>附示例：将现有项目提交到Github</p>
+
+<p>```
+cd projectHome
+git init
+git remote add origin git@github.com:someone/fooproject.git
+git pull origin master</p>
+
+<h1>pushes up the repo and its refs for the first time</h1>
+
+<p>git push -u origin &mdash;all</p>
+
+<h1>日常上传</h1>
+
+<p>git push origin master
+```</p>
+
+<p>附常用命令：</p>
 
 <p><img src="/myresource/images/git-2015-07-26.png" alt="image" /></p>
+
+<p>参考： <a href="http://git-scm.com/book/zh/v1">http://git-scm.com/book/zh/v1</a></p>
 ]]></content>
   </entry>
   

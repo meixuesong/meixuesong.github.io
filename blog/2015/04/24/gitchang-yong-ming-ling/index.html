@@ -355,9 +355,24 @@ $ git commit --amend</code></pre>
 </table>
 
 
-<p>参考： <a href="http://git-scm.com/book/zh/v1">http://git-scm.com/book/zh/v1</a></p>
+<p>附示例：将现有项目提交到Github</p>
+
+<pre  class='line-numbers language-bash'><code class='language-bash'>cd projectHome
+git init
+git remote add origin git@github.com:someone/fooproject.git
+git pull origin master
+# pushes up the repo and its refs for the first time
+git push -u origin --all 
+
+#日常上传
+git push origin master</code></pre>
+
+
+<p>附常用命令：</p>
 
 <p><img src="/myresource/images/git-2015-07-26.png" alt="image" /></p>
+
+<p>参考： <a href="http://git-scm.com/book/zh/v1">http://git-scm.com/book/zh/v1</a></p>
 </div>
 
 
