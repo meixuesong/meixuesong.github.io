@@ -1044,6 +1044,20 @@ public Book getBook(@PathParam("id") final Long bookId) {
 @Consumes注解用于定义方法的请求实体的数据类型，它只用于匹配请求处理的方法，不做内容协商使用。如果匹配不到，则服务器返回HTTP状态码415（Unsupported Media Type）。
 
 
+附：常用curl示例：
+
+```
+curl -i -X GET localhost:8080/books
+
+curl -i -X POST -H "Content-Type: application/json" -d '{"name": "I am a book", "author": "somebody"}' localhost:8080/books
+
+curl -i -X GET localhost:8080/books/1
+
+curl -i -X PUT -H "Content-Type: application/json" -d '{"name": "Another book", "author": "somebody"}' localhost:8080/books/1
+
+curl -i -X DELETE localhost:8080/books/1
+```
+
 参考：《Java RESTful Web Service实战》
 
 
