@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Others | 码出人生]]></title>
   <link href="http://blog.ubone.com/blog/categories/others/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-08-03T09:28:48+08:00</updated>
+  <updated>2015-11-12T21:40:02+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -302,11 +302,15 @@ $ git commit --amend
 <td>git branch &mdash;no-merged </td>
 <td> 查看尚未与当前分支合并的分支</td>
 </tr>
+<tr>
+<td>git push [remote-repository-name] [branch-or-commit-name] </td>
+<td> 在远程服务器建立分支. eg. git push origin issue56</td>
+</tr>
 </tbody>
 </table>
 
 
-<p>附示例：将现有项目提交到Github</p>
+<h2>附1 示例：将现有项目提交到Github</h2>
 
 <p>```
 cd projectHome
@@ -323,7 +327,569 @@ git pull origin master</p>
 <p>git push origin master
 ```</p>
 
-<p>附常用命令：</p>
+<h2>附2 常用别名</h2>
+
+<p>当使用了<a href="http://ohmyz.sh/">Oh My Zsh</a>，自动开启了git插件，可以使用以下git常用别名：</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th align="left"> Alias                </th>
+<th align="left"> Command                                                                                                                                   </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td align="left"> g                    </td>
+<td align="left"> git                                                                                                                                     |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> ga                   </td>
+<td align="left"> git add                                                                                                                                 |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gaa                  </td>
+<td align="left"> git add &mdash;all                                                                                                                           |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gapa                 </td>
+<td align="left"> git add &mdash;patch                                                                                                                         |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gb                   </td>
+<td align="left"> git branch                                                                                                                              |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gba                  </td>
+<td align="left"> git branch -a                                                                                                                           |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gbda                 </td>
+<td align="left"> git branch &mdash;merged \| command grep -vE &ldquo;^(*\|\s<em>master\s</em>$)&rdquo; \| command xargs -n 1 git branch -d                                      |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gbl                  </td>
+<td align="left"> git blame -b -w                                                                                                                         |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gbnm                 </td>
+<td align="left"> git branch &mdash;no-merged                                                                                                                  |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gbr                  </td>
+<td align="left"> git branch &mdash;remote                                                                                                                     |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gbs                  </td>
+<td align="left"> git bisect                                                                                                                              |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gbsb                 </td>
+<td align="left"> git bisect bad                                                                                                                          |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gbsg                 </td>
+<td align="left"> git bisect good                                                                                                                         |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gbsr                 </td>
+<td align="left"> git bisect reset                                                                                                                        |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gbss                 </td>
+<td align="left"> git bisect start                                                                                                                        |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gc                   </td>
+<td align="left"> git commit -v                                                                                                                           |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gc!                  </td>
+<td align="left"> git commit -v &mdash;amend                                                                                                                   |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gca                  </td>
+<td align="left"> git commit -v -a</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gcam                 </td>
+<td align="left"> git commit -a -m                                                                                                                         |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gca!                 </td>
+<td align="left"> git commit -v -a &mdash;amend                                                                                                                |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gcan!                </td>
+<td align="left"> git commit -v -a -s &mdash;no-edit &mdash;amend                                                                                                   |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gcb                  </td>
+<td align="left"> git checkout -b                                                                                                                         |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gcf                  </td>
+<td align="left"> git config &mdash;list                                                                                                                       |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gcl                  </td>
+<td align="left"> git clone &mdash;recursive                                                                                                                   |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gclean               </td>
+<td align="left"> git reset &mdash;hard &amp;&amp; git clean -dfx                                                                                                      |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gcm                  </td>
+<td align="left"> git checkout master                                                                                                                     |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gcmsg                </td>
+<td align="left"> git commit -m                                                                                                                           |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gco                  </td>
+<td align="left"> git checkout                                                                                                                            |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gcount               </td>
+<td align="left"> git shortlog -sn                                                                                                                        |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gcp                  </td>
+<td align="left"> git cherry-pick                                                                                                                         |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gcs                  </td>
+<td align="left"> git commit -S                                                                                                                           |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gd                   </td>
+<td align="left"> git diff                                                                                                                                |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gdca                 </td>
+<td align="left"> git diff &mdash;cached                                                                                                                       |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gdt                  </td>
+<td align="left"> git diff-tree &mdash;no-commit-id &mdash;name-only -r                                                                                             |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gdw                  </td>
+<td align="left"> git diff &mdash;word-diff                                                                                                                    |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gf                   </td>
+<td align="left"> git fetch                                                                                                                               |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gfa                  </td>
+<td align="left"> git fetch &mdash;all &mdash;prune                                                                                                                 |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gfo                  </td>
+<td align="left"> git fetch origin                                                                                                                        |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gg                   </td>
+<td align="left"> git gui citool                                                                                                                          |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gga                  </td>
+<td align="left"> git gui citool &mdash;amend                                                                                                                  |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> ggpull               </td>
+<td align="left"> ggl                                                                                                                                     |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> ggpur                </td>
+<td align="left"> ggu                                                                                                                                     |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> ggpush               </td>
+<td align="left"> ggp                                                                                                                                     |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> ggsup                </td>
+<td align="left"> git branch &mdash;set-upstream-to = origin/$(current_branch)                                                                                 |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gignore              </td>
+<td align="left"> git update-index &mdash;assume-unchanged                                                                                                     |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gignored             </td>
+<td align="left"> git ls-files -v \| grep &ldquo;^[[:lower:]]&rdquo;                                                                                                  |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> git-svn-dcommit-push </td>
+<td align="left"> git svn dcommit &amp;&amp; git push github master:svntrunk                                                                                      |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gk                   </td>
+<td align="left"> \gitk &mdash;all &mdash;branches                                                                                                                  |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gke                  </td>
+<td align="left"> \gitk &mdash;all $(git log -g &mdash;pretty = format:%h)                                                                                          |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gl                   </td>
+<td align="left"> git pull                                                                                                                                |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> glg                  </td>
+<td align="left"> git log &mdash;stat &mdash;color                                                                                                                  |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> glgg                 </td>
+<td align="left"> git log &mdash;graph &mdash;color                                                                                                                 |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> glgga                </td>
+<td align="left"> git log &mdash;graph &mdash;decorate &mdash;all                                                                                                        |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> glgm                 </td>
+<td align="left"> git log &mdash;graph &mdash;max-count = 10                                                                                                        |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> glgp                 </td>
+<td align="left"> git log &mdash;stat &mdash;color -p                                                                                                               |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> glo                  </td>
+<td align="left"> git log &mdash;oneline &mdash;decorate &mdash;color                                                                                                    |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> glog                 </td>
+<td align="left"> git log &mdash;oneline &mdash;decorate &mdash;color &mdash;graph                                                                                            |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> glol                 </td>
+<td align="left"> git log &mdash;graph &mdash;pretty = format:&lsquo;%Cred%h%Creset &ndash;%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an>%Creset&rsquo; &mdash;abbrev-commit       |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> glola                </td>
+<td align="left"> git log &mdash;graph &mdash;pretty = format:&lsquo;%Cred%h%Creset &ndash;%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an>%Creset&rsquo; &mdash;abbrev-commit &mdash;all |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> glp                  </td>
+<td align="left"> _git_log_prettily                                                                                                                       |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gm                   </td>
+<td align="left"> git merge                                                                                                                               |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gmom                 </td>
+<td align="left"> git merge origin/master                                                                                                                 |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gmt                  </td>
+<td align="left"> git mergetool &mdash;no-prompt                                                                                                               |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gmtvim               </td>
+<td align="left"> git mergetool &mdash;no-prompt &mdash;tool = vimdiff                                                                                              |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gmum                 </td>
+<td align="left"> git merge upstream/master                                                                                                               |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gp                   </td>
+<td align="left"> git push                                                                                                                                |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gpd                  </td>
+<td align="left"> git push &mdash;dry-run                                                                                                                      |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gpoat                </td>
+<td align="left"> git push origin &mdash;all &amp;&amp; git push origin &mdash;tags                                                                                         |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gpu                  </td>
+<td align="left"> git push upstream                                                                                                                       |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gpv                  </td>
+<td align="left"> git push -v                                                                                                                             |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gr                   </td>
+<td align="left"> git remote                                                                                                                              |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gra                  </td>
+<td align="left"> git remote add                                                                                                                          |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> grb                  </td>
+<td align="left"> git rebase                                                                                                                              |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> grba                 </td>
+<td align="left"> git rebase &mdash;abort                                                                                                                      |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> grbc                 </td>
+<td align="left"> git rebase &mdash;continue                                                                                                                   |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> grbi                 </td>
+<td align="left"> git rebase -i                                                                                                                           |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> grbm                 </td>
+<td align="left"> git rebase master                                                                                                                       |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> grbs                 </td>
+<td align="left"> git rebase &mdash;skip                                                                                                                       |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> grh                  </td>
+<td align="left"> git reset HEAD                                                                                                                          |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> grhh                 </td>
+<td align="left"> git reset HEAD &mdash;hard                                                                                                                   |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> grmv                 </td>
+<td align="left"> git remote rename                                                                                                                       |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> grrm                 </td>
+<td align="left"> git remote remove                                                                                                                       |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> grset                </td>
+<td align="left"> git remote set-url                                                                                                                      |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> grt                  </td>
+<td align="left"> cd $(git rev-parse &mdash;show-toplevel \|\| echo &ldquo;.&rdquo;)                                                                                       |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gru                  </td>
+<td align="left"> git reset &mdash;                                                                                                                            |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> grup                 </td>
+<td align="left"> git remote update                                                                                                                       |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> grv                  </td>
+<td align="left"> git remote -v                                                                                                                           |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gsb                  </td>
+<td align="left"> git status -sb                                                                                                                          |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gsd                  </td>
+<td align="left"> git svn dcommit                                                                                                                         |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gsi                  </td>
+<td align="left"> git submodule init                                                                                                                      |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gsps                 </td>
+<td align="left"> git show &mdash;pretty = short &mdash;show-signature                                                                                              |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gsr                  </td>
+<td align="left"> git svn rebase                                                                                                                          |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gss                  </td>
+<td align="left"> git status -s                                                                                                                           |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gst                  </td>
+<td align="left"> git status                                                                                                                              |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gsta                 </td>
+<td align="left"> git stash                                                                                                                               |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gstaa                </td>
+<td align="left"> git stash apply                                                                                                                         |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gstd                 </td>
+<td align="left"> git stash drop                                                                                                                          |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gstl                 </td>
+<td align="left"> git stash list                                                                                                                          |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gstp                 </td>
+<td align="left"> git stash pop                                                                                                                           |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gsts                 </td>
+<td align="left"> git stash show &mdash;text                                                                                                                   |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gsu                  </td>
+<td align="left"> git submodule update                                                                                                                    |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gts                  </td>
+<td align="left"> git tag -s                                                                                                                              |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gunignore            </td>
+<td align="left"> git update-index &mdash;no-assume-unchanged                                                                                                  |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gunwip               </td>
+<td align="left"> git log -n 1 \| grep -q -c &ldquo;--wip--&rdquo; &amp;&amp; git reset HEAD~1                                                                            |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gup                  </td>
+<td align="left"> git pull &mdash;rebase                                                                                                                       |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gupv                 </td>
+<td align="left"> git pull &mdash;rebase -v                                                                                                                    |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gvt                  </td>
+<td align="left"> git verify-tag                                                                                                                          |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gwch                 </td>
+<td align="left"> git whatchanged -p &mdash;abbrev-commit &mdash;pretty = medium                                                                                    |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> gwip                 </td>
+<td align="left"> git add -A; git rm $(git ls-files &mdash;deleted) 2> /dev/null; git commit -m &ldquo;&mdash;wip&mdash;&rdquo;                                                      |</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>附3 常用命令：</h2>
 
 <p><img src="/myresource/images/git-2015-07-26.png" alt="image" /></p>
 
