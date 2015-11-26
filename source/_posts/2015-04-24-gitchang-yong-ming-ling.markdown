@@ -214,7 +214,28 @@ git push -u origin --all
 git push origin master
 ```
 
-## 附2 常用别名
+##附2 示例：pull 冲突解决
+在git pull时，更新下来的内容可能会与本地冲突，提示信息如下：
+
+```
+error: Your local changes to 'c/environ.c' would be overwritten by merge.  Aborting.
+Please, commit your changes or stash them before you can merge.
+```
+
+这时候可以：
+
+```
+#先将本地修改存储起来,git会返回一个标记，如stash@{0}
+$ git stash
+#然后pull
+$ git pull
+#还原暂存内容
+$ git stash pop stash@{0}
+#这时会有冲突产生。修正冲突后再提交即可。
+$ git mergetool
+```
+
+## 附3 常用别名
 当使用了[Oh My Zsh](http://ohmyz.sh/)，自动开启了git插件，可以使用以下git常用别名：
 
  Alias           |      Command                                                                                                                                   
@@ -331,7 +352,7 @@ git push origin master
 
 
 
-## 附3 常用命令：
+## 附4 常用命令：
 
 ![image](/myresource/images/git-2015-07-26.png)
 
