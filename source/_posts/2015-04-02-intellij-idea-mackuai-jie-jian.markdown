@@ -4,7 +4,7 @@ title: "IntelliJ IDEA Mac快捷键"
 date: 2015-04-02 11:12:07 +0800
 comments: true
 toc: true
-categories: 
+categories:
 - others
 ---
 
@@ -134,22 +134,7 @@ Build Run 快捷键 | 说明
 `Command+F8` | Toggle Line BreakPoint
 `Shift+Command+F8` | View Breakpoints...
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+其它快捷键 | 说明
+---|---
+`Option+Enter` | Show the list of available intention actions.
+`Shift+Command+A` | Find action by name
