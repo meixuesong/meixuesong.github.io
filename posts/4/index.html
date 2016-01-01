@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="本篇学习类加载过程、类文件的分析工具和字节码。 ">
+  <meta name="description" content="人们总是猜不对系统变慢的原因在哪里，你必须量体裁衣。没有评测就没有合适的调优。本文重点学习性能相关的内存管理、垃圾收集、相关工具并简单了解HotSpot。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +88,47 @@ var _hmt = _hmt || [];
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">理解Java性能调优</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-06T21:00:37+08:00" pubdate data-updated="true">2014-12-06</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>人们总是猜不对系统变慢的原因在哪里，你必须量体裁衣。没有评测就没有合适的调优。本文重点学习性能相关的内存管理、垃圾收集、相关工具并简单了解HotSpot。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/12/06/li-jie-javaxing-neng-diao-you/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -472,49 +513,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/10/31/zui-xiao-sheng-cheng-shu/">最小生成树</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-10-31T22:38:49+08:00" pubdate data-updated="true">2014-10-31</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>加权图是一种为每条边关联一个权值或成本的图模型。这种图最令人感兴趣的是将成本最小化。本节学习加权无向图模型并找到它的一棵最小生成树。</p>
-
-<p>图的生成树是它的一棵含有其所有顶点的无环连通子图。一幅加权图的最小生成树（MST）是它的一棵权值（树中所有边的权值之和）最小的生成树。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/10/31/zui-xiao-sheng-cheng-shu/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/5">&larr; Older</a>
@@ -536,10 +534,14 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/db/'>db (1)</a></li><li><a href='/blog/categories/english/'>english (4)</a></li><li><a href='/blog/categories/java/'>java (35)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (7)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (4)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/db/'>db (1)</a></li><li><a href='/blog/categories/english/'>english (4)</a></li><li><a href='/blog/categories/java/'>java (35)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (8)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (4)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/01/01/bash-for-macji-chu/">Bash for Mac</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/08/yong-hu-gu-shi-yu-min-jie-fang-fa/">用户故事与敏捷方法</a>
@@ -557,10 +559,6 @@ var _hmt = _hmt || [];
         <a href="/blog/2015/07/25/yu-fa-bi-ji-ming-ci-ci-zu-yu-guan-ci/">语法笔记-名词词组与冠词</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2015/07/25/yu-fa-bi-ji-ji-ben-ju-xing/">语法笔记-基本句型</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -574,7 +572,7 @@ var _hmt = _hmt || [];
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2015 - 梅雪松 -
+  Copyright &copy; 2016 - 梅雪松 -
   <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
 </p>
 </footer>

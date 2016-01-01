@@ -9,7 +9,7 @@
   <meta name="author" content="梅雪松">
 
   
-  <meta name="description" content="原型（Prototype）模式的用处是：对于给定的原型对象，用复制的方法创建出更多的同类型对象。之前学习的工厂方法模式常常需要有一个与产品等级相同的等级结构，而原型模式则不需要这样。Java语言天生就支持原型模式。原型模式的结构图如下： ">
+  <meta name="description" content="适配器模式分为类的适配器和对象的适配器。它们都是把被适配类的API转换成目标类的API。但前者使用继承关系，而后者使用委派关系。它们的结构如下图： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +88,49 @@ var _hmt = _hmt || [];
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/30/she-ji-mo-shi-gua-pei-qi-mo-shi/">设计模式:适配器模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-30T22:31:42+08:00" pubdate data-updated="true">2014-07-30</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>适配器模式分为类的适配器和对象的适配器。它们都是把被适配类的API转换成目标类的API。但前者使用继承关系，而后者使用委派关系。它们的结构如下图：</p>
+
+<p><img src="/myresource/images/image_blog_2014-07-30_22.38.26.jpg" alt="image" /> <img src="/myresource/images/image_blog_2014-07-30_22.40.21.jpg" alt="image" /></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/30/she-ji-mo-shi-gua-pei-qi-mo-shi/">继续阅读 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -487,47 +530,6 @@ var _hmt = _hmt || [];
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/23/yi-zhang-tu-kan-dong/">一张图看懂UML类图的关系</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-23T23:37:18+08:00" pubdate data-updated="true">2014-07-23</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在UML类图中，类之间的关系包括：继承、关联、聚合、组合和依赖关系。如何分辨这些关系呢？每种关系使用什么样的连线呢？</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/23/yi-zhang-tu-kan-dong/">继续阅读 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/10">&larr; Older</a>
@@ -549,10 +551,14 @@ var _hmt = _hmt || [];
   </p>
 </section><section>
   <h1>分类</h1>
-    <ul id="category-list"><li><a href='/blog/categories/db/'>db (1)</a></li><li><a href='/blog/categories/english/'>english (4)</a></li><li><a href='/blog/categories/java/'>java (35)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (7)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (4)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/db/'>db (1)</a></li><li><a href='/blog/categories/english/'>english (4)</a></li><li><a href='/blog/categories/java/'>java (35)</a></li><li><a href='/blog/categories/linux/'>linux (2)</a></li><li><a href='/blog/categories/others/'>others (8)</a></li><li><a href='/blog/categories/webxiang-guan/'>web相关 (3)</a></li><li><a href='/blog/categories/sheng-huo/'>生活 (3)</a></li><li><a href='/blog/categories/yi-dong-kai-fa/'>移动开发 (6)</a></li><li><a href='/blog/categories/suan-fa/'>算法 (14)</a></li><li><a href='/blog/categories/she-ji-mo-shi/'>设计模式 (27)</a></li><li><a href='/blog/categories/xiang-mu-yu-chan-pin/'>项目与产品 (4)</a></li></ul>
 </section><section>
   <h1>最新博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/01/01/bash-for-macji-chu/">Bash for Mac</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/08/yong-hu-gu-shi-yu-min-jie-fang-fa/">用户故事与敏捷方法</a>
@@ -570,10 +576,6 @@ var _hmt = _hmt || [];
         <a href="/blog/2015/07/25/yu-fa-bi-ji-ming-ci-ci-zu-yu-guan-ci/">语法笔记-名词词组与冠词</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2015/07/25/yu-fa-bi-ji-ji-ben-ju-xing/">语法笔记-基本句型</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -587,7 +589,7 @@ var _hmt = _hmt || [];
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2015 - 梅雪松 -
+  Copyright &copy; 2016 - 梅雪松 -
   <span class="credit">Powered by <a href="http://octopress.org" target="_blank">Octopress</a></span>
 </p>
 </footer>

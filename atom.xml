@@ -4,7 +4,7 @@
   <title><![CDATA[码出人生]]></title>
   <link href="http://blog.ubone.com/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2015-12-10T23:21:58+08:00</updated>
+  <updated>2016-01-01T19:42:52+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,24 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Bash for Mac]]></title>
+    <link href="http://blog.ubone.com/blog/2016/01/01/bash-for-macji-chu/"/>
+    <updated>2016-01-01T19:09:01+08:00</updated>
+    <id>http://blog.ubone.com/blog/2016/01/01/bash-for-macji-chu</id>
+    <content type="html"><![CDATA[<p>Bash for Mac OS introduction.</p>
+
+<!--more-->
+
+
+<p><img src="http://blog.ubone.com/myresource/images/bash_mac_20160101_0001.jpg" alt="image" />
+<img src="http://blog.ubone.com/myresource/images/bash_mac_20160101_0002.jpg" alt="image" />
+<img src="http://blog.ubone.com/myresource/images/bash_mac_20160101_0003.jpg" alt="image" />
+<img src="http://blog.ubone.com/myresource/images/bash_mac_20160101_0004.jpg" alt="image" />
+<img src="http://blog.ubone.com/myresource/images/bash_mac_20160101_0005.jpg" alt="image" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[用户故事与敏捷方法]]></title>
@@ -4642,6 +4660,26 @@ curl -i -X DELETE localhost:8080/books/1</code></pre>
 </tbody>
 </table>
 
+
+<table>
+<thead>
+<tr>
+<th>其它快捷键 </th>
+<th> 说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Option+Enter</code> </td>
+<td> Show the list of available intention actions.</td>
+</tr>
+<tr>
+<td><code>Shift+Command+A</code> </td>
+<td> Find action by name</td>
+</tr>
+</tbody>
+</table>
+
 ]]></content>
   </entry>
   
@@ -7832,143 +7870,6 @@ tar -zcvf filename.tar.gz FILES</code></pre>
 <h2>4. 磁盘管理</h2>
 
 <p>Linux的文件系统格式被称为ExtN(N=2,3,4)。ExtN文件系统中包含inode数据结构来代表一个文件，并且存储了这个文件的各种属性和权限。文件的实际数据保存在data block块区中。data block与inode一样，每一个都有一个唯一编号，inode只需要记录这些编号，就能够定位整个文件的任意一段数据。因此ExtN通过inode能够一次性获得文件数据所存放的位置，尽量保证在磁盘只旋转一圈的情况下将所有内容读出来。而FAT32则只有将对应的data block读入之后才知道下一个data block在什么地方，因此效率比较低，这也是Windows系统使用较长时间后，碎片较多，系统变慢的原因。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java Web中文编码]]></title>
-    <link href="http://blog.ubone.com/blog/2015/02/23/java-webzhong-wen-bian-ma/"/>
-    <updated>2015-02-23T15:57:18+08:00</updated>
-    <id>http://blog.ubone.com/blog/2015/02/23/java-webzhong-wen-bian-ma</id>
-    <content type="html"><![CDATA[<p>介绍常见的编码格式，以及Java Web和JavaScript相关的字符集编码。</p>
-
-<!--more-->
-
-
-<h2>1. 常见的编码格式</h2>
-
-<table>
-<thead>
-<tr>
-<th>编码 </th>
-<th> 说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ASCII </td>
-<td> 共128个，用1个字节表示。0～31为控制字符，如换行、回车等。32～126为打印字符。</td>
-</tr>
-<tr>
-<td>ISO-8859-1 </td>
-<td> 扩展ASCII编码，仍然是单字节，共256个字符。</td>
-</tr>
-<tr>
-<td>GB2312 </td>
-<td> 双字节编码，A1~A9是符号区，共682个符号；B0~F7是汉字区，共6763个汉字</td>
-</tr>
-<tr>
-<td>GBK </td>
-<td> 为Win95所制定的汉字内码规范，扩展GB2312，与GB2312兼容，能表示21003个汉字。</td>
-</tr>
-<tr>
-<td>GB18030 </td>
-<td> 可能是单字节、双字节或者四字节编码，与GB2312兼容。虽然是国家标准，但未广泛使用。</td>
-</tr>
-<tr>
-<td>UTF-16 </td>
-<td> 定义了Unicode字符在计算机中的存取方法。Unicode是ISO试图创建一个全新的超语言字典，世界上所有语言都可以通过这个字典相互翻译。Unicode是Java和XML的基础。UTF-16用两个字节来表示Unicode的转化格式，采用定长的表示方法。</td>
-</tr>
-<tr>
-<td>UTF-8 </td>
-<td> 避免UTF-16的空间浪费，采用变长技术，每个编码区域有不同的字码长度。不同类型的字符可以由1～6个字节组成。</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>UTF-8的编码规则：</p>
-
-<ul>
-<li>如果是1个字节，最高位（第8位）为0，表示1个ASCII字符。</li>
-<li>如果是1个字节，以11开着，则连续的1的个数表示这个字符的字节数。例如110xxxxx表示它是双字节UTF-8字符的首字节。</li>
-<li>如果1个字节，以10开始，表示它不是首字节，需要向前查找才能得到当前字符的首字节。</li>
-</ul>
-
-
-<h2>2. Java中的编码场景</h2>
-
-<h3>2.1 在I/O中编码</h3>
-
-<p>在磁盘和网络I/O中，都涉及字节与字符的转换。Reader类是Java的I/O中读字符的父类，而InputStream类是读字节的父类。两者之间的转换由StreamDecoder和StreamEncoder完成。在编、解码过程中必须指定Charset，否则使用本地环境默认字符集，如中文环境使用GBK。</p>
-
-<p>在实际开发过程中，只要保持编码的一致就不会造成乱码：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>String charset = "UTF-8";
-String file = "c:/stream.txt";
-
-FileOutputStream fos = new FieOutputStream(file);
-OutputStreamWriter writer = new OutputStreamWriter(fos, charset);
-
-...
-InputStreamReader reader = new InputStreamReader(inputStream, charset);</code></pre>
-
-
-<h3>2.2 在内存中编码</h3>
-
-<p>String类提供了字符和字节的转换方法：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>String s= "这是一段中文";
-byte[] b = s.getBytes("UTF-8");
-String n = new String(b, "UTF-8");</code></pre>
-
-
-<p></p>
-
-<p>另一种方法是使用Charset类：</p>
-
-<pre class='line-numbers language-java'><code class='language-java'>Charset charset = Charset.forName("UTF-8");
-ByteBuffer byteBuffer = charset.encode("abcd");
-CharBuffer charBuffer = charset.decode(byteBuffer);</code></pre>
-
-
-<p></p>
-
-<h2>3. Java Web中的编解码</h2>
-
-<p>用户从浏览器发起一个HTTP请求，需要编码的地方包括URL、Cookie和Parameter。</p>
-
-<h3>3.1 URL的编解码</h3>
-
-<p>URL <code>http://localhost:8080/examples/servlets/servlet/books?author=jason</code> 可分解为：</p>
-
-<ul>
-<li>URI: <code>/examples/servlets/servlet/books</code></li>
-<li>schema: http</li>
-<li>domain: localhost</li>
-<li>port: 8080</li>
-<li>contextPath: examples</li>
-<li>servletPath: servlets/servlet</li>
-<li>PathInfo: books</li>
-<li>QueryString: author=jason</li>
-</ul>
-
-
-<p>对于Tomcat，对URL的URI部分进行解码的字符集是在Connector中定义的。如果没有定义，那么默认为ISO-8859-1。QueryString的解码字符集要么是Header中ContentType定义的Charset，要么是默认的ISO-8859-1。要使用ContentType定义的编码，需要设置Connector。因此Tomcat一般会设置：</p>
-
-<p><code>&lt;Connector URIEncoding="UTF-8" useBodyEncodingForURI="true" /&gt;</code></p>
-
-<h3>3.2 HTTP Header的编解码</h3>
-
-<p>除了URL外，还可能在Header中传递其它参数，如Cookie、redirectPath等。不要在Header中传递非ASCII字符，如果一定要传递，可以先用URLEncoder编码，再添加到Header中。</p>
-
-<h3>3.3 其它编解码</h3>
-
-<p>POST表单也是通过ContentType的Charset编码。用JDBC来存取数据时要和数据的内置编码保持一致，可以通过设置JDBC URL来指定，如MySQL: url=&ldquo;jdbc:mysql://localhost:3306/DB?useUnicode=true&amp;characterEncoding=GBK&#8221;。</p>
-
-<h2>4. Javascript中的编码问题</h2>
-
-<p>如果Javascript文件的编码格式与当前页面不一致，需要指定字符集，否则可能出现乱码：<code>&lt;script src="abc.js" charset="gbk"/&gt;</code>。在Javascript中处理URL可以使用<code>encodeURI()</code>和<code>encodeURIComponent()</code>。后者编码得更彻底，除了<code>!</code>、<code>'</code>、<code>(</code>、<code>)</code>、<code>*</code>、<code>-</code>、<code>.</code>、<code>_</code>、<code>~</code>、<code>0-9</code>、<code>a-z</code>和<code>A-Z</code>之外，对其他所有字符都编码，因此通常用于将一个URL当作一个参数放在另一个URL中。</p>
 ]]></content>
   </entry>
   
