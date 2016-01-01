@@ -4,8 +4,8 @@ title: "Linux crontab定时任务"
 date: 2015-03-28 21:04:50 +0800
 comments: true
 toc: true
-categories: 
-- linux
+categories:
+- linux & mac
 ---
 
 通过crontab命令可以固定的间隔时间循环执行指定的命令或shell脚本。时间间隔的单位可以是分钟、小时、日、月、周及以上的任意组合。这个命令非常适合周期性的工作。

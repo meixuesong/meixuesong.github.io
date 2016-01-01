@@ -3,9 +3,9 @@ layout: post
 title: "Bash for Mac"
 date: 2016-01-01 19:09:01 +0800
 comments: true
-toc: true
+toc: false
 categories:
-- others
+- linux & mac
 ---
 
 Bash for Mac OS introduction.

@@ -4,8 +4,8 @@ title: "Linux基础"
 date: 2015-02-24 11:37:23 +0800
 comments: true
 toc: true
-categories: 
-- linux
+categories:
+- linux & mac
 ---
 学习Linux的一些基本知识，包括用户身份、文件、目录、程序执行和磁盘管理等。
 
@@ -136,7 +136,7 @@ Linux有5个搜索文件的命令。
 whereis | 搜索可执行文件、联机帮助和源代码文件。基于每天更新一次的数据库（/var/lib/mlocate/），查询快速。| whereis ls
 locate | 与whereis使用相同的数据库，支持复杂的匹配语法。| locate ls 会找到很多结果。
 which | 只在$PATH环境变量中搜索可执行文件。可用于确认系统是否安装了指定软件。| which gcc
-find | 强大的查找工具。`find / -mtime -1 -exec ls -l {} \;`表示列出一天以内变化的文件的详细信息。`-exec`表示对找到的文件执行的动作，{}表示占位符，find命令执行过程中会不断地被替换为当前找到的文件，这样ls命令就完整了。分号";"是因为`-exec`的结束标记是分号，在bash中有特殊含义，所以需要转义符`\`。另一个示例： 在php文件中查找41：  find . -name '*.php' -type f -exec grep -q 41 {} \; -print| 
+find | 强大的查找工具。`find / -mtime -1 -exec ls -l {} \;`表示列出一天以内变化的文件的详细信息。`-exec`表示对找到的文件执行的动作，{}表示占位符，find命令执行过程中会不断地被替换为当前找到的文件，这样ls命令就完整了。分号";"是因为`-exec`的结束标记是分号，在bash中有特殊含义，所以需要转义符`\`。另一个示例： 在php文件中查找41：  find . -name '*.php' -type f -exec grep -q 41 {} \; -print|
 
 ### 2.3 文件打包压缩
 
@@ -172,5 +172,3 @@ Linux的守护进程分为stand alone和xinetd。前者可以自行启动，启�
 
 ## 4. 磁盘管理
 Linux的文件系统格式被称为ExtN(N=2,3,4)。ExtN文件系统中包含inode数据结构来代表一个文件，并且存储了这个文件的各种属性和权限。文件的实际数据保存在data block块区中。data block与inode一样，每一个都有一个唯一编号，inode只需要记录这些编号，就能够定位整个文件的任意一段数据。因此ExtN通过inode能够一次性获得文件数据所存放的位置，尽量保证在磁盘只旋转一圈的情况下将所有内容读出来。而FAT32则只有将对应的data block读入之后才知道下一个data block在什么地方，因此效率比较低，这也是Windows系统使用较长时间后，碎片较多，系统变慢的原因。
-
-
