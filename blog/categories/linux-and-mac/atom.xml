@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Linux | 码出人生]]></title>
-  <link href="http://blog.ubone.com/blog/categories/linux/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Linux & Mac | 码出人生]]></title>
+  <link href="http://blog.ubone.com/blog/categories/linux-and-mac/atom.xml" rel="self"/>
   <link href="http://blog.ubone.com/"/>
-  <updated>2016-01-01T19:42:52+08:00</updated>
+  <updated>2016-01-01T19:51:24+08:00</updated>
   <id>http://blog.ubone.com/</id>
   <author>
     <name><![CDATA[梅雪松]]></name>
@@ -12,6 +12,24 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Bash for Mac]]></title>
+    <link href="http://blog.ubone.com/blog/2016/01/01/bash-for-macji-chu/"/>
+    <updated>2016-01-01T19:09:01+08:00</updated>
+    <id>http://blog.ubone.com/blog/2016/01/01/bash-for-macji-chu</id>
+    <content type="html"><![CDATA[<p>Bash for Mac OS introduction.</p>
+
+<!--more-->
+
+
+<p><img src="/myresource/images/bash_mac_20160101_0001.jpg" alt="image" />
+<img src="/myresource/images/bash_mac_20160101_0002.jpg" alt="image" />
+<img src="/myresource/images/bash_mac_20160101_0003.jpg" alt="image" />
+<img src="/myresource/images/bash_mac_20160101_0004.jpg" alt="image" />
+<img src="/myresource/images/bash_mac_20160101_0005.jpg" alt="image" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux Crontab定时任务]]></title>
@@ -386,7 +404,7 @@ drwxrwxr-x  2 mxs  mxs      4096 Jan 20 10:26 pki
 <tr>
 <td>find </td>
 <td> 强大的查找工具。<code>find / -mtime -1 -exec ls -l {} \;</code>表示列出一天以内变化的文件的详细信息。<code>-exec</code>表示对找到的文件执行的动作，{}表示占位符，find命令执行过程中会不断地被替换为当前找到的文件，这样ls命令就完整了。分号";&ldquo;是因为<code>-exec</code>的结束标记是分号，在bash中有特殊含义，所以需要转义符<code>\</code>。另一个示例： 在php文件中查找41：  find . -name &lsquo;*.php&rsquo; -type f -exec grep -q 41 {} \; -print</td>
-<td> </td>
+<td></td>
 </tr>
 </tbody>
 </table>
